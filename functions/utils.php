@@ -1,0 +1,206 @@
+<?php
+
+function hpt_enqueue_debug_assets()
+{
+    // Ajouter Bootstrap si nécessaire
+    wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
+    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js', [], null, true);
+
+    // Ajouter le CSS personnalisé
+    wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
+}
+add_action('admin_enqueue_scripts', 'hpt_enqueue_debug_assets');
+add_action('wp_enqueue_scripts', 'hpt_enqueue_debug_assets');
+
+
+// Stockage des variables de debug pour affichage en fin de rendu
+global $hpt_debug_entries;
+$hpt_debug_entries = [];
+
+if (!function_exists('vd')) {
+    function vd($variable, $label = null)
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        global $hpt_debug_entries;
+
+        // Utiliser debug_backtrace() pour récupérer l'appelant de la fonction
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller_line = $backtrace[0]['line']; // Ligne d'où la fonction a été appelée
+        $caller_file = $backtrace[0]['file']; // Fichier où elle a été appelée
+
+        // Lire la ligne du fichier contenant l'appel à vd()
+        $file_lines = file($caller_file);
+        $call_line = $file_lines[$caller_line - 1];
+
+        // Utiliser une regex pour essayer d'extraire le nom de la variable
+        preg_match('/vd\s*\(\s*\$(\w+)/', $call_line, $matches);
+        $variable_name = isset($matches[1]) ? $matches[1] : 'Variable Debug';
+
+        // Si aucun label n'est défini, utiliser le nom de la variable
+        $label = $label ?: $variable_name;
+
+        // Transformer la variable en format lisible
+        ob_start();
+        var_dump($variable);
+        $dumpContent = ob_get_clean();
+        $dumpContent = htmlspecialchars($dumpContent, ENT_QUOTES, 'UTF-8');
+
+        // Générer un ID unique pour chaque debug box
+        $uniqueId = 'hptDebugModal_' . uniqid();
+
+        // Stocker les données de debug pour un affichage ultérieur
+        $hpt_debug_entries[] = [
+            'id' => $uniqueId,
+            'label' => $label,
+            'content' => $dumpContent
+        ];
+    }
+}
+
+function hpt_render_debug_popups()
+{
+    global $hpt_debug_entries;
+
+    if (empty($hpt_debug_entries)) {
+        return;
+    }
+?> <div class="btn-vd-group"> <?php
+                                foreach ($hpt_debug_entries as $debug) {
+                                ?>
+            <button type="button" class="hpt-debug-btn" data-bs-toggle="modal" data-bs-target="#<?php echo esc_attr($debug['id']); ?>">
+                <?php echo esc_html($debug['label']); ?>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="<?php echo esc_attr($debug['id']); ?>" tabindex="-1" aria-labelledby="<?php echo esc_attr($debug['id']); ?>Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="<?php echo esc_attr($debug['id']); ?>Label"><?php echo esc_html($debug['label']); ?></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <pre class="hpt-debug-content"><?php echo $debug['content']; ?></pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php
+                                }
+        ?>
+    </div> <?php
+        }
+        add_action('admin_footer', 'hpt_render_debug_popups');
+        add_action('wp_footer', 'hpt_render_debug_popups');
+
+        // test 
+
+        // vd($user_data, 'User Data Debug');
+        // vd($settings, 'Settings Debug');
+        // vd($_POST, 'Form Submission');
+
+        // popup error
+
+        // On définit un tableau global pour stocker les erreurs récupérées.
+        static $hpt_collected_errors = [];
+
+        /**
+         * Fonction : haptic_GPT_set_custom_error_handler
+         * But : Définir un gestionnaire d'erreurs qui stocke les erreurs dans un tableau global.
+         */
+        function haptic_GPT_set_custom_error_handler()
+        {
+            set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+                global $hpt_collected_errors;
+
+                // Construire un message d'erreur
+                $error_message = sprintf(
+                    "PHP Error [%d]: %s in %s on line %d",
+                    $errno,
+                    $errstr,
+                    $errfile,
+                    $errline
+                );
+
+                // Stocker le message dans le tableau global
+                $hpt_collected_errors[] = $error_message;
+
+                // Indique à PHP que l'erreur est gérée
+                return true;
+            });
+        }
+
+        /**
+         * Fonction : haptic_GPT_display_php_errors_in_popup
+         * But : Afficher les erreurs collectées dans une pop-up JavaScript. 
+         *       Vérifie d'abord que l'utilisateur est administrateur.
+         */
+        function haptic_GPT_display_php_errors_in_popup()
+        {
+            global $hpt_collected_errors;
+
+            // On vérifie si l'utilisateur est administrateur
+            if (!current_user_can('administrator')) {
+                return;
+            }
+
+            // Si aucune erreur, on ne fait rien
+            if (empty($hpt_collected_errors)) {
+                return;
+            }
+
+            // Convertir les erreurs en JSON pour les transmettre au script JS
+            $errors_json = json_encode($hpt_collected_errors);
+            ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer les erreurs depuis la variable PHP
+            var errors = <?php echo $errors_json; ?>;
+            var message = errors.join("\n\n");
+
+            // Afficher une pop-up basique (alert)
+            alert("Erreurs PHP détectées :\n\n" + message);
+        });
+    </script>
+<?php
+        }
+
+        /**
+         * Fonction : haptic_GPT_register_shutdown_handler
+         * But : Intercepter les erreurs fatales via register_shutdown_function pour les enregistrer avant que le script ne termine.
+         */
+        function haptic_GPT_register_shutdown_handler()
+        {
+            register_shutdown_function(function () {
+                global $hpt_collected_errors;
+                $last_error = error_get_last();
+
+                // On cible les erreurs fatales, parse errors, etc.
+                if ($last_error && in_array($last_error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+                    $error_message = sprintf(
+                        "Fatal Error [%d]: %s in %s on line %d",
+                        $last_error['type'],
+                        $last_error['message'],
+                        $last_error['file'],
+                        $last_error['line']
+                    );
+                    $hpt_collected_errors[] = $error_message;
+                }
+            });
+        }
+
+        /**
+         * Hooks WordPress
+         */
+        // Initialisation du gestionnaire d'erreurs
+        add_action('plugins_loaded', 'haptic_GPT_set_custom_error_handler');
+        // Registration du shutdown handler (pour erreurs fatales)
+        add_action('plugins_loaded', 'haptic_GPT_register_shutdown_handler');
+        // Injection de la pop-up dans l'admin
+        add_action('admin_print_footer_scripts', 'haptic_GPT_display_php_errors_in_popup');
