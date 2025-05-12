@@ -1,13 +1,37 @@
 <?php
 
+
 function hpt_enqueue_debug_assets()
 {
-    // Ajouter Bootstrap si nécessaire
-    wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
-    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js', [], null, true);
-
-    // Ajouter le CSS personnalisé
+    // Ajouter le CSS personnalisé en priorité
     wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
+
+    // Injecter un script pour vérifier la présence de Bootstrap côté client
+    add_action('wp_footer', function () {
+?>
+        <script type="text/javascript">
+            (function() {
+                // Vérifie si Bootstrap est déjà chargé (test compatible v4/v5)
+                var isBootstrapLoaded = (typeof bootstrap !== 'undefined') ||
+                    (typeof $ !== 'undefined' && typeof $.fn.modal === 'function');
+
+                if (!isBootstrapLoaded) {
+                    // Charger Bootstrap CSS
+                    var link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css';
+                    document.head.appendChild(link);
+
+                    // Charger Bootstrap JS
+                    var script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
+                    script.defer = true;
+                    document.body.appendChild(script);
+                }
+            })();
+        </script>
+    <?php
+    }, 100); // S'assurer que ce script est injecté après tous les autres
 }
 add_action('admin_enqueue_scripts', 'hpt_enqueue_debug_assets');
 add_action('wp_enqueue_scripts', 'hpt_enqueue_debug_assets');
@@ -67,9 +91,9 @@ function hpt_render_debug_popups()
     if (empty($hpt_debug_entries)) {
         return;
     }
-?> <div class="btn-vd-group"> <?php
-                                foreach ($hpt_debug_entries as $debug) {
-                                ?>
+    ?> <div class="btn-vd-group"> <?php
+                                    foreach ($hpt_debug_entries as $debug) {
+                                    ?>
             <button type="button" class="hpt-debug-btn" data-bs-toggle="modal" data-bs-target="#<?php echo esc_attr($debug['id']); ?>">
                 <?php echo esc_html($debug['label']); ?>
             </button>
@@ -92,7 +116,7 @@ function hpt_render_debug_popups()
                 </div>
             </div>
         <?php
-                                }
+                                    }
         ?>
     </div> <?php
         }

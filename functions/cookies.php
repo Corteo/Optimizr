@@ -296,6 +296,15 @@ function hpt_options_enqueue_tracking_scripts()
              <script type=\"text/javascript\">
         (tarteaucitron.job = tarteaucitron.job || []).push('youtubeapi');
         </script>";
+    echo "<!-- TAC : Google Consent Mode V2 -->
+             <script type=\"text/javascript\">
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmadstorage');
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmanalyticsstorage');
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmfunctionality');
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmpersonalization');
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmadsuserdata');
+(tarteaucitron.job = tarteaucitron.job || []).push('gcmsecurity');
+    </script>";
 
 
 
