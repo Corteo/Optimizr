@@ -4,7 +4,7 @@ function hpt_add_seo_metabox()
 {
     add_meta_box(
         'hpt_seo_meta',
-        'SEO & OpenGraph plop',
+        'SEO & OpenGraph',
         'hpt_seo_meta_callback',
         ['post', 'page'], // Ajouter les CPT si nécessaire
         'normal',
@@ -78,8 +78,46 @@ function hpt_seo_meta_callback($post)
     <p>
         <label for="hpt_og_desc">Description OpenGraph :</label><br>
         <textarea id="hpt_og_desc" name="hpt_og_desc" class="widefat"><?php echo esc_textarea($og_desc); ?></textarea>
-        <span class="hpt-char-count" id="hpt_desc_count">0/160</span>
-        <small class="hpt-seo-hint">🔹 Idéalement entre 120 et 160 caractères.</small>
+    <p>
+        <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>">
+            Générer avec l'IA
+        </button>
+    </p>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('generate-seo-desc');
+            const textarea = document.getElementById('hpt_og_desc');
+            if (!button || !textarea) return;
+
+            button.addEventListener('click', function() {
+                button.disabled = true;
+                button.innerText = 'Génération...';
+
+                fetch(ajaxurl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            action: 'hpt_generate_ai_seo_description',
+                            post_id: this.dataset.postId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            textarea.value = data.data.description;
+                        } else {
+                            textarea.value = 'Erreur : ' + data.data;
+                        }
+                        button.disabled = false;
+                        button.innerText = 'Générer avec l\'IA';
+                    });
+            });
+        });
+    </script>
+    <span class="hpt-char-count" id="hpt_desc_count">0/160</span>
+    <small class="hpt-seo-hint">🔹 Idéalement entre 120 et 160 caractères.</small>
     </p>
 
     <!-- Champ Image OpenGraph -->

@@ -6,14 +6,22 @@ function hpt_enqueue_debug_assets()
     // Ajouter le CSS personnalisé en priorité
     wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
 
-    // Injecter un script pour vérifier la présence de Bootstrap côté client
+    // Injecter un script pour vérifier la présence de Bootstrap côté client (compatibilité v3/v4/v5)
     add_action('wp_footer', function () {
 ?>
         <script type="text/javascript">
             (function() {
-                // Vérifie si Bootstrap est déjà chargé (test compatible v4/v5)
-                var isBootstrapLoaded = (typeof bootstrap !== 'undefined') ||
-                    (typeof $ !== 'undefined' && typeof $.fn.modal === 'function');
+                var isBootstrapLoaded = false;
+
+                // Vérifie si Bootstrap 5 (objet global) est présent
+                if (typeof bootstrap !== 'undefined') {
+                    isBootstrapLoaded = true;
+                }
+
+                // Vérifie si Bootstrap 3 ou 4 est présent via jQuery.fn.modal (souvent utilisé dans v3 et v4)
+                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.modal === 'function') {
+                    isBootstrapLoaded = true;
+                }
 
                 if (!isBootstrapLoaded) {
                     // Charger Bootstrap CSS
@@ -45,6 +53,10 @@ if (!function_exists('vd')) {
     function vd($variable, $label = null)
     {
         if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        if (!get_option('hpt_dev_mode')) {
             return;
         }
 
@@ -171,6 +183,10 @@ function hpt_render_debug_popups()
 
             // On vérifie si l'utilisateur est administrateur
             if (!current_user_can('administrator')) {
+                return;
+            }
+
+            if (!get_option('hpt_debug_mode')) {
                 return;
             }
 

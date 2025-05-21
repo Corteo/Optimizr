@@ -13,11 +13,12 @@ function hpt_generate_meta_tags()
         $seo_title = hpt_generate_seo_content($title_pattern, $post->ID);
         $seo_desc = hpt_generate_seo_content($desc_pattern, $post->ID);
 
-        vd($seo_title);
-        vd($seo_desc);
+        // vd($seo_title);
+        // vd($seo_desc);
 
         $og_title = get_post_meta($post->ID, '_hpt_og_title', true) ?: $seo_title;
         $og_desc = get_post_meta($post->ID, '_hpt_og_desc', true) ?: $seo_desc;
+        $og_desc = html_entity_decode($og_desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $og_image = get_post_meta($post->ID, '_hpt_og_image', true) ?: get_the_post_thumbnail_url($post, 'full');
 
         if ($noindex) {
@@ -26,14 +27,13 @@ function hpt_generate_meta_tags()
 
         echo '<meta property="og:title" content="' . esc_attr($og_title) . '">' . PHP_EOL;
         echo '<meta property="og:description" content="' . esc_attr($og_desc) . '">' . PHP_EOL;
+        echo '<meta name="description" content="' . esc_attr($og_desc) . '">' . PHP_EOL;
         if ($og_image) {
             echo '<meta property="og:image" content="' . esc_url($og_image) . '">' . PHP_EOL;
         }
 
-
-
-        echo '<meta property="og:title" content="' . esc_attr($seo_title) . '">' . PHP_EOL;
-        echo '<meta property="og:description" content="' . esc_attr($seo_desc) . '">' . PHP_EOL;
+        // echo '<meta property="og:title" content="' . esc_attr($seo_title) . '">' . PHP_EOL;
+        // echo '<meta property="og:description" content="' . esc_attr($seo_desc) . '">' . PHP_EOL;
     }
 }
 add_action('wp_head', 'hpt_generate_meta_tags');
@@ -46,6 +46,7 @@ function hpt_generate_seo_content($pattern, $post_id)
     $site_slogan = get_bloginfo('description');
     $post_title = get_the_title($post_id);
     $post_excerpt = get_the_excerpt($post_id);
+    $post_excerpt = html_entity_decode($post_excerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $author_name = get_the_author_meta('display_name', $post->post_author);
     $categories = get_the_category($post_id);
     $category_names = (!empty($categories)) ? implode(', ', wp_list_pluck($categories, 'name')) : 'Sans catégorie';

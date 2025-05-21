@@ -68,6 +68,8 @@ function hpt_options_init()
 {
     // Add your initialization code here
     // For example, you can register custom settings, add custom fields, and create custom tables in the database
+    register_setting('hpt-options-settings-group', 'hpt_debug_mode');
+    register_setting('hpt-options-settings-group', 'hpt_dev_mode');
 }
 
 // Function to enqueue scripts and styles
@@ -128,6 +130,18 @@ function hpt_options_settings_page()
     // Update the options based on the current state before displaying the settings page
     hpt_options_update_settings();
 
+    add_settings_section('hpt-options-main', 'Options principales', null, 'hpt-options');
+
+    add_settings_field('hpt_debug_mode', 'Activer le mode Debug', function () {
+        $value = get_option('hpt_debug_mode', false);
+        echo '<input type="checkbox" name="hpt_debug_mode" value="1" ' . checked(1, $value, false) . '> Activer l\'affichage des erreurs PHP';
+    }, 'hpt-options', 'hpt-options-main');
+
+    add_settings_field('hpt_dev_mode', 'Activer le mode Développeur', function () {
+        $value = get_option('hpt_dev_mode', false);
+        echo '<input type="checkbox" name="hpt_dev_mode" value="1" ' . checked(1, $value, false) . '> Activer l\'affichage des variables de debug (vd)';
+    }, 'hpt-options', 'hpt-options-main');
+
 ?>
     <div class="wrap">
         <h1>Haptic Optimizr</h1>
@@ -148,6 +162,7 @@ require_once('hpt_admin-page.php');
 require_once('functions/thumbnails.php');
 require_once('functions/cpts.php');
 require_once('functions/cookies.php');
+require_once('functions/ai.php');
 require_once('functions/seo/seo.php');
 require_once('gutenberg/gutenberg.php');
 require_once('functions/tabs.php');

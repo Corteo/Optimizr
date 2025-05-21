@@ -60,10 +60,88 @@ function hpt_options_add_tarteaucitron_field()
         'Activer Tarte au citron',
         'hpt_options_enable_tarteaucitron_callback',
         'hpt-options',
-        'hpt-options-services-section',
+        'hpt-options-services-section'
     );
-
     register_setting('hpt-options-settings-group', 'hpt_option_enable_tarteaucitron');
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-banner-style',
+        'Style de bannière Tarte au Citron',
+        'hpt_options_tarteaucitron_banner_style_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_banner_style');
+
+
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-banner-bg',
+        'Couleur de fond de la bannière',
+        'hpt_options_tarteaucitron_banner_bg_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_banner_bg');
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-btn-accept',
+        'Couleur bouton Accepter',
+        'hpt_options_tarteaucitron_btn_accept_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_btn_accept');
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-btn-deny',
+        'Couleur bouton Refuser',
+        'hpt_options_tarteaucitron_btn_deny_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_btn_deny');
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-btn-customize',
+        'Couleur bouton Personnaliser',
+        'hpt_options_tarteaucitron_btn_customize_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_btn_customize');
+
+    add_settings_field(
+        'hpt-options-tarteaucitron-highlight-color',
+        'Couleur des éléments de service (bordures, listes)',
+        'hpt_options_tarteaucitron_highlight_color_callback',
+        'hpt-options',
+        'hpt-options-services-section'
+    );
+    register_setting('hpt-options-settings-group', 'hpt_option_tarteaucitron_highlight_color');
+}
+
+// function hpt_options_enable_tarteaucitron_callback()
+// {
+//     $option = get_option('hpt_option_enable_tarteaucitron');
+//     $checked = $option ? 'checked' : '';
+//     echo '<label><input type="checkbox" name="hpt_option_enable_tarteaucitron" value="1" ' . $checked . ' /> Activer la gestion des Cookies (RGPD)</label>';
+// }
+
+function hpt_options_tarteaucitron_banner_style_callback()
+{
+    $styles = [
+        'top' => 'Bannière en haut',
+        'bottom' => 'Bannière en bas',
+        'middle' => 'Centré (par défaut)'
+    ];
+    $selected = get_option('hpt_option_tarteaucitron_banner_style', 'middle');
+    echo '<select name="hpt_option_tarteaucitron_banner_style">';
+    foreach ($styles as $value => $label) {
+        $is_selected = $selected === $value ? 'selected' : '';
+        echo "<option value=\"$value\" $is_selected>$label</option>";
+    }
+    echo '</select>';
 }
 
 function hpt_options_enable_tarteaucitron_callback()
@@ -127,7 +205,7 @@ function hpt_options_enqueue_tracking_scripts()
             \"bodyPosition\": \"bottom\", /* or top to bring it as first element for accessibility */
             \"hashtag\": \"#tarteaucitron\", /* Open the panel with this hashtag */
             \"cookieName\": \"tarteaucitron\", /* Cookie name */
-            \"orientation\": \"middle\", /* Banner position (top - bottom) */
+            \"orientation\": \"" . esc_js(get_option('hpt_option_tarteaucitron_banner_style', 'middle')) . "\", /* Banner position (top - bottom - middle) */
             \"groupServices\": false, /* Group services by category */
             \"serviceDefaultState\": \"wait\", /* Default state (true - wait - false) */
             \"showAlertSmall\": false, /* Show the small banner on bottom right */
@@ -145,9 +223,51 @@ function hpt_options_enqueue_tracking_scripts()
             \"useExternalCss\": false, /* If false, the tarteaucitron.css file will be loaded */
             \"useExternalJs\": false, /* If false, the tarteaucitron.js file will be loaded */
             \"mandatory\": true, /* Show a message about mandatory cookies */
-            \"mandatoryCta\": true /* Show the disabled accept button when mandatory on */
-        });
+            \"mandatoryCta\": true, /* Show the disabled accept button when mandatory on */
+
+          //\"cookieDomain\": \".my-multisite-domaine.fr\", /* Optionnel: domaine principal pour partager le consentement avec des sous domaines */
+     
+           //\"customCloserId\": \"\", /* Optionnel a11y: ID personnalisé pour ouvrir le panel */
+          
+          \"googleConsentMode\": true, /* Activer le Google Consent Mode v2 pour Google ads & GA4 */
+          \"bingConsentMode\": true, /* Activer le Bing Consent Mode pour Clarity & Bing Ads */
+          \"softConsentMode\": false, /* Soft consent mode (le consentement est requis pour charger les tags) */
+
+          \"dataLayer\": false, /* Envoyer un événement dans dataLayer avec le statut des services */
+          \"serverSide\": false, /* Server side seulement, les tags ne sont pas chargé côté client */
+          
+          \"partnersList\": false /* Afficher le détail du nombre de partenaires sur la bandeau */
+          });
     </script>";
+
+    // Ajout du style personnalisé pour la bannière et les boutons
+    echo "<style type=\"text/css\">
+ 
+     #tarteaucitron #tarteaucitronServices .tarteaucitronTitle button,
+     #tarteaucitron #tarteaucitronInfo,
+#tarteaucitron #tarteaucitronServices .tarteaucitronMainLine,
+     #tarteaucitronRoot #tarteaucitronAlertBig{
+          background-color: " . esc_html(get_option('hpt_option_tarteaucitron_highlight_color', '#e0e0e0')) . " !important;
+       }
+        #tarteaucitronRoot,
+        #tarteaucitronRoot div#tarteaucitronSave {
+            background-color: " . esc_html(get_option('hpt_option_tarteaucitron_banner_bg', '#f9f9f9')) . ";
+        }
+        #tarteaucitronRoot .tarteaucitronAllow {
+            background-color: " . esc_html(get_option('hpt_option_tarteaucitron_btn_accept', '#00c853')) . " !important;
+        }
+        #tarteaucitronRoot .tarteaucitronDeny {
+            background-color: " . esc_html(get_option('hpt_option_tarteaucitron_btn_deny', '#d50000')) . " !important;
+        }
+        #tarteaucitronRoot .tarteaucitronPersonalize {
+            background-color: " . esc_html(get_option('hpt_option_tarteaucitron_btn_customize', '#ff9800')) . " !important;
+        }
+
+        div#tarteaucitronInfo{
+            border:none;
+        }
+       
+    </style>";
 
     $services = [
         'google_analytics' => 'ID',
@@ -490,3 +610,34 @@ function toggleFacebookHelp() {
 
 // // Hook to add the new section for displaying the generated script
 // add_action('admin_init', 'hpt_options_add_generated_script_section');
+
+// Fonctions de callback pour les champs de couleur personnalisés Tarteaucitron
+function hpt_options_tarteaucitron_banner_bg_callback()
+{
+    $value = get_option('hpt_option_tarteaucitron_banner_bg', '#f9f9f9');
+    echo '<input type="color" name="hpt_option_tarteaucitron_banner_bg" value="' . esc_attr($value) . '">';
+}
+
+function hpt_options_tarteaucitron_btn_accept_callback()
+{
+    $value = get_option('hpt_option_tarteaucitron_btn_accept', '#00c853');
+    echo '<input type="color" name="hpt_option_tarteaucitron_btn_accept" value="' . esc_attr($value) . '">';
+}
+
+function hpt_options_tarteaucitron_btn_deny_callback()
+{
+    $value = get_option('hpt_option_tarteaucitron_btn_deny', '#d50000');
+    echo '<input type="color" name="hpt_option_tarteaucitron_btn_deny" value="' . esc_attr($value) . '">';
+}
+
+function hpt_options_tarteaucitron_btn_customize_callback()
+{
+    $value = get_option('hpt_option_tarteaucitron_btn_customize', '#ff9800');
+    echo '<input type="color" name="hpt_option_tarteaucitron_btn_customize" value="' . esc_attr($value) . '">';
+}
+
+function hpt_options_tarteaucitron_highlight_color_callback()
+{
+    $value = get_option('hpt_option_tarteaucitron_highlight_color', '#e0e0e0');
+    echo '<input type="color" name="hpt_option_tarteaucitron_highlight_color" value="' . esc_attr($value) . '">';
+}

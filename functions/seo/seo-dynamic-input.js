@@ -5,142 +5,111 @@ document.addEventListener("DOMContentLoaded", function () {
     // Sélectionne tous les champs contenteditable
     const editableFields = document.querySelectorAll('[contenteditable][data-hidden-input]');
 
-    // Tableau d'objets { code, label } sans underscores
+    // Tableau d'objets { code, label }
     const SEO_VARIABLES = [
-        { code: 'titre', label: 'Titre' },
-        { code: 'nomsite', label: 'Nom du site' },
-        { code: 'slogan', label: 'Slogan' },
-        { code: 'categorie', label: 'Catégorie' },
-        { code: 'resume', label: 'Résumé' },
-        { code: 'auteur', label: 'Auteur' },
-        { code: 'typecontenu', label: 'Type de contenu' },
-        { code: 'datepublication', label: 'Date de publication' }
+        { code: '{titre_page}', label: 'Titre de la page' },
+        { code: '{nom_site}', label: 'Nom du site' },
+        { code: '{slogan}', label: 'Slogan' },
+        { code: '{categorie}', label: 'Catégorie' },
+        { code: '{resume}', label: 'Résumé' },
+        { code: '{auteur}', label: 'Auteur' },
+        { code: '{type_contenu}', label: 'Type de contenu' },
+        { code: '{date_publication}', label: 'Date de publication' }
     ];
 
-    // Petit div pour l'affichage des suggestions
+    /* ----------- Activation Drag & Drop sur les badges variables ----------- */
+    document.querySelectorAll('.hpt-draggable').forEach(el => {
+        el.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', el.getAttribute('data-seo-variable'));
+        });
+    });
+
+    /* ----------- Boîte de suggestions pour l’autocomplétion clavier -------- */
     let suggestionBox = document.createElement('div');
     suggestionBox.style.position = 'absolute';
     suggestionBox.style.zIndex = '9999';
     suggestionBox.style.background = '#fff';
     suggestionBox.style.border = '1px solid #ccc';
     suggestionBox.style.display = 'none';
-
     document.body.appendChild(suggestionBox);
 
-    // -------------------------------------------------
-    // haptic_GPT_convertTextToBadges
-    // Convertit le texte brut en structure HTML (badges)
-    // -------------------------------------------------
+    /* ----------------- Fonctions utilitaires ----------------- */
     function haptic_GPT_convertTextToBadges(text) {
-        let tempContainer = document.createElement('div');
-        // Découpe en séquences non-espace ou espaces
+        let container = document.createElement('div');
         let tokens = text.match(/\S+|\s+/g) || [];
 
         tokens.forEach(token => {
-            let foundVar = SEO_VARIABLES.find(item => item.code === token);
-            if (foundVar) {
-                // Création du badge
+            let found = SEO_VARIABLES.find(v => v.code === token);
+            if (found) {
                 let badge = document.createElement('span');
                 badge.className = 'badge bg-primary me-1';
-                badge.setAttribute('data-seo-variable', foundVar.code);
-                badge.textContent = foundVar.label;
+                badge.setAttribute('data-seo-variable', found.code);
+                badge.textContent = found.label;
 
-                // Bouton (croix) pour supprimer
                 let closeBtn = document.createElement('button');
                 closeBtn.type = 'button';
                 closeBtn.className = 'btn-close btn-close-white ms-1';
-                closeBtn.style.float = 'none';
-                closeBtn.addEventListener('click', function (e) {
+                closeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     badge.remove();
                     haptic_GPT_syncAllFields();
                 });
                 badge.appendChild(closeBtn);
 
-                tempContainer.appendChild(badge);
-                // Ajoute un espace après (optionnel)
-                tempContainer.appendChild(document.createTextNode(' '));
+                container.appendChild(badge);
+                container.appendChild(document.createTextNode(' '));
             } else {
-                // Texte ou espace
-                tempContainer.appendChild(document.createTextNode(token));
+                container.appendChild(document.createTextNode(token));
             }
         });
-
-        return tempContainer.innerHTML;
+        return container.innerHTML;
     }
 
-    // -------------------------------------------------
-    // haptic_GPT_convertBadgesToText
-    // Convertit badges + texte en texte brut
-    // -------------------------------------------------
     function haptic_GPT_convertBadgesToText(html) {
         let temp = document.createElement('div');
         temp.innerHTML = html;
-
-        let textParts = [];
+        let parts = [];
         temp.childNodes.forEach(node => {
             if (node.nodeType === Node.ELEMENT_NODE && node.matches('.badge')) {
-                // Récupère la variable
-                let varName = node.getAttribute('data-seo-variable');
-                if (varName) {
-                    textParts.push(varName);
-                }
+                parts.push(node.getAttribute('data-seo-variable'));
             } else {
-                textParts.push(node.textContent);
+                parts.push(node.textContent);
             }
         });
-
-        return textParts.join('').replace(/\s+/g, ' ').trim();
+        return parts.join('').replace(/\s+/g, ' ').trim();
     }
 
-    // -------------------------------------------------
-    // haptic_GPT_syncAllFields
-    // Synchronise la valeur du champ hidden
-    // -------------------------------------------------
     function haptic_GPT_syncAllFields() {
         editableFields.forEach(field => {
-            let hiddenInputId = field.getAttribute('data-hidden-input');
-            let hiddenInput = document.getElementById(hiddenInputId);
+            let hiddenId = field.getAttribute('data-hidden-input');
+            let hiddenInput = document.getElementById(hiddenId);
             if (!hiddenInput) return;
-
-            let htmlContent = field.innerHTML;
-            let rawText = haptic_GPT_convertBadgesToText(htmlContent);
-            hiddenInput.value = rawText;
+            hiddenInput.value = haptic_GPT_convertBadgesToText(field.innerHTML);
         });
     }
 
-    // -------------------------------------------------
-    // getCaretCoordinatesInContentEditable
-    // Pour positionner le suggestionBox à l'emplacement du caret
-    // -------------------------------------------------
-    function getCaretCoordinatesInContentEditable(field) {
+    /* ----------------- Autocomplétion clavier ----------------- */
+    function getCaretPos(field) {
         let sel = window.getSelection();
         if (!sel.rangeCount) return { x: 0, y: 0 };
         let range = sel.getRangeAt(0).cloneRange();
         let dummy = document.createElement('span');
         range.insertNode(dummy);
         range.collapse(false);
-
         let rect = dummy.getBoundingClientRect();
-        dummy.parentNode.removeChild(dummy);
+        dummy.remove();
         return { x: rect.left, y: rect.top };
     }
 
-    // -------------------------------------------------
-    // showSuggestions
-    // Affiche la popup avec la liste de correspondances
-    // -------------------------------------------------
     function showSuggestions(matches, x, y, onSelect) {
         if (!matches.length) {
             suggestionBox.style.display = 'none';
             return;
         }
-
         suggestionBox.innerHTML = '';
         let ul = document.createElement('ul');
         ul.style.listStyle = 'none';
-        ul.style.margin = '0';
-        ul.style.padding = '0';
+        ul.style.margin = ul.style.padding = '0';
 
         matches.forEach(item => {
             let li = document.createElement('li');
@@ -161,26 +130,16 @@ document.addEventListener("DOMContentLoaded", function () {
         suggestionBox.style.display = 'none';
     }
 
-    // -------------------------------------------------
-    // insertVariableAsBadge
-    // Insère la variable choisie comme badge
-    // -------------------------------------------------
     function insertVariableAsBadge(field, variable) {
         let sel = window.getSelection();
         if (!sel.rangeCount) return;
-
-        // Supprime le mot (ou la sélection) en cours
         let range = sel.getRangeAt(0);
         range.deleteContents();
-
-        // Insère le code brut (ex: "titre ") à l’emplacement du caret
         range.insertNode(document.createTextNode(variable.code + ' '));
 
-        // Re-transforme en badges
-        let rawText = haptic_GPT_convertBadgesToText(field.innerHTML);
-        field.innerHTML = haptic_GPT_convertTextToBadges(rawText);
+        let raw = haptic_GPT_convertBadgesToText(field.innerHTML);
+        field.innerHTML = haptic_GPT_convertTextToBadges(raw);
 
-        // Replace le caret
         field.focus();
         sel = window.getSelection();
         sel.collapse(field.lastChild, 1);
@@ -189,64 +148,74 @@ document.addEventListener("DOMContentLoaded", function () {
         haptic_GPT_syncAllFields();
     }
 
-    // -------------------------------------------------
-    // getCurrentWordUpToCaret
-    // Récupère le “mot” en cours de saisie
-    // -------------------------------------------------
-    function getCurrentWordUpToCaret(field) {
+    function currentWord(field) {
         let sel = window.getSelection();
         if (!sel.rangeCount) return '';
-
         let range = sel.getRangeAt(0);
-        let preCursorRange = range.cloneRange();
-        preCursorRange.selectNodeContents(field);
-        preCursorRange.setEnd(range.endContainer, range.endOffset);
-
-        let text = preCursorRange.toString();
-        // Récupère le dernier groupe non-espace saisi
-        let matches = text.match(/[^\s]+$/);
-        return matches ? matches[0] : '';
+        let pre = range.cloneRange();
+        pre.selectNodeContents(field);
+        pre.setEnd(range.endContainer, range.endOffset);
+        let text = pre.toString();
+        let m = text.match(/[^\s]+$/);
+        return m ? m[0] : '';
     }
 
-    // -------------------------------------------------
-    // Initialisation : Sur chaque zone edit, on gère l'autocomplétion
-    // -------------------------------------------------
+    /* -------------------- Initialisation --------------------- */
     editableFields.forEach(field => {
-        let hiddenInputId = field.getAttribute('data-hidden-input');
-        let hiddenInput = document.getElementById(hiddenInputId);
+        let hiddenId = field.getAttribute('data-hidden-input');
+        let hiddenInput = document.getElementById(hiddenId);
         if (!hiddenInput) return;
 
-        // Conversion initiale (si une valeur existait)
-        let initialValue = hiddenInput.value;
-        field.innerHTML = haptic_GPT_convertTextToBadges(initialValue);
+        field.innerHTML = haptic_GPT_convertTextToBadges(hiddenInput.value);
 
-        // Sur la frappe au clavier : propose des suggestions si >= 2 lettres
-        field.addEventListener('input', function () {
-            let currentWord = getCurrentWordUpToCaret(field);
-            if (currentWord.length >= 2) {
-                let searchTerm = currentWord.toLowerCase();
-
-                // Filtre : code ou label qui commence par la saisie
+        field.addEventListener('input', () => {
+            let word = currentWord(field);
+            if (word.length >= 2) {
                 let matches = SEO_VARIABLES.filter(v =>
-                    v.code.toLowerCase().startsWith(searchTerm) ||
-                    v.label.toLowerCase().startsWith(searchTerm)
+                    v.code.toLowerCase().startsWith(word.toLowerCase()) ||
+                    v.label.toLowerCase().startsWith(word.toLowerCase())
                 );
-
-                let caretPos = getCaretCoordinatesInContentEditable(field);
-                showSuggestions(matches, caretPos.x, caretPos.y, (selected) => {
-                    insertVariableAsBadge(field, selected);
-                });
+                let pos = getCaretPos(field);
+                showSuggestions(matches, pos.x, pos.y, sel => insertVariableAsBadge(field, sel));
             } else {
                 hideSuggestions();
             }
         });
 
-        // Sur blur : re-transforme et cache la popup si on ne survole pas la liste
-        field.addEventListener('blur', function () {
+        /* ----- Drag & Drop depuis les badges ----- */
+        field.addEventListener('dragover', e => e.preventDefault());
+        field.addEventListener('drop', e => {
+            e.preventDefault();
+            // Place le caret à la position du drop
+            if (document.caretRangeFromPoint) {
+                const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+                if (range) {
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            } else if (e.rangeParent) {
+                // Pour compatibilité Firefox
+                const range = document.createRange();
+                range.setStart(e.rangeParent, e.rangeOffset);
+                range.collapse(true);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            const varCode = e.dataTransfer.getData('text/plain');
+            if (!varCode) return;
+            const variable = SEO_VARIABLES.find(v => v.code === varCode) ||
+                { code: varCode, label: varCode.replace(/[{}]/g, '') };
+            insertVariableAsBadge(field, variable);
+        });
+
+        field.addEventListener('blur', () => {
             setTimeout(() => {
                 if (!suggestionBox.matches(':hover')) {
-                    let rawText = haptic_GPT_convertBadgesToText(field.innerHTML);
-                    field.innerHTML = haptic_GPT_convertTextToBadges(rawText);
+                    field.innerHTML = haptic_GPT_convertTextToBadges(
+                        haptic_GPT_convertBadgesToText(field.innerHTML)
+                    );
                     haptic_GPT_syncAllFields();
                     hideSuggestions();
                 }
