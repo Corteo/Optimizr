@@ -13,6 +13,8 @@ function hpt_do_settings_sections($page)
     $i = 0;
     foreach ((array) $wp_settings_sections[$page] as $index => $section) {
         $i++;
+        // Ensure section['id'] exists, fallback to sanitized title or index
+        $section['id'] = isset($section['id']) ? $section['id'] : sanitize_title($section['title']);
         $active_class = $i == 1 ? 'active' : '';
         echo '<li class="nav-item">';
         echo '<a class="nav-link ' . $active_class . '" id="tab-' . esc_attr($section['id']) . '-tab" data-bs-toggle="tab" href="#tab-' . esc_attr($section['id']) . '" role="tab" aria-controls="tab-' . esc_attr($section['id']) . '" aria-selected="' . ($i == 1 ? 'true' : 'false') . '">' . esc_html($section['title']) . '</a>';
@@ -24,6 +26,15 @@ function hpt_do_settings_sections($page)
     $i = 0;
     foreach ((array) $wp_settings_sections[$page] as $index => $section) {
         $i++;
+
+        // Ensure section['id'] exists, fallback to sanitized title or index
+        $section['id'] = isset($section['id']) ? $section['id'] : sanitize_title($section['title']);
+
+        // Add fallback for before_section, section_class, and after_section
+        $section['before_section'] = isset($section['before_section']) ? $section['before_section'] : '';
+        $section['section_class'] = isset($section['section_class']) ? $section['section_class'] : '';
+        $section['after_section'] = isset($section['after_section']) ? $section['after_section'] : '';
+
         $active_class = $i == 1 ? 'show active' : '';
         echo '<div class="tab-pane fade ' . $active_class . '" id="tab-' . esc_attr($section['id']) . '" role="tabpanel" aria-labelledby="tab-' . esc_attr($section['id']) . '-tab">';
 

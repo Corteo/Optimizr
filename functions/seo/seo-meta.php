@@ -2,14 +2,17 @@
 // Ajouter une meta box SEO dans l'éditeur de page/post
 function hpt_add_seo_metabox()
 {
-    add_meta_box(
-        'hpt_seo_meta',
-        'SEO & OpenGraph',
-        'hpt_seo_meta_callback',
-        ['post', 'page'], // Ajouter les CPT si nécessaire
-        'normal',
-        'high'
-    );
+    $post_types = get_option('hpt_sitemap_post_types', ['post', 'page']);
+    foreach ($post_types as $post_type) {
+        add_meta_box(
+            'hpt_seo_meta',
+            'SEO & OpenGraph',
+            'hpt_seo_meta_callback',
+            $post_type,
+            'normal',
+            'high'
+        );
+    }
 }
 add_action('add_meta_boxes', 'hpt_add_seo_metabox');
 

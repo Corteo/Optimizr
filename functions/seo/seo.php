@@ -12,6 +12,8 @@ function hpt_options_register_seo_settings()
         'sanitize_callback' => 'hpt_sanitize_sitemap_post_types',
         'default' => ['post', 'page']
     ]);
+    register_setting('hpt-options-settings-group', 'hpt_enable_robots');
+    register_setting('hpt-options-settings-group', 'hpt_custom_robots_txt', ['type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field']);
 
     function hpt_sanitize_sitemap_post_types($input)
     {
@@ -77,6 +79,83 @@ function hpt_options_register_seo_settings()
         'hpt-options',
         'hpt_seo_settings_section'
     );
+
+    add_settings_field(
+        'hpt_enable_robots',
+        'Activer la personnalisation du robots.txt',
+        'hpt_enable_robots_callback',
+        'hpt-options',
+        'hpt_seo_settings_section'
+    );
+
+    add_settings_field(
+        'hpt_custom_robots_txt',
+        'Contenu personnalisé du fichier robots.txt',
+        'hpt_custom_robots_txt_callback',
+        'hpt-options',
+        'hpt_seo_settings_section'
+    );
+    // Callback pour l'option robots.txt
+    function hpt_enable_robots_callback()
+    {
+        $option = get_option('hpt_enable_robots', 0);
+        echo '<input type="checkbox" name="hpt_enable_robots" value="1" ' . checked(1, $option, false) . '>';
+    }
+
+    function hpt_custom_robots_txt_callback()
+    {
+        $db_value = get_option('hpt_custom_robots_txt', '');
+        $file_path = ABSPATH . 'robots.txt';
+
+        // Enregistre en base le contenu actuel du fichier robots.txt, s’il existe
+        if (file_exists($file_path)) {
+            $robots_content = file_get_contents($file_path);
+            update_option('hpt_custom_robots_txt', $robots_content);
+        }
+
+        if (file_exists($file_path)) {
+            $value = file_get_contents($file_path);
+        } elseif (!empty($db_value)) {
+            $value = $db_value;
+        } else {
+            $value = "User-agent: *\nDisallow:\nSitemap: " . home_url('/sitemap.xml');
+        }
+
+        echo '<textarea name="hpt_custom_robots_txt" rows="10" class="large-text code" id="hpt_custom_robots_txt_field">' . esc_textarea($value) . '</textarea>';
+        echo '<p><a href="' . esc_url(admin_url('admin-post.php?action=hpt_generate_robots_txt')) . '" class="button button-secondary" id="generate-robots-btn">Générer et sauvegarder robots.txt</a></p>';
+        echo '<p class="description">Voici quelques exemples de directives :</p>';
+        echo '<ul class="description" style="margin-left: 1em;">
+            <li><code>User-agent: *</code> → s’applique à tous les robots</li>
+            <li><code>Disallow: /wp-admin/</code> → empêche l’accès à l’admin</li>
+            <li><code>Allow: /wp-content/uploads/</code> → autorise un sous-dossier</li>
+            <li><code>Sitemap: https://exemple.com/sitemap.xml</code> → lien vers le plan de site</li>
+        </ul>';
+
+        // Prévisualisation en lecture seule du fichier robots.txt (affiche le contenu réel du fichier)
+        echo '<h4>Aperçu actuel du fichier robots.txt</h4>';
+        if (file_exists($file_path)) {
+            $real_content = file_get_contents($file_path);
+            echo '<pre style="background:#f6f6f6;padding:1em;border:1px solid #ccc;">' . esc_html($real_content) . '</pre>';
+        } else {
+            echo '<pre style="background:#f6f6f6;padding:1em;border:1px solid #ccc;">(Aucun fichier robots.txt trouvé à la racine du site)</pre>';
+        }
+
+        // Test d'accessibilité du robots.txt
+        echo '<p class="description"><strong>Test d\'accessibilité :</strong> ';
+        $robots_url = home_url('/robots.txt');
+        $response = wp_remote_get($robots_url);
+        if (is_wp_error($response)) {
+            echo '<span style="color:red;">Erreur d\'accès</span>';
+        } else {
+            $code = wp_remote_retrieve_response_code($response);
+            if ($code === 200) {
+                echo '<a href="' . esc_url($robots_url) . '" target="_blank" style="color:green;">✅ Accessible</a>';
+            } else {
+                echo '<span style="color:orange;">⚠️ Réponse HTTP : ' . esc_html($code) . '</span>';
+            }
+        }
+        echo '</p>';
+    }
 }
 // Callback pour le champ de sélection des types de contenus du sitemap
 function hpt_sitemap_post_types_callback()
@@ -315,3 +394,37 @@ function hpt_seo_desc_pattern_callback()
 require_once('seo-meta.php');
 require_once('seo-sitemap.php');
 require_once('seo-output.php');
+
+// Filtre pour personnaliser le robots.txt
+add_filter('robots_txt', function ($output, $public) {
+    if (!get_option('hpt_enable_robots')) {
+        return $output;
+    }
+
+    $custom = get_option('hpt_custom_robots_txt', '');
+    return !empty($custom) ? $custom : $output;
+}, 10, 2);
+
+
+add_action('admin_post_hpt_generate_robots_txt', function () {
+    if (!current_user_can('manage_options')) {
+        wp_die('Accès refusé');
+    }
+
+    $content = get_option('hpt_custom_robots_txt', '');
+    update_option('hpt_custom_robots_txt', $content);
+    $file = ABSPATH . 'robots.txt';
+
+    if (!empty($content)) {
+        file_put_contents($file, $content);
+    }
+
+    wp_redirect(admin_url('options-general.php?page=hpt-options&hpt_message=robots_generated'));
+    exit;
+});
+
+add_action('admin_notices', function () {
+    if (isset($_GET['hpt_message']) && $_GET['hpt_message'] === 'robots_generated') {
+        echo '<div class="notice notice-success is-dismissible"><p>Le fichier robots.txt a été généré avec succès.</p></div>';
+    }
+});

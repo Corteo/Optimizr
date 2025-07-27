@@ -18,6 +18,9 @@ Ce plugin vous permet de contrôler et de personnaliser diverses fonctionnalité
   - Dailymotion, Youtube
 - Gestion et personnalisation des métadonnées SEO (titre, description, image OpenGraph) avec prévisualisation et options d'automatisation IA, y compris pour les CPT
 - **Affichage des erreurs PHP détectées sous forme de pop-up pour les administrateurs** : les erreurs sont collectées et une alerte est affichée à l'ouverture d'une page d'administration pour un diagnostic rapide.
+- **SEO :**
+  - Optimisation des balises SEO grace a l'IA. 
+
 
 ## Installation
 
@@ -31,7 +34,11 @@ Une fois le plugin activé, accédez à la page d'options en allant à 'Réglage
 
 ## Changelog
 
-- **Version 1.4 (Unreleased) :**
+- **Version 1.5 :**
+  - Ajout de services connecté à chatGPT. 
+  - Génération de descriptions SEO, et des ablise alt pour les medias.
+  - Ajout d'un champ de contexte du site pour amelioré les requettes IA
+- **Version 1.4 :**
   - Ajout des fonctionnalités de gestion et personnalisation des métadonnées SEO.
   - Ajout de l'affichage des erreurs PHP pour les administrateurs sous forme de pop-up.
 - **Version 1.3 :**

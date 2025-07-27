@@ -266,6 +266,9 @@ function hpt_options_enqueue_tracking_scripts()
         div#tarteaucitronInfo{
             border:none;
         }
+        #tarteaucitronRoot #tarteaucitronIcon {
+            display: none !important;
+        }
        
     </style>";
 
@@ -284,6 +287,38 @@ function hpt_options_enqueue_tracking_scripts()
 
 
     ];
+    // Ajout d'une icône personnalisée FontAwesome en bas à droite
+    echo '<script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var icon = document.createElement("div");
+            icon.id = "custom-cookie-icon";
+            icon.innerHTML = \'<i class="fa-regular fa-cookie-bite"></i>\';
+            icon.style.position = "fixed";
+            icon.style.bottom = "15px";
+            icon.style.right = "15px";
+            icon.style.zIndex = "99999";
+            icon.style.cursor = "pointer";
+            icon.style.fontSize = "22px";
+            icon.style.opacity = "0.4";
+            icon.style.color = "' . esc_html(get_option('hpt_option_tarteaucitron_highlight_color', '#e0e0e0')) . '";
+            icon.style.transition = "opacity 0.3s ease";
+
+            icon.addEventListener("mouseenter", function () {
+                icon.style.opacity = "0.7";
+            });
+
+            icon.addEventListener("mouseleave", function () {
+                icon.style.opacity = "0.4";
+            });
+
+            icon.onclick = function () {
+                if (typeof tarteaucitron !== "undefined") {
+                    tarteaucitron.userInterface.openPanel();
+                }
+            };
+            document.body.appendChild(icon);
+        });
+    </script>';
 
     echo "<!-- TAC : Start -->";
 
