@@ -6,6 +6,26 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.3] - 2026-09-29
+
+Une migration s'exécute automatiquement : elle supprime les titres, descriptions et images que l'ancienne metabox avait enregistrés sans qu'ils soient choisis. Les personnalisations réelles sont conservées.
+
+### Ajouté
+- Balises `og:locale`, `og:type`, `og:url`, `og:site_name` et `twitter:card`.
+- Image de partage par défaut : image à la une, sinon celle de la page d'accueil, sinon l'icône du site.
+- Filtre `hpt_seo_disable_theme_tags` pour conserver les balises du thème si besoin.
+
+### Modifié
+- Le motif « Titre » s'applique désormais à la balise `<title>` (celle que Google affiche), et plus seulement au titre de partage. Fonctionne avec les thèmes modernes (`title-tag`) comme avec ceux qui écrivent `<title>` eux-mêmes.
+- Metabox « SEO & partage » : les champs sont vides par défaut et affichent en gris le résultat du motif. Seule une valeur saisie volontairement est enregistrée ; un champ vidé revient au motif.
+- Quand le module SEO est actif, les balises produites par le socle de thème Haptic (`wdm_add_social_tags`) sont désactivées : une seule source, plus de balises en double.
+- Les séparateurs orphelins sont retirés quand une variable est vide (« {resume} - {nom_site} » sans résumé donne « cobalt » et non « - cobalt »).
+
+### Corrigé
+- Le titre provisoire « Brouillon auto » apparaissait comme titre de partage sur des pages publiées.
+- Les motifs ne s'appliquaient plus aux contenus déjà enregistrés une fois, la metabox ayant figé leurs valeurs.
+- `og:title` et la meta description apparaissaient en double, avec des valeurs différentes, sur les thèmes Haptic.
+
 ## [2.0.0-beta.2] - 2026-09-29
 
 ### Ajouté

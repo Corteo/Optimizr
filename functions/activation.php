@@ -38,9 +38,15 @@ function hpt_options_maybe_upgrade()
         update_option('hpt_enable_opengraph', 1);
     }
 
+    if (version_compare($installed, '2.0.0-beta.3', '<') && function_exists('hpt_seo_cleanup_saved_meta')) {
+        $removed = hpt_seo_cleanup_saved_meta();
+        hpt_log('[Migration] Valeurs SEO pré-remplies supprimées : ' . $removed);
+    }
+
     update_option('hpt_optimizr_version', HPT_OPTIMIZR_VERSION);
 }
-add_action('plugins_loaded', 'hpt_options_maybe_upgrade');
+// Sur init (tard) : types de contenu et shortcodes chargés, nécessaires pour comparer les extraits
+add_action('init', 'hpt_options_maybe_upgrade', 99);
 
 register_activation_hook(__DIR__ . '/../hpt_options.php', 'hpt_options_activate');
 register_deactivation_hook(__DIR__ . '/../hpt_options.php', 'hpt_options_deactivate');

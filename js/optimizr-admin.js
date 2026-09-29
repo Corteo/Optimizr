@@ -229,10 +229,12 @@
         var titleCount = root.querySelector('[data-seo-count-title]');
         var descCount = root.querySelector('[data-seo-count-desc]');
 
+        // Même résultat que hpt_generate_seo_content() : variables remplacées, séparateurs orphelins retirés
         function render(pattern) {
-            return Object.keys(vars).reduce(function (text, code) {
-                return text.split(code).join(vars[code]);
+            var text = Object.keys(vars).reduce(function (acc, code) {
+                return acc.split(code).join(vars[code]);
             }, pattern || '');
+            return text.replace(/\s+/g, ' ').replace(/^[\s\-–—|*·•:,;\/]+|[\s\-–—|*·•:,;\/]+$/g, '');
         }
 
         function count(el, text, max) {

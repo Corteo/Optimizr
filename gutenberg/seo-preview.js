@@ -12,8 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const titleCount = document.getElementById("hpt_title_count");
     const descCount = document.getElementById("hpt_desc_count");
 
+    // Un champ vide applique le motif, affiché en placeholder
+    function effective(input) {
+        return input.value.trim() || input.placeholder || "";
+    }
+
     function updateCount(input, counter, max) {
-        let length = input.value.length;
+        let length = effective(input).length;
         counter.textContent = `${length}/${max}`;
 
         if (length > max) {
@@ -26,8 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updatePreview() {
-        previewTitle.textContent = titleInput.value || "Exemple de titre SEO";
-        previewDesc.textContent = descInput.value || "Exemple de description SEO générée automatiquement.";
+        previewTitle.textContent = effective(titleInput);
+        previewDesc.textContent = effective(descInput);
     }
 
     // Ajout des événements pour les mises à jour
@@ -47,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
             img = document.createElement("img");
             previewBox.appendChild(img);
         }
-        img.src = imageInput.value;
+        img.src = effective(imageInput);
         img.alt = "Prévisualisation SEO";
     });
 
