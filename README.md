@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.3 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.4 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -22,7 +22,8 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
 - Balises OpenGraph (titre, description, image).
 - Metabox « SEO & OpenGraph » dans l'éditeur : titre, description et image personnalisés, option « ne pas indexer ».
-- Sitemap XML et plan du site HTML, régénérés à chaque publication et chaque jour, pour les types de contenu choisis.
+- Sitemap XML pour les types de contenu choisis, avec la page d'accueil, régénéré en arrière-plan après chaque modification et chaque jour. Les contenus « ne pas indexer », protégés par mot de passe et les pages privées de WooCommerce en sont exclus ; découpage automatique au-delà de 50 000 URL.
+- Plan du site pour les visiteurs avec le shortcode `[optimizr_plan_du_site]` (options : `recent="6"`, `types="post,page"`).
 - robots.txt personnalisable, avec test d'accessibilité.
 
 ### Assistant IA (OpenAI)
@@ -82,6 +83,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `hpt_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
 | `hpt_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
 | `hpt_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
+| `hpt_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
+| `hpt_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
+| `hpt_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |
 | `before_hpt_options_enqueue_admin_scripts` / `after_…` | action | Charger des scripts côté administration. |
 

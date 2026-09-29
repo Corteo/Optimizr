@@ -68,7 +68,7 @@ function hpt_options_register_seo_settings()
         'hpt_seo_sitemap_section',
         'Plan du site',
         function () {
-            echo '<p>sitemap.xml et sitemap.html, régénérés à chaque publication et une fois par jour.</p>';
+            echo '<p>sitemap.xml, régénéré une minute après chaque modification de contenu et une fois par jour. Les contenus « ne pas indexer », protégés par mot de passe et les pages privées de WooCommerce en sont exclus.</p>';
         },
         $page
     );
@@ -174,7 +174,8 @@ add_action('admin_enqueue_scripts', 'hpt_enqueue_seo_admin_scripts');
 function hpt_generate_sitemap_button_callback()
 {
     $url = wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_sitemap_now'), 'hpt_generate_sitemap_now');
-    $last = get_option('hpt_sitemap_last_generated');
+    $error = get_option('hpt_sitemap_error');
+    $history = (array) get_option('hpt_sitemap_history', []);
     $file_exists = file_exists(ABSPATH . 'sitemap.xml');
     $file_url = home_url('/sitemap.xml');
 
@@ -185,37 +186,50 @@ function hpt_generate_sitemap_button_callback()
         $http_ok = !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200;
     }
 
-    $last_text = $last ? ' · dernière génération : ' . esc_html(mysql2date('j F Y à H:i', $last)) : '';
+    $details = '';
+    if (!empty($history[0])) {
+        $details = ' · ' . sprintf(_n('%d URL', '%d URL', $history[0]['count']), $history[0]['count'])
+            . ' · dernière génération : ' . esc_html(mysql2date('j F Y à H:i', $history[0]['time']));
+    }
 
-    if (!$file_exists) {
+    if ($error) {
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>La dernière génération a échoué.</strong> ' . esc_html($error) . '</span></div>';
+    } elseif (!$file_exists) {
         echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>Le fichier sitemap.xml est absent.</strong> Régénérez-le ci-dessous.</span></div>';
     } elseif (!$http_ok) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>sitemap.xml existe mais ne répond pas en HTTP</strong>' . $last_text . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>sitemap.xml existe mais ne répond pas en HTTP</strong>' . $details . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     } else {
-        echo '<div class="optimizr-notice optimizr-notice--ok">' . hpt_icon('check', 18) . '<span><strong>sitemap.xml est accessible</strong>' . $last_text . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
+        echo '<div class="optimizr-notice optimizr-notice--ok">' . hpt_icon('check', 18) . '<span><strong>sitemap.xml est accessible</strong>' . $details . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     }
 
     echo '<div class="optimizr-inline">';
     echo '<a href="' . esc_url($url) . '" class="optimizr-btn optimizr-btn--secondary">' . hpt_icon('refresh', 16) . 'Régénérer maintenant</a>';
-
-    $log_path = plugin_dir_path(__FILE__) . 'sitemap.log';
-    if (file_exists($log_path)) {
-        echo '<a href="' . esc_url(plugin_dir_url(__FILE__) . 'sitemap.log') . '" target="_blank" rel="noopener" class="optimizr-btn optimizr-btn--ghost">Journal des générations</a>';
-        $clear_log_url = wp_nonce_url(admin_url('admin-post.php?action=hpt_clear_sitemap_log'), 'hpt_clear_sitemap_log');
-        echo '<a href="' . esc_url($clear_log_url) . '" class="optimizr-btn optimizr-btn--ghost">Vider le journal</a>';
-    }
     echo '</div>';
+
+    if ($history) {
+        echo '<details class="optimizr-details"><summary>Historique des générations</summary><ul>';
+        foreach ($history as $entry) {
+            printf(
+                '<li>%s · %s · %s</li>',
+                esc_html(mysql2date('j M Y, H:i', $entry['time'])),
+                esc_html($entry['origin']),
+                $entry['ok'] ? esc_html(sprintf('%d URL', $entry['count'])) : '<strong>échec d\'écriture</strong>'
+            );
+        }
+        echo '</ul></details>';
+    }
+
+    echo '<p class="optimizr-field__help">Plan du site pour les visiteurs : placez le shortcode <code>[optimizr_plan_du_site]</code> dans une page.</p>';
 }
 
 // Déclenche la génération du sitemap et flush les permaliens lors de la modification des options pertinentes
 function hpt_flush_rewrite_and_generate_sitemap()
 {
-    haptic_GPT_write_sitemap_to_file();
+    haptic_GPT_write_sitemap_to_file('réglages');
     flush_rewrite_rules();
 }
 
-add_action('update_option_hpt_seo_title_pattern', 'hpt_flush_rewrite_and_generate_sitemap');
-add_action('update_option_hpt_seo_desc_pattern', 'hpt_flush_rewrite_and_generate_sitemap');
+// Changement des types de contenu inclus : régénération immédiate
 add_action('update_option_hpt_sitemap_post_types', 'hpt_flush_rewrite_and_generate_sitemap');
 
 // Traitement de l'action
@@ -224,23 +238,9 @@ add_action('admin_post_hpt_generate_sitemap_now', function () {
         wp_die('Accès refusé');
     }
     check_admin_referer('hpt_generate_sitemap_now');
-    require_once plugin_dir_path(__FILE__) . 'seo-sitemap.php';
-    hpt_flush_rewrite_and_generate_sitemap();
-    wp_redirect(add_query_arg('hpt_message', 'sitemap_regenerated', hpt_admin_tab_url('seo')));
-    exit;
-});
-
-// Action pour vider le fichier de log du sitemap
-add_action('admin_post_hpt_clear_sitemap_log', function () {
-    if (!current_user_can('manage_options')) {
-        wp_die('Accès refusé');
-    }
-    check_admin_referer('hpt_clear_sitemap_log');
-    $log_file = plugin_dir_path(__FILE__) . 'sitemap.log';
-    if (file_exists($log_file)) {
-        file_put_contents($log_file, '');
-    }
-    wp_redirect(add_query_arg('hpt_message', 'log_cleared', hpt_admin_tab_url('seo')));
+    $ok = haptic_GPT_write_sitemap_to_file('manuel');
+    flush_rewrite_rules();
+    wp_redirect(add_query_arg('hpt_message', $ok ? 'sitemap_regenerated' : 'sitemap_failed', hpt_admin_tab_url('seo')));
     exit;
 });
 
@@ -251,13 +251,14 @@ function hpt_show_sitemap_notice()
     }
 
     $messages = [
-        'sitemap_regenerated' => 'Le fichier sitemap.xml a été régénéré avec succès.',
-        'log_cleared'         => 'Le fichier de log a été vidé.',
+        'sitemap_regenerated' => 'Le sitemap a été régénéré.',
         'robots_generated'    => 'Le fichier robots.txt a été généré avec succès.',
     ];
 
     $key = sanitize_key($_GET['hpt_message']);
-    if (isset($messages[$key])) {
+    if ($key === 'sitemap_failed') {
+        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html(get_option('hpt_sitemap_error', 'La génération du sitemap a échoué.')) . '</p></div>';
+    } elseif (isset($messages[$key])) {
         echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($messages[$key]) . '</p></div>';
     }
 }

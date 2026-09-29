@@ -336,10 +336,10 @@ function hpt_site_health_checks()
     }
 
     if (hpt_is_module_active('seo')) {
-        $sitemap = file_exists(ABSPATH . 'sitemap.xml');
+        $sitemap = file_exists(ABSPATH . 'sitemap.xml') && !get_option('hpt_sitemap_error');
         $checks[] = [
             'status' => $sitemap ? 'ok' : 'warn',
-            'label' => $sitemap ? 'Sitemap XML généré' : 'Sitemap XML absent',
+            'label' => $sitemap ? 'Sitemap XML généré' : (get_option('hpt_sitemap_error') ? 'Échec d\'écriture du sitemap XML' : 'Sitemap XML absent'),
             'link' => $sitemap ? home_url('/sitemap.xml') : hpt_admin_tab_url('seo'),
             'link_label' => $sitemap ? 'Voir' : 'Générer',
         ];

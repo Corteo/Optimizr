@@ -4,51 +4,275 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Chemin : functions/seo/seo-sitemap.php
+/*
+ * Sitemap XML d'Optimizr.
+ *
+ * Écrit dans des fichiers statiques à la racine du site (sitemap.xml, et sitemap-N.xml au-delà de
+ * 50 000 URL) : ils fonctionnent aussi avec les permaliens simples, sans règle de réécriture.
+ * Régénéré en arrière-plan une minute après une modification de contenu, et une fois par jour.
+ */
 
-// Génère le sitemap XML
-function haptic_GPT_generate_sitemap($return_output = false)
+/** Nombre maximal d'URL par fichier (limite Google : 50 000). */
+function hpt_sitemap_max_urls()
 {
-    $post_types = get_option('hpt_sitemap_post_types', ['post', 'page']);
-    $post_types = array_filter($post_types);
-
-    $posts = get_posts([
-        'post_type' => $post_types,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-    ]);
-
-    $xml = new DOMDocument('1.0', 'UTF-8');
-    $urlset = $xml->createElement('urlset');
-    $urlset->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-
-    foreach ($posts as $post) {
-        $url = $xml->createElement('url');
-        $loc = $xml->createElement('loc', get_permalink($post));
-        $lastmod = $xml->createElement('lastmod', get_the_modified_time('c', $post));
-        $url->appendChild($loc);
-        $url->appendChild($lastmod);
-        $urlset->appendChild($url);
-    }
-
-    $xml->appendChild($urlset);
-    if ($return_output) {
-        return $xml->saveXML();
-    } else {
-        header('Content-Type: application/xml; charset=utf-8');
-        echo $xml->saveXML();
-        exit;
-    }
+    return (int) apply_filters('hpt_sitemap_max_urls', 50000);
 }
 
-// Point d'accès du sitemap
+function hpt_sitemap_post_types()
+{
+    return array_values(array_filter((array) get_option('hpt_sitemap_post_types', ['post', 'page'])));
+}
+
+/**
+ * Contenus à ne jamais envoyer aux moteurs : pages privées de WooCommerce, page d'accueil
+ * statique (ajoutée séparément sous l'URL du site), et exclusions ajoutées par filtre.
+ */
+function hpt_sitemap_excluded_ids()
+{
+    $ids = [(int) get_option('page_on_front')];
+
+    foreach (['woocommerce_cart_page_id', 'woocommerce_checkout_page_id', 'woocommerce_myaccount_page_id'] as $option) {
+        $ids[] = (int) get_option($option);
+    }
+
+    return array_values(array_filter(array_unique(apply_filters('hpt_sitemap_excluded_ids', $ids))));
+}
+
+/**
+ * Parcourt les contenus du sitemap par lots, pour ne jamais tout charger en mémoire.
+ *
+ * @param callable $callback Reçoit chaque WP_Post
+ */
+function hpt_sitemap_each_post(callable $callback)
+{
+    $post_types = hpt_sitemap_post_types();
+    if (!$post_types) {
+        return;
+    }
+
+    $page = 1;
+    do {
+        $query = new WP_Query([
+            'post_type'              => $post_types,
+            'post_status'            => 'publish',
+            'has_password'           => false,
+            'post__not_in'           => hpt_sitemap_excluded_ids(),
+            'posts_per_page'         => 500,
+            'paged'                  => $page,
+            'orderby'                => 'modified',
+            'order'                  => 'DESC',
+            'no_found_rows'          => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+            'ignore_sticky_posts'    => true,
+            // Contenus marqués « ne pas indexer » dans la metabox SEO
+            'meta_query'             => [
+                'relation' => 'OR',
+                ['key' => '_hpt_noindex', 'compare' => 'NOT EXISTS'],
+                ['key' => '_hpt_noindex', 'value' => '1', 'compare' => '!='],
+            ],
+        ]);
+
+        foreach ($query->posts as $post) {
+            $callback($post);
+        }
+
+        $page++;
+        $count = count($query->posts);
+
+        // Gros sites : libère le cache mémoire entre deux lots
+        if ($count === 500 && function_exists('wp_cache_flush_runtime')) {
+            wp_cache_flush_runtime();
+        }
+    } while ($count === 500);
+}
+
+/**
+ * Liste des URL : page d'accueil en premier, puis les contenus.
+ *
+ * @return array[] ['loc' => ..., 'lastmod' => ...]
+ */
+function hpt_sitemap_urls()
+{
+    $urls = [];
+    $latest = '';
+
+    hpt_sitemap_each_post(function ($post) use (&$urls, &$latest) {
+        $lastmod = get_post_modified_time('c', false, $post);
+        $latest = max($latest, (string) $lastmod);
+        $urls[] = ['loc' => get_permalink($post), 'lastmod' => $lastmod];
+    });
+
+    $front = (int) get_option('page_on_front');
+    if ($front) {
+        $latest = max($latest, (string) get_post_modified_time('c', false, $front));
+    }
+
+    array_unshift($urls, ['loc' => home_url('/'), 'lastmod' => $latest]);
+
+    return $urls;
+}
+
+function hpt_sitemap_urlset_xml(array $urls)
+{
+    $xml = new DOMDocument('1.0', 'UTF-8');
+    $xml->formatOutput = true;
+    $xml->appendChild($xml->createComment(' Généré par Optimizr '));
+    $urlset = $xml->appendChild($xml->createElement('urlset'));
+    $urlset->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+    foreach ($urls as $url) {
+        $node = $urlset->appendChild($xml->createElement('url'));
+        $node->appendChild($xml->createElement('loc'))->appendChild($xml->createTextNode($url['loc']));
+        if (!empty($url['lastmod'])) {
+            $node->appendChild($xml->createElement('lastmod', $url['lastmod']));
+        }
+    }
+
+    return $xml->saveXML();
+}
+
+function hpt_sitemap_index_xml(array $files)
+{
+    $xml = new DOMDocument('1.0', 'UTF-8');
+    $xml->formatOutput = true;
+    $xml->appendChild($xml->createComment(' Généré par Optimizr '));
+    $index = $xml->appendChild($xml->createElement('sitemapindex'));
+    $index->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+    foreach ($files as $file) {
+        $node = $index->appendChild($xml->createElement('sitemap'));
+        $node->appendChild($xml->createElement('loc'))->appendChild($xml->createTextNode(home_url('/' . $file)));
+        $node->appendChild($xml->createElement('lastmod', current_time('c')));
+    }
+
+    return $xml->saveXML();
+}
+
+/**
+ * Écriture atomique : fichier temporaire puis renommage, pour ne jamais servir un fichier à moitié écrit.
+ */
+function hpt_sitemap_write_file($name, $content)
+{
+    $path = ABSPATH . $name;
+    $tmp = $path . '.tmp';
+
+    if (@file_put_contents($tmp, $content, LOCK_EX) === false) {
+        return false;
+    }
+
+    if (!@rename($tmp, $path)) {
+        @unlink($tmp);
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Régénère les fichiers du sitemap.
+ *
+ * @param string $origin Déclencheur affiché dans l'historique (manuel, automatique, quotidien…)
+ * @return bool
+ */
+function haptic_GPT_write_sitemap_to_file($origin = 'manuel')
+{
+    $urls = hpt_sitemap_urls();
+    $chunks = array_chunk($urls, max(1, hpt_sitemap_max_urls()));
+    $ok = true;
+
+    if (count($chunks) === 1) {
+        $ok = hpt_sitemap_write_file('sitemap.xml', hpt_sitemap_urlset_xml($chunks[0]));
+        $files = ['sitemap.xml'];
+    } else {
+        $files = [];
+        foreach ($chunks as $i => $chunk) {
+            $name = 'sitemap-' . ($i + 1) . '.xml';
+            $ok = hpt_sitemap_write_file($name, hpt_sitemap_urlset_xml($chunk)) && $ok;
+            $files[] = $name;
+        }
+        $ok = hpt_sitemap_write_file('sitemap.xml', hpt_sitemap_index_xml($files)) && $ok;
+        $files[] = 'sitemap.xml';
+    }
+
+    // Fichiers de découpage devenus inutiles (le site a perdu des contenus)
+    foreach ((array) glob(ABSPATH . 'sitemap-*.xml') as $path) {
+        if (!in_array(basename($path), $files, true) && hpt_sitemap_is_ours($path)) {
+            @unlink($path);
+        }
+    }
+
+    if ($ok) {
+        update_option('hpt_sitemap_last_generated', current_time('mysql'));
+        delete_option('hpt_sitemap_error');
+    } else {
+        update_option('hpt_sitemap_error', sprintf(
+            'Impossible d\'écrire dans %s. Vérifiez les droits d\'écriture du dossier racine du site.',
+            untrailingslashit(ABSPATH)
+        ), false);
+    }
+
+    hpt_sitemap_add_history($origin, count($urls), $ok);
+
+    return $ok;
+}
+
+/** Historique des 20 dernières générations, affiché dans l'onglet SEO. */
+function hpt_sitemap_add_history($origin, $count, $ok)
+{
+    $history = (array) get_option('hpt_sitemap_history', []);
+    array_unshift($history, [
+        'time'   => current_time('mysql'),
+        'origin' => $origin,
+        'count'  => (int) $count,
+        'ok'     => (bool) $ok,
+    ]);
+    update_option('hpt_sitemap_history', array_slice($history, 0, 20), false);
+}
+
+/* ---------- Déclencheurs ---------- */
+
+// Modification d'un contenu : régénération en arrière-plan une minute plus tard.
+// Plusieurs modifications rapprochées ne déclenchent qu'une seule régénération.
+function haptic_GPT_maybe_write_sitemap_on_post_change($post_id)
+{
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    if (!in_array(get_post_type($post_id), hpt_sitemap_post_types(), true)) {
+        return;
+    }
+
+    if (!wp_next_scheduled('hpt_sitemap_regenerate')) {
+        wp_schedule_single_event(time() + MINUTE_IN_SECONDS, 'hpt_sitemap_regenerate');
+    }
+}
+add_action('save_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
+add_action('delete_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
+
+add_action('hpt_sitemap_regenerate', function () {
+    haptic_GPT_write_sitemap_to_file('automatique');
+});
+
+// Tâche quotidienne
+if (!wp_next_scheduled('haptic_GPT_daily_sitemap_cron')) {
+    wp_schedule_event(time(), 'daily', 'haptic_GPT_daily_sitemap_cron');
+}
+add_action('haptic_GPT_daily_sitemap_cron', function () {
+    haptic_GPT_write_sitemap_to_file('quotidien');
+});
+
+// Un seul sitemap publié : celui de WordPress (wp-sitemap.xml) est désactivé
+add_filter('wp_sitemaps_enabled', '__return_false');
+
+// Si le fichier a disparu, /sitemap.xml est régénéré à la demande (permaliens personnalisés)
 function haptic_GPT_add_sitemap_endpoint()
 {
     add_rewrite_rule('^sitemap\.xml$', 'index.php?hpt_sitemap=1', 'top');
 }
 add_action('init', 'haptic_GPT_add_sitemap_endpoint');
 
-// Traitement de la requête
 function haptic_GPT_sitemap_query_var($vars)
 {
     $vars[] = 'hpt_sitemap';
@@ -56,44 +280,26 @@ function haptic_GPT_sitemap_query_var($vars)
 }
 add_filter('query_vars', 'haptic_GPT_sitemap_query_var');
 
-function haptic_GPT_template_redirect()
-{
-    if (get_query_var('hpt_sitemap')) {
-        haptic_GPT_generate_sitemap();
-    }
-}
-add_action('template_redirect', 'haptic_GPT_template_redirect');
-
-
-// --- Génération automatique du sitemap dans un fichier physique ---
-function haptic_GPT_write_sitemap_to_file()
-{
-    $sitemap_content = haptic_GPT_generate_sitemap(true);
-    file_put_contents(ABSPATH . 'sitemap.xml', $sitemap_content);
-    haptic_GPT_generate_html_sitemap();
-    update_option('hpt_sitemap_last_generated', current_time('mysql'));
-    haptic_GPT_log_sitemap_regeneration(wp_doing_cron() ? 'cron' : 'manuel');
-}
-
-// Génère automatiquement un sitemap lors des mises à jour de contenu
-function haptic_GPT_maybe_write_sitemap_on_post_change($post_id)
-{
-    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+add_action('template_redirect', function () {
+    if (!get_query_var('hpt_sitemap')) {
         return;
     }
 
-    $post_types = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
-    if (!in_array(get_post_type($post_id), $post_types, true)) {
-        return;
+    $path = ABSPATH . 'sitemap.xml';
+    if (!file_exists($path)) {
+        haptic_GPT_write_sitemap_to_file('à la demande');
     }
 
-    haptic_GPT_write_sitemap_to_file();
-}
-add_action('save_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
-add_action('delete_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
+    header('Content-Type: application/xml; charset=utf-8');
+    if (file_exists($path)) {
+        readfile($path);
+    } else {
+        echo hpt_sitemap_urlset_xml(array_slice(hpt_sitemap_urls(), 0, hpt_sitemap_max_urls()));
+    }
+    exit;
+});
 
-
-// --- Modification dynamique du contenu du robots.txt ---
+// Le robots.txt indique l'adresse du sitemap
 function haptic_GPT_add_robots_sitemap($output, $public)
 {
     // Le robots.txt personnalisé peut déjà contenir la directive
@@ -104,132 +310,62 @@ function haptic_GPT_add_robots_sitemap($output, $public)
 }
 add_filter('robots_txt', 'haptic_GPT_add_robots_sitemap', 20, 2);
 
+/* ---------- Plan du site pour les visiteurs ---------- */
 
-// --- Tâche cron quotidienne pour générer le sitemap ---
-if (!wp_next_scheduled('haptic_GPT_daily_sitemap_cron')) {
-    wp_schedule_event(time(), 'daily', 'haptic_GPT_daily_sitemap_cron');
-}
-add_action('haptic_GPT_daily_sitemap_cron', 'haptic_GPT_write_sitemap_to_file');
-
-// --- Journalisation des écritures de sitemap ---
-function haptic_GPT_log_sitemap_regeneration($origin = 'automatique')
+/**
+ * [optimizr_plan_du_site recent="6" types="post,page"]
+ * Liste les contenus du sitemap, avec le style du thème. recent="0" masque les dernières mises à jour.
+ */
+function hpt_sitemap_shortcode($atts)
 {
-    $log_entry = sprintf(
-        "[%s] Génération du sitemap (%s)\n",
-        current_time('mysql'),
-        $origin
-    );
-    $log_file = plugin_dir_path(__FILE__) . 'sitemap.log';
-    // Force l'encodage UTF-8 du log
-    $log_entry = mb_convert_encoding($log_entry, 'UTF-8', mb_detect_encoding($log_entry, 'UTF-8, ISO-8859-1', true));
-    file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
-}
+    $atts = shortcode_atts([
+        'recent' => 6,
+        'types'  => '',
+    ], $atts, 'optimizr_plan_du_site');
 
-function haptic_GPT_generate_html_sitemap()
-{
-    $post_types = get_option('hpt_sitemap_post_types', ['post', 'page']);
-    $post_types = array_filter($post_types);
+    $allowed = hpt_sitemap_post_types();
+    $types = $atts['types'] !== '' ? array_intersect(array_map('trim', explode(',', $atts['types'])), $allowed) : $allowed;
 
-    // Dernières pages modifiées
-    $recently_modified = get_posts([
-        'post_type' => $post_types,
-        'post_status' => 'publish',
-        'posts_per_page' => 6,
-        'orderby' => 'modified',
-        'order' => 'DESC',
-    ]);
-
-    // Reste des contenus par date de publication
-    $others = get_posts([
-        'post_type' => $post_types,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'post__not_in' => wp_list_pluck($recently_modified, 'ID'),
-    ]);
+    $by_type = [];
+    $recent = [];
+    hpt_sitemap_each_post(function ($post) use (&$by_type, &$recent, $types, $atts) {
+        if (!in_array($post->post_type, $types, true)) {
+            return;
+        }
+        $item = ['url' => get_permalink($post), 'title' => get_the_title($post), 'date' => get_the_modified_date('', $post)];
+        $by_type[$post->post_type][] = $item;
+        if (count($recent) < (int) $atts['recent']) {
+            $recent[] = $item;
+        }
+    });
 
     ob_start();
-?>
-    <!DOCTYPE html>
-    <html lang="fr">
+    echo '<div class="optimizr-plan-du-site">';
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Plan du site</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
+    if ($recent) {
+        echo '<section class="optimizr-plan-du-site__recent"><h2>Dernières mises à jour</h2><ul>';
+        foreach ($recent as $item) {
+            printf('<li><a href="%s">%s</a> <time>%s</time></li>', esc_url($item['url']), esc_html($item['title']), esc_html($item['date']));
+        }
+        echo '</ul></section>';
+    }
 
-    <body class="bg-light">
-        <div class="container my-5">
-            <h1 class="mb-4">Plan du site - <?php echo bloginfo('title'); ?></h1>
+    foreach ($types as $type) {
+        if (empty($by_type[$type])) {
+            continue;
+        }
+        usort($by_type[$type], function ($a, $b) {
+            return strcasecmp($a['title'], $b['title']);
+        });
+        $object = get_post_type_object($type);
+        echo '<section class="optimizr-plan-du-site__type"><h2>' . esc_html($object ? $object->labels->name : $type) . '</h2><ul>';
+        foreach ($by_type[$type] as $item) {
+            printf('<li><a href="%s">%s</a></li>', esc_url($item['url']), esc_html($item['title']));
+        }
+        echo '</ul></section>';
+    }
 
-            <h2 class="h4">🕒 Dernières pages modifiées</h2>
-            <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
-                <?php foreach ($recently_modified as $post) : setup_postdata($post); ?>
-                    <div class="col">
-                        <div class="card h-100 border-warning">
-                            <div class="card-body">
-                                <h5 class="card-title mb-1">
-                                    <a href="<?php echo esc_url(get_permalink($post)); ?>"><?php echo esc_html(get_the_title($post)); ?></a>
-                                </h5>
-                                <p class="card-text"><?php echo esc_html(wp_strip_all_tags(get_the_excerpt($post))); ?></p>
-                                <p class="mb-1"><small class="text-muted">Modifié le <?php echo esc_html(get_the_modified_date('d/m/Y', $post)); ?></small></p>
-                                <p class="mb-0"><strong>Type :</strong> <?php echo esc_html(get_post_type_object($post->post_type)->labels->singular_name); ?></p>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach;
-                wp_reset_postdata(); ?>
-            </div>
-
-            <h2 class="h4">📄 Tous les contenus (par date de publication)</h2>
-            <div class="row row-cols-1 row-cols-md-2 g-4">
-                <?php foreach ($others as $post) : setup_postdata($post); ?>
-                    <div class="col">
-                        <div class="card h-100">
-                            <?php if (has_post_thumbnail($post)) : ?>
-                                <img src="<?php echo esc_url(get_the_post_thumbnail_url($post, 'medium')); ?>" class="card-img-top" alt="<?php echo esc_attr(get_the_title($post)); ?>">
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <a href="<?php echo esc_url(get_permalink($post)); ?>"><?php echo esc_html(get_the_title($post)); ?></a>
-                                </h5>
-                                <p class="card-text"><?php echo esc_html(wp_strip_all_tags(get_the_excerpt($post))); ?></p>
-                                <p class="mb-1"><strong>Type :</strong> <?php echo esc_html(get_post_type_object($post->post_type)->labels->singular_name); ?></p>
-                                <p class="mb-1"><small class="text-muted">Publié le <?php echo esc_html(get_the_date('d/m/Y', $post)); ?></small></p>
-                                <?php
-                                $categories = get_the_category($post);
-                                $tags = get_the_tags($post);
-                                ?>
-                                <?php if (!empty($categories)) : ?>
-                                    <div class="mb-1">
-                                        <strong>Catégories :</strong>
-                                        <?php foreach ($categories as $cat) : ?>
-                                            <span class="badge bg-primary"><?php echo esc_html($cat->name); ?></span>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if (!empty($tags)) : ?>
-                                    <div class="mb-1">
-                                        <strong>Étiquettes :</strong>
-                                        <?php foreach ($tags as $tag) : ?>
-                                            <span class="badge bg-secondary"><?php echo esc_html($tag->name); ?></span>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach;
-                wp_reset_postdata(); ?>
-            </div>
-        </div>
-    </body>
-
-    </html>
-<?php
-
-    $html = ob_get_clean();
-    file_put_contents(ABSPATH . 'sitemap.html', $html);
+    echo '</div>';
+    return ob_get_clean();
 }
+add_shortcode('optimizr_plan_du_site', 'hpt_sitemap_shortcode');

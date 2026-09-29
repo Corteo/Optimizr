@@ -6,6 +6,34 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.4] - 2026-09-29
+
+Une migration s'exécute automatiquement : elle régénère le sitemap avec les nouvelles règles, supprime l'ancien fichier `sitemap.html` et l'ancien journal public.
+
+### Ajouté
+- Shortcode `[optimizr_plan_du_site]` : plan du site pour les visiteurs, affiché avec le style du thème (remplace le fichier `sitemap.html`).
+- La page d'accueil figure en tête du sitemap.
+- Découpage automatique en plusieurs fichiers réunis par un index au-delà de 50 000 URL.
+- Historique des 20 dernières générations dans l'onglet SEO, avec le nombre d'URL.
+- Alerte dans l'onglet SEO et sur le tableau de bord si le sitemap ne peut pas être écrit.
+- Filtres `hpt_sitemap_excluded_ids` et `hpt_sitemap_max_urls`.
+
+### Modifié
+- Régénération en arrière-plan une minute après une modification de contenu : l'enregistrement n'est plus ralenti et plusieurs modifications rapprochées ne donnent qu'une régénération.
+- Contenus chargés par lots de 500 : consommation mémoire maîtrisée sur les gros sites.
+- Le sitemap natif de WordPress (`wp-sitemap.xml`) est désactivé quand le module SEO est actif : un seul sitemap publié.
+- Écriture atomique des fichiers : un fichier incomplet n'est jamais servi.
+
+### Corrigé
+- Les pages privées de WooCommerce (panier, commande, compte), les contenus « ne pas indexer » et les contenus protégés par mot de passe figuraient dans le sitemap.
+- Un sitemap périmé restait en ligne après la désactivation du plugin ou du module SEO.
+
+### Supprimé
+- Fichier statique `sitemap.html`, qui chargeait Bootstrap depuis un CDN externe sans consentement des visiteurs.
+
+### Sécurité
+- Le journal des générations n'est plus un fichier lisible publiquement.
+
 ## [2.0.0-beta.3] - 2026-09-29
 
 Une migration s'exécute automatiquement : elle supprime les titres, descriptions et images que l'ancienne metabox avait enregistrés sans qu'ils soient choisis. Les personnalisations réelles sont conservées.
