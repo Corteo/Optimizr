@@ -1034,50 +1034,75 @@
 /* ---------- Motifs SEO ---------- */
 
 .optimizr-token-input {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
+    /* Flux de texte normal : un conteneur flex empêche de placer le curseur et de taper */
+    display: block;
     min-height: 44px;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border: 1px solid var(--o-border-input);
     border-radius: var(--o-radius-sm);
     background: var(--o-surface);
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 30px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
     cursor: text;
 }
 
 .optimizr-token {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 4px 2px 8px;
+    gap: 2px;
+    margin: 0 1px;
+    padding: 0 2px 0 8px;
     border-radius: 6px;
     background: var(--o-accent-soft);
     color: var(--o-accent-strong);
     font-size: 13px;
     font-weight: 500;
+    line-height: 24px;
+    vertical-align: middle;
+    white-space: nowrap;
     user-select: none;
+    cursor: grab;
+}
+
+.optimizr-token:active {
+    cursor: grabbing;
+}
+
+.optimizr-token.is-dragging {
+    opacity: 0.4;
 }
 
 .optimizr-token__remove {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     padding: 0;
     border: 0;
     border-radius: 4px;
     background: transparent;
     color: inherit;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1;
     cursor: pointer;
 }
 
 .optimizr-token__remove:hover {
     background: rgba(29, 53, 180, 0.12);
+}
+
+.optimizr-drop-caret {
+    display: inline-block;
+    width: 2px;
+    height: 22px;
+    margin: 0 1px;
+    border-radius: 1px;
+    background: var(--o-accent);
+    vertical-align: middle;
+    pointer-events: none;
 }
 
 .optimizr-token-picker {
@@ -1095,7 +1120,7 @@
     color: var(--o-text);
     font-family: inherit;
     font-size: 12px;
-    cursor: pointer;
+    cursor: grab;
 }
 
 .optimizr-token-add:hover {
@@ -1107,17 +1132,13 @@
     position: absolute;
     z-index: 100000;
     min-width: 180px;
+    margin: 0;
     padding: 4px;
+    list-style: none;
     border: 1px solid var(--o-border, #e2e4e7);
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.optimizr-suggest ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
 }
 
 .optimizr-suggest li {
@@ -1128,8 +1149,14 @@
     cursor: pointer;
 }
 
-.optimizr-suggest li:hover {
+.optimizr-suggest li:hover,
+.optimizr-suggest li.is-active {
     background: #eef1fd;
+    color: #1d35b4;
+}
+
+.optimizr-suggest[hidden] {
+    display: none;
 }
 
 /* ---------- Aperçus Google et partage ---------- */

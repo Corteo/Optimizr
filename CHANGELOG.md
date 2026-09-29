@@ -6,6 +6,18 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.2] - 2026-09-29
+
+### Ajouté
+- Motifs SEO : glisser-déposer des variables depuis la liste, déplacement des variables déjà placées (y compris d'un champ à l'autre) avec un repère à l'endroit du dépôt.
+- Motifs SEO : « { » ouvre la liste des variables, filtrable et utilisable au clavier (flèches, Entrée, Échap).
+- Motifs SEO : le collage se fait en texte brut et les variables collées sont reconnues.
+
+### Corrigé
+- Impossible de taper du texte au clavier dans les champs Titre et Description des balises meta.
+- Une variable n'était reconnue que si elle était entourée d'espaces.
+- L'aperçu Google ne se mettait à jour qu'en quittant le champ ; il suit maintenant chaque frappe.
+
 ## [2.0.0-beta.1] - 2026-09-29
 
 Version majeure : nouvelle interface et nouvelle organisation des réglages. Une migration s'exécute automatiquement à la mise à jour ; aucun réglage existant n'est perdu.

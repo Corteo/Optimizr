@@ -166,6 +166,7 @@ function hpt_enqueue_seo_admin_scripts($hook)
 
     $file_path = plugin_dir_path(__FILE__) . 'seo-dynamic-input.js';
     wp_enqueue_script('hpt-seo-dynamic-input', plugin_dir_url(__FILE__) . 'seo-dynamic-input.js', [], filemtime($file_path), true);
+    wp_localize_script('hpt-seo-dynamic-input', 'hptSeoVariables', hpt_seo_pattern_variables());
 }
 add_action('admin_enqueue_scripts', 'hpt_enqueue_seo_admin_scripts');
 
@@ -274,15 +275,17 @@ function hpt_seo_pattern_editor($option, $default, $label)
         class="optimizr-token-input"
         contenteditable="true"
         role="textbox"
+        aria-multiline="false"
+        spellcheck="false"
         aria-label="<?php echo esc_attr($label); ?>"
         data-hidden-input="<?php echo esc_attr($option); ?>"><?php echo esc_html($value); ?></div>
 
     <input type="hidden" id="<?php echo esc_attr($option); ?>" name="<?php echo esc_attr($option); ?>" value="<?php echo esc_attr($value); ?>" data-seo-pattern />
 
     <div class="optimizr-token-picker">
-        <span class="optimizr-muted">Insérer :</span>
+        <span class="optimizr-muted">Cliquez ou glissez :</span>
         <?php foreach (hpt_seo_pattern_variables() as $code => $var_label) : ?>
-            <button type="button" class="optimizr-token-add hpt-draggable" draggable="true"
+            <button type="button" class="optimizr-token-add" draggable="true"
                 data-seo-variable="<?php echo esc_attr($code); ?>"
                 data-target="<?php echo esc_attr($editable_id); ?>">+ <?php echo esc_html($var_label); ?></button>
         <?php endforeach; ?>
@@ -293,13 +296,13 @@ function hpt_seo_pattern_editor($option, $default, $label)
 function hpt_seo_title_pattern_callback()
 {
     hpt_seo_pattern_editor('hpt_seo_title_pattern', '{titre_page} - {nom_site}', 'Motif du titre');
-    echo '<p class="optimizr-field__help">Idéalement entre 50 et 60 caractères une fois les variables remplacées.</p>';
+    echo '<p class="optimizr-field__help">Tapez votre texte librement et « { » pour choisir une variable. Idéalement entre 50 et 60 caractères une fois les variables remplacées.</p>';
 }
 
 function hpt_seo_desc_pattern_callback()
 {
     hpt_seo_pattern_editor('hpt_seo_desc_pattern', '{resume} - {nom_site}', 'Motif de la description');
-    echo '<p class="optimizr-field__help">Idéalement entre 120 et 160 caractères. Tapez les premières lettres d\'une variable pour l\'insérer.</p>';
+    echo '<p class="optimizr-field__help">Tapez votre texte librement et « { » pour choisir une variable. Idéalement entre 120 et 160 caractères.</p>';
 }
 
 // Panneau latéral : aperçus Google et réseaux sociaux, mis à jour en direct par js/optimizr-admin.js

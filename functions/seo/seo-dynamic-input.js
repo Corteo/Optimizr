@@ -1,233 +1,562 @@
-/* /Applications/MAMP/htdocs/playground/wp-content/plugins/Optimizr/functions/seo/seo-dynamic-input.js */
+/**
+ * Éditeur de motifs SEO (onglet SEO de la page d'options).
+ *
+ * Champ contenteditable où le texte se tape librement et où les variables
+ * ({titre_page}, {nom_site}…) sont des étiquettes que l'on peut :
+ * - insérer d'un clic ou par glisser-déposer depuis la liste « Insérer » ;
+ * - déplacer par glisser-déposer, y compris d'un champ à l'autre ;
+ * - choisir au clavier en tapant « { » ;
+ * - supprimer avec leur croix ou la touche Retour arrière.
+ *
+ * La valeur texte est recopiée à chaque modification dans le champ caché
+ * indiqué par data-hidden-input, puis l'évènement « hpt:seo-pattern-change »
+ * prévient les aperçus et la barre d'enregistrement (js/optimizr-admin.js).
+ */
+(function () {
+    'use strict';
 
-document.addEventListener("DOMContentLoaded", function () {
+    // Fournies par PHP (hpt_seo_pattern_variables()) : { '{code}': 'Libellé' }
+    var VARIABLES = window.hptSeoVariables || {};
+    var CODES = Object.keys(VARIABLES);
+    var TOKEN_MIME = 'application/x-hpt-seo-token';
 
-    // Sélectionne tous les champs contenteditable
-    const editableFields = document.querySelectorAll('[contenteditable][data-hidden-input]');
+    var dragSource = null;   // Étiquette en cours de déplacement (null si elle vient de la liste)
+    var dropCaret = null;    // Repère visuel de la position de dépôt
 
-    // Tableau d'objets { code, label }
-    const SEO_VARIABLES = [
-        { code: '{titre_page}', label: 'Titre de la page' },
-        { code: '{nom_site}', label: 'Nom du site' },
-        { code: '{slogan}', label: 'Slogan' },
-        { code: '{categorie}', label: 'Catégorie' },
-        { code: '{resume}', label: 'Résumé' },
-        { code: '{auteur}', label: 'Auteur' },
-        { code: '{type_contenu}', label: 'Type de contenu' },
-        { code: '{date_publication}', label: 'Date de publication' }
-    ];
+    function escapeRegExp(text) {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
 
-    /* ----------- Activation Drag & Drop sur les badges variables ----------- */
-    document.querySelectorAll('.hpt-draggable').forEach(el => {
-        el.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', el.getAttribute('data-seo-variable'));
+    var CODE_PATTERN = CODES.length ? new RegExp('(' + CODES.map(escapeRegExp).join('|') + ')', 'g') : null;
+
+    function normalize(text) {
+        return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    }
+
+    /* ---------- Rendu et lecture du champ ---------- */
+
+    function createToken(code) {
+        var token = document.createElement('span');
+        token.className = 'optimizr-token';
+        token.contentEditable = 'false';
+        token.draggable = true;
+        token.setAttribute('data-seo-variable', code);
+
+        var label = document.createElement('span');
+        label.textContent = VARIABLES[code] || code.replace(/[{}]/g, '');
+        token.appendChild(label);
+
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'optimizr-token__remove';
+        remove.tabIndex = -1;
+        remove.setAttribute('aria-label', 'Retirer ' + label.textContent);
+        remove.textContent = '×';
+        token.appendChild(remove);
+
+        return token;
+    }
+
+    // Texte brut → fragment (texte + étiquettes)
+    function parse(text) {
+        var fragment = document.createDocumentFragment();
+        var parts = CODE_PATTERN ? text.split(CODE_PATTERN) : [text];
+
+        parts.forEach(function (part) {
+            if (!part) return;
+            fragment.appendChild(VARIABLES[part] ? createToken(part) : document.createTextNode(part));
         });
 
-        // Clic : ajoute la variable à la fin du champ ciblé
-        el.addEventListener('click', () => {
-            const field = document.getElementById(el.getAttribute('data-target'));
-            if (!field) return;
-            const code = el.getAttribute('data-seo-variable');
-            const raw = haptic_GPT_convertBadgesToText(field.innerHTML);
-            field.innerHTML = haptic_GPT_convertTextToBadges((raw ? raw + ' ' : '') + code);
-            haptic_GPT_syncAllFields();
-        });
-    });
+        return fragment;
+    }
 
-    /* ----------- Boîte de suggestions pour l’autocomplétion clavier -------- */
-    let suggestionBox = document.createElement('div');
-    suggestionBox.className = 'optimizr-suggest';
-    suggestionBox.style.display = 'none';
-    document.body.appendChild(suggestionBox);
+    // Champ → texte brut
+    function serialize(node) {
+        var text = '';
 
-    /* ----------------- Fonctions utilitaires ----------------- */
-    function haptic_GPT_convertTextToBadges(text) {
-        let container = document.createElement('div');
-        let tokens = text.match(/\S+|\s+/g) || [];
-
-        tokens.forEach(token => {
-            let found = SEO_VARIABLES.find(v => v.code === token);
-            if (found) {
-                let badge = document.createElement('span');
-                badge.className = 'optimizr-token';
-                badge.contentEditable = 'false';
-                badge.setAttribute('data-seo-variable', found.code);
-                badge.textContent = found.label;
-
-                let closeBtn = document.createElement('button');
-                closeBtn.type = 'button';
-                closeBtn.className = 'optimizr-token__remove';
-                closeBtn.setAttribute('aria-label', 'Retirer ' + found.label);
-                closeBtn.textContent = '×';
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    badge.remove();
-                    haptic_GPT_syncAllFields();
-                });
-                badge.appendChild(closeBtn);
-
-                container.appendChild(badge);
-                container.appendChild(document.createTextNode(' '));
-            } else {
-                container.appendChild(document.createTextNode(token));
+        node.childNodes.forEach(function (child) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                text += child.nodeValue;
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                if (child.matches('.optimizr-token')) {
+                    text += child.getAttribute('data-seo-variable');
+                } else if (child === dropCaret) {
+                    return;
+                } else if (child.tagName === 'BR') {
+                    text += ' ';
+                } else {
+                    // Le navigateur peut envelopper la saisie dans des <div> ou <span>
+                    text += serialize(child);
+                }
             }
         });
-        return container.innerHTML;
+
+        return text;
     }
 
-    function haptic_GPT_convertBadgesToText(html) {
-        let temp = document.createElement('div');
-        temp.innerHTML = html;
-        let parts = [];
-        temp.childNodes.forEach(node => {
-            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.optimizr-token')) {
-                parts.push(node.getAttribute('data-seo-variable'));
-            } else {
-                parts.push(node.textContent);
-            }
-        });
-        return parts.join('').replace(/\s+/g, ' ').trim();
+    function clean(text) {
+        return text.replace(/[ ​]/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    function haptic_GPT_syncAllFields() {
-        editableFields.forEach(field => {
-            let hiddenId = field.getAttribute('data-hidden-input');
-            let hiddenInput = document.getElementById(hiddenId);
-            if (!hiddenInput) return;
-            hiddenInput.value = haptic_GPT_convertBadgesToText(field.innerHTML);
-        });
-        // Aperçus SEO et barre d'enregistrement (js/optimizr-admin.js)
-        document.dispatchEvent(new CustomEvent('hpt:seo-pattern-change'));
+    function render(editor, text) {
+        editor.textContent = '';
+        editor.appendChild(parse(text));
     }
 
-    /* ----------------- Autocomplétion clavier ----------------- */
-    function getCaretPos(field) {
-        let sel = window.getSelection();
-        if (!sel.rangeCount) return { x: 0, y: 0 };
-        let range = sel.getRangeAt(0).cloneRange();
-        let dummy = document.createElement('span');
-        range.insertNode(dummy);
+    function sync(editor) {
+        var hidden = document.getElementById(editor.getAttribute('data-hidden-input'));
+        if (!hidden) return;
+
+        var value = clean(serialize(editor));
+        if (hidden.value !== value) {
+            hidden.value = value;
+            document.dispatchEvent(new CustomEvent('hpt:seo-pattern-change'));
+        }
+    }
+
+    function syncAll() {
+        document.querySelectorAll('[data-hidden-input]').forEach(sync);
+    }
+
+    /* ---------- Position du curseur ---------- */
+
+    var savedRanges = new WeakMap();
+
+    function editorOf(node) {
+        var el = node && (node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement);
+        return el ? el.closest('[data-hidden-input]') : null;
+    }
+
+    function saveRange() {
+        var sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        var range = sel.getRangeAt(0);
+        var editor = editorOf(range.startContainer);
+        if (editor) savedRanges.set(editor, range.cloneRange());
+    }
+
+    function rangeAtEnd(editor) {
+        var range = document.createRange();
+        range.selectNodeContents(editor);
         range.collapse(false);
-        let rect = dummy.getBoundingClientRect();
-        dummy.remove();
-        return { x: rect.left, y: rect.top };
+        return range;
     }
 
-    function showSuggestions(matches, x, y, onSelect) {
-        if (!matches.length) {
-            suggestionBox.style.display = 'none';
+    function placeCaret(range) {
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    // Position de dépôt sous le pointeur, jamais à l'intérieur d'une étiquette
+    function rangeFromPoint(editor, x, y) {
+        var range = null;
+
+        if (document.caretPositionFromPoint) {
+            var pos = document.caretPositionFromPoint(x, y);
+            if (pos) {
+                range = document.createRange();
+                range.setStart(pos.offsetNode, pos.offset);
+            }
+        } else if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(x, y);
+        }
+
+        if (!range || !editor.contains(range.startContainer)) {
+            return rangeAtEnd(editor);
+        }
+
+        var container = range.startContainer.nodeType === Node.ELEMENT_NODE ? range.startContainer : range.startContainer.parentElement;
+        var token = container.closest('.optimizr-token');
+        if (token && editor.contains(token)) {
+            var rect = token.getBoundingClientRect();
+            range = document.createRange();
+            if (x < rect.left + rect.width / 2) {
+                range.setStartBefore(token);
+            } else {
+                range.setStartAfter(token);
+            }
+        }
+
+        range.collapse(true);
+        return range;
+    }
+
+    /* ---------- Insertion ---------- */
+
+    function charBefore(range) {
+        var node = range.startContainer;
+        var offset = range.startOffset;
+        if (node.nodeType === Node.TEXT_NODE) {
+            if (offset > 0) return node.nodeValue.charAt(offset - 1);
+            node = node.previousSibling;
+        } else {
+            node = node.childNodes[offset - 1] || null;
+        }
+        while (node && node === dropCaret) node = node.previousSibling;
+        if (!node) return '';
+        if (node.nodeType === Node.TEXT_NODE) return node.nodeValue.slice(-1);
+        return 'x';
+    }
+
+    function charAfter(range) {
+        var node = range.endContainer;
+        var offset = range.endOffset;
+        if (node.nodeType === Node.TEXT_NODE) {
+            if (offset < node.nodeValue.length) return node.nodeValue.charAt(offset);
+            node = node.nextSibling;
+        } else {
+            node = node.childNodes[offset] || null;
+        }
+        while (node && node === dropCaret) node = node.nextSibling;
+        if (!node) return '';
+        if (node.nodeType === Node.TEXT_NODE) return node.nodeValue.charAt(0);
+        return 'x';
+    }
+
+    // Insère une variable à la position donnée, en ajoutant les espaces qui la séparent du texte
+    function insertToken(editor, range, code) {
+        var needsSpaceBefore = /\S/.test(charBefore(range));
+        var needsSpaceAfter = !/\s/.test(charAfter(range));
+
+        range.deleteContents();
+
+        var fragment = document.createDocumentFragment();
+        if (needsSpaceBefore) fragment.appendChild(document.createTextNode(' '));
+        var token = createToken(code);
+        fragment.appendChild(token);
+        var after = document.createTextNode(needsSpaceAfter ? ' ' : '');
+        fragment.appendChild(after);
+        range.insertNode(fragment);
+
+        var caret = document.createRange();
+        caret.setStart(after, after.nodeValue.length);
+        caret.collapse(true);
+        editor.focus();
+        placeCaret(caret);
+        savedRanges.set(editor, caret.cloneRange());
+
+        syncAll();
+    }
+
+    function insertText(editor, range, text) {
+        range.deleteContents();
+        var fragment = parse(text);
+        var last = fragment.lastChild;
+        range.insertNode(fragment);
+
+        if (last) {
+            var caret = document.createRange();
+            caret.setStartAfter(last);
+            caret.collapse(true);
+            placeCaret(caret);
+        }
+        sync(editor);
+    }
+
+    /* ---------- Suggestions au clavier (« { ») ---------- */
+
+    var suggest = {
+        box: null,
+        editor: null,
+        items: [],
+        active: 0,
+        query: null
+    };
+
+    function buildSuggestBox() {
+        var box = document.createElement('ul');
+        box.className = 'optimizr-suggest';
+        box.id = 'optimizr-seo-suggest';
+        box.setAttribute('role', 'listbox');
+        box.hidden = true;
+        // mousedown : garde le focus dans le champ
+        box.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            var li = e.target.closest('li');
+            if (li) chooseSuggestion(Number(li.dataset.index));
+        });
+        document.body.appendChild(box);
+        suggest.box = box;
+    }
+
+    // Texte tapé depuis le dernier « { » avant le curseur, ou null
+    function currentQuery() {
+        var sel = window.getSelection();
+        if (!sel.rangeCount || !sel.isCollapsed) return null;
+        var range = sel.getRangeAt(0);
+        if (range.startContainer.nodeType !== Node.TEXT_NODE) return null;
+        var before = range.startContainer.nodeValue.slice(0, range.startOffset);
+        var match = before.match(/\{([^\s{}]*)$/);
+        return match ? { text: match[1], length: match[0].length, range: range } : null;
+    }
+
+    function updateSuggestions(editor) {
+        var query = currentQuery();
+        if (!query) {
+            closeSuggestions();
             return;
         }
-        suggestionBox.innerHTML = '';
-        let ul = document.createElement('ul');
 
-        matches.forEach(item => {
-            let li = document.createElement('li');
-            li.textContent = item.label;
-            li.addEventListener('click', () => onSelect(item));
-            ul.appendChild(li);
+        var needle = normalize(query.text);
+        suggest.items = CODES.filter(function (code) {
+            return !needle || normalize(code).indexOf(needle) !== -1 || normalize(VARIABLES[code]).indexOf(needle) !== -1;
         });
 
-        suggestionBox.appendChild(ul);
-        suggestionBox.style.left = (x + window.scrollX) + 'px';
-        suggestionBox.style.top = (y + window.scrollY + 22) + 'px';
-        suggestionBox.style.display = 'block';
+        if (!suggest.items.length) {
+            closeSuggestions();
+            return;
+        }
+
+        suggest.editor = editor;
+        suggest.query = query;
+        suggest.active = Math.min(suggest.active, suggest.items.length - 1);
+
+        suggest.box.textContent = '';
+        suggest.items.forEach(function (code, index) {
+            var li = document.createElement('li');
+            li.id = 'optimizr-seo-suggest-' + index;
+            li.setAttribute('role', 'option');
+            li.dataset.index = index;
+            li.textContent = VARIABLES[code];
+            suggest.box.appendChild(li);
+        });
+        highlightSuggestion();
+
+        var rect = query.range.getBoundingClientRect();
+        if (!rect.width && !rect.height) rect = editor.getBoundingClientRect();
+        suggest.box.style.left = (rect.left + window.scrollX) + 'px';
+        suggest.box.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+        suggest.box.hidden = false;
+        editor.setAttribute('aria-expanded', 'true');
     }
 
-    function hideSuggestions() {
-        suggestionBox.style.display = 'none';
+    function highlightSuggestion() {
+        Array.prototype.forEach.call(suggest.box.children, function (li, index) {
+            var active = index === suggest.active;
+            li.classList.toggle('is-active', active);
+            li.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        if (suggest.editor) {
+            suggest.editor.setAttribute('aria-activedescendant', 'optimizr-seo-suggest-' + suggest.active);
+        }
     }
 
-    function insertVariableAsBadge(field, variable) {
-        let sel = window.getSelection();
-        if (!sel.rangeCount) return;
-        let range = sel.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(document.createTextNode(variable.code + ' '));
-
-        let raw = haptic_GPT_convertBadgesToText(field.innerHTML);
-        field.innerHTML = haptic_GPT_convertTextToBadges(raw);
-
-        field.focus();
-        sel = window.getSelection();
-        sel.collapse(field.lastChild, 1);
-
-        hideSuggestions();
-        haptic_GPT_syncAllFields();
+    function closeSuggestions() {
+        if (!suggest.box || suggest.box.hidden) return;
+        suggest.box.hidden = true;
+        suggest.active = 0;
+        if (suggest.editor) {
+            suggest.editor.setAttribute('aria-expanded', 'false');
+            suggest.editor.removeAttribute('aria-activedescendant');
+        }
     }
 
-    function currentWord(field) {
-        let sel = window.getSelection();
-        if (!sel.rangeCount) return '';
-        let range = sel.getRangeAt(0);
-        let pre = range.cloneRange();
-        pre.selectNodeContents(field);
-        pre.setEnd(range.endContainer, range.endOffset);
-        let text = pre.toString();
-        let m = text.match(/[^\s]+$/);
-        return m ? m[0] : '';
+    function chooseSuggestion(index) {
+        var code = suggest.items[index];
+        var query = currentQuery();
+        if (!code || !query) return;
+
+        // Remplace « {texte tapé » par l'étiquette
+        var range = query.range.cloneRange();
+        range.setStart(range.startContainer, range.startOffset - query.length);
+        closeSuggestions();
+        insertToken(suggest.editor, range, code);
     }
 
-    /* -------------------- Initialisation --------------------- */
-    editableFields.forEach(field => {
-        let hiddenId = field.getAttribute('data-hidden-input');
-        let hiddenInput = document.getElementById(hiddenId);
-        if (!hiddenInput) return;
+    /* ---------- Glisser-déposer ---------- */
 
-        field.innerHTML = haptic_GPT_convertTextToBadges(hiddenInput.value);
+    function removeDropCaret() {
+        if (dropCaret && dropCaret.parentNode) {
+            var parent = dropCaret.parentNode;
+            parent.removeChild(dropCaret);
+            parent.normalize();
+        }
+    }
 
-        field.addEventListener('input', () => {
-            let word = currentWord(field);
-            if (word.length >= 2) {
-                let matches = SEO_VARIABLES.filter(v =>
-                    v.code.toLowerCase().startsWith(word.toLowerCase()) ||
-                    v.label.toLowerCase().startsWith(word.toLowerCase())
-                );
-                let pos = getCaretPos(field);
-                showSuggestions(matches, pos.x, pos.y, sel => insertVariableAsBadge(field, sel));
-            } else {
-                hideSuggestions();
+    function showDropCaret(editor, x, y) {
+        if (!dropCaret) {
+            dropCaret = document.createElement('span');
+            dropCaret.className = 'optimizr-drop-caret';
+            dropCaret.setAttribute('aria-hidden', 'true');
+            dropCaret.contentEditable = 'false';
+        }
+        var range = rangeFromPoint(editor, x, y);
+        range.insertNode(dropCaret);
+    }
+
+    function isVariableDrag(e) {
+        var types = Array.prototype.slice.call(e.dataTransfer.types || []);
+        return types.indexOf(TOKEN_MIME) !== -1 || types.indexOf('text/plain') !== -1;
+    }
+
+    function startDrag(e, code, source) {
+        dragSource = source;
+        e.dataTransfer.effectAllowed = source ? 'move' : 'copy';
+        e.dataTransfer.setData(TOKEN_MIME, code);
+        e.dataTransfer.setData('text/plain', code);
+        if (source) source.classList.add('is-dragging');
+    }
+
+    function endDrag() {
+        if (dragSource) dragSource.classList.remove('is-dragging');
+        dragSource = null;
+        removeDropCaret();
+    }
+
+    /* ---------- Initialisation ---------- */
+
+    function initEditor(editor) {
+        var hidden = document.getElementById(editor.getAttribute('data-hidden-input'));
+        if (!hidden) return;
+
+        render(editor, hidden.value);
+        editor.setAttribute('aria-autocomplete', 'list');
+        editor.setAttribute('aria-controls', 'optimizr-seo-suggest');
+        editor.setAttribute('aria-expanded', 'false');
+
+        editor.addEventListener('input', function () {
+            sync(editor);
+            updateSuggestions(editor);
+        });
+
+        editor.addEventListener('keydown', function (e) {
+            var open = suggest.box && !suggest.box.hidden && suggest.editor === editor;
+
+            if (open && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                e.preventDefault();
+                var step = e.key === 'ArrowDown' ? 1 : -1;
+                suggest.active = (suggest.active + step + suggest.items.length) % suggest.items.length;
+                highlightSuggestion();
+            } else if (open && (e.key === 'Enter' || e.key === 'Tab')) {
+                e.preventDefault();
+                chooseSuggestion(suggest.active);
+            } else if (open && e.key === 'Escape') {
+                e.preventDefault();
+                closeSuggestions();
+            } else if (e.key === 'Enter') {
+                // Motif sur une seule ligne
+                e.preventDefault();
             }
         });
 
-        /* ----- Drag & Drop depuis les badges ----- */
-        field.addEventListener('dragover', e => e.preventDefault());
-        field.addEventListener('drop', e => {
+        // Collage en texte brut ; les variables collées deviennent des étiquettes
+        editor.addEventListener('paste', function (e) {
             e.preventDefault();
-            // Place le caret à la position du drop
-            if (document.caretRangeFromPoint) {
-                const range = document.caretRangeFromPoint(e.clientX, e.clientY);
-                if (range) {
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            } else if (e.rangeParent) {
-                // Pour compatibilité Firefox
-                const range = document.createRange();
-                range.setStart(e.rangeParent, e.rangeOffset);
-                range.collapse(true);
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-            const varCode = e.dataTransfer.getData('text/plain');
-            if (!varCode) return;
-            const variable = SEO_VARIABLES.find(v => v.code === varCode) ||
-                { code: varCode, label: varCode.replace(/[{}]/g, '') };
-            insertVariableAsBadge(field, variable);
+            var text = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\s+/g, ' ');
+            var sel = window.getSelection();
+            if (sel.rangeCount) insertText(editor, sel.getRangeAt(0), text);
         });
 
-        field.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (!suggestionBox.matches(':hover')) {
-                    field.innerHTML = haptic_GPT_convertTextToBadges(
-                        haptic_GPT_convertBadgesToText(field.innerHTML)
-                    );
-                    haptic_GPT_syncAllFields();
-                    hideSuggestions();
-                }
-            }, 200);
+        editor.addEventListener('click', function (e) {
+            var remove = e.target.closest('.optimizr-token__remove');
+            if (remove && editor.contains(remove)) {
+                e.preventDefault();
+                remove.closest('.optimizr-token').remove();
+                editor.focus();
+                sync(editor);
+            }
         });
+
+        // Tokens déplaçables à l'intérieur des champs
+        editor.addEventListener('dragstart', function (e) {
+            var token = e.target.closest && e.target.closest('.optimizr-token');
+            if (!token) {
+                // Glisser une sélection de texte : laissé au navigateur mais sans dépôt dans le champ
+                return;
+            }
+            startDrag(e, token.getAttribute('data-seo-variable'), token);
+        });
+
+        editor.addEventListener('dragend', endDrag);
+
+        editor.addEventListener('dragover', function (e) {
+            if (!isVariableDrag(e)) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = dragSource ? 'move' : 'copy';
+            showDropCaret(editor, e.clientX, e.clientY);
+        });
+
+        editor.addEventListener('dragleave', function (e) {
+            if (!editor.contains(e.relatedTarget)) removeDropCaret();
+        });
+
+        editor.addEventListener('drop', function (e) {
+            if (!isVariableDrag(e)) return;
+            e.preventDefault();
+
+            var code = e.dataTransfer.getData(TOKEN_MIME) || e.dataTransfer.getData('text/plain');
+            var range;
+            if (dropCaret && editor.contains(dropCaret)) {
+                range = document.createRange();
+                range.setStartBefore(dropCaret);
+                range.collapse(true);
+            } else {
+                range = rangeFromPoint(editor, e.clientX, e.clientY);
+            }
+
+            if (dragSource) {
+                var sourceEditor = editorOf(dragSource);
+                dragSource.remove();
+                if (sourceEditor) sourceEditor.normalize();
+            }
+            removeDropCaret();
+
+            if (VARIABLES[code]) {
+                insertToken(editor, range, code);
+            } else if (code) {
+                insertText(editor, range, code.replace(/\s+/g, ' '));
+            }
+
+            endDrag();
+        });
+
+        // Texte tapé à la main (« {nom_site} ») : converti en étiquette à la sortie du champ
+        editor.addEventListener('blur', function () {
+            closeSuggestions();
+            var value = clean(serialize(editor));
+            render(editor, value);
+            sync(editor);
+        });
+    }
+
+    function initPicker() {
+        document.querySelectorAll('.optimizr-token-add[data-seo-variable]').forEach(function (chip) {
+            var code = chip.getAttribute('data-seo-variable');
+            var editor = document.getElementById(chip.getAttribute('data-target'));
+            if (!editor) return;
+
+            chip.addEventListener('dragstart', function (e) {
+                startDrag(e, code, null);
+            });
+            chip.addEventListener('dragend', endDrag);
+
+            // Clic : insère à la dernière position du curseur dans le champ, sinon à la fin
+            chip.addEventListener('mousedown', function (e) {
+                e.preventDefault();
+            });
+            chip.addEventListener('click', function () {
+                // Sélection courante si elle est dans le champ, sinon la dernière mémorisée, sinon la fin
+                var sel = window.getSelection();
+                var current = sel.rangeCount ? sel.getRangeAt(0) : null;
+                var saved = savedRanges.get(editor);
+                var range = current && editorOf(current.startContainer) === editor ? current
+                    : saved && editor.contains(saved.startContainer) ? saved
+                    : rangeAtEnd(editor);
+                insertToken(editor, range, code);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var editors = document.querySelectorAll('[contenteditable][data-hidden-input]');
+        if (!editors.length) return;
+
+        buildSuggestBox();
+        editors.forEach(initEditor);
+        initPicker();
+
+        document.addEventListener('selectionchange', saveRange);
+        document.addEventListener('dragend', endDrag);
     });
-});
+})();
