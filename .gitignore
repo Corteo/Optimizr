@@ -1,0 +1,20 @@
+# Système
+.DS_Store
+Thumbs.db
+
+# Outils locaux
+.claude/
+.vscode/
+.idea/
+node_modules/
+
+# Fichiers générés par le plugin sur chaque site
+logs/
+functions/seo/sitemap.log
+
+# Librairies retirées du plugin en 2.0 (FontAwesome Pro est sous licence, ne pas le versionner)
+assets/fontawesome/
+assets/bootstrap/
+
+# Notes personnelles
+misc
