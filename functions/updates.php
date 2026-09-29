@@ -23,7 +23,8 @@ function haptic_GPT_initialize_updater()
     }
 
     $updater = PucFactory::buildUpdateChecker(
-        'https://github.com/Corteo/Optimizr.git',
+        // Sans « .git » : la librairie en déduit l'URL d'API /repos/Corteo/Optimizr
+        'https://github.com/Corteo/Optimizr/',
         plugin_dir_path(__DIR__) . 'hpt_options.php',
         'optimizr'
     );

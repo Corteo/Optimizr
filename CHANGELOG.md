@@ -39,7 +39,7 @@ Version majeure : nouvelle interface et nouvelle organisation des réglages. Une
 - Erreur JavaScript sur tout le site quand le bandeau Tarteaucitron était désactivé.
 - Le contenu personnalisé du robots.txt était écrasé à chaque affichage de la page ; la ligne `Sitemap:` apparaissait en double.
 - Google reCAPTCHA ne se chargeait jamais.
-- Les mises à jour du plugin n'étaient pas détectées automatiquement.
+- Les mises à jour du plugin n'étaient jamais détectées : l'adresse du dépôt, mal formée (suffixe `.git`), faisait échouer chaque requête à GitHub, et la vérification n'était lancée qu'à la main. Les sites en 1.5 doivent donc être mis à jour manuellement une fois vers la 2.0.
 - L'éditeur de motifs SEO, le journal de debug et les redirections après régénération du sitemap ne fonctionnaient plus depuis le passage de la page d'options dans son propre menu.
 - La fonction de journalisation console produisait un message erroné.
 - La tâche planifiée du sitemap restait active après la désactivation du plugin.
