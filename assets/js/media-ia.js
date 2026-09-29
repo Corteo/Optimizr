@@ -1,44 +1,32 @@
 jQuery(document).ready(function ($) {
-    console.log("media-ia.js chargé");
-    const observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-            if ($(mutation.addedNodes).find('.attachment-details').length) {
-                let $metaPanel = $('.attachment-details');
-                if (!$metaPanel.find('.hpt-ai-tools').length) {
-                    $metaPanel.append(
-                        '<div class="hpt-ai-tools" style="margin-top:10px;"><button class="button hpt-ai-alt" title="Générer ALT"><i class="fa fa-magic"></i> Générer avec IA</button></div>'
-                    );
-                }
-            }
-        });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
+    // Le bouton est rendu côté PHP via le filtre attachment_fields_to_edit (functions/media.php)
     $(document).on('click', '.hpt-ai-alt', function () {
         const attachmentId = $(this).data('post-id');
         const $button = $(this);
         $button.prop('disabled', true).text('Génération en cours...');
 
-        $.post(ajaxurl, {
+        $.post(hptMediaIA.ajaxUrl, {
             action: 'haptic_GPT_generate_image_meta',
             post_id: attachmentId,
+            nonce: hptMediaIA.nonce,
         }, function (response) {
-            $button.prop('disabled', false).html('<i class="fa fa-magic"></i> Générer avec IA');
+            $button.prop('disabled', false).text('Générer avec l\'IA');
 
             if (response.success) {
-                const data = response.data;
-                // Remplacement de la sélection du champ ALT par l'ID spécifique de la colonne deux colonnes
-                const $altField = $('#attachment-details-two-column-alt-text');
+                // Champ ALT : médiathèque (grille), modale média, puis écran d'édition du média
+                const $altField = $('#attachment-details-two-column-alt-text, #attachment-details-alt-text, #attachment_alt').first();
 
                 if ($altField.length) {
-                    $altField.val(data.alt).trigger('change');
+                    $altField.val(response.data.alt).trigger('change');
                 }
 
                 alert('Balise ALT générée avec succès.');
             } else {
                 alert('Erreur : ' + response.data);
             }
+        }).fail(function () {
+            $button.prop('disabled', false).text('Générer avec l\'IA');
+            alert('La requête a échoué.');
         });
     });
 });

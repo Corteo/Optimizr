@@ -1,27 +1,26 @@
 <?php
 
-// Enregistrement des options liées aux mails
-function haptic_GPT_register_mail_options()
-{
-    register_setting('hpt-options-settings-group', 'hpt_disable_plugin_update_emails');
-    register_setting('hpt-options-settings-group', 'hpt_disable_core_update_emails');
+if (!defined('ABSPATH')) {
+    exit;
 }
-add_action('admin_init', 'haptic_GPT_register_mail_options');
 
-// Ajout des sections et champs pour les réglages
+// Enregistrement des options et des champs liés aux mails
 function haptic_GPT_render_mail_settings()
 {
-    add_settings_section('hpt-email-settings', 'Notifications par mail', null, 'hpt-options');
+    register_setting(hpt_settings_group('advanced'), 'hpt_disable_plugin_update_emails', ['sanitize_callback' => 'absint']);
+    register_setting(hpt_settings_group('advanced'), 'hpt_disable_core_update_emails', ['sanitize_callback' => 'absint']);
 
-    add_settings_field('hpt_disable_plugin_update_emails', 'Désactiver les emails de mise à jour de plugin', function () {
-        $value = get_option('hpt_disable_plugin_update_emails', false);
-        echo '<input type="checkbox" name="hpt_disable_plugin_update_emails" value="1" ' . checked(1, $value, false) . '> Ne pas recevoir d\'emails lors de la mise à jour automatique des plugins.';
-    }, 'hpt-options', 'hpt-email-settings');
+    add_settings_section('hpt-email-settings', 'Emails', function () {
+        echo '<p>Emails envoyés à l\'administrateur après les mises à jour automatiques.</p>';
+    }, hpt_settings_page('advanced'));
 
-    add_settings_field('hpt_disable_core_update_emails', 'Désactiver les emails de mise à jour du cœur WordPress', function () {
-        $value = get_option('hpt_disable_core_update_emails', false);
-        echo '<input type="checkbox" name="hpt_disable_core_update_emails" value="1" ' . checked(1, $value, false) . '> Ne pas recevoir d\'emails lors des mises à jour automatiques de WordPress.';
-    }, 'hpt-options', 'hpt-email-settings');
+    add_settings_field('hpt_disable_plugin_update_emails', 'Couper les emails des extensions', function () {
+        echo hpt_switch_input('hpt_disable_plugin_update_emails', get_option('hpt_disable_plugin_update_emails', false), 'Couper les emails de mise à jour des extensions');
+    }, hpt_settings_page('advanced'), 'hpt-email-settings', ['description' => 'Aucun email après la mise à jour automatique d\'une extension.']);
+
+    add_settings_field('hpt_disable_core_update_emails', 'Couper les emails de WordPress', function () {
+        echo hpt_switch_input('hpt_disable_core_update_emails', get_option('hpt_disable_core_update_emails', false), 'Couper les emails de mise à jour de WordPress');
+    }, hpt_settings_page('advanced'), 'hpt-email-settings', ['description' => 'Aucun email après une mise à jour automatique du cœur de WordPress.']);
 }
 add_action('admin_init', 'haptic_GPT_render_mail_settings');
 

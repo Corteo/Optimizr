@@ -1,35 +1,61 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 add_action('admin_init', 'hpt_register_ai_settings');
 
 function hpt_register_ai_settings()
 {
-    register_setting('hpt-options-settings-group', 'hpt_ai_provider');
-    register_setting('hpt-options-settings-group', 'hpt_openai_api_key');
-    register_setting('hpt-options-settings-group', 'hpt_openai_model');
-    register_setting('hpt-options-settings-group', 'hpt_ai_context');
+    $group = hpt_settings_group('ai');
+    $page  = hpt_settings_page('ai');
+
+    register_setting($group, 'hpt_ai_provider', ['sanitize_callback' => 'sanitize_key']);
+    register_setting($group, 'hpt_openai_api_key', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting($group, 'hpt_openai_model', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting($group, 'hpt_ai_context', ['sanitize_callback' => 'sanitize_textarea_field']);
 
     add_settings_section(
         'hpt_ai_settings_section',
-        'Assistant IA',
+        'Connexion à OpenAI',
         'hpt_ai_section_callback',
-        'hpt-options'
+        $page
     );
 
-    add_settings_field('hpt_ai_provider', 'Fournisseur IA', 'hpt_ai_provider_callback', 'hpt-options', 'hpt_ai_settings_section');
-    add_settings_field('hpt_openai_model', 'Modèle OpenAI', 'hpt_openai_model_callback', 'hpt-options', 'hpt_ai_settings_section');
-    add_settings_field('hpt_openai_api_key', 'Clé API OpenAI', 'hpt_openai_api_key_callback', 'hpt-options', 'hpt_ai_settings_section');
-    add_settings_field('hpt_ai_context', 'Contexte global IA', 'hpt_ai_context_callback', 'hpt-options', 'hpt_ai_settings_section');
+    add_settings_field('hpt_ai_provider', 'Fournisseur', 'hpt_ai_provider_callback', $page, 'hpt_ai_settings_section', ['label_for' => 'hpt_ai_provider']);
+    add_settings_field('hpt_openai_model', 'Modèle', 'hpt_openai_model_callback', $page, 'hpt_ai_settings_section', [
+        'label_for' => 'hpt_openai_model',
+        'description' => 'GPT-4o est recommandé : il sait aussi décrire les images.',
+    ]);
+    add_settings_field('hpt_openai_api_key', 'Clé API', 'hpt_openai_api_key_callback', $page, 'hpt_ai_settings_section', [
+        'label_for' => 'hpt_openai_api_key',
+        'description' => 'À créer sur platform.openai.com. Elle n\'est jamais affichée en clair.',
+    ]);
+
+    add_settings_section(
+        'hpt_ai_context_section',
+        'Contexte du site',
+        function () {
+            echo '<p>Ajouté à chaque demande pour que les textes générés collent à votre activité.</p>';
+        },
+        $page
+    );
+    add_settings_field('hpt_ai_context', 'Description de l\'activité', 'hpt_ai_context_callback', $page, 'hpt_ai_context_section', [
+        'label_for' => 'hpt_ai_context',
+        'layout' => 'stacked',
+    ]);
 }
 
 function hpt_ai_section_callback()
 {
-    echo '<p>Configuration de l\'assistant IA pour la génération de descriptions SEO.</p>';
+    echo '<p>Utilisée pour les meta descriptions (metabox SEO) et les balises ALT (médiathèque).</p>';
 }
 
 function hpt_ai_provider_callback()
 {
     $option = get_option('hpt_ai_provider', 'openai');
-    echo '<select name="hpt_ai_provider">
+    echo '<select name="hpt_ai_provider" id="hpt_ai_provider">
         <option value="openai" ' . selected($option, 'openai', false) . '>OpenAI</option>
     </select>';
 }
@@ -37,8 +63,7 @@ function hpt_ai_provider_callback()
 function hpt_openai_model_callback()
 {
     $model = get_option('hpt_openai_model', 'gpt-4o');
-    echo '<select name="hpt_openai_model" class="regular-text">';
-    echo '<p class="description" style="margin-bottom:6px;">Choisissez un modèle adapté à vos besoins. GPT-4o est recommandé pour les performances et la compréhension multimodale.</p>';
+    echo '<select name="hpt_openai_model" id="hpt_openai_model">';
     $models = [
         'gpt-4.1' => 'GPT-4.1 (performances améliorées)',
         'gpt-4.1-mini' => 'GPT-4.1 Mini (léger, rapide)',
@@ -57,24 +82,26 @@ function hpt_openai_model_callback()
 function hpt_openai_api_key_callback()
 {
     $key = get_option('hpt_openai_api_key', '');
-    echo '<input type="password" name="hpt_openai_api_key" value="' . esc_attr($key) . '" class="regular-text" />';
+    echo '<input type="password" name="hpt_openai_api_key" id="hpt_openai_api_key" value="' . esc_attr($key) . '" autocomplete="off" spellcheck="false" />';
 }
 
 function hpt_ai_context_callback()
 {
     $context = get_option('hpt_ai_context', '');
-    echo '<textarea name="hpt_ai_context" rows="4" class="large-text" placeholder="Décrivez ici le contexte global de votre site (ex. : école de céramique, atelier photo, agence de voyage, etc.)">' . esc_textarea($context) . '</textarea>';
+    echo '<textarea name="hpt_ai_context" id="hpt_ai_context" rows="4" placeholder="Décrivez ici le contexte global de votre site (ex. : école de céramique, atelier photo, agence de voyage, etc.)">' . esc_textarea($context) . '</textarea>';
 }
 
 add_action('wp_ajax_hpt_generate_ai_seo_description', 'hpt_generate_ai_seo_description');
 
 function hpt_generate_ai_seo_description()
 {
-    if (!current_user_can('edit_posts')) {
+    check_ajax_referer('hpt_ai_nonce', 'nonce');
+
+    $post_id = intval($_POST['post_id'] ?? 0);
+    if (!$post_id || !current_user_can('edit_post', $post_id)) {
         wp_send_json_error('Permissions insuffisantes');
     }
 
-    $post_id = intval($_POST['post_id']);
     $content = wp_strip_all_tags(get_post_field('post_content', $post_id));
 
     $api_key = get_option('hpt_openai_api_key');
@@ -171,13 +198,15 @@ function haptic_GPT_generate_alt_with_ai($title, $post_ID)
 add_action('wp_ajax_haptic_GPT_generate_image_meta', 'haptic_GPT_generate_image_meta');
 function haptic_GPT_generate_image_meta()
 {
-    if (!current_user_can('edit_posts')) {
-        wp_send_json_error('Permissions insuffisantes');
-    }
+    check_ajax_referer('hpt_ai_nonce', 'nonce');
 
     $post_id = intval($_POST['post_id'] ?? 0);
     if (!$post_id) {
         wp_send_json_error('ID de fichier manquant');
+    }
+
+    if (!current_user_can('edit_post', $post_id)) {
+        wp_send_json_error('Permissions insuffisantes');
     }
 
     $post = get_post($post_id);

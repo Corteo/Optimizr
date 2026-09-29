@@ -1,8 +1,20 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+global $hpt_log_queue, $hpt_console_queue;
+$hpt_log_queue = [];
+$hpt_console_queue = [];
 
 function hpt_enqueue_debug_assets()
 {
+    // Uniquement utile pour les modales de vd(), réservées aux admins en mode développeur
+    if (!get_option('hpt_dev_mode') || !current_user_can('manage_options')) {
+        return;
+    }
+
     // Ajouter le CSS personnalisé en priorité
     wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
 
@@ -103,14 +115,13 @@ function hpt_render_debug_popups()
     if (empty($hpt_debug_entries)) {
         return;
     }
-    ?> <div class="btn-vd-group"> <?php
-                                    foreach ($hpt_debug_entries as $debug) {
-                                    ?>
+    ?>
+    <div class="btn-vd-group">
+        <?php foreach ($hpt_debug_entries as $debug) : ?>
             <button type="button" class="hpt-debug-btn" data-bs-toggle="modal" data-bs-target="#<?php echo esc_attr($debug['id']); ?>">
                 <?php echo esc_html($debug['label']); ?>
             </button>
 
-            <!-- Modal -->
             <div class="modal fade" id="<?php echo esc_attr($debug['id']); ?>" tabindex="-1" aria-labelledby="<?php echo esc_attr($debug['id']); ?>Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -127,120 +138,214 @@ function hpt_render_debug_popups()
                     </div>
                 </div>
             </div>
-        <?php
-                                    }
-        ?>
-    </div> <?php
-        }
-        add_action('admin_footer', 'hpt_render_debug_popups');
-        add_action('wp_footer', 'hpt_render_debug_popups');
+        <?php endforeach; ?>
+    </div>
+    <?php
+}
+add_action('admin_footer', 'hpt_render_debug_popups');
+add_action('wp_footer', 'hpt_render_debug_popups');
 
-        // test 
+// ---------- Alerte des erreurs PHP (mode debug) ----------
 
-        // vd($user_data, 'User Data Debug');
-        // vd($settings, 'Settings Debug');
-        // vd($_POST, 'Form Submission');
+// On définit un tableau global pour stocker les erreurs récupérées.
+global $hpt_collected_errors;
+$hpt_collected_errors = [];
 
-        // popup error
+/**
+ * Fonction : haptic_GPT_set_custom_error_handler
+ * But : Définir un gestionnaire d'erreurs qui stocke les erreurs dans un tableau global.
+ */
+function haptic_GPT_set_custom_error_handler()
+{
+    if (!get_option('hpt_debug_mode')) {
+        return;
+    }
 
-        // On définit un tableau global pour stocker les erreurs récupérées.
-        static $hpt_collected_errors = [];
+    set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+        global $hpt_collected_errors;
 
-        /**
-         * Fonction : haptic_GPT_set_custom_error_handler
-         * But : Définir un gestionnaire d'erreurs qui stocke les erreurs dans un tableau global.
-         */
-        function haptic_GPT_set_custom_error_handler()
-        {
-            set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-                global $hpt_collected_errors;
-
-                // Construire un message d'erreur
-                $error_message = sprintf(
-                    "PHP Error [%d]: %s in %s on line %d",
-                    $errno,
-                    $errstr,
-                    $errfile,
-                    $errline
-                );
-
-                // Stocker le message dans le tableau global
-                $hpt_collected_errors[] = $error_message;
-
-                // Indique à PHP que l'erreur est gérée
-                return true;
-            });
+        // Respecte error_reporting() et l'opérateur @
+        if (!(error_reporting() & $errno)) {
+            return false;
         }
 
-        /**
-         * Fonction : haptic_GPT_display_php_errors_in_popup
-         * But : Afficher les erreurs collectées dans une pop-up JavaScript. 
-         *       Vérifie d'abord que l'utilisateur est administrateur.
-         */
-        function haptic_GPT_display_php_errors_in_popup()
-        {
-            global $hpt_collected_errors;
+        // Construire un message d'erreur
+        $error_message = sprintf(
+            "PHP Error [%d]: %s in %s on line %d",
+            $errno,
+            $errstr,
+            $errfile,
+            $errline
+        );
 
-            // On vérifie si l'utilisateur est administrateur
-            if (!current_user_can('administrator')) {
-                return;
-            }
+        // Stocker le message dans le tableau global
+        $hpt_collected_errors[] = $error_message;
 
-            if (!get_option('hpt_debug_mode')) {
-                return;
-            }
+        // Laisse PHP poursuivre son traitement normal (debug.log, affichage)
+        return false;
+    });
+}
 
-            // Si aucune erreur, on ne fait rien
-            if (empty($hpt_collected_errors)) {
-                return;
-            }
+/**
+ * Fonction : haptic_GPT_display_php_errors_in_popup
+ * But : Afficher les erreurs collectées dans une pop-up JavaScript. 
+ *       Vérifie d'abord que l'utilisateur est administrateur.
+ */
+function haptic_GPT_display_php_errors_in_popup()
+{
+    global $hpt_collected_errors;
 
-            // Convertir les erreurs en JSON pour les transmettre au script JS
-            $errors_json = json_encode($hpt_collected_errors);
-            ?>
+    // On vérifie si l'utilisateur est administrateur
+    if (!current_user_can('administrator')) {
+        return;
+    }
+
+    if (!get_option('hpt_debug_mode')) {
+        return;
+    }
+
+    // Si aucune erreur, on ne fait rien
+    if (empty($hpt_collected_errors)) {
+        return;
+    }
+
+    // Convertir les erreurs en JSON pour les transmettre au script JS
+    $errors_json = json_encode($hpt_collected_errors);
+    ?>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Récupérer les erreurs depuis la variable PHP
-            var errors = <?php echo $errors_json; ?>;
-            var message = errors.join("\n\n");
+document.addEventListener('DOMContentLoaded', function() {
+    // Récupérer les erreurs depuis la variable PHP
+    var errors = <?php echo $errors_json; ?>;
+    var message = errors.join("\n\n");
 
-            // Afficher une pop-up basique (alert)
-            alert("Erreurs PHP détectées :\n\n" + message);
-        });
+    // Afficher une pop-up basique (alert)
+    alert("Erreurs PHP détectées :\n\n" + message);
+});
     </script>
 <?php
+}
+
+/**
+ * Fonction : haptic_GPT_register_shutdown_handler
+ * But : Intercepter les erreurs fatales via register_shutdown_function pour les enregistrer avant que le script ne termine.
+ */
+function haptic_GPT_register_shutdown_handler()
+{
+    register_shutdown_function(function () {
+        global $hpt_collected_errors;
+        $last_error = error_get_last();
+
+        // On cible les erreurs fatales, parse errors, etc.
+        if ($last_error && in_array($last_error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            $error_message = sprintf(
+                "Fatal Error [%d]: %s in %s on line %d",
+                $last_error['type'],
+                $last_error['message'],
+                $last_error['file'],
+                $last_error['line']
+            );
+            $hpt_collected_errors[] = $error_message;
         }
+    });
+}
 
-        /**
-         * Fonction : haptic_GPT_register_shutdown_handler
-         * But : Intercepter les erreurs fatales via register_shutdown_function pour les enregistrer avant que le script ne termine.
-         */
-        function haptic_GPT_register_shutdown_handler()
-        {
-            register_shutdown_function(function () {
-                global $hpt_collected_errors;
-                $last_error = error_get_last();
+/**
+ * Hooks WordPress
+ */
+// Initialisation du gestionnaire d'erreurs
+add_action('plugins_loaded', 'haptic_GPT_set_custom_error_handler');
+// Registration du shutdown handler (pour erreurs fatales)
+add_action('plugins_loaded', 'haptic_GPT_register_shutdown_handler');
+// Injection de la pop-up dans l'admin
+add_action('admin_print_footer_scripts', 'haptic_GPT_display_php_errors_in_popup');
 
-                // On cible les erreurs fatales, parse errors, etc.
-                if ($last_error && in_array($last_error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-                    $error_message = sprintf(
-                        "Fatal Error [%d]: %s in %s on line %d",
-                        $last_error['type'],
-                        $last_error['message'],
-                        $last_error['file'],
-                        $last_error['line']
-                    );
-                    $hpt_collected_errors[] = $error_message;
-                }
-            });
+/**
+ * Écrit un message de log dans logs/debug.log (plugin).
+ *
+ * @param string $message
+ * @param mixed $context
+ */
+function hpt_log($message, $context = null)
+{
+    global $hpt_log_queue;
+    $hpt_log_queue[] = ['message' => $message, 'context' => $context];
+}
+
+function _hpt_log_execute($message, $context = null)
+{
+    if (!function_exists('current_user_can') || !function_exists('get_option')) return;
+    if (!function_exists('wp_get_current_user') || !is_user_logged_in()) return;
+    if (!current_user_can('manage_options')) return;
+    if (!get_option('hpt_debug_mode')) return;
+
+    $output = '[HPT LOG] ' . date('Y-m-d H:i:s') . ' - ' . $message;
+
+    if ($context !== null) {
+        if (is_scalar($context)) {
+            $output .= ' | ' . $context;
+        } elseif (is_array($context) || is_object($context)) {
+            $output .= ' | ' . print_r($context, true);
+        } else {
+            $output .= ' | ' . gettype($context);
         }
+    }
 
-        /**
-         * Hooks WordPress
-         */
-        // Initialisation du gestionnaire d'erreurs
-        add_action('plugins_loaded', 'haptic_GPT_set_custom_error_handler');
-        // Registration du shutdown handler (pour erreurs fatales)
-        add_action('plugins_loaded', 'haptic_GPT_register_shutdown_handler');
-        // Injection de la pop-up dans l'admin
-        add_action('admin_print_footer_scripts', 'haptic_GPT_display_php_errors_in_popup');
+    $log_dir = plugin_dir_path(__DIR__) . 'logs/';
+    if (!file_exists($log_dir)) {
+        wp_mkdir_p($log_dir);
+    }
+
+    file_put_contents($log_dir . 'debug.log', $output . PHP_EOL, FILE_APPEND);
+}
+
+// Écriture en fin de requête : l'utilisateur courant est alors connu
+add_action('shutdown', function () {
+    global $hpt_log_queue;
+
+    if (!empty($hpt_log_queue)) {
+        foreach ($hpt_log_queue as $log) {
+            _hpt_log_execute($log['message'], $log['context']);
+        }
+        $hpt_log_queue = [];
+    }
+});
+
+/**
+ * Affiche un message dans la console du navigateur.
+ *
+ * @param string $message
+ * @param mixed $context
+ */
+function hpt_console($message, $context = null)
+{
+    global $hpt_console_queue;
+    $hpt_console_queue[] = ['message' => $message, 'context' => $context];
+}
+
+function _hpt_console_execute($message, $context = null)
+{
+    if (!function_exists('current_user_can') || !function_exists('get_option')) return;
+    if (!function_exists('wp_get_current_user') || !is_user_logged_in()) return;
+    if (!current_user_can('manage_options')) return;
+    if (!get_option('hpt_debug_mode')) return;
+
+    $output = '[HPT CONSOLE] ' . $message;
+
+    if ($context !== null) {
+        $output .= ' | ' . ((is_array($context) || is_object($context)) ? json_encode($context) : $context);
+    }
+
+    echo "<script>console.log(" . json_encode($output) . ");</script>";
+}
+
+// Dans le footer : un <script> émis pendant admin_init casserait les en-têtes HTTP
+add_action('admin_footer', function () {
+    global $hpt_console_queue;
+
+    if (!empty($hpt_console_queue)) {
+        foreach ($hpt_console_queue as $log) {
+            _hpt_console_execute($log['message'], $log['context']);
+        }
+        $hpt_console_queue = [];
+    }
+});

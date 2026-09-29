@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Chemin : functions/seo/seo-sitemap.php
 
 // Génère le sitemap XML
@@ -71,18 +76,33 @@ function haptic_GPT_write_sitemap_to_file()
 }
 
 // Génère automatiquement un sitemap lors des mises à jour de contenu
-add_action('save_post', 'haptic_GPT_write_sitemap_to_file');
-add_action('delete_post', 'haptic_GPT_write_sitemap_to_file');
-add_action('publish_post', 'haptic_GPT_write_sitemap_to_file');
+function haptic_GPT_maybe_write_sitemap_on_post_change($post_id)
+{
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    $post_types = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
+    if (!in_array(get_post_type($post_id), $post_types, true)) {
+        return;
+    }
+
+    haptic_GPT_write_sitemap_to_file();
+}
+add_action('save_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
+add_action('delete_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
 
 
 // --- Modification dynamique du contenu du robots.txt ---
 function haptic_GPT_add_robots_sitemap($output, $public)
 {
-    $output .= "\nSitemap: " . home_url('/sitemap.xml');
+    // Le robots.txt personnalisé peut déjà contenir la directive
+    if (stripos($output, 'sitemap:') === false) {
+        $output .= "\nSitemap: " . home_url('/sitemap.xml');
+    }
     return $output;
 }
-add_filter('robots_txt', 'haptic_GPT_add_robots_sitemap', 10, 2);
+add_filter('robots_txt', 'haptic_GPT_add_robots_sitemap', 20, 2);
 
 
 // --- Tâche cron quotidienne pour générer le sitemap ---

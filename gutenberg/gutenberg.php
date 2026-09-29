@@ -1,23 +1,14 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Charger le bloc Gutenberg SEO
 function hpt_enqueue_gutenberg_assets()
 {
     $script_path = plugin_dir_path(__FILE__) . 'seo-preview.js';
     $css_path = plugin_dir_path(__FILE__) . 'seo-preview.css';
-
-?>
-
-    <!-- <pre>
-        <?php
-        var_dump($script_path); ?>
-    </pre>
-    <pre>
-        <?php
-        var_dump($css_path); ?>
-    </pre> -->
-
-<?php
 
     wp_enqueue_script(
         'hpt-seo-preview',

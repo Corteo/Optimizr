@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Ajouter une meta box SEO dans l'éditeur de page/post
 function hpt_add_seo_metabox()
 {
@@ -81,8 +86,9 @@ function hpt_seo_meta_callback($post)
     <p>
         <label for="hpt_og_desc">Description OpenGraph :</label><br>
         <textarea id="hpt_og_desc" name="hpt_og_desc" class="widefat"><?php echo esc_textarea($og_desc); ?></textarea>
+    <?php if (hpt_is_module_active('ai')) : ?>
     <p>
-        <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>">
+        <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_ai_nonce')); ?>">
             Générer avec l'IA
         </button>
     </p>
@@ -103,7 +109,8 @@ function hpt_seo_meta_callback($post)
                         },
                         body: new URLSearchParams({
                             action: 'hpt_generate_ai_seo_description',
-                            post_id: this.dataset.postId
+                            post_id: this.dataset.postId,
+                            nonce: this.dataset.nonce
                         })
                     })
                     .then(res => res.json())
@@ -119,6 +126,7 @@ function hpt_seo_meta_callback($post)
             });
         });
     </script>
+    <?php endif; ?>
     <span class="hpt-char-count" id="hpt_desc_count">0/160</span>
     <small class="hpt-seo-hint">🔹 Idéalement entre 120 et 160 caractères.</small>
     </p>

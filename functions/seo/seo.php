@@ -1,254 +1,211 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Variables disponibles dans les motifs de titre et de description.
+ */
+function hpt_seo_pattern_variables()
+{
+    return [
+        '{titre_page}'       => 'Titre de la page',
+        '{nom_site}'         => 'Nom du site',
+        '{slogan}'           => 'Slogan',
+        '{categorie}'        => 'Catégorie',
+        '{resume}'           => 'Résumé',
+        '{auteur}'           => 'Auteur',
+        '{type_contenu}'     => 'Type de contenu',
+        '{date_publication}' => 'Date de publication',
+    ];
+}
+
+// S'assure que c'est un tableau et filtre les post types valides
+function hpt_sanitize_sitemap_post_types($input)
+{
+    $post_types = get_post_types(['public' => true], 'names');
+    $input = is_array($input) ? $input : [];
+    return array_values(array_intersect($input, $post_types));
+}
+
 // Ajouter les paramètres SEO dans les options du plugin
 function hpt_options_register_seo_settings()
 {
-    register_setting('hpt-options-settings-group', 'hpt_enable_seo');
-    register_setting('hpt-options-settings-group', 'hpt_enable_opengraph');
-    register_setting('hpt-seo-settings-group', 'hpt_seo_title_pattern');
-    register_setting('hpt-seo-settings-group', 'hpt_seo_desc_pattern');
-    register_setting('hpt-options-settings-group', 'hpt_sitemap_post_types', [
+    $group = hpt_settings_group('seo');
+    $page  = hpt_settings_page('seo');
+
+    register_setting($group, 'hpt_enable_seo', ['sanitize_callback' => 'absint']);
+    register_setting($group, 'hpt_enable_opengraph', ['sanitize_callback' => 'absint']);
+    register_setting($group, 'hpt_seo_title_pattern', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting($group, 'hpt_seo_desc_pattern', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting($group, 'hpt_sitemap_post_types', [
         'type' => 'array',
         'sanitize_callback' => 'hpt_sanitize_sitemap_post_types',
         'default' => ['post', 'page']
     ]);
-    register_setting('hpt-options-settings-group', 'hpt_enable_robots');
-    register_setting('hpt-options-settings-group', 'hpt_custom_robots_txt', ['type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field']);
+    register_setting($group, 'hpt_enable_robots', ['sanitize_callback' => 'absint']);
+    register_setting($group, 'hpt_custom_robots_txt', ['type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field']);
 
-    function hpt_sanitize_sitemap_post_types($input)
-    {
-        // S'assure que c’est un tableau et filtre les post types valides
-        $post_types = get_post_types(['public' => true], 'names');
-        $input = is_array($input) ? $input : [];
-        return array_values(array_intersect($input, $post_types));
-    }
-
+    // Carte « Balises meta »
     add_settings_section(
-        'hpt_seo_settings_section',
-        'Optimisation SEO',
-        'hpt_seo_section_callback',
-        'hpt-options'
+        'hpt_seo_meta_section',
+        'Balises meta',
+        function () {
+            echo '<p>Utilisées quand un contenu n\'a pas de titre ou de description personnalisés.</p>';
+        },
+        $page,
+        ['toggle' => 'hpt_enable_seo', 'toggle_label' => 'Générer les balises meta']
     );
+    add_settings_field('hpt_seo_title_pattern', 'Titre', 'hpt_seo_title_pattern_callback', $page, 'hpt_seo_meta_section', ['layout' => 'stacked']);
+    add_settings_field('hpt_seo_desc_pattern', 'Description', 'hpt_seo_desc_pattern_callback', $page, 'hpt_seo_meta_section', ['layout' => 'stacked']);
+    add_settings_field('hpt_enable_opengraph', 'Balises OpenGraph', 'hpt_enable_opengraph_callback', $page, 'hpt_seo_meta_section', [
+        'description' => 'Titre, description et image lors d\'un partage sur les réseaux sociaux.',
+    ]);
 
-    add_settings_field(
-        'hpt_enable_seo',
-        'Activer l’optimisation SEO',
-        'hpt_enable_seo_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
+    // Carte « Plan du site »
+    add_settings_section(
+        'hpt_seo_sitemap_section',
+        'Plan du site',
+        function () {
+            echo '<p>sitemap.xml et sitemap.html, régénérés à chaque publication et une fois par jour.</p>';
+        },
+        $page
     );
+    add_settings_field('hpt_generate_sitemap_now', '', 'hpt_generate_sitemap_button_callback', $page, 'hpt_seo_sitemap_section', ['layout' => 'stacked']);
+    add_settings_field('hpt_sitemap_post_types', 'Contenus inclus', 'hpt_sitemap_post_types_callback', $page, 'hpt_seo_sitemap_section', ['layout' => 'stacked']);
 
-    add_settings_field(
-        'hpt_enable_opengraph',
-        'Activer la personnalisation des balises OpenGraph',
-        'hpt_enable_opengraph_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
+    // Carte « robots.txt »
+    add_settings_section(
+        'hpt_seo_robots_section',
+        'robots.txt',
+        function () {
+            echo '<p>Remplace le fichier généré par WordPress.</p>';
+        },
+        $page,
+        ['toggle' => 'hpt_enable_robots', 'toggle_label' => 'Personnaliser le robots.txt']
     );
-
-    // Ajout du champ pour sélectionner les types de contenus du sitemap
-    add_settings_field(
-        'hpt_sitemap_post_types',
-        'Types de contenus à inclure dans le Sitemap',
-        'hpt_sitemap_post_types_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-
-    add_settings_field(
-        'hpt_seo_title_pattern',
-        'Motif du titre SEO',
-        'hpt_seo_title_pattern_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-
-    add_settings_field(
-        'hpt_seo_desc_pattern',
-        'Motif de la description SEO',
-        'hpt_seo_desc_pattern_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-
-    // Ajout du bouton de régénération du sitemap
-    add_settings_field(
-        'hpt_generate_sitemap_now',
-        ' ',
-        'hpt_generate_sitemap_button_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-
-    add_settings_field(
-        'hpt_enable_robots',
-        'Activer la personnalisation du robots.txt',
-        'hpt_enable_robots_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-
-    add_settings_field(
-        'hpt_custom_robots_txt',
-        'Contenu personnalisé du fichier robots.txt',
-        'hpt_custom_robots_txt_callback',
-        'hpt-options',
-        'hpt_seo_settings_section'
-    );
-    // Callback pour l'option robots.txt
-    function hpt_enable_robots_callback()
-    {
-        $option = get_option('hpt_enable_robots', 0);
-        echo '<input type="checkbox" name="hpt_enable_robots" value="1" ' . checked(1, $option, false) . '>';
-    }
-
-    function hpt_custom_robots_txt_callback()
-    {
-        $db_value = get_option('hpt_custom_robots_txt', '');
-        $file_path = ABSPATH . 'robots.txt';
-
-        // Enregistre en base le contenu actuel du fichier robots.txt, s’il existe
-        if (file_exists($file_path)) {
-            $robots_content = file_get_contents($file_path);
-            update_option('hpt_custom_robots_txt', $robots_content);
-        }
-
-        if (file_exists($file_path)) {
-            $value = file_get_contents($file_path);
-        } elseif (!empty($db_value)) {
-            $value = $db_value;
-        } else {
-            $value = "User-agent: *\nDisallow:\nSitemap: " . home_url('/sitemap.xml');
-        }
-
-        echo '<textarea name="hpt_custom_robots_txt" rows="10" class="large-text code" id="hpt_custom_robots_txt_field">' . esc_textarea($value) . '</textarea>';
-        echo '<p><a href="' . esc_url(admin_url('admin-post.php?action=hpt_generate_robots_txt')) . '" class="button button-secondary" id="generate-robots-btn">Générer et sauvegarder robots.txt</a></p>';
-        echo '<p class="description">Voici quelques exemples de directives :</p>';
-        echo '<ul class="description" style="margin-left: 1em;">
-            <li><code>User-agent: *</code> → s’applique à tous les robots</li>
-            <li><code>Disallow: /wp-admin/</code> → empêche l’accès à l’admin</li>
-            <li><code>Allow: /wp-content/uploads/</code> → autorise un sous-dossier</li>
-            <li><code>Sitemap: https://exemple.com/sitemap.xml</code> → lien vers le plan de site</li>
-        </ul>';
-
-        // Prévisualisation en lecture seule du fichier robots.txt (affiche le contenu réel du fichier)
-        echo '<h4>Aperçu actuel du fichier robots.txt</h4>';
-        if (file_exists($file_path)) {
-            $real_content = file_get_contents($file_path);
-            echo '<pre style="background:#f6f6f6;padding:1em;border:1px solid #ccc;">' . esc_html($real_content) . '</pre>';
-        } else {
-            echo '<pre style="background:#f6f6f6;padding:1em;border:1px solid #ccc;">(Aucun fichier robots.txt trouvé à la racine du site)</pre>';
-        }
-
-        // Test d'accessibilité du robots.txt
-        echo '<p class="description"><strong>Test d\'accessibilité :</strong> ';
-        $robots_url = home_url('/robots.txt');
-        $response = wp_remote_get($robots_url);
-        if (is_wp_error($response)) {
-            echo '<span style="color:red;">Erreur d\'accès</span>';
-        } else {
-            $code = wp_remote_retrieve_response_code($response);
-            if ($code === 200) {
-                echo '<a href="' . esc_url($robots_url) . '" target="_blank" style="color:green;">✅ Accessible</a>';
-            } else {
-                echo '<span style="color:orange;">⚠️ Réponse HTTP : ' . esc_html($code) . '</span>';
-            }
-        }
-        echo '</p>';
-    }
-}
-// Callback pour le champ de sélection des types de contenus du sitemap
-function hpt_sitemap_post_types_callback()
-{
-    $selected = get_option('hpt_sitemap_post_types', ['post', 'page']);
-    $post_types = get_post_types(['public' => true], 'objects');
-    foreach ($post_types as $pt) {
-        echo '<label><input type="checkbox" name="hpt_sitemap_post_types[]" value="' . esc_attr($pt->name) . '" ' . checked(in_array($pt->name, $selected), true, false) . '> ' . esc_html($pt->labels->singular_name) . '</label><br>';
-    }
+    add_settings_field('hpt_custom_robots_txt', 'Contenu', 'hpt_custom_robots_txt_callback', $page, 'hpt_seo_robots_section', [
+        'layout' => 'stacked',
+        'label_for' => 'hpt_custom_robots_txt_field',
+    ]);
 }
 add_action('admin_init', 'hpt_options_register_seo_settings');
-
-// Callback pour la section SEO
-function hpt_seo_section_callback()
-{
-    echo '<p>Activez ou désactivez l’optimisation SEO pour votre site.</p>';
-}
-
-// Callback pour l'option SEO
-function hpt_enable_seo_callback()
-{
-    $option = get_option('hpt_enable_seo', 0);
-    echo '<input type="checkbox" name="hpt_enable_seo" value="1" ' . checked(1, $option, false) . '>';
-}
 
 // Callback pour l'option OpenGraph
 function hpt_enable_opengraph_callback()
 {
-    $option = get_option('hpt_enable_opengraph', 0);
-    echo '<input type="checkbox" name="hpt_enable_opengraph" value="1" ' . checked(1, $option, false) . '>';
+    echo hpt_switch_input('hpt_enable_opengraph', get_option('hpt_enable_opengraph', 0), 'Générer les balises OpenGraph');
 }
 
+function hpt_custom_robots_txt_callback()
+{
+    $db_value = get_option('hpt_custom_robots_txt', '');
+    $file_path = ABSPATH . 'robots.txt';
 
+    // La valeur enregistrée prime ; le fichier existant ne sert qu'à pré-remplir le champ
+    if (!empty($db_value)) {
+        $value = $db_value;
+    } elseif (file_exists($file_path)) {
+        $value = file_get_contents($file_path);
+    } else {
+        $value = "User-agent: *\nDisallow:\nSitemap: " . home_url('/sitemap.xml');
+    }
+
+    echo '<textarea name="hpt_custom_robots_txt" rows="8" class="optimizr-code" id="hpt_custom_robots_txt_field" spellcheck="false">' . esc_textarea($value) . '</textarea>';
+
+    echo '<div class="optimizr-inline">';
+
+    // Test d'accessibilité du robots.txt
+    $robots_url = home_url('/robots.txt');
+    $response = wp_remote_get($robots_url);
+    if (is_wp_error($response)) {
+        echo '<span class="optimizr-status optimizr-status--warn">Inaccessible</span>';
+    } else {
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code === 200) {
+            echo '<a href="' . esc_url($robots_url) . '" target="_blank" rel="noopener" class="optimizr-status optimizr-status--ok">Accessible (HTTP 200)</a>';
+        } else {
+            echo '<span class="optimizr-status optimizr-status--warn">Réponse HTTP ' . esc_html($code) . '</span>';
+        }
+    }
+
+    if (file_exists($file_path)) {
+        echo '<span class="optimizr-muted">Un fichier robots.txt physique existe à la racine : il est prioritaire sur ce réglage.</span>';
+    }
+
+    echo '<a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_robots_txt'), 'hpt_generate_robots_txt')) . '" class="optimizr-btn optimizr-btn--secondary optimizr-push">Écrire le fichier robots.txt</a>';
+    echo '</div>';
+
+    echo '<details class="optimizr-details"><summary>Exemples de directives</summary><ul>
+        <li><code>User-agent: *</code> s\'applique à tous les robots</li>
+        <li><code>Disallow: /wp-admin/</code> empêche l\'accès à l\'admin</li>
+        <li><code>Allow: /wp-content/uploads/</code> autorise un sous-dossier</li>
+        <li><code>Sitemap: ' . esc_html(home_url('/sitemap.xml')) . '</code> indique le plan du site</li>
+    </ul></details>';
+}
+
+// Callback pour le champ de sélection des types de contenus du sitemap
+function hpt_sitemap_post_types_callback()
+{
+    $selected = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
+    $post_types = get_post_types(['public' => true], 'objects');
+
+    echo '<div class="optimizr-pills">';
+    foreach ($post_types as $pt) {
+        echo '<label class="optimizr-pill"><input type="checkbox" name="hpt_sitemap_post_types[]" value="' . esc_attr($pt->name) . '" ' . checked(in_array($pt->name, $selected, true), true, false) . '> ' . esc_html($pt->labels->name) . '</label>';
+    }
+    echo '</div>';
+}
 
 function hpt_enqueue_seo_admin_scripts($hook)
 {
-    if ($hook !== 'settings_page_hpt-options') {
+    if ($hook !== HPT_OPTIMIZR_ADMIN_HOOK || hpt_current_tab() !== 'seo') {
         return;
     }
 
     $file_path = plugin_dir_path(__FILE__) . 'seo-dynamic-input.js';
-    $script_url = plugin_dir_url(__FILE__) . 'seo-dynamic-input.js';
-
-    if (file_exists($file_path)) {
-        wp_enqueue_script('hpt-seo-dynamic-input', $script_url, [], filemtime($file_path), true);
-    } else {
-        wp_enqueue_script('hpt-seo-dynamic-input', $script_url, [], '1.0.0', true);
-    }
+    wp_enqueue_script('hpt-seo-dynamic-input', plugin_dir_url(__FILE__) . 'seo-dynamic-input.js', [], filemtime($file_path), true);
 }
 add_action('admin_enqueue_scripts', 'hpt_enqueue_seo_admin_scripts');
 
-// Callback pour bouton de régénération du sitemap
+// Callback pour l'état et la régénération du sitemap
 function hpt_generate_sitemap_button_callback()
 {
-    $url = admin_url('admin-post.php?action=hpt_generate_sitemap_now');
+    $url = wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_sitemap_now'), 'hpt_generate_sitemap_now');
     $last = get_option('hpt_sitemap_last_generated');
-    $filepath = ABSPATH . 'sitemap.xml';
-    $file_exists = file_exists($filepath);
+    $file_exists = file_exists(ABSPATH . 'sitemap.xml');
     $file_url = home_url('/sitemap.xml');
 
-    // Vérifie l’accessibilité HTTP
+    // Vérifie l'accessibilité HTTP
     $http_ok = false;
     if ($file_exists) {
         $response = wp_remote_head($file_url);
         $http_ok = !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200;
     }
 
-    echo '<div style="display: flex; align-items: center; gap: 1em;">';
-    echo '<a href="' . esc_url($url) . '" class="button button-secondary">Régénérer le sitemap</a>';
-
-    if ($last) {
-        echo '<span class="description">Dernière génération : ' . esc_html($last) . '</span>';
-    }
+    $last_text = $last ? ' · dernière génération : ' . esc_html(mysql2date('j F Y à H:i', $last)) : '';
 
     if (!$file_exists) {
-        echo '<span class="description" style="color:red;">❌ Le fichier sitemap.xml est manquant !</span>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>Le fichier sitemap.xml est absent.</strong> Régénérez-le ci-dessous.</span></div>';
     } elseif (!$http_ok) {
-        echo '<span class="description" style="color:orange;">⚠️ <a href="' . esc_url($file_url) . '" target="_blank">Fichier présent, mais inaccessible en HTTP</a></span>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>sitemap.xml existe mais ne répond pas en HTTP</strong>' . $last_text . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     } else {
-        echo '<span class="description" style="color:green;">✅ <a href="' . esc_url($file_url) . '" target="_blank">Voir le sitemap</a></span>';
+        echo '<div class="optimizr-notice optimizr-notice--ok">' . hpt_icon('check', 18) . '<span><strong>sitemap.xml est accessible</strong>' . $last_text . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     }
 
-    // Ajout du lien vers le fichier de logs
+    echo '<div class="optimizr-inline">';
+    echo '<a href="' . esc_url($url) . '" class="optimizr-btn optimizr-btn--secondary">' . hpt_icon('refresh', 16) . 'Régénérer maintenant</a>';
+
     $log_path = plugin_dir_path(__FILE__) . 'sitemap.log';
-    $log_url = plugin_dir_url(__FILE__) . 'sitemap.log';
     if (file_exists($log_path)) {
-        echo '<span class="description"><a href="' . esc_url($log_url) . '" target="_blank">📄 Voir les logs</a></span>';
-        // Ajout du bouton pour vider le fichier de log
-        $clear_log_url = admin_url('admin-post.php?action=hpt_clear_sitemap_log');
-        echo '<span class="description"><a href="' . esc_url($clear_log_url) . '" class="button button-small" style="margin-left: 1em;">🗑️ Vider les logs</a></span>';
+        echo '<a href="' . esc_url(plugin_dir_url(__FILE__) . 'sitemap.log') . '" target="_blank" rel="noopener" class="optimizr-btn optimizr-btn--ghost">Journal des générations</a>';
+        $clear_log_url = wp_nonce_url(admin_url('admin-post.php?action=hpt_clear_sitemap_log'), 'hpt_clear_sitemap_log');
+        echo '<a href="' . esc_url($clear_log_url) . '" class="optimizr-btn optimizr-btn--ghost">Vider le journal</a>';
     }
     echo '</div>';
 }
+
 // Déclenche la génération du sitemap et flush les permaliens lors de la modification des options pertinentes
 function hpt_flush_rewrite_and_generate_sitemap()
 {
@@ -265,9 +222,10 @@ add_action('admin_post_hpt_generate_sitemap_now', function () {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé');
     }
+    check_admin_referer('hpt_generate_sitemap_now');
     require_once plugin_dir_path(__FILE__) . 'seo-sitemap.php';
     hpt_flush_rewrite_and_generate_sitemap();
-    wp_redirect(admin_url('options-general.php?page=hpt-options&hpt_message=sitemap_regenerated'));
+    wp_redirect(add_query_arg('hpt_message', 'sitemap_regenerated', hpt_admin_tab_url('seo')));
     exit;
 });
 
@@ -276,120 +234,146 @@ add_action('admin_post_hpt_clear_sitemap_log', function () {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé');
     }
+    check_admin_referer('hpt_clear_sitemap_log');
     $log_file = plugin_dir_path(__FILE__) . 'sitemap.log';
     if (file_exists($log_file)) {
         file_put_contents($log_file, '');
     }
-    wp_redirect(admin_url('options-general.php?page=hpt-options&hpt_message=log_cleared'));
+    wp_redirect(add_query_arg('hpt_message', 'log_cleared', hpt_admin_tab_url('seo')));
     exit;
 });
 
 function hpt_show_sitemap_notice()
 {
-    if (isset($_GET['hpt_message'])) {
-        if ($_GET['hpt_message'] === 'sitemap_regenerated') {
-            echo '<div class="notice notice-success is-dismissible"><p>Le fichier sitemap.xml a été régénéré avec succès.</p></div>';
-        }
-        if ($_GET['hpt_message'] === 'log_cleared') {
-            echo '<div class="notice notice-success is-dismissible"><p>Le fichier de log a été vidé.</p></div>';
-        }
+    if (!isset($_GET['hpt_message'])) {
+        return;
+    }
+
+    $messages = [
+        'sitemap_regenerated' => 'Le fichier sitemap.xml a été régénéré avec succès.',
+        'log_cleared'         => 'Le fichier de log a été vidé.',
+        'robots_generated'    => 'Le fichier robots.txt a été généré avec succès.',
+    ];
+
+    $key = sanitize_key($_GET['hpt_message']);
+    if (isset($messages[$key])) {
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($messages[$key]) . '</p></div>';
     }
 }
 add_action('admin_notices', 'hpt_show_sitemap_notice');
 
+/**
+ * Éditeur de motif : variables en étiquettes (js : seo-dynamic-input.js).
+ */
+function hpt_seo_pattern_editor($option, $default, $label)
+{
+    $value = get_option($option, $default);
+    $editable_id = $option . '_editable';
+    ?>
+    <div id="<?php echo esc_attr($editable_id); ?>"
+        class="optimizr-token-input"
+        contenteditable="true"
+        role="textbox"
+        aria-label="<?php echo esc_attr($label); ?>"
+        data-hidden-input="<?php echo esc_attr($option); ?>"><?php echo esc_html($value); ?></div>
+
+    <input type="hidden" id="<?php echo esc_attr($option); ?>" name="<?php echo esc_attr($option); ?>" value="<?php echo esc_attr($value); ?>" data-seo-pattern />
+
+    <div class="optimizr-token-picker">
+        <span class="optimizr-muted">Insérer :</span>
+        <?php foreach (hpt_seo_pattern_variables() as $code => $var_label) : ?>
+            <button type="button" class="optimizr-token-add hpt-draggable" draggable="true"
+                data-seo-variable="<?php echo esc_attr($code); ?>"
+                data-target="<?php echo esc_attr($editable_id); ?>">+ <?php echo esc_html($var_label); ?></button>
+        <?php endforeach; ?>
+    </div>
+    <?php
+}
 
 function hpt_seo_title_pattern_callback()
 {
-    $value = get_option('hpt_seo_title_pattern', '{titre_page} - {nom_site}');
-
-    // Tableau des variables disponibles : code => label lisible
-    $variables = [
-        '{titre_page}'       => 'Titre de la page',
-        '{nom_site}'         => 'Nom du site',
-        '{slogan}'           => 'Slogan',
-        '{categorie}'        => 'Catégorie',
-        '{resume}'           => 'Résumé',
-        '{auteur}'           => 'Auteur',
-        '{type_contenu}'     => 'Type de contenu',
-        '{date_publication}' => 'Date de publication',
-    ];
-?>
-    <!-- Badges variables à glisser‑déposer -->
-    <div class="hpt-seo-variables mb-2">
-        <?php foreach ($variables as $code => $label) : ?>
-            <span class="badge bg-secondary me-1 hpt-draggable"
-                draggable="true"
-                data-seo-variable="<?php echo esc_attr($code); ?>">
-                <?php echo esc_html($label); ?>
-            </span>
-        <?php endforeach; ?>
-    </div>
-
-    <!-- Zone éditable -->
-    <div id="hpt_seo_title_pattern_editable"
-        class="form-control"
-        contenteditable="true"
-        data-hidden-input="hpt_seo_title_pattern"
-        style="min-height:40px;overflow:auto;"><?php echo esc_html($value); ?></div>
-
-    <!-- Champ caché réellement enregistré -->
-    <input type="hidden"
-        id="hpt_seo_title_pattern"
-        name="hpt_seo_title_pattern"
-        value="<?php echo esc_attr($value); ?>" />
-
-    <p class="description">
-        Glissez‑déposez les variables ci‑dessus ou tapez « { » pour les insérer.<br>
-        Variables disponibles : {titre_page}, {nom_site}, {slogan}, {categorie},
-        {resume}, {auteur}, {type_contenu}, {date_publication}.
-    </p>
-<?php
+    hpt_seo_pattern_editor('hpt_seo_title_pattern', '{titre_page} - {nom_site}', 'Motif du titre');
+    echo '<p class="optimizr-field__help">Idéalement entre 50 et 60 caractères une fois les variables remplacées.</p>';
 }
 
 function hpt_seo_desc_pattern_callback()
 {
-    $value = get_option('hpt_seo_desc_pattern', '{resume} - {nom_site}');
-
-    $variables = [
-        '{titre_page}'       => 'Titre de la page',
-        '{nom_site}'         => 'Nom du site',
-        '{slogan}'           => 'Slogan',
-        '{categorie}'        => 'Catégorie',
-        '{resume}'           => 'Résumé',
-        '{auteur}'           => 'Auteur',
-        '{type_contenu}'     => 'Type de contenu',
-        '{date_publication}' => 'Date de publication',
-    ];
-?>
-    <div class="hpt-seo-variables mb-2">
-        <?php foreach ($variables as $code => $label) : ?>
-            <span class="badge bg-secondary me-1 hpt-draggable"
-                draggable="true"
-                data-seo-variable="<?php echo esc_attr($code); ?>">
-                <?php echo esc_html($label); ?>
-            </span>
-        <?php endforeach; ?>
-    </div>
-
-    <div id="hpt_seo_desc_pattern_editable"
-        class="form-control"
-        contenteditable="true"
-        data-hidden-input="hpt_seo_desc_pattern"
-        style="min-height:40px;overflow:auto;"><?php echo esc_html($value); ?></div>
-
-    <input type="hidden"
-        id="hpt_seo_desc_pattern"
-        name="hpt_seo_desc_pattern"
-        value="<?php echo esc_attr($value); ?>" />
-
-    <p class="description">
-        Glissez‑déposez les variables ci‑dessus ou tapez « { » pour les insérer.<br>
-        Variables disponibles : {titre_page}, {nom_site}, {slogan}, {categorie},
-        {resume}, {auteur}, {type_contenu}, {date_publication}.
-    </p>
-<?php
+    hpt_seo_pattern_editor('hpt_seo_desc_pattern', '{resume} - {nom_site}', 'Motif de la description');
+    echo '<p class="optimizr-field__help">Idéalement entre 120 et 160 caractères. Tapez les premières lettres d\'une variable pour l\'insérer.</p>';
 }
 
+// Panneau latéral : aperçus Google et réseaux sociaux, mis à jour en direct par js/optimizr-admin.js
+add_action('hpt_admin_aside_seo', function () {
+    $post_types = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
+    $latest = get_posts([
+        'post_type' => $post_types ?: ['post'],
+        'post_status' => 'publish',
+        'numberposts' => 1,
+    ]);
+
+    if (empty($latest)) {
+        return;
+    }
+
+    $post = $latest[0];
+    $vars = hpt_seo_variables($post->ID);
+    $title = hpt_generate_seo_content(get_option('hpt_seo_title_pattern', '{titre_page} - {nom_site}'), $post->ID);
+    $desc = hpt_generate_seo_content(get_option('hpt_seo_desc_pattern', '{resume} - {nom_site}'), $post->ID);
+    $url = get_permalink($post);
+    $host = wp_parse_url(home_url(), PHP_URL_HOST);
+    $image = get_the_post_thumbnail_url($post, 'large');
+    ?>
+    <div class="optimizr-sticky" data-seo-preview data-seo-vars="<?php echo esc_attr(wp_json_encode($vars)); ?>">
+        <section class="optimizr-card">
+            <div class="optimizr-card__header">
+                <h2 class="optimizr-card__title">Aperçu dans Google</h2>
+            </div>
+            <div class="optimizr-card__body">
+                <div class="optimizr-serp">
+                    <div class="optimizr-serp__site">
+                        <span class="optimizr-serp__favicon" aria-hidden="true"></span>
+                        <span>
+                            <span class="optimizr-serp__name"><?php echo esc_html(get_bloginfo('name')); ?></span>
+                            <span class="optimizr-serp__url"><?php echo esc_html(untrailingslashit(preg_replace('#^https?://#', '', $url))); ?></span>
+                        </span>
+                    </div>
+                    <span class="optimizr-serp__title" data-seo-preview-title><?php echo esc_html($title); ?></span>
+                    <span class="optimizr-serp__desc" data-seo-preview-desc><?php echo esc_html($desc); ?></span>
+                </div>
+                <dl class="optimizr-dl optimizr-dl--compact">
+                    <dt>Titre</dt>
+                    <dd data-seo-count-title></dd>
+                    <dt>Description</dt>
+                    <dd data-seo-count-desc></dd>
+                </dl>
+                <p class="optimizr-card__hint">Exemple avec « <?php echo esc_html(get_the_title($post)); ?> », dernier contenu publié.</p>
+            </div>
+        </section>
+
+        <section class="optimizr-card">
+            <div class="optimizr-card__header">
+                <h2 class="optimizr-card__title">Aperçu d'un partage</h2>
+            </div>
+            <div class="optimizr-card__body">
+                <div class="optimizr-share">
+                    <div class="optimizr-share__image">
+                        <?php if ($image) : ?>
+                            <img src="<?php echo esc_url($image); ?>" alt="">
+                        <?php else : ?>
+                            <?php echo hpt_icon('image', 18); ?><span>Pas d'image à la une</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="optimizr-share__text">
+                        <span class="optimizr-share__host"><?php echo esc_html($host); ?></span>
+                        <span class="optimizr-share__title" data-seo-preview-title><?php echo esc_html($title); ?></span>
+                        <span class="optimizr-share__desc" data-seo-preview-desc><?php echo esc_html($desc); ?></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <?php
+});
 
 require_once('seo-meta.php');
 require_once('seo-sitemap.php');
@@ -410,21 +394,15 @@ add_action('admin_post_hpt_generate_robots_txt', function () {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé');
     }
+    check_admin_referer('hpt_generate_robots_txt');
 
     $content = get_option('hpt_custom_robots_txt', '');
-    update_option('hpt_custom_robots_txt', $content);
     $file = ABSPATH . 'robots.txt';
 
     if (!empty($content)) {
         file_put_contents($file, $content);
     }
 
-    wp_redirect(admin_url('options-general.php?page=hpt-options&hpt_message=robots_generated'));
+    wp_redirect(add_query_arg('hpt_message', 'robots_generated', hpt_admin_tab_url('seo')));
     exit;
-});
-
-add_action('admin_notices', function () {
-    if (isset($_GET['hpt_message']) && $_GET['hpt_message'] === 'robots_generated') {
-        echo '<div class="notice notice-success is-dismissible"><p>Le fichier robots.txt a été généré avec succès.</p></div>';
-    }
 });

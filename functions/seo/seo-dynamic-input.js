@@ -22,14 +22,21 @@ document.addEventListener("DOMContentLoaded", function () {
         el.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', el.getAttribute('data-seo-variable'));
         });
+
+        // Clic : ajoute la variable à la fin du champ ciblé
+        el.addEventListener('click', () => {
+            const field = document.getElementById(el.getAttribute('data-target'));
+            if (!field) return;
+            const code = el.getAttribute('data-seo-variable');
+            const raw = haptic_GPT_convertBadgesToText(field.innerHTML);
+            field.innerHTML = haptic_GPT_convertTextToBadges((raw ? raw + ' ' : '') + code);
+            haptic_GPT_syncAllFields();
+        });
     });
 
     /* ----------- Boîte de suggestions pour l’autocomplétion clavier -------- */
     let suggestionBox = document.createElement('div');
-    suggestionBox.style.position = 'absolute';
-    suggestionBox.style.zIndex = '9999';
-    suggestionBox.style.background = '#fff';
-    suggestionBox.style.border = '1px solid #ccc';
+    suggestionBox.className = 'optimizr-suggest';
     suggestionBox.style.display = 'none';
     document.body.appendChild(suggestionBox);
 
@@ -42,13 +49,16 @@ document.addEventListener("DOMContentLoaded", function () {
             let found = SEO_VARIABLES.find(v => v.code === token);
             if (found) {
                 let badge = document.createElement('span');
-                badge.className = 'badge bg-primary me-1';
+                badge.className = 'optimizr-token';
+                badge.contentEditable = 'false';
                 badge.setAttribute('data-seo-variable', found.code);
                 badge.textContent = found.label;
 
                 let closeBtn = document.createElement('button');
                 closeBtn.type = 'button';
-                closeBtn.className = 'btn-close btn-close-white ms-1';
+                closeBtn.className = 'optimizr-token__remove';
+                closeBtn.setAttribute('aria-label', 'Retirer ' + found.label);
+                closeBtn.textContent = '×';
                 closeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     badge.remove();
@@ -70,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         temp.innerHTML = html;
         let parts = [];
         temp.childNodes.forEach(node => {
-            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.badge')) {
+            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.optimizr-token')) {
                 parts.push(node.getAttribute('data-seo-variable'));
             } else {
                 parts.push(node.textContent);
@@ -86,6 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!hiddenInput) return;
             hiddenInput.value = haptic_GPT_convertBadgesToText(field.innerHTML);
         });
+        // Aperçus SEO et barre d'enregistrement (js/optimizr-admin.js)
+        document.dispatchEvent(new CustomEvent('hpt:seo-pattern-change'));
     }
 
     /* ----------------- Autocomplétion clavier ----------------- */
@@ -108,21 +120,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         suggestionBox.innerHTML = '';
         let ul = document.createElement('ul');
-        ul.style.listStyle = 'none';
-        ul.style.margin = ul.style.padding = '0';
 
         matches.forEach(item => {
             let li = document.createElement('li');
-            li.style.padding = '5px 10px';
-            li.style.cursor = 'pointer';
             li.textContent = item.label;
             li.addEventListener('click', () => onSelect(item));
             ul.appendChild(li);
         });
 
         suggestionBox.appendChild(ul);
-        suggestionBox.style.left = x + 'px';
-        suggestionBox.style.top = (y + 20) + 'px';
+        suggestionBox.style.left = (x + window.scrollX) + 'px';
+        suggestionBox.style.top = (y + window.scrollY + 22) + 'px';
         suggestionBox.style.display = 'block';
     }
 

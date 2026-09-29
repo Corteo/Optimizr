@@ -1,60 +1,130 @@
-# Optimizr (optimizr)
+# Haptic Optimizr
 
-Haptic Optimizr est un plugin WordPress qui vous permet d'activer ou de désactiver certaines fonctionnalités et de gérer des options spécifiques à votre site. Il permet également la gestion des cookies des différents services tiers et assure la conformité avec le RGPD.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), SEO, génération de textes par IA, types de contenu personnalisés et quelques outils de maintenance.
 
-## Description
+Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-Ce plugin vous permet de contrôler et de personnaliser diverses fonctionnalités et options de votre site WordPress.
+**Version actuelle :** 2.0.0-beta.1 · [Historique des versions](CHANGELOG.md)
 
-### Fonctionnalités principales :
+## Modules
 
-- Gestion des images à la une pour des types de posts spécifiques
-- Gestion des types de contenus personnalisés (CPT) avec interface d'ajout/suppression et support de l'icône
-- Support du service Tarteaucitron.js par AmauryC pour la conformité RGPD
-- Liste des services supportés par Tarteaucitron.js :
-  - Google Analytics 4, Google Ads, Clarity, Matomo, Hotjar
-  - Facebook & Facebook Pixel, Google Fonts, Google Maps
-  - Google reCAPTCHA, hCAPTCHA, X (Twitter)
-  - Dailymotion, Youtube
-- Gestion et personnalisation des métadonnées SEO (titre, description, image OpenGraph) avec prévisualisation et options d'automatisation IA, y compris pour les CPT
-- **Affichage des erreurs PHP détectées sous forme de pop-up pour les administrateurs** : les erreurs sont collectées et une alerte est affichée à l'ouverture d'une page d'administration pour un diagnostic rapide.
-- **SEO :**
-  - Optimisation des balises SEO grace a l'IA. 
+### Cookies & RGPD
+- Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas) et couleurs personnalisables, avec aperçu en direct et contrôle du contraste des boutons.
+- Services chargés uniquement après accord du visiteur :
+  - **Mesure d'audience :** Google Analytics 4, Google Tag Manager, Microsoft Clarity, Matomo Tag Manager, Hotjar
+  - **Publicité :** Google Ads, Pixel Meta (Facebook)
+  - **Contenus intégrés :** Google Fonts, Google Maps
+  - **Anti-spam :** Google reCAPTCHA, hCaptcha
+  - **Toujours proposés, sans réglage :** YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé
+- Google Consent Mode v2 et Bing Consent Mode transmis automatiquement.
 
+### SEO
+- Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
+- Balises OpenGraph (titre, description, image).
+- Metabox « SEO & OpenGraph » dans l'éditeur : titre, description et image personnalisés, option « ne pas indexer ».
+- Sitemap XML et plan du site HTML, régénérés à chaque publication et chaque jour, pour les types de contenu choisis.
+- robots.txt personnalisable, avec test d'accessibilité.
+
+### Assistant IA (OpenAI)
+- Génération de la meta description d'un contenu depuis sa metabox SEO.
+- Génération de la balise ALT des images, à l'import et à la demande depuis la médiathèque.
+- Contexte du site (activité, ton) ajouté à chaque demande.
+
+### Types de contenu
+- Type « Évènements » prêt à l'emploi : date de début, date de fin, lieu, horaires (champs [ACF Pro](https://www.advancedcustomfields.com/pro/)).
+- Création de types de contenu personnalisés depuis l'administration (nom et icône Dashicons).
+
+### Images à la une
+- Choix des types de contenu qui proposent une image de couverture.
+
+### Emails
+- Désactivation des emails envoyés après les mises à jour automatiques des extensions et de WordPress.
+
+### Outils développeur
+- Mode debug : journal dans `logs/debug.log` et alerte des erreurs PHP dans l'administration.
+- Fonction `vd($variable)` : affiche le contenu d'une variable dans une fenêtre, visible par les seuls administrateurs.
+
+## Prérequis
+
+- WordPress 6.1 ou plus récent
+- PHP 7.4 ou plus récent
+- ACF Pro, uniquement pour les champs du type « Évènements »
+- Une clé API OpenAI, uniquement pour l'Assistant IA
 
 ## Installation
 
-1. Dans l'administration de WordPress, allez à 'Plugins' > 'Ajouter des plugins'.
-2. Recherchez "Haptic Optimizr" et cliquez sur "Installer maintenant".
-3. Après l'installation, cliquez sur "Activer".
+1. Récupérez l'archive ZIP du plugin (branche `stable` du dépôt GitHub).
+2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
+3. Activez **Haptic Optimizr**.
+
+Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, comme pour toute extension. Le bouton « Vérifier les mises à jour » en haut de la page du plugin force une vérification immédiate.
 
 ## Utilisation
 
-Une fois le plugin activé, accédez à la page d'options en allant à 'Réglages' > 'Haptic - Options' dans le menu de l'administration WordPress.
+Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
-## Changelog
+- **Tableau de bord :** activez les modules utiles et consultez l'état du site (sitemap, bandeau cookies, clé API, indexation).
+- **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 
-- **Version 1.5 :**
-  - Ajout de services connecté à chatGPT. 
-  - Génération de descriptions SEO, et des ablise alt pour les medias.
-  - Ajout d'un champ de contexte du site pour amelioré les requettes IA
-- **Version 1.4 :**
-  - Ajout des fonctionnalités de gestion et personnalisation des métadonnées SEO.
-  - Ajout de l'affichage des erreurs PHP pour les administrateurs sous forme de pop-up.
-- **Version 1.3 :**
-  - Ajout de la gestion des types de contenu personnalisés (CPT).
-- **Version 1.2 :**
-  - Intégration de la gestion des erreurs et affichage de debugging pour les administrateurs.
-- **Version 1.1 :**
-  - Ajout du support pour Tarteaucitron.js pour la conformité RGPD avec les services variés.
-- **Version 1.0 :**
-  - Version initiale du plugin.
-  - Ajout de la fonctionnalité de gestion d'image à la une.
+## Pour les développeurs
+
+### Configuration
+
+| Constante (`wp-config.php`) | Rôle |
+|---|---|
+| `OPTIMIZR_GITHUB_TOKEN` | Token GitHub utilisé pour les mises à jour depuis un dépôt privé. Prioritaire sur le token distant. |
+
+### Points d'extension
+
+| Hook | Type | Rôle |
+|---|---|---|
+| `hpt_modules` | filtre | Ajouter ou modifier un module du tableau de bord. |
+| `hpt_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
+| `hpt_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
+| `hpt_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
+| `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |
+| `before_hpt_options_enqueue_admin_scripts` / `after_…` | action | Charger des scripts côté administration. |
+
+Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant `hpt_settings_group($onglet)` pour `register_setting()` et `hpt_settings_page($onglet)` pour `add_settings_section()` et `add_settings_field()`. Les sections sont affichées sous forme de cartes ; l'argument `toggle` d'une section place un interrupteur dans son en-tête.
+
+### Organisation du code
+
+```
+hpt_options.php          Fichier principal : constantes, chargement des modules
+functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
+functions/tabs.php       Affichage des sections en cartes
+functions/cookies.php    Module Cookies & RGPD
+functions/seo/           Module SEO (réglages, metabox, sitemap, balises)
+functions/ai.php         Module Assistant IA (+ functions/media.php)
+functions/cpts.php       Module Types de contenu
+functions/thumbnails.php Module Images à la une
+functions/mails.php      Module Emails
+functions/settings.php   Module Outils développeur (+ functions/utils.php)
+functions/updates.php    Mises à jour depuis GitHub
+css/, js/                Interface de la page d'options
+```
+
+### Numérotation des versions
+
+Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.MINEUR.CORRECTIF`.
+
+- **MAJEUR** (3.0.0) : changement qui casse la compatibilité (structure des réglages, fonctionnalité retirée, migration nécessaire).
+- **MINEUR** (2.1.0) : nouvelle fonctionnalité ou nouveau module, sans rien casser.
+- **CORRECTIF** (2.0.1) : correction de bug ou de sécurité, sans nouvelle fonctionnalité.
+- **Pré-version** (`2.1.0-beta.1`) : version de test sur une branche de développement, jamais sur `stable`.
+
+Pour publier une version :
+
+1. Modifiez le numéro aux deux endroits de `hpt_options.php` : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION`.
+2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
+3. Fusionnez dans `stable` : les sites installés lisent l'en-tête de cette branche pour proposer la mise à jour. Seule une version finale doit y être fusionnée.
+
+Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
 
 ## Auteur
 
-Alexandre Vergnaud - [https://alexandrevergnaud.fr/](https://alexandrevergnaud.fr/)
+Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/)
 
 ## Licence
 
-GPL2 - [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)
+GPL2 · [gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)

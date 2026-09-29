@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageInput = document.getElementById("hpt_og_image");
 
     const previewBox = document.getElementById("hpt_seo_preview");
+    // La metabox SEO n'est présente que sur les types de contenu du sitemap
+    if (!previewBox || !titleInput || !descInput) return;
+
     const previewTitle = previewBox.querySelector(".seo-title");
     const previewDesc = previewBox.querySelector(".seo-desc");
     const titleCount = document.getElementById("hpt_title_count");

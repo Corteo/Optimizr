@@ -1,70 +1,68 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
 
+/**
+ * Affiche les sections d'une page Settings API sous forme de cartes.
+ *
+ * Arguments supplémentaires reconnus dans add_settings_section($id, $title, $cb, $page, $args) :
+ * - 'toggle'       => nom d'une option booléenne, affichée en interrupteur dans l'en-tête de la carte
+ * - 'toggle_label' => libellé accessible de cet interrupteur
+ */
 function hpt_do_settings_sections($page)
 {
     global $wp_settings_sections, $wp_settings_fields;
 
-    if (!isset($wp_settings_sections[$page])) {
+    if (empty($wp_settings_sections[$page])) {
+        echo '<p class="optimizr-empty">Aucun réglage dans cet onglet.</p>';
         return;
     }
 
-    echo '<ul class="nav nav-tabs" role="tablist">';
-    $i = 0;
-    foreach ((array) $wp_settings_sections[$page] as $index => $section) {
-        $i++;
-        // Ensure section['id'] exists, fallback to sanitized title or index
-        $section['id'] = isset($section['id']) ? $section['id'] : sanitize_title($section['title']);
-        $active_class = $i == 1 ? 'active' : '';
-        echo '<li class="nav-item">';
-        echo '<a class="nav-link ' . $active_class . '" id="tab-' . esc_attr($section['id']) . '-tab" data-bs-toggle="tab" href="#tab-' . esc_attr($section['id']) . '" role="tab" aria-controls="tab-' . esc_attr($section['id']) . '" aria-selected="' . ($i == 1 ? 'true' : 'false') . '">' . esc_html($section['title']) . '</a>';
-        echo '</li>';
-    }
-    echo '</ul>';
+    foreach ((array) $wp_settings_sections[$page] as $section) {
+        $has_fields = !empty($wp_settings_fields[$page][$section['id']]);
 
-    echo '<div class="tab-content">';
-    $i = 0;
-    foreach ((array) $wp_settings_sections[$page] as $index => $section) {
-        $i++;
-
-        // Ensure section['id'] exists, fallback to sanitized title or index
-        $section['id'] = isset($section['id']) ? $section['id'] : sanitize_title($section['title']);
-
-        // Add fallback for before_section, section_class, and after_section
-        $section['before_section'] = isset($section['before_section']) ? $section['before_section'] : '';
-        $section['section_class'] = isset($section['section_class']) ? $section['section_class'] : '';
-        $section['after_section'] = isset($section['after_section']) ? $section['after_section'] : '';
-
-        $active_class = $i == 1 ? 'show active' : '';
-        echo '<div class="tab-pane fade ' . $active_class . '" id="tab-' . esc_attr($section['id']) . '" role="tabpanel" aria-labelledby="tab-' . esc_attr($section['id']) . '-tab">';
-
-        if ('' !== $section['before_section']) {
-            if ('' !== $section['section_class']) {
-                echo wp_kses_post(sprintf($section['before_section'], esc_attr($section['section_class'])));
-            } else {
-                echo wp_kses_post($section['before_section']);
-            }
-        }
-
-        if ($section['callback']) {
+        ob_start();
+        if (!empty($section['callback'])) {
             call_user_func($section['callback'], $section);
         }
+        $description = trim(ob_get_clean());
 
-        if (isset($wp_settings_fields[$page][$section['id']])) {
-            echo '<div class="form-div" role="presentation">';
+        echo '<section class="optimizr-card" id="' . esc_attr('section-' . $section['id']) . '">';
+        echo '<div class="optimizr-card__header">';
+        echo '<div>';
+        if (!empty($section['title'])) {
+            echo '<h2 class="optimizr-card__title">' . esc_html($section['title']) . '</h2>';
+        }
+        if ($description !== '') {
+            echo '<div class="optimizr-card__desc">' . $description . '</div>';
+        }
+        echo '</div>';
+
+        if (!empty($section['toggle'])) {
+            $label = !empty($section['toggle_label']) ? $section['toggle_label'] : $section['title'];
+            echo hpt_switch_input($section['toggle'], get_option($section['toggle']), $label);
+        }
+        echo '</div>';
+
+        if ($has_fields) {
+            echo '<div class="optimizr-card__body">';
             hpt_do_settings_fields($page, $section['id']);
             echo '</div>';
         }
 
-        if ('' !== $section['after_section']) {
-            echo wp_kses_post($section['after_section']);
-        }
-
-        echo '</div>';
+        echo '</section>';
     }
-    echo '</div>';
 }
 
+/**
+ * Affiche les champs d'une section.
+ *
+ * Arguments supplémentaires reconnus dans add_settings_field(..., $args) :
+ * - 'description' => aide affichée sous le libellé
+ * - 'layout'      => 'stacked' pour placer le contrôle sous le libellé (champs larges)
+ */
 function hpt_do_settings_fields($page, $section)
 {
     global $wp_settings_fields;
@@ -74,20 +72,36 @@ function hpt_do_settings_fields($page, $section)
     }
 
     foreach ((array) $wp_settings_fields[$page][$section] as $field) {
-        $class = '';
+        $args = (array) $field['args'];
 
-        if (!empty($field['args']['class'])) {
-            $class = ' class="' . esc_attr($field['args']['class']) . '"';
+        $classes = ['optimizr-field'];
+        if (!empty($args['layout']) && $args['layout'] === 'stacked') {
+            $classes[] = 'optimizr-field--stacked';
+        }
+        if (!empty($args['class'])) {
+            $classes[] = $args['class'];
         }
 
-        echo '<div class="form-group row"' . $class . '>';
-        if (!empty($field['args']['label_for'])) {
-            echo '<label for="' . esc_attr($field['args']['label_for']) . '" class="col-sm-2 col-form-label">' . $field['title'] . '</label>';
-        } else {
-            echo '<label class="col-sm-2 col-form-label">' . $field['title'] . '</label>';
+        echo '<div class="' . esc_attr(implode(' ', $classes)) . '">';
+
+        $title = trim(wp_strip_all_tags($field['title']));
+        if ($title !== '' || !empty($args['description'])) {
+            echo '<div class="optimizr-field__label">';
+            if ($title !== '') {
+                if (!empty($args['label_for'])) {
+                    echo '<label for="' . esc_attr($args['label_for']) . '">' . esc_html($title) . '</label>';
+                } else {
+                    echo '<span>' . esc_html($title) . '</span>';
+                }
+            }
+            if (!empty($args['description'])) {
+                echo '<p class="optimizr-field__help">' . esc_html($args['description']) . '</p>';
+            }
+            echo '</div>';
         }
-        echo '<div class="col-sm-10">';
-        call_user_func($field['callback'], $field['args']);
+
+        echo '<div class="optimizr-field__control">';
+        call_user_func($field['callback'], $args);
         echo '</div>';
         echo '</div>';
     }
