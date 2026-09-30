@@ -6,6 +6,20 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.6] - 2026-09-30
+
+### Ajouté
+- Assistant IA : **estimation du coût** avant chaque traitement en masse, calculée sur les images (dimensions réelles, méthode de décompte propre à chaque modèle) et les contenus du site, aux tarifs OpenAI relevés le 30 septembre 2026.
+- **Comparatif des modèles** : coût d'une balise ALT, d'une description et de ce qui reste à traiter, pour chaque modèle proposé.
+- **Consommation réelle** mesurée à partir des réponses d'OpenAI, affichée pendant les traitements et cumulée par mois (12 derniers mois).
+- Réglage « ALT automatique à l'import » pour désactiver la génération facturée à chaque image importée.
+- Filtre `hpt_ai_pricing` pour mettre à jour les tarifs.
+
+### Modifié
+- Liste des modèles : GPT-4.1 Mini (recommandé, nouveau modèle par défaut), GPT-4.1 Nano, GPT-4.1, GPT-4o et GPT-4o Mini, avec leurs tarifs. Les anciens modèles (GPT-4, GPT-3.5, GPT-4 Turbo) ne sont plus proposés ; un site qui en utilise un le conserve jusqu'à ce qu'un autre soit choisi.
+- Pour les balises ALT, un ancien modèle qui ne lit pas les images est remplacé par GPT-4.1 Mini au lieu de GPT-4o, cinq fois plus cher.
+- L'ALT automatique à l'import est générée une fois les tailles d'image créées : une version allégée est envoyée plutôt que l'original.
+
 ## [2.0.0-beta.5] - 2026-09-30
 
 ### Ajouté

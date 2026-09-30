@@ -312,6 +312,14 @@
                 while (log.children.length > 50) log.removeChild(log.lastChild);
             }
 
+            // Montant en dollars : « 0,0042 $ » sous un centime, « 0,42 $ » au-delà
+            function formatCost(amount) {
+                return amount.toLocaleString('fr-FR', {
+                    minimumFractionDigits: amount < 0.01 ? 4 : 2,
+                    maximumFractionDigits: amount < 0.01 ? 4 : 2
+                }) + ' $';
+            }
+
             function render() {
                 var processed = state.done + state.skipped.length;
                 var total = Math.max(state.total, processed);
@@ -319,7 +327,8 @@
                 bar.firstElementChild.style.width = percent + '%';
                 bar.setAttribute('aria-valuenow', percent);
                 status.textContent = processed + ' / ' + total + ' traité(s) · ' + state.done + ' généré(s)'
-                    + (state.skipped.length ? ' · ' + state.skipped.length + ' ignoré(s)' : '');
+                    + (state.skipped.length ? ' · ' + state.skipped.length + ' ignoré(s)' : '')
+                    + ' · coût réel ' + formatCost(state.cost);
             }
 
             function finish(message, remaining) {
@@ -327,7 +336,7 @@
                 state.running = false;
                 start.hidden = false;
                 stop.hidden = true;
-                status.textContent = message;
+                status.textContent = message + ' Coût réel : ' + formatCost(state.cost) + '.';
                 task.dataset.count = remaining;
                 summary.textContent = remaining > 0 ? remaining + ' ' + task.dataset.unit + '.' : task.dataset.empty;
                 start.disabled = remaining === 0;
@@ -360,6 +369,7 @@
                         }
                         if (data.status === 'ok') {
                             state.done++;
+                            if (typeof data.cost === 'number') state.cost += data.cost;
                             addLog('ok', data, data.text);
                         } else {
                             state.skipped.push(data.id);
@@ -375,7 +385,7 @@
 
             start.addEventListener('click', function () {
                 var total = parseInt(task.dataset.count, 10) || 0;
-                state = { running: true, total: total, remaining: total, done: 0, skipped: [] };
+                state = { running: true, total: total, remaining: total, done: 0, skipped: [], cost: 0 };
                 running++;
                 start.hidden = true;
                 stop.hidden = false;

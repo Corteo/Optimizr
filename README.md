@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.5 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.6 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -30,6 +30,8 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - Génération de la meta description d'un contenu depuis sa metabox SEO.
 - Génération de la balise ALT des images, à l'import et à la demande depuis la médiathèque.
 - Contexte du site (activité, ton) ajouté à chaque demande.
+- **Coûts maîtrisés** : estimation avant chaque traitement, calculée sur les images et les contenus du site aux tarifs OpenAI en vigueur ; comparatif des modèles ; consommation réelle mesurée et cumulée par mois.
+- Génération automatique de la balise ALT à l'import des images (désactivable).
 - **Traitement en masse** : génère d'un coup les balises ALT manquantes de la médiathèque et les meta descriptions manquantes des contenus, avec progression, journal et arrêt à tout moment. Les éléments déjà renseignés ne sont jamais modifiés.
 
 ### Types de contenu
@@ -90,6 +92,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `hpt_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
 | `hpt_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
 | `hpt_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
+| `hpt_ai_pricing` | filtre | Modèles proposés et tarifs OpenAI (dollars pour 1 million de tokens), à ajuster quand OpenAI change ses prix. |
 | `hpt_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
 | `hpt_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |
@@ -105,7 +108,7 @@ functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, sitemap, balises)
-functions/ai.php         Module Assistant IA (+ ai-bulk.php : traitement en masse, media.php)
+functions/ai.php         Module Assistant IA (+ ai-pricing.php : tarifs et coûts, ai-bulk.php : traitement en masse, media.php)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
@@ -131,6 +134,8 @@ Pour publier une version :
 3. Fusionnez dans `stable` : les sites installés lisent l'en-tête de cette branche pour proposer la mise à jour. Seule une version finale doit y être fusionnée.
 
 Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
+
+Les tarifs OpenAI sont dans `hpt_ai_models()` (`functions/ai-pricing.php`), avec leur date de relevé `HPT_AI_PRICING_DATE` : à vérifier sur la [grille officielle](https://developers.openai.com/api/docs/pricing) à chaque version.
 
 ## Auteur
 

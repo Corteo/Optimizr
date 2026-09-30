@@ -22,6 +22,7 @@ function hpt_settings_internal_options()
         'hpt_sitemap_history',
         'hpt_sitemap_error',
         'hpt_sitemap_last_generated',
+        'hpt_ai_usage',
     ]);
 }
 

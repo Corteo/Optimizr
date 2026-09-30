@@ -94,6 +94,14 @@ function hpt_ai_bulk_count($task, array $skip = [])
     return $sql ? (int) $wpdb->get_var('SELECT COUNT(*) ' . $sql) : 0;
 }
 
+/** Tous les éléments restant à traiter (pour l'estimation du coût). */
+function hpt_ai_bulk_ids($task)
+{
+    global $wpdb;
+    $sql = hpt_ai_bulk_sql($task);
+    return $sql ? array_map('intval', $wpdb->get_col('SELECT p.ID ' . $sql . ' ORDER BY p.ID DESC')) : [];
+}
+
 function hpt_ai_bulk_next_id($task, array $skip = [])
 {
     global $wpdb;
@@ -153,6 +161,7 @@ function hpt_ai_bulk_next()
     wp_send_json_success($item + [
         'status'    => 'ok',
         'text'      => $result,
+        'cost'      => hpt_ai_last_cost(),
         'remaining' => hpt_ai_bulk_count($task, $skip),
     ]);
 }
@@ -182,13 +191,28 @@ function hpt_ai_bulk_callback()
     echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('hpt_ai_bulk')) . '">';
 
     foreach (hpt_ai_bulk_tasks() as $slug => $task) {
-        $count = hpt_ai_bulk_count($slug);
+        $ids = hpt_ai_bulk_ids($slug);
+        $count = count($ids);
+        $model = $slug === 'alt' ? hpt_ai_vision_model() : hpt_ai_current_model();
+        $estimate = $count ? hpt_ai_estimate($slug, $ids)['per_model'][$model] : null;
         ?>
         <div class="optimizr-bulk__task" data-task="<?php echo esc_attr($slug); ?>" data-count="<?php echo esc_attr($count); ?>" data-unit="<?php echo esc_attr($task['unit']); ?>" data-empty="<?php echo esc_attr($task['empty']); ?>">
             <div class="optimizr-bulk__head">
                 <div class="optimizr-bulk__text">
                     <strong><?php echo esc_html($task['label']); ?></strong>
                     <span class="optimizr-field__help" data-bulk-summary><?php echo esc_html($count ? $count . ' ' . $task['unit'] . '.' : $task['empty']); ?></span>
+                    <?php if ($estimate) : ?>
+                        <span class="optimizr-bulk__estimate" data-bulk-estimate>
+                            <?php
+                            echo esc_html(sprintf(
+                                'Coût estimé : %s pour l\'ensemble (≈ %s par élément) avec %s.',
+                                hpt_ai_format_cost($estimate['total']),
+                                hpt_ai_format_unit($estimate['unit']),
+                                $model
+                            ));
+                            ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
                 <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count); ?>>
                     <?php echo hpt_icon('sparkles', 16); ?>Générer

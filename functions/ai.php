@@ -15,6 +15,7 @@ function hpt_register_ai_settings()
     register_setting($group, 'hpt_openai_api_key', ['sanitize_callback' => 'sanitize_text_field']);
     register_setting($group, 'hpt_openai_model', ['sanitize_callback' => 'sanitize_text_field']);
     register_setting($group, 'hpt_ai_context', ['sanitize_callback' => 'sanitize_textarea_field']);
+    register_setting($group, 'hpt_ai_alt_on_upload', ['sanitize_callback' => 'absint']);
 
     add_settings_section(
         'hpt_ai_settings_section',
@@ -26,12 +27,32 @@ function hpt_register_ai_settings()
     add_settings_field('hpt_ai_provider', 'Fournisseur', 'hpt_ai_provider_callback', $page, 'hpt_ai_settings_section', ['label_for' => 'hpt_ai_provider']);
     add_settings_field('hpt_openai_model', 'Modèle', 'hpt_openai_model_callback', $page, 'hpt_ai_settings_section', [
         'label_for' => 'hpt_openai_model',
-        'description' => 'GPT-4o est recommandé : il sait aussi décrire les images.',
+        'description' => 'Tous les modèles proposés savent décrire les images.',
     ]);
     add_settings_field('hpt_openai_api_key', 'Clé API', 'hpt_openai_api_key_callback', $page, 'hpt_ai_settings_section', [
         'label_for' => 'hpt_openai_api_key',
         'description' => 'À créer sur platform.openai.com. Elle n\'est jamais affichée en clair.',
     ]);
+    add_settings_field('hpt_ai_alt_on_upload', 'ALT automatique à l\'import', function () {
+        echo hpt_switch_input('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'Générer la balise ALT à l\'import des images');
+    }, $page, 'hpt_ai_settings_section', [
+        'description' => 'Génère la balise ALT de chaque image importée dans la médiathèque (une requête facturée par image).',
+    ]);
+
+    add_settings_section(
+        'hpt_ai_costs_section',
+        'Coûts',
+        function () {
+            printf(
+                '<p>Estimations calculées sur les images et les contenus de ce site, aux tarifs OpenAI relevés le %s (<a href="%s" target="_blank" rel="noopener">grille officielle</a>), en dollars US hors taxes.</p>',
+                esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
+                esc_url(HPT_AI_PRICING_SOURCE)
+            );
+        },
+        $page
+    );
+    add_settings_field('hpt_ai_usage', 'Consommation réelle', 'hpt_ai_usage_callback', $page, 'hpt_ai_costs_section');
+    add_settings_field('hpt_ai_costs', 'Comparatif des modèles', 'hpt_ai_costs_callback', $page, 'hpt_ai_costs_section', ['layout' => 'stacked']);
 
     add_settings_section(
         'hpt_ai_context_section',
@@ -62,21 +83,107 @@ function hpt_ai_provider_callback()
 
 function hpt_openai_model_callback()
 {
-    $model = get_option('hpt_openai_model', 'gpt-4o');
+    $current = hpt_ai_current_model();
+    $models = hpt_ai_models();
+
     echo '<select name="hpt_openai_model" id="hpt_openai_model">';
-    $models = [
-        'gpt-4.1' => 'GPT-4.1 (performances améliorées)',
-        'gpt-4.1-mini' => 'GPT-4.1 Mini (léger, rapide)',
-        'gpt-4.1-nano' => 'GPT-4.1 Nano (ultra-léger)',
-        'gpt-4o' => 'GPT-4o (multimodal, rapide, recommandé)',
-        'gpt-4-turbo' => 'GPT-4 Turbo (performant, context long)',
-        'gpt-4' => 'GPT-4 (standard)',
-        'gpt-3.5-turbo' => 'GPT-3.5 Turbo (économique)',
-    ];
-    foreach ($models as $value => $label) {
-        echo '<option value="' . esc_attr($value) . '" ' . selected($model, $value, false) . '>' . esc_html($label) . '</option>';
+    // Ancien modèle enregistré (GPT-4, GPT-3.5…) : conservé tant qu'on n'en choisit pas un autre
+    if (!isset($models[$current])) {
+        echo '<option value="' . esc_attr($current) . '" selected>' . esc_html($current . ' — ancien modèle, tarif non suivi') . '</option>';
+    }
+    foreach ($models as $value => $model) {
+        printf(
+            '<option value="%s" %s>%s</option>',
+            esc_attr($value),
+            selected($current, $value, false),
+            esc_html(sprintf('%s · %s $ / %s $ par million de tokens', $model['label'], number_format_i18n($model['input'], 2), number_format_i18n($model['output'], 2)))
+        );
     }
     echo '</select>';
+
+    if (!isset($models[$current])) {
+        echo '<p class="optimizr-field__help">Ce modèle n\'est plus proposé. Les balises ALT utilisent ' . esc_html(HPT_AI_DEFAULT_MODEL) . ' ; choisissez un modèle de la liste pour suivre les coûts.</p>';
+    }
+}
+
+function hpt_ai_usage_callback()
+{
+    $month = hpt_ai_usage_this_month();
+    $all = (array) get_option('hpt_ai_usage', []);
+
+    printf(
+        '<p class="optimizr-ai-usage"><strong>%s</strong> ce mois-ci <span class="optimizr-muted">(%s)</span></p>',
+        esc_html(hpt_ai_format_cost($month['cost'])),
+        esc_html(sprintf('%d requête(s), %s tokens envoyés, %s reçus', $month['requests'], number_format_i18n($month['input']), number_format_i18n($month['output'])))
+    );
+
+    $previous = array_slice($all, 1, 5, true);
+    if ($previous) {
+        echo '<details class="optimizr-details"><summary>Mois précédents</summary><ul>';
+        foreach ($previous as $key => $entry) {
+            printf('<li>%s : %s · %d requête(s)</li>', esc_html(date_i18n('F Y', strtotime($key . '-01'))), esc_html(hpt_ai_format_cost($entry['cost'])), (int) $entry['requests']);
+        }
+        echo '</ul></details>';
+    }
+
+    echo '<p class="optimizr-field__help">Mesurée à partir des réponses d\'OpenAI pour les requêtes envoyées par ce site. La facture fait foi : <a href="https://platform.openai.com/usage" target="_blank" rel="noopener">tableau de bord OpenAI</a>.</p>';
+}
+
+/**
+ * Comparatif : coût d'une image, d'une description, et de ce qui reste à traiter sur le site, pour chaque modèle.
+ */
+function hpt_ai_costs_callback()
+{
+    $models = array_keys(hpt_ai_models());
+    $alt_ids = function_exists('hpt_ai_bulk_ids') ? hpt_ai_bulk_ids('alt') : [];
+    $desc_ids = function_exists('hpt_ai_bulk_ids') && hpt_is_module_active('seo') ? hpt_ai_bulk_ids('descriptions') : [];
+
+    // Unités chiffrées sur un échantillon représentatif du site, même si tout est déjà traité
+    $alt_sample = $alt_ids ?: array_map('intval', get_posts(['post_type' => 'attachment', 'post_mime_type' => 'image', 'post_status' => 'inherit', 'numberposts' => 50, 'fields' => 'ids']));
+    $desc_sample = $desc_ids ?: array_map('intval', get_posts(['post_type' => (array) get_option('hpt_sitemap_post_types', ['post', 'page']), 'numberposts' => 50, 'fields' => 'ids']));
+
+    $alt = hpt_ai_estimate('alt', $alt_sample, $models);
+    $desc = hpt_ai_estimate('descriptions', $desc_sample, $models);
+    $current = hpt_ai_current_model();
+    ?>
+    <div class="optimizr-table-wrap">
+        <table class="optimizr-table">
+            <thead>
+                <tr>
+                    <th scope="col">Modèle</th>
+                    <th scope="col">1 balise ALT</th>
+                    <th scope="col">1 description</th>
+                    <?php if ($alt_ids) : ?><th scope="col"><?php echo esc_html(sprintf('%d ALT manquantes', count($alt_ids))); ?></th><?php endif; ?>
+                    <?php if ($desc_ids) : ?><th scope="col"><?php echo esc_html(sprintf('%d descriptions manquantes', count($desc_ids))); ?></th><?php endif; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($models as $model) :
+                    $a = $alt['per_model'][$model];
+                    $d = $desc['per_model'][$model];
+                    ?>
+                    <tr<?php echo $model === $current ? ' class="is-current"' : ''; ?>>
+                        <th scope="row"><?php echo esc_html($model); ?><?php echo $model === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
+                        <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
+                        <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
+                        <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
+                        <?php if ($desc_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($d['unit'] === null ? null : $d['unit'] * count($desc_ids))); ?></td><?php endif; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <p class="optimizr-field__help">Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, et chaque image selon ses dimensions réelles et la méthode de décompte du modèle. Changez de modèle ci-dessus puis enregistrez pour l'appliquer.</p>
+    <?php
+}
+
+/** Coût unitaire lisible, avec plus de décimales : « 0,0004 $ ». */
+function hpt_ai_format_unit($amount)
+{
+    if ($amount === null) {
+        return 'tarif inconnu';
+    }
+    return number_format_i18n($amount, $amount < 0.01 ? 4 : 3) . ' $';
 }
 
 function hpt_openai_api_key_callback()
@@ -112,7 +219,7 @@ function hpt_openai_chat(array $messages, $max_tokens, $temperature = 0.7, $mode
             'Content-Type' => 'application/json',
         ],
         'body' => wp_json_encode([
-            'model' => $model ?: get_option('hpt_openai_model', 'gpt-4o'),
+            'model' => $model ?: hpt_ai_current_model(),
             'messages' => $messages,
             'temperature' => $temperature,
             'max_completion_tokens' => (int) $max_tokens,
@@ -130,6 +237,9 @@ function hpt_openai_chat(array $messages, $max_tokens, $temperature = 0.7, $mode
         $message = $body['error']['message'] ?? 'réponse HTTP ' . $code;
         return new WP_Error('hpt_ai_http', 'OpenAI : ' . $message, ['status' => $code]);
     }
+
+    // Consommation réelle, facturée même si la réponse est inutilisable
+    hpt_ai_record_usage($model ?: hpt_ai_current_model(), (array) ($body['usage'] ?? []));
 
     $text = trim((string) ($body['choices'][0]['message']['content'] ?? ''), "\"'«» \t\n\r\0\x0B");
     if ($text === '') {
@@ -175,6 +285,39 @@ function hpt_ai_generate_description($post_id)
 }
 
 /**
+ * Version de l'image envoyée à OpenAI : la première taille disponible parmi large, medium_large
+ * et l'original, de 4 Mo au plus. Sert à la génération comme à l'estimation du coût.
+ *
+ * @return array ['path' => string (vide si aucune version locale utilisable), 'width' => int, 'height' => int]
+ */
+function hpt_ai_alt_image_source($attachment_id)
+{
+    $meta = wp_get_attachment_metadata($attachment_id);
+    $original = get_attached_file($attachment_id);
+
+    foreach (['large', 'medium_large', 'full'] as $size) {
+        if ($size === 'full') {
+            $path = $original;
+            $width = (int) ($meta['width'] ?? 0);
+            $height = (int) ($meta['height'] ?? 0);
+        } elseif (!empty($meta['sizes'][$size]['file'])) {
+            $path = path_join(dirname($original), $meta['sizes'][$size]['file']);
+            $width = (int) $meta['sizes'][$size]['width'];
+            $height = (int) $meta['sizes'][$size]['height'];
+        } else {
+            continue;
+        }
+
+        if ($path && is_readable($path) && filesize($path) <= 4 * MB_IN_BYTES) {
+            return ['path' => $path, 'width' => $width, 'height' => $height];
+        }
+    }
+
+    // Image envoyée par son adresse : dimensions de l'original
+    return ['path' => '', 'width' => (int) ($meta['width'] ?? 1024), 'height' => (int) ($meta['height'] ?? 1024)];
+}
+
+/**
  * Balise ALT d'une image. L'image est envoyée en pièce jointe (base64) quand c'est possible :
  * fonctionne aussi en local et sur les sites protégés, que les serveurs d'OpenAI ne peuvent pas lire.
  *
@@ -186,25 +329,16 @@ function hpt_ai_generate_alt($attachment_id)
         return new WP_Error('hpt_ai_not_image', 'Ce fichier n\'est pas une image.');
     }
 
-    $image_url = '';
-    $original = get_attached_file($attachment_id);
-    foreach (['large', 'medium_large', 'full'] as $size) {
-        $src = image_get_intermediate_size($attachment_id, $size);
-        $path = $src ? path_join(dirname($original), $src['file']) : ($size === 'full' ? $original : '');
-        if ($path && is_readable($path) && filesize($path) <= 4 * MB_IN_BYTES) {
-            $mime = wp_check_filetype($path)['type'] ?: 'image/jpeg';
-            $image_url = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
-            break;
-        }
+    $source = hpt_ai_alt_image_source($attachment_id);
+    if ($source['path']) {
+        $mime = wp_check_filetype($source['path'])['type'] ?: 'image/jpeg';
+        $image_url = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($source['path']));
+    } else {
+        $image_url = wp_get_attachment_url($attachment_id);
     }
-    $image_url = $image_url ?: wp_get_attachment_url($attachment_id);
 
     $site_context = trim(get_option('hpt_ai_context', ''));
-    $model = get_option('hpt_openai_model', 'gpt-4o');
-    // Les modèles texte seuls ne lisent pas les images
-    if (!in_array($model, ['gpt-4o', 'gpt-4.1', 'gpt-4.1-mini', 'gpt-4-turbo'], true)) {
-        $model = 'gpt-4o';
-    }
+    $model = hpt_ai_vision_model();
 
     return hpt_openai_chat([
         ['role' => 'system', 'content' => 'Tu es un assistant expert en accessibilité, SEO et description d’images.'],

@@ -1398,6 +1398,65 @@
     }
 }
 
+.optimizr-bulk__estimate {
+    color: var(--o-text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* ---------- Tableau (comparatif des coûts IA) ---------- */
+
+.optimizr-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius-sm);
+}
+
+.optimizr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.optimizr-table th,
+.optimizr-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--o-border-soft);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.optimizr-table th:first-child {
+    text-align: left;
+}
+
+.optimizr-table thead th {
+    background: var(--o-bg);
+    color: var(--o-muted);
+    font-weight: 600;
+}
+
+.optimizr-table tbody tr:last-child th,
+.optimizr-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.optimizr-table tr.is-current {
+    background: var(--o-accent-soft);
+}
+
+.optimizr-table .optimizr-badge {
+    margin-left: 6px;
+    background: var(--o-accent);
+    color: #fff;
+}
+
+.optimizr-ai-usage {
+    margin: 0;
+    font-size: 14px;
+}
+
 /* ---------- Onglet Outils ---------- */
 
 .optimizr-tools {

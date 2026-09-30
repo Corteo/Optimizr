@@ -21,16 +21,28 @@ function haptic_GPT_enqueue_media_ia_script()
     ]);
 }
 
-add_action('add_attachment', 'haptic_GPT_generate_image_metadata_on_upload');
-function haptic_GPT_generate_image_metadata_on_upload($post_ID)
+// ALT automatique à l'import : une fois les tailles d'image générées, pour envoyer une version
+// allégée plutôt que l'original (moins de tokens facturés)
+add_filter('wp_generate_attachment_metadata', 'haptic_GPT_generate_image_metadata_on_upload', 20, 3);
+function haptic_GPT_generate_image_metadata_on_upload($metadata, $post_ID, $context = 'create')
 {
-    $post = get_post($post_ID);
-    if ($post->post_mime_type && strpos($post->post_mime_type, 'image/') === 0) {
-        $alt = haptic_GPT_generate_alt_with_ai($post->post_title, $post_ID);
-        if ($alt) {
-            update_post_meta($post_ID, '_wp_attachment_image_alt', $alt);
-        }
+    if ($context !== 'create' || !get_option('hpt_ai_alt_on_upload', 1) || !wp_attachment_is_image($post_ID)) {
+        return $metadata;
     }
+
+    if (get_post_meta($post_ID, '_wp_attachment_image_alt', true) !== '') {
+        return $metadata;
+    }
+
+    // Les métadonnées ne sont pas encore enregistrées : on les met à disposition pour choisir la taille envoyée
+    wp_update_attachment_metadata($post_ID, $metadata);
+
+    $alt = haptic_GPT_generate_alt_with_ai('', $post_ID);
+    if ($alt) {
+        update_post_meta($post_ID, '_wp_attachment_image_alt', $alt);
+    }
+
+    return $metadata;
 }
 
 add_filter('attachment_fields_to_edit', 'haptic_GPT_add_ia_button_to_media_fields', 10, 2);
