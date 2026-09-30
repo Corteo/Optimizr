@@ -292,6 +292,11 @@
     grid-template-columns: minmax(0, 1fr);
 }
 
+/* Réglages d'un autre fournisseur d'IA que celui sélectionné */
+.optimizr .optimizr-field--hidden {
+    display: none;
+}
+
 .optimizr-field__label {
     display: flex;
     flex-direction: column;
@@ -1439,6 +1444,17 @@
 .optimizr-table tbody tr:last-child th,
 .optimizr-table tbody tr:last-child td {
     border-bottom: 0;
+}
+
+.optimizr-table .optimizr-table__group th {
+    padding-top: 14px;
+    background: var(--o-surface);
+    color: var(--o-text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
 }
 
 .optimizr-table tr.is-current {

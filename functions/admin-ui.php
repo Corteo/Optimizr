@@ -25,7 +25,7 @@ function hpt_modules()
         ],
         'ai' => [
             'label' => 'Assistant IA',
-            'desc'  => 'Meta descriptions et balises ALT générées avec OpenAI, à partir du contexte du site.',
+            'desc'  => 'Meta descriptions et balises ALT générées avec OpenAI, Claude ou Gemini, à partir du contexte du site.',
             'icon'  => 'sparkles',
             'tab'   => 'ai',
         ],
@@ -300,7 +300,7 @@ function hpt_render_settings_tab($slug, $tab)
     $intros = [
         'cookies'  => 'Consentement des visiteurs et services tiers chargés uniquement après autorisation.',
         'seo'      => 'Titres et descriptions par défaut, plan du site et consignes pour les robots d\'indexation.',
-        'ai'       => 'Génération de contenus avec OpenAI : meta descriptions et balises ALT des images.',
+        'ai'       => 'Génération de contenus avec OpenAI, Claude ou Gemini : meta descriptions et balises ALT des images.',
         'content'  => 'Types de contenu personnalisés et images de couverture.',
         'advanced' => 'Notifications et outils réservés aux développeurs.',
     ];
@@ -370,10 +370,10 @@ function hpt_site_health_checks()
         ];
     }
 
-    if (hpt_is_module_active('ai') && !get_option('hpt_openai_api_key')) {
+    if (hpt_is_module_active('ai') && function_exists('hpt_ai_api_key') && hpt_ai_api_key() === '') {
         $checks[] = [
             'status' => 'warn',
-            'label' => 'Clé API OpenAI manquante',
+            'label' => sprintf('Clé API %s manquante', hpt_ai_provider_config()['label']),
             'link' => hpt_admin_tab_url('ai'),
             'link_label' => 'Ajouter',
         ];
@@ -402,7 +402,7 @@ function hpt_module_status($slug)
         return ['status' => 'off', 'label' => 'Désactivé'];
     }
 
-    if ($slug === 'ai' && !get_option('hpt_openai_api_key')) {
+    if ($slug === 'ai' && function_exists('hpt_ai_api_key') && hpt_ai_api_key() === '') {
         return ['status' => 'warn', 'label' => 'Clé API manquante'];
     }
 

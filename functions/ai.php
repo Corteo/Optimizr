@@ -10,29 +10,45 @@ function hpt_register_ai_settings()
 {
     $group = hpt_settings_group('ai');
     $page  = hpt_settings_page('ai');
+    $current = hpt_ai_provider();
 
-    register_setting($group, 'hpt_ai_provider', ['sanitize_callback' => 'sanitize_key']);
-    register_setting($group, 'hpt_openai_api_key', ['sanitize_callback' => 'sanitize_text_field']);
-    register_setting($group, 'hpt_openai_model', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting($group, 'hpt_ai_provider', [
+        'sanitize_callback' => function ($value) {
+            return isset(hpt_ai_providers()[$value]) ? $value : HPT_AI_DEFAULT_PROVIDER;
+        },
+    ]);
     register_setting($group, 'hpt_ai_context', ['sanitize_callback' => 'sanitize_textarea_field']);
     register_setting($group, 'hpt_ai_alt_on_upload', ['sanitize_callback' => 'absint']);
 
     add_settings_section(
         'hpt_ai_settings_section',
-        'Connexion à OpenAI',
+        'Fournisseur d\'IA',
         'hpt_ai_section_callback',
         $page
     );
 
     add_settings_field('hpt_ai_provider', 'Fournisseur', 'hpt_ai_provider_callback', $page, 'hpt_ai_settings_section', ['label_for' => 'hpt_ai_provider']);
-    add_settings_field('hpt_openai_model', 'Modèle', 'hpt_openai_model_callback', $page, 'hpt_ai_settings_section', [
-        'label_for' => 'hpt_openai_model',
-        'description' => 'Tous les modèles proposés savent décrire les images.',
-    ]);
-    add_settings_field('hpt_openai_api_key', 'Clé API', 'hpt_openai_api_key_callback', $page, 'hpt_ai_settings_section', [
-        'label_for' => 'hpt_openai_api_key',
-        'description' => 'À créer sur platform.openai.com. Elle n\'est jamais affichée en clair.',
-    ]);
+
+    // Un modèle et une clé par fournisseur : seuls ceux du fournisseur choisi sont affichés (js/optimizr-admin.js)
+    foreach (hpt_ai_providers() as $slug => $provider) {
+        register_setting($group, $provider['model_option'], ['sanitize_callback' => 'sanitize_text_field']);
+        register_setting($group, $provider['key_option'], ['sanitize_callback' => 'sanitize_text_field']);
+
+        $class = 'hpt-ai-provider-row hpt-ai-provider-' . $slug . ($slug === $current ? '' : ' optimizr-field--hidden');
+
+        add_settings_field($provider['model_option'], 'Modèle', 'hpt_ai_model_callback', $page, 'hpt_ai_settings_section', [
+            'label_for'   => $provider['model_option'],
+            'provider'    => $slug,
+            'class'       => $class,
+            'description' => 'Tous les modèles proposés savent décrire les images.',
+        ]);
+        add_settings_field($provider['key_option'], 'Clé API', 'hpt_ai_api_key_callback', $page, 'hpt_ai_settings_section', [
+            'label_for'   => $provider['key_option'],
+            'provider'    => $slug,
+            'class'       => $class,
+        ]);
+    }
+
     add_settings_field('hpt_ai_alt_on_upload', 'ALT automatique à l\'import', function () {
         echo hpt_switch_input('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'Générer la balise ALT à l\'import des images');
     }, $page, 'hpt_ai_settings_section', [
@@ -55,54 +71,79 @@ function hpt_register_ai_settings()
 
 function hpt_ai_section_callback()
 {
-    echo '<p>Utilisée pour les meta descriptions (metabox SEO) et les balises ALT (médiathèque).</p>';
+    echo '<p>Utilisé pour les meta descriptions (metabox SEO) et les balises ALT (médiathèque). Chaque fournisseur garde sa propre clé et son propre modèle.</p>';
 }
 
 function hpt_ai_provider_callback()
 {
-    $option = get_option('hpt_ai_provider', 'openai');
-    echo '<select name="hpt_ai_provider" id="hpt_ai_provider">
-        <option value="openai" ' . selected($option, 'openai', false) . '>OpenAI</option>
-    </select>';
+    $current = hpt_ai_provider();
+    echo '<select name="hpt_ai_provider" id="hpt_ai_provider" data-ai-provider-select>';
+    foreach (hpt_ai_providers() as $slug => $provider) {
+        printf('<option value="%s" %s>%s</option>', esc_attr($slug), selected($current, $slug, false), esc_html($provider['label']));
+    }
+    echo '</select>';
+    echo '<p class="optimizr-field__help" data-ai-provider-notice hidden>Enregistrez pour utiliser ce fournisseur : les estimations de coût se mettront à jour.</p>';
 }
 
-function hpt_openai_model_callback()
+function hpt_ai_model_callback($args)
 {
-    $current = hpt_ai_current_model();
-    $models = hpt_ai_models();
+    $provider = $args['provider'];
+    $config = hpt_ai_provider_config($provider);
+    $current = hpt_ai_current_model($provider);
 
-    echo '<select name="hpt_openai_model" id="hpt_openai_model">';
+    echo '<select name="' . esc_attr($config['model_option']) . '" id="' . esc_attr($config['model_option']) . '">';
     // Ancien modèle enregistré (GPT-4, GPT-3.5…) : conservé tant qu'on n'en choisit pas un autre
-    if (!isset($models[$current])) {
+    if (!isset($config['models'][$current])) {
         echo '<option value="' . esc_attr($current) . '" selected>' . esc_html($current . ' — ancien modèle, tarif non suivi') . '</option>';
     }
-    foreach ($models as $value => $model) {
+    foreach ($config['models'] as $value => $model) {
         printf('<option value="%s" %s>%s</option>', esc_attr($value), selected($current, $value, false), esc_html($model['label']));
     }
     echo '</select>';
 
-    if (!isset($models[$current])) {
-        echo '<p class="optimizr-field__help">Ce modèle n\'est plus proposé. Les balises ALT utilisent ' . esc_html(HPT_AI_DEFAULT_MODEL) . ' ; choisissez un modèle de la liste pour suivre les coûts.</p>';
+    if (!isset($config['models'][$current])) {
+        echo '<p class="optimizr-field__help">Ce modèle n\'est plus proposé. Les balises ALT utilisent ' . esc_html($config['default']) . ' ; choisissez un modèle de la liste pour suivre les coûts.</p>';
     }
 }
 
+function hpt_ai_api_key_callback($args)
+{
+    $config = hpt_ai_provider_config($args['provider']);
+    printf(
+        '<input type="password" name="%1$s" id="%1$s" value="%2$s" autocomplete="off" spellcheck="false" />',
+        esc_attr($config['key_option']),
+        esc_attr(get_option($config['key_option'], ''))
+    );
+    printf(
+        '<p class="optimizr-field__help">À créer sur <a href="%s" target="_blank" rel="noopener">%s</a>. Elle n\'est jamais affichée en clair.</p>',
+        esc_url($config['key_url']),
+        esc_html(wp_parse_url($config['key_url'], PHP_URL_HOST))
+    );
+}
+
+function hpt_ai_context_callback()
+{
+    $context = get_option('hpt_ai_context', '');
+    echo '<textarea name="hpt_ai_context" id="hpt_ai_context" rows="4" placeholder="Décrivez ici le contexte global de votre site (ex. : école de céramique, atelier photo, agence de voyage, etc.)">' . esc_textarea($context) . '</textarea>';
+}
+
+/* ---------- Détail des coûts (bouton « ? » du traitement en masse) ---------- */
+
 /**
- * Détail des coûts, affiché par le bouton (?) de la carte « Traitement en masse » :
- * tarifs, comparatif des modèles sur les données du site et consommation réelle.
+ * Tarifs, comparatif des modèles sur les données du site et consommation réelle.
  */
 function hpt_ai_costs_panel()
 {
-    ?>
-    <p class="optimizr-field__help">
-        <?php
-        printf(
-            'Tarifs OpenAI relevés le %s (<a href="%s" target="_blank" rel="noopener">grille officielle</a>), en dollars US hors taxes.',
-            esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
-            esc_url(HPT_AI_PRICING_SOURCE)
-        );
-        ?>
-    </p>
-    <?php
+    $links = [];
+    foreach (hpt_ai_providers() as $provider) {
+        $links[] = sprintf('<a href="%s" target="_blank" rel="noopener">%s</a>', esc_url($provider['pricing_url']), esc_html($provider['label']));
+    }
+    printf(
+        '<p class="optimizr-field__help">Tarifs relevés le %s sur les grilles officielles (%s), en dollars US hors taxes.</p>',
+        esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
+        implode(', ', $links)
+    );
+
     hpt_ai_costs_table();
     hpt_ai_usage_summary();
 }
@@ -126,15 +167,26 @@ function hpt_ai_usage_summary()
         echo '</ul>';
     }
 
-    echo '<p class="optimizr-field__help">Mesurée à partir des réponses d\'OpenAI pour les requêtes envoyées par ce site. La facture fait foi : <a href="https://platform.openai.com/usage" target="_blank" rel="noopener">tableau de bord OpenAI</a>.</p>';
+    printf(
+        '<p class="optimizr-field__help">Mesurée à partir des réponses des API pour les requêtes envoyées par ce site, tous fournisseurs confondus. La facture fait foi : <a href="%s" target="_blank" rel="noopener">tableau de bord %s</a>.</p>',
+        esc_url(hpt_ai_provider_config()['usage_url']),
+        esc_html(hpt_ai_provider_config()['label'])
+    );
 }
 
 /**
- * Comparatif : tarif de chaque modèle, coût d'une image, d'une description, et de ce qui reste à traiter sur le site.
+ * Comparatif de tous les modèles de tous les fournisseurs : tarif, coût d'une image,
+ * d'une description, et de ce qui reste à traiter sur le site.
  */
 function hpt_ai_costs_table()
 {
-    $models = array_keys(hpt_ai_models());
+    $targets = [];
+    foreach (hpt_ai_providers() as $slug => $provider) {
+        foreach (array_keys($provider['models']) as $model) {
+            $targets[] = [$slug, $model];
+        }
+    }
+
     $alt_ids = function_exists('hpt_ai_bulk_ids') ? hpt_ai_bulk_ids('alt') : [];
     $desc_ids = function_exists('hpt_ai_bulk_ids') && hpt_is_module_active('seo') ? hpt_ai_bulk_ids('descriptions') : [];
 
@@ -142,9 +194,10 @@ function hpt_ai_costs_table()
     $alt_sample = $alt_ids ?: array_map('intval', get_posts(['post_type' => 'attachment', 'post_mime_type' => 'image', 'post_status' => 'inherit', 'numberposts' => 50, 'fields' => 'ids']));
     $desc_sample = $desc_ids ?: array_map('intval', get_posts(['post_type' => (array) get_option('hpt_sitemap_post_types', ['post', 'page']), 'numberposts' => 50, 'fields' => 'ids']));
 
-    $alt = hpt_ai_estimate('alt', $alt_sample, $models);
-    $desc = hpt_ai_estimate('descriptions', $desc_sample, $models);
-    $current = hpt_ai_current_model();
+    $alt = hpt_ai_estimate('alt', $alt_sample, $targets);
+    $desc = hpt_ai_estimate('descriptions', $desc_sample, $targets);
+    $current = hpt_ai_provider() . ':' . hpt_ai_current_model();
+    $columns = 4 + ($alt_ids ? 1 : 0) + ($desc_ids ? 1 : 0);
     ?>
     <div class="optimizr-table-wrap">
         <table class="optimizr-table">
@@ -159,98 +212,33 @@ function hpt_ai_costs_table()
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($models as $model) :
-                    $a = $alt['per_model'][$model];
-                    $d = $desc['per_model'][$model];
-                    $pricing = hpt_ai_models()[$model];
-                    ?>
-                    <tr<?php echo $model === $current ? ' class="is-current"' : ''; ?>>
-                        <th scope="row"><?php echo esc_html($model); ?><?php echo $model === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
-                        <td><?php echo esc_html(sprintf('%s $ / %s $', number_format_i18n($pricing['input'], 2), number_format_i18n($pricing['output'], 2))); ?></td>
-                        <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
-                        <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
-                        <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
-                        <?php if ($desc_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($d['unit'] === null ? null : $d['unit'] * count($desc_ids))); ?></td><?php endif; ?>
-                    </tr>
+                <?php foreach (hpt_ai_providers() as $slug => $provider) : ?>
+                    <tr class="optimizr-table__group"><th scope="rowgroup" colspan="<?php echo (int) $columns; ?>"><?php echo esc_html($provider['label']); ?></th></tr>
+                    <?php foreach ($provider['models'] as $model => $config) :
+                        $key = $slug . ':' . $model;
+                        $a = $alt['per_model'][$key];
+                        $d = $desc['per_model'][$key];
+                        ?>
+                        <tr<?php echo $key === $current ? ' class="is-current"' : ''; ?>>
+                            <th scope="row"><?php echo esc_html($model); ?><?php echo $key === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
+                            <td><?php echo esc_html(sprintf('%s $ / %s $', number_format_i18n($config['input'], 2), number_format_i18n($config['output'], 2))); ?></td>
+                            <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
+                            <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
+                            <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
+                            <?php if ($desc_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($d['unit'] === null ? null : $d['unit'] * count($desc_ids))); ?></td><?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <p class="optimizr-field__help">Tarif : entrée / sortie. Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, et chaque image selon ses dimensions réelles et la méthode de décompte du modèle. Le modèle se change dans « Connexion à OpenAI ».</p>
+    <p class="optimizr-field__help">Tarif : entrée / sortie. Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, chaque image selon ses dimensions réelles et la méthode de décompte du modèle, et la réflexion des modèles qui en font est estimée pour une tâche courte. Le fournisseur et le modèle se changent dans « Fournisseur d'IA ».</p>
     <?php
 }
 
-/** Coût unitaire lisible, avec plus de décimales : « 0,0004 $ ». */
-function hpt_ai_format_unit($amount)
-{
-    if ($amount === null) {
-        return 'tarif inconnu';
-    }
-    return number_format_i18n($amount, $amount < 0.01 ? 4 : 3) . ' $';
-}
-
-function hpt_openai_api_key_callback()
-{
-    $key = get_option('hpt_openai_api_key', '');
-    echo '<input type="password" name="hpt_openai_api_key" id="hpt_openai_api_key" value="' . esc_attr($key) . '" autocomplete="off" spellcheck="false" />';
-}
-
-function hpt_ai_context_callback()
-{
-    $context = get_option('hpt_ai_context', '');
-    echo '<textarea name="hpt_ai_context" id="hpt_ai_context" rows="4" placeholder="Décrivez ici le contexte global de votre site (ex. : école de céramique, atelier photo, agence de voyage, etc.)">' . esc_textarea($context) . '</textarea>';
-}
+/* ---------- Génération ---------- */
 
 add_action('wp_ajax_hpt_generate_ai_seo_description', 'hpt_generate_ai_seo_description');
-
-/**
- * Appel à l'API OpenAI (chat completions).
- *
- * @return string|WP_Error Texte généré, ou erreur (hpt_ai_no_key, hpt_ai_http avec le code HTTP, hpt_ai_empty)
- */
-function hpt_openai_chat(array $messages, $max_tokens, $temperature = 0.7, $model = null)
-{
-    $api_key = get_option('hpt_openai_api_key');
-    if (empty($api_key)) {
-        return new WP_Error('hpt_ai_no_key', 'Clé API OpenAI manquante (onglet Assistant IA).');
-    }
-
-    $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
-        'timeout' => 45,
-        'headers' => [
-            'Authorization' => 'Bearer ' . $api_key,
-            'Content-Type' => 'application/json',
-        ],
-        'body' => wp_json_encode([
-            'model' => $model ?: hpt_ai_current_model(),
-            'messages' => $messages,
-            'temperature' => $temperature,
-            'max_completion_tokens' => (int) $max_tokens,
-        ]),
-    ]);
-
-    if (is_wp_error($response)) {
-        return new WP_Error('hpt_ai_http', 'Connexion à OpenAI impossible : ' . $response->get_error_message(), ['status' => 0]);
-    }
-
-    $code = (int) wp_remote_retrieve_response_code($response);
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-
-    if ($code !== 200) {
-        $message = $body['error']['message'] ?? 'réponse HTTP ' . $code;
-        return new WP_Error('hpt_ai_http', 'OpenAI : ' . $message, ['status' => $code]);
-    }
-
-    // Consommation réelle, facturée même si la réponse est inutilisable
-    hpt_ai_record_usage($model ?: hpt_ai_current_model(), (array) ($body['usage'] ?? []));
-
-    $text = trim((string) ($body['choices'][0]['message']['content'] ?? ''), "\"'«» \t\n\r\0\x0B");
-    if ($text === '') {
-        return new WP_Error('hpt_ai_empty', 'OpenAI n\'a renvoyé aucun texte.');
-    }
-
-    return $text;
-}
 
 /**
  * Meta description d'un contenu, générée à partir de son texte.
@@ -269,9 +257,8 @@ function hpt_ai_generate_description($post_id)
         . mb_substr($content, 0, 6000)
         . ($site_context ? "\n\nContexte du site : " . $site_context : '');
 
-    $text = hpt_openai_chat([
-        ['role' => 'system', 'content' => 'Tu es un assistant expert en rédaction SEO.'],
-        ['role' => 'user', 'content' => $prompt],
+    $text = hpt_ai_chat('Tu es un assistant expert en rédaction SEO.', [
+        ['type' => 'text', 'text' => $prompt],
     ], 120);
 
     if (is_wp_error($text)) {
@@ -288,7 +275,7 @@ function hpt_ai_generate_description($post_id)
 }
 
 /**
- * Version de l'image envoyée à OpenAI : la première taille disponible parmi large, medium_large
+ * Version de l'image envoyée à l'IA : la première taille disponible parmi large, medium_large
  * et l'original, de 4 Mo au plus. Sert à la génération comme à l'estimation du coût.
  *
  * @return array ['path' => string (vide si aucune version locale utilisable), 'width' => int, 'height' => int]
@@ -322,7 +309,7 @@ function hpt_ai_alt_image_source($attachment_id)
 
 /**
  * Balise ALT d'une image. L'image est envoyée en pièce jointe (base64) quand c'est possible :
- * fonctionne aussi en local et sur les sites protégés, que les serveurs d'OpenAI ne peuvent pas lire.
+ * fonctionne aussi en local et sur les sites protégés, que les serveurs des fournisseurs ne peuvent pas lire.
  *
  * @return string|WP_Error
  */
@@ -333,26 +320,16 @@ function hpt_ai_generate_alt($attachment_id)
     }
 
     $source = hpt_ai_alt_image_source($attachment_id);
-    if ($source['path']) {
-        $mime = wp_check_filetype($source['path'])['type'] ?: 'image/jpeg';
-        $image_url = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($source['path']));
-    } else {
-        $image_url = wp_get_attachment_url($attachment_id);
-    }
-
+    $image = $source['path'] ? ['type' => 'image', 'path' => $source['path']] : ['type' => 'image', 'url' => wp_get_attachment_url($attachment_id)];
     $site_context = trim(get_option('hpt_ai_context', ''));
-    $model = hpt_ai_vision_model();
 
-    return hpt_openai_chat([
-        ['role' => 'system', 'content' => 'Tu es un assistant expert en accessibilité, SEO et description d’images.'],
-        ['role' => 'user', 'content' => [
-            [
-                'type' => 'text',
-                'text' => 'Décris cette image de façon concise (125 caractères maximum) pour une balise ALT accessible et optimisée SEO. Réponds uniquement par le contenu de la balise.' . ($site_context ? "\n\nContexte du site : " . $site_context : ''),
-            ],
-            ['type' => 'image_url', 'image_url' => ['url' => $image_url]],
-        ]],
-    ], 80, 0.6, $model);
+    return hpt_ai_chat('Tu es un assistant expert en accessibilité, SEO et description d’images.', [
+        [
+            'type' => 'text',
+            'text' => 'Décris cette image de façon concise (125 caractères maximum) pour une balise ALT accessible et optimisée SEO. Réponds uniquement par le contenu de la balise.' . ($site_context ? "\n\nContexte du site : " . $site_context : ''),
+        ],
+        $image,
+    ], 80, 0.6, hpt_ai_vision_model());
 }
 
 // Metabox SEO : bouton « Générer la description avec l'IA »

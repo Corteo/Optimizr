@@ -44,7 +44,8 @@ function hpt_exportable_settings($include_api_key = false)
     $settings = [];
 
     foreach ($names as $name) {
-        if (!hpt_is_exportable_option($name) || (!$include_api_key && $name === 'hpt_openai_api_key')) {
+        // Clés API (OpenAI, Anthropic, Gemini…) : seulement sur demande
+        if (!hpt_is_exportable_option($name) || (!$include_api_key && substr($name, -8) === '_api_key')) {
             continue;
         }
         $settings[$name] = get_option($name);
@@ -225,7 +226,7 @@ function hpt_render_tools_tab()
             <div class="optimizr-card__body">
                 <label class="optimizr-check">
                     <input type="checkbox" name="include_api_key" value="1">
-                    <span>Inclure la clé API OpenAI <span class="optimizr-muted">(à ne transmettre qu'à un site de confiance)</span></span>
+                    <span>Inclure les clés API <span class="optimizr-muted">(à ne transmettre qu'à un site de confiance)</span></span>
                 </label>
                 <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Télécharger le fichier</button></div>
             </div>

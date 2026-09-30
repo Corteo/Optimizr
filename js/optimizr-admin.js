@@ -422,9 +422,28 @@
         });
     }
 
+    /* ---------- Assistant IA : fournisseur ---------- */
+
+    // Affiche le modèle et la clé du fournisseur choisi (les autres restent enregistrés)
+    function initAiProvider() {
+        var select = document.querySelector('[data-ai-provider-select]');
+        if (!select) return;
+
+        var initial = select.value;
+        var notice = document.querySelector('[data-ai-provider-notice]');
+
+        select.addEventListener('change', function () {
+            document.querySelectorAll('.hpt-ai-provider-row').forEach(function (row) {
+                row.classList.toggle('optimizr-field--hidden', !row.classList.contains('hpt-ai-provider-' + select.value));
+            });
+            if (notice) notice.hidden = select.value === initial;
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initSaveBar();
         initHelpToggles();
+        initAiProvider();
         initAiBulk();
         initUpdateCheck();
         initModules();

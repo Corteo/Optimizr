@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.7 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.8 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -26,11 +26,12 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - Plan du site pour les visiteurs avec le shortcode `[optimizr_plan_du_site]` (options : `recent="6"`, `types="post,page"`).
 - robots.txt personnalisable, avec test d'accessibilité.
 
-### Assistant IA (OpenAI)
+### Assistant IA (OpenAI, Claude, Gemini)
+- Trois fournisseurs au choix, chacun avec sa clé et son modèle : **OpenAI** (GPT-5 Nano/Mini, GPT-4.1, GPT-4o), **Anthropic** (Claude Haiku 4.5, Sonnet 5.5, Opus 5.5) et **Google** (Gemini 2.5, 3.1 et 3.5 Flash-Lite).
 - Génération de la meta description d'un contenu depuis sa metabox SEO.
 - Génération de la balise ALT des images, à l'import et à la demande depuis la médiathèque.
 - Contexte du site (activité, ton) ajouté à chaque demande.
-- **Coûts maîtrisés** : estimation avant chaque traitement, calculée sur les images et les contenus du site aux tarifs OpenAI en vigueur ; comparatif des modèles ; consommation réelle mesurée et cumulée par mois.
+- **Coûts maîtrisés** : estimation avant chaque traitement, calculée sur les images et les contenus du site aux tarifs en vigueur ; comparatif de tous les modèles des trois fournisseurs ; consommation réelle mesurée et cumulée par mois.
 - Génération automatique de la balise ALT à l'import des images (désactivable).
 - **Traitement en masse** : génère d'un coup les balises ALT manquantes de la médiathèque et les meta descriptions manquantes des contenus, avec progression, journal et arrêt à tout moment. Les éléments déjà renseignés ne sont jamais modifiés.
 
@@ -56,7 +57,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - WordPress 6.1 ou plus récent
 - PHP 7.4 ou plus récent
 - ACF Pro, uniquement pour les champs du type « Évènements »
-- Une clé API OpenAI, uniquement pour l'Assistant IA
+- Une clé API OpenAI, Anthropic ou Google, uniquement pour l'Assistant IA
 
 ## Installation
 
@@ -92,7 +93,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `hpt_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
 | `hpt_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
 | `hpt_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
-| `hpt_ai_pricing` | filtre | Modèles proposés et tarifs OpenAI (dollars pour 1 million de tokens), à ajuster quand OpenAI change ses prix. |
+| `hpt_ai_providers` | filtre | Fournisseurs, modèles proposés et tarifs (dollars pour 1 million de tokens), à ajuster quand un fournisseur change ses prix ou ses modèles. |
 | `hpt_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
 | `hpt_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |
@@ -108,7 +109,10 @@ functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, sitemap, balises)
-functions/ai.php         Module Assistant IA (+ ai-pricing.php : tarifs et coûts, ai-bulk.php : traitement en masse, media.php)
+functions/ai.php         Module Assistant IA : réglages et génération
+functions/ai-pricing.php Fournisseurs, modèles, tarifs, estimation et consommation
+functions/ai-providers.php Appels HTTP aux API OpenAI, Anthropic et Gemini
+functions/ai-bulk.php    Traitement en masse (+ media.php : médiathèque)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
@@ -135,7 +139,7 @@ Pour publier une version :
 
 Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
 
-Les tarifs OpenAI sont dans `hpt_ai_models()` (`functions/ai-pricing.php`), avec leur date de relevé `HPT_AI_PRICING_DATE` : à vérifier sur la [grille officielle](https://developers.openai.com/api/docs/pricing) à chaque version.
+Les modèles et tarifs sont dans `hpt_ai_providers()` (`functions/ai-pricing.php`), avec leur date de relevé `HPT_AI_PRICING_DATE` : à vérifier à chaque version sur les grilles officielles d'[OpenAI](https://developers.openai.com/api/docs/pricing), d'[Anthropic](https://platform.claude.com/docs/en/about-claude/pricing) et de [Google](https://ai.google.dev/gemini-api/docs/pricing).
 
 ## Auteur
 

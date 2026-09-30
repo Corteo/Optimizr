@@ -6,6 +6,22 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.8] - 2026-09-30
+
+### Ajouté
+- Assistant IA **multi-fournisseur** : OpenAI, Anthropic (Claude) et Google (Gemini), chacun avec sa propre clé et son propre modèle. Le changement de fournisseur conserve les réglages des autres.
+- Nouveaux modèles, avec leurs tarifs relevés le 30 septembre 2026 :
+  - OpenAI : GPT-5 Nano (0,05 $ / 0,40 $) et GPT-5 Mini (0,25 $ / 2,00 $) ;
+  - Anthropic : Claude Haiku 4.5 (par défaut), Claude Sonnet 5.5 et Claude Opus 5.5 ;
+  - Google : Gemini 2.5 Flash-Lite (par défaut, 0,10 $ / 0,40 $), Gemini 3.1 Flash-Lite et Gemini 3.5 Flash-Lite.
+- Comparatif des coûts étendu aux trois fournisseurs, avec le décompte des images propre à chacun (vérifié sur les exemples chiffrés des documentations officielles) et une estimation de la réflexion des modèles qui en font.
+- Claude Sonnet 5.5 et Opus 5.5 : repli automatique côté serveur si le modèle refuse une demande.
+
+### Modifié
+- Appels aux API regroupés dans `functions/ai-providers.php`, en requêtes HTTP directes, sans dépendance. Les refus des filtres de sécurité sont signalés comme éléments ignorés ; une clé invalide, un quota atteint ou un service surchargé arrêtent le traitement en masse.
+- L'export des réglages exclut par défaut toutes les clés API, quel que soit le fournisseur.
+- Filtre `hpt_ai_pricing` remplacé par `hpt_ai_providers`.
+
 ## [2.0.0-beta.7] - 2026-09-30
 
 ### Modifié

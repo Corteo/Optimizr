@@ -141,9 +141,9 @@ function hpt_ai_bulk_next()
 
     if (is_wp_error($result)) {
         $status = (int) ($result->get_error_data()['status'] ?? -1);
-        // Clé absente ou refusée, quota atteint, OpenAI injoignable : inutile de continuer
+        // Clé absente ou refusée, quota atteint, service injoignable ou surchargé : inutile de continuer
         $fatal = $result->get_error_code() === 'hpt_ai_no_key'
-            || ($result->get_error_code() === 'hpt_ai_http' && in_array($status, [0, 401, 403, 429], true));
+            || ($result->get_error_code() === 'hpt_ai_http' && in_array($status, [0, 401, 403, 404, 429, 503, 529], true));
 
         wp_send_json_success($item + [
             'status'    => $fatal ? 'fatal' : 'skipped',
@@ -182,10 +182,10 @@ add_action('admin_init', function () {
 
 function hpt_ai_bulk_callback()
 {
-    $has_key = (bool) get_option('hpt_openai_api_key');
+    $has_key = hpt_ai_api_key() !== '';
 
     if (!$has_key) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span>Renseignez et enregistrez d\'abord la clé API ci-dessus.</span></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', hpt_ai_provider_config()['label'])) . '</span></div>';
     }
 
     echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('hpt_ai_bulk')) . '">';
@@ -194,7 +194,7 @@ function hpt_ai_bulk_callback()
         $ids = hpt_ai_bulk_ids($slug);
         $count = count($ids);
         $model = $slug === 'alt' ? hpt_ai_vision_model() : hpt_ai_current_model();
-        $estimate = $count ? hpt_ai_estimate($slug, $ids)['per_model'][$model] : null;
+        $estimate = $count ? hpt_ai_estimate_current($slug, $ids) : null;
         ?>
         <div class="optimizr-bulk__task" data-task="<?php echo esc_attr($slug); ?>" data-count="<?php echo esc_attr($count); ?>" data-unit="<?php echo esc_attr($task['unit']); ?>" data-empty="<?php echo esc_attr($task['empty']); ?>">
             <div class="optimizr-bulk__head">
@@ -236,7 +236,7 @@ function hpt_ai_bulk_callback()
     hpt_ai_costs_panel();
     echo '</div>';
 
-    echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par OpenAI. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
+    echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par le fournisseur d\'IA choisi. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
     // Tout est déjà traité : le détail des coûts reste accessible
     if (!array_filter(array_map('hpt_ai_bulk_count', array_keys(hpt_ai_bulk_tasks())))) {
         echo ' Détail des coûts ' . hpt_ai_costs_toggle();
