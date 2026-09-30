@@ -256,8 +256,147 @@
         update();
     }
 
+    /* ---------- Assistant IA : traitement en masse ---------- */
+
+    function initAiBulk() {
+        var root = document.querySelector('[data-optimizr-bulk]');
+        if (!root || typeof window.ajaxurl === 'undefined') return;
+
+        var nonce = root.dataset.nonce;
+        var running = 0;
+
+        // Quitter la page interrompt le traitement : on prévient
+        window.addEventListener('beforeunload', function (e) {
+            if (running > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        root.querySelectorAll('.optimizr-bulk__task').forEach(function (task) {
+            var start = task.querySelector('[data-bulk-start]');
+            var stop = task.querySelector('[data-bulk-stop]');
+            var progress = task.querySelector('[data-bulk-progress]');
+            var bar = progress.querySelector('.optimizr-progress');
+            var status = task.querySelector('[data-bulk-status]');
+            var summary = task.querySelector('[data-bulk-summary]');
+            var log = task.querySelector('[data-bulk-log]');
+
+            var state = null;
+
+            function addLog(kind, item, text) {
+                var li = document.createElement('li');
+                li.className = 'optimizr-bulk__entry is-' + kind;
+
+                var badge = document.createElement('span');
+                badge.className = 'optimizr-status optimizr-status--' + (kind === 'ok' ? 'ok' : 'warn');
+                badge.textContent = kind === 'ok' ? 'Généré' : 'Ignoré';
+                li.appendChild(badge);
+
+                var name = document.createElement(item.link ? 'a' : 'span');
+                name.textContent = item.title;
+                if (item.link) {
+                    name.href = item.link;
+                    name.target = '_blank';
+                    name.rel = 'noopener';
+                }
+                li.appendChild(name);
+
+                var detail = document.createElement('span');
+                detail.className = 'optimizr-bulk__detail';
+                detail.textContent = text;
+                li.appendChild(detail);
+
+                log.hidden = false;
+                log.insertBefore(li, log.firstChild);
+                while (log.children.length > 50) log.removeChild(log.lastChild);
+            }
+
+            function render() {
+                var processed = state.done + state.skipped.length;
+                var total = Math.max(state.total, processed);
+                var percent = total ? Math.round(processed / total * 100) : 100;
+                bar.firstElementChild.style.width = percent + '%';
+                bar.setAttribute('aria-valuenow', percent);
+                status.textContent = processed + ' / ' + total + ' traité(s) · ' + state.done + ' généré(s)'
+                    + (state.skipped.length ? ' · ' + state.skipped.length + ' ignoré(s)' : '');
+            }
+
+            function finish(message, remaining) {
+                running--;
+                state.running = false;
+                start.hidden = false;
+                stop.hidden = true;
+                status.textContent = message;
+                task.dataset.count = remaining;
+                summary.textContent = remaining > 0 ? remaining + ' ' + task.dataset.unit + '.' : task.dataset.empty;
+                start.disabled = remaining === 0;
+            }
+
+            function next() {
+                if (!state.running) {
+                    finish('Traitement arrêté · ' + state.done + ' généré(s).', state.remaining);
+                    return;
+                }
+
+                var body = new URLSearchParams({ action: 'hpt_ai_bulk_next', nonce: nonce, task: task.dataset.task });
+                state.skipped.forEach(function (id) { body.append('skip[]', id); });
+
+                fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
+                    .then(function (res) { return res.json(); })
+                    .then(function (res) {
+                        var data = res.data || {};
+                        state.remaining = typeof data.remaining === 'number' ? data.remaining : state.remaining;
+
+                        if (!res.success || data.status === 'fatal') {
+                            if (data.id) addLog('skipped', data, data.message);
+                            finish('Arrêt : ' + (data.message || 'erreur inconnue.'), state.remaining);
+                            return;
+                        }
+                        if (data.status === 'done') {
+                            render();
+                            finish('Terminé · ' + state.done + ' généré(s)' + (state.skipped.length ? ', ' + state.skipped.length + ' ignoré(s)' : '') + '.', state.skipped.length);
+                            return;
+                        }
+                        if (data.status === 'ok') {
+                            state.done++;
+                            addLog('ok', data, data.text);
+                        } else {
+                            state.skipped.push(data.id);
+                            addLog('skipped', data, data.message);
+                        }
+                        render();
+                        next();
+                    })
+                    .catch(function () {
+                        finish('Arrêt : la requête a échoué (connexion perdue ?).', state.remaining);
+                    });
+            }
+
+            start.addEventListener('click', function () {
+                var total = parseInt(task.dataset.count, 10) || 0;
+                state = { running: true, total: total, remaining: total, done: 0, skipped: [] };
+                running++;
+                start.hidden = true;
+                stop.hidden = false;
+                progress.hidden = false;
+                log.textContent = '';
+                render();
+                next();
+            });
+
+            // L'élément en cours se termine, puis le traitement s'arrête
+            stop.addEventListener('click', function () {
+                if (state) state.running = false;
+                stop.hidden = true;
+                status.textContent = 'Arrêt après l\'élément en cours…';
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initSaveBar();
+        initAiBulk();
         initUpdateCheck();
         initModules();
         initCookieBanner();

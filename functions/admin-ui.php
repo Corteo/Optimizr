@@ -91,6 +91,8 @@ function hpt_admin_tabs()
         'ai'        => ['label' => 'Assistant IA', 'modules' => ['ai']],
         'content'   => ['label' => 'Contenus', 'modules' => ['cpts', 'thumbnails']],
         'advanced'  => ['label' => 'Avancé', 'modules' => ['emails', 'devtools']],
+        // Onglet sans réglages : ses propres formulaires, pas de barre d'enregistrement
+        'tools'     => ['label' => 'Outils', 'modules' => [], 'render' => 'hpt_render_tools_tab'],
     ];
 
     $tabs = array_filter($tabs, function ($tab) {
@@ -258,6 +260,12 @@ function hpt_options_settings_page()
 
         <?php settings_errors(); ?>
 
+        <?php if (!empty($tabs[$current]['render']) && is_callable($tabs[$current]['render'])) : ?>
+            <main class="optimizr-main">
+                <?php call_user_func($tabs[$current]['render']); ?>
+            </main>
+        <?php else : ?>
+
         <form method="post" action="options.php" class="optimizr-form" data-optimizr-form>
             <?php settings_fields(hpt_settings_group($current)); ?>
 
@@ -278,6 +286,7 @@ function hpt_options_settings_page()
                 <button type="submit" class="optimizr-btn optimizr-btn--primary">Enregistrer les modifications</button>
             </div>
         </form>
+        <?php endif; ?>
     </div>
     <?php
 }

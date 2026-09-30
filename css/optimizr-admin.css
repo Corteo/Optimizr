@@ -39,6 +39,11 @@
     box-sizing: border-box;
 }
 
+/* L'attribut hidden l'emporte sur les display des composants (boutons, barres…) */
+.optimizr [hidden] {
+    display: none !important;
+}
+
 .optimizr .wp-header-end {
     margin: 0;
     border: 0;
@@ -1293,6 +1298,136 @@
     align-self: flex-start;
 }
 
+/* ---------- Assistant IA : traitement en masse ---------- */
+
+.optimizr-bulk {
+    display: flex;
+    flex-direction: column;
+}
+
+.optimizr-bulk__task {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+}
+
+.optimizr-bulk__task + .optimizr-bulk__task {
+    border-top: 1px solid var(--o-border-soft);
+}
+
+.optimizr-bulk__task:first-child {
+    padding-top: 0;
+}
+
+.optimizr-bulk__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.optimizr-bulk__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+}
+
+.optimizr-bulk__progress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.optimizr-progress {
+    overflow: hidden;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--o-border-soft);
+}
+
+.optimizr-progress span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--o-accent);
+    transition: width 0.3s ease;
+}
+
+.optimizr-bulk__log {
+    max-height: 260px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    border: 1px solid var(--o-border-soft);
+    border-radius: var(--o-radius-sm);
+    list-style: none;
+    font-size: 13px;
+}
+
+.optimizr-bulk__entry {
+    display: grid;
+    grid-template-columns: 84px minmax(120px, 220px) minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+    margin: 0;
+    padding: 8px 12px;
+}
+
+.optimizr-bulk__entry + .optimizr-bulk__entry {
+    border-top: 1px solid var(--o-border-soft);
+}
+
+.optimizr-bulk__entry a,
+.optimizr-bulk__entry > span:nth-child(2) {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.optimizr-bulk__detail {
+    color: var(--o-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .optimizr-progress span {
+        transition: none;
+    }
+}
+
+/* ---------- Onglet Outils ---------- */
+
+.optimizr-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+.optimizr-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.optimizr-check input {
+    margin: 2px 0 0;
+}
+
+.optimizr-file input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed var(--o-border-input);
+    border-radius: var(--o-radius-sm);
+    background: var(--o-bg);
+    font-size: 13px;
+}
+
 /* ---------- Barre d'enregistrement ---------- */
 
 .optimizr-savebar {
@@ -1351,8 +1486,17 @@
 }
 
 @media (max-width: 1100px) {
-    .optimizr-layout--aside {
+    .optimizr-layout--aside,
+    .optimizr-tools {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .optimizr-bulk__entry {
+        grid-template-columns: 84px minmax(0, 1fr);
+    }
+
+    .optimizr-bulk__detail {
+        grid-column: 2;
     }
 
     .optimizr-sticky {

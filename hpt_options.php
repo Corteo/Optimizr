@@ -4,7 +4,7 @@
  * Plugin Name: Haptic Optimizr
  * Plugin URI: https://alexandrevergnaud.fr/
  * Description: Cookies et RGPD (Tarteaucitron), SEO, assistant IA, types de contenu personnalisés et outils de maintenance, réunis dans une seule page de réglages et activables module par module.
- * Version: 2.0.0-beta.4
+ * Version: 2.0.0-beta.5
  * Author: Alexandre Vergnaud
  * Author URI: https://alexandrevergnaud.fr/
  * License: GPL2
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HPT_OPTIMIZR_VERSION', '2.0.0-beta.4');
+define('HPT_OPTIMIZR_VERSION', '2.0.0-beta.5');
 define('HPT_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HPT_OPTIMIZR_URL', plugin_dir_url(__FILE__));
 // Hook de la page d'options (menu de premier niveau, cf. functions/admin-ui.php)
@@ -33,6 +33,7 @@ require_once('functions/utils.php');
 require_once('functions/updates.php');
 require_once('functions/tabs.php');
 require_once('functions/settings.php');
+require_once('functions/tools.php');
 
 // Modules activables depuis le tableau de bord (cf. hpt_modules())
 if (hpt_is_module_active('emails')) {
@@ -49,6 +50,7 @@ if (hpt_is_module_active('cookies')) {
 }
 if (hpt_is_module_active('ai')) {
     require_once('functions/ai.php');
+    require_once('functions/ai-bulk.php');
     require_once('functions/media.php');
 }
 if (hpt_is_module_active('seo')) {

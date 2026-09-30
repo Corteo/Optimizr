@@ -93,6 +93,132 @@ function hpt_ai_context_callback()
 
 add_action('wp_ajax_hpt_generate_ai_seo_description', 'hpt_generate_ai_seo_description');
 
+/**
+ * Appel à l'API OpenAI (chat completions).
+ *
+ * @return string|WP_Error Texte généré, ou erreur (hpt_ai_no_key, hpt_ai_http avec le code HTTP, hpt_ai_empty)
+ */
+function hpt_openai_chat(array $messages, $max_tokens, $temperature = 0.7, $model = null)
+{
+    $api_key = get_option('hpt_openai_api_key');
+    if (empty($api_key)) {
+        return new WP_Error('hpt_ai_no_key', 'Clé API OpenAI manquante (onglet Assistant IA).');
+    }
+
+    $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
+        'timeout' => 45,
+        'headers' => [
+            'Authorization' => 'Bearer ' . $api_key,
+            'Content-Type' => 'application/json',
+        ],
+        'body' => wp_json_encode([
+            'model' => $model ?: get_option('hpt_openai_model', 'gpt-4o'),
+            'messages' => $messages,
+            'temperature' => $temperature,
+            'max_completion_tokens' => (int) $max_tokens,
+        ]),
+    ]);
+
+    if (is_wp_error($response)) {
+        return new WP_Error('hpt_ai_http', 'Connexion à OpenAI impossible : ' . $response->get_error_message(), ['status' => 0]);
+    }
+
+    $code = (int) wp_remote_retrieve_response_code($response);
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if ($code !== 200) {
+        $message = $body['error']['message'] ?? 'réponse HTTP ' . $code;
+        return new WP_Error('hpt_ai_http', 'OpenAI : ' . $message, ['status' => $code]);
+    }
+
+    $text = trim((string) ($body['choices'][0]['message']['content'] ?? ''), "\"'«» \t\n\r\0\x0B");
+    if ($text === '') {
+        return new WP_Error('hpt_ai_empty', 'OpenAI n\'a renvoyé aucun texte.');
+    }
+
+    return $text;
+}
+
+/**
+ * Meta description d'un contenu, générée à partir de son texte.
+ *
+ * @return string|WP_Error
+ */
+function hpt_ai_generate_description($post_id)
+{
+    $content = trim(preg_replace('/\s+/u', ' ', wp_strip_all_tags(strip_shortcodes(get_post_field('post_content', $post_id)))));
+    if ($content === '') {
+        return new WP_Error('hpt_ai_no_content', 'Le contenu ne contient pas de texte.');
+    }
+
+    $site_context = trim(get_option('hpt_ai_context', ''));
+    $prompt = 'Rédige une meta description optimisée SEO de 160 caractères maximum (espaces compris) pour la page « ' . get_the_title($post_id) . " », à partir du texte suivant. Réponds uniquement par la description.\n\n"
+        . mb_substr($content, 0, 6000)
+        . ($site_context ? "\n\nContexte du site : " . $site_context : '');
+
+    $text = hpt_openai_chat([
+        ['role' => 'system', 'content' => 'Tu es un assistant expert en rédaction SEO.'],
+        ['role' => 'user', 'content' => $prompt],
+    ], 120);
+
+    if (is_wp_error($text)) {
+        return $text;
+    }
+
+    // Garde-fou : 160 caractères, coupés sur un mot
+    if (mb_strlen($text) > 160) {
+        $text = mb_substr($text, 0, 159);
+        $text = mb_substr($text, 0, (int) mb_strrpos($text, ' ')) . '…';
+    }
+
+    return $text;
+}
+
+/**
+ * Balise ALT d'une image. L'image est envoyée en pièce jointe (base64) quand c'est possible :
+ * fonctionne aussi en local et sur les sites protégés, que les serveurs d'OpenAI ne peuvent pas lire.
+ *
+ * @return string|WP_Error
+ */
+function hpt_ai_generate_alt($attachment_id)
+{
+    if (!wp_attachment_is_image($attachment_id)) {
+        return new WP_Error('hpt_ai_not_image', 'Ce fichier n\'est pas une image.');
+    }
+
+    $image_url = '';
+    $original = get_attached_file($attachment_id);
+    foreach (['large', 'medium_large', 'full'] as $size) {
+        $src = image_get_intermediate_size($attachment_id, $size);
+        $path = $src ? path_join(dirname($original), $src['file']) : ($size === 'full' ? $original : '');
+        if ($path && is_readable($path) && filesize($path) <= 4 * MB_IN_BYTES) {
+            $mime = wp_check_filetype($path)['type'] ?: 'image/jpeg';
+            $image_url = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
+            break;
+        }
+    }
+    $image_url = $image_url ?: wp_get_attachment_url($attachment_id);
+
+    $site_context = trim(get_option('hpt_ai_context', ''));
+    $model = get_option('hpt_openai_model', 'gpt-4o');
+    // Les modèles texte seuls ne lisent pas les images
+    if (!in_array($model, ['gpt-4o', 'gpt-4.1', 'gpt-4.1-mini', 'gpt-4-turbo'], true)) {
+        $model = 'gpt-4o';
+    }
+
+    return hpt_openai_chat([
+        ['role' => 'system', 'content' => 'Tu es un assistant expert en accessibilité, SEO et description d’images.'],
+        ['role' => 'user', 'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Décris cette image de façon concise (125 caractères maximum) pour une balise ALT accessible et optimisée SEO. Réponds uniquement par le contenu de la balise.' . ($site_context ? "\n\nContexte du site : " . $site_context : ''),
+            ],
+            ['type' => 'image_url', 'image_url' => ['url' => $image_url]],
+        ]],
+    ], 80, 0.6, $model);
+}
+
+// Metabox SEO : bouton « Générer la description avec l'IA »
 function hpt_generate_ai_seo_description()
 {
     check_ajax_referer('hpt_ai_nonce', 'nonce');
@@ -102,97 +228,19 @@ function hpt_generate_ai_seo_description()
         wp_send_json_error('Permissions insuffisantes');
     }
 
-    $content = wp_strip_all_tags(get_post_field('post_content', $post_id));
-
-    $api_key = get_option('hpt_openai_api_key');
-    $model = get_option('hpt_openai_model', 'gpt-4');
-
-    if (empty($api_key)) {
-        wp_send_json_error('Clé API manquante');
+    $desc = hpt_ai_generate_description($post_id);
+    if (is_wp_error($desc)) {
+        wp_send_json_error($desc->get_error_message());
     }
-
-    $site_context = trim(get_option('hpt_ai_context', ''));
-
-    $prompt = "Rédige une meta description optimisée SEO de 160 caractères maximum (espaces compris) à partir du texte suivant. :\n\n$content" . ($site_context ? "\n\n Voici le contexte du site web :" . $site_context : '');
-
-    $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
-        'headers' => [
-            'Authorization' => 'Bearer ' . $api_key,
-            'Content-Type' => 'application/json',
-        ],
-        'body' => json_encode([
-            'model' => $model,
-            'messages' => [
-                ['role' => 'system', 'content' => 'Tu es un assistant expert en rédaction SEO.'],
-                ['role' => 'user', 'content' => $prompt],
-            ],
-            'temperature' => 0.7,
-            'max_tokens' => 100,
-        ]),
-    ]);
-
-    if (is_wp_error($response)) {
-        wp_send_json_error('Erreur API : ' . $response->get_error_message());
-    }
-
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    $desc = trim($body['choices'][0]['message']['content'] ?? '', "\"' \t\n\r\0\x0B");
 
     wp_send_json_success(['description' => $desc]);
 }
 
+// Compatibilité : ancienne signature, renvoie une chaîne vide en cas d'erreur
 function haptic_GPT_generate_alt_with_ai($title, $post_ID)
 {
-    $api_key = get_option('hpt_openai_api_key');
-    $model = get_option('hpt_openai_model', 'gpt-4.1');
-
-    if (!in_array($model, ['gpt-4o', 'gpt-4-vision-preview'])) {
-        $model = 'gpt-4o';
-    }
-
-    if (empty($api_key)) return '';
-
-    $site_context = trim(get_option('hpt_ai_context', ''));
-
-    $image_url = wp_get_attachment_url($post_ID);
-    if (!$image_url) return '';
-
-    $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
-        'headers' => [
-            'Authorization' => 'Bearer ' . $api_key,
-            'Content-Type' => 'application/json',
-        ],
-        'body' => json_encode([
-            'model' => $model,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => 'Tu es un assistant expert en accessibilité, SEO et description d’images.'
-                ],
-                [
-                    'role' => 'user',
-                    'content' => [
-                        [
-                            'type' => 'text',
-                            'text' => 'Décris cette image de façon concise pour une balise ALT accessible et optimisée SEO. Le resulat doit être uniquement le contenu de la balise' . ($site_context ? "\n\nContexte : " . $site_context : '')
-                        ],
-                        [
-                            'type' => 'image_url',
-                            'image_url' => [
-                                'url' => $image_url
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            'temperature' => 0.6,
-            'max_tokens' => 80,
-        ]),
-    ]);
-
-    if (is_wp_error($response)) return '';
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    return trim($body['choices'][0]['message']['content'] ?? '', "\"' \t\n\r\0\x0B");
+    $alt = hpt_ai_generate_alt($post_ID);
+    return is_wp_error($alt) ? '' : $alt;
 }
 
 add_action('wp_ajax_haptic_GPT_generate_image_meta', 'haptic_GPT_generate_image_meta');
@@ -214,11 +262,12 @@ function haptic_GPT_generate_image_meta()
         wp_send_json_error('Ce n’est pas une image valide');
     }
 
-    $alt = haptic_GPT_generate_alt_with_ai($post->post_title, $post_id);
-
-    if ($alt) {
-        update_post_meta($post_id, '_wp_attachment_image_alt', $alt);
+    $alt = hpt_ai_generate_alt($post_id);
+    if (is_wp_error($alt)) {
+        wp_send_json_error($alt->get_error_message());
     }
+
+    update_post_meta($post_id, '_wp_attachment_image_alt', $alt);
 
     wp_send_json_success([
         'alt' => $alt,
