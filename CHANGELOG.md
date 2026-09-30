@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.7] - 2026-09-30
+
+### Modifié
+- Assistant IA : informations de coût plus discrètes. Seule la ligne « Coût estimé » reste visible dans le traitement en masse ; un bouton (?) ouvre le détail (tarifs, comparatif des modèles, consommation réelle). La carte « Coûts » et les prix dans la liste des modèles sont retirés.
+
 ## [2.0.0-beta.6] - 2026-09-30
 
 ### Ajouté

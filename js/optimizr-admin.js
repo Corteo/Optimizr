@@ -404,8 +404,27 @@
         });
     }
 
+    /* ---------- Boutons (?) : panneau de détail replié ---------- */
+
+    function initHelpToggles() {
+        document.querySelectorAll('[data-costs-toggle]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var panel = document.getElementById(button.getAttribute('aria-controls'));
+                if (!panel) return;
+                var open = panel.hidden;
+                panel.hidden = !open;
+                // Tous les boutons qui pilotent ce panneau reflètent son état
+                document.querySelectorAll('[aria-controls="' + panel.id + '"]').forEach(function (other) {
+                    other.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+                if (open) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initSaveBar();
+        initHelpToggles();
         initAiBulk();
         initUpdateCheck();
         initModules();

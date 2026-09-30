@@ -40,21 +40,6 @@ function hpt_register_ai_settings()
     ]);
 
     add_settings_section(
-        'hpt_ai_costs_section',
-        'Coûts',
-        function () {
-            printf(
-                '<p>Estimations calculées sur les images et les contenus de ce site, aux tarifs OpenAI relevés le %s (<a href="%s" target="_blank" rel="noopener">grille officielle</a>), en dollars US hors taxes.</p>',
-                esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
-                esc_url(HPT_AI_PRICING_SOURCE)
-            );
-        },
-        $page
-    );
-    add_settings_field('hpt_ai_usage', 'Consommation réelle', 'hpt_ai_usage_callback', $page, 'hpt_ai_costs_section');
-    add_settings_field('hpt_ai_costs', 'Comparatif des modèles', 'hpt_ai_costs_callback', $page, 'hpt_ai_costs_section', ['layout' => 'stacked']);
-
-    add_settings_section(
         'hpt_ai_context_section',
         'Contexte du site',
         function () {
@@ -92,12 +77,7 @@ function hpt_openai_model_callback()
         echo '<option value="' . esc_attr($current) . '" selected>' . esc_html($current . ' — ancien modèle, tarif non suivi') . '</option>';
     }
     foreach ($models as $value => $model) {
-        printf(
-            '<option value="%s" %s>%s</option>',
-            esc_attr($value),
-            selected($current, $value, false),
-            esc_html(sprintf('%s · %s $ / %s $ par million de tokens', $model['label'], number_format_i18n($model['input'], 2), number_format_i18n($model['output'], 2)))
-        );
+        printf('<option value="%s" %s>%s</option>', esc_attr($value), selected($current, $value, false), esc_html($model['label']));
     }
     echo '</select>';
 
@@ -106,33 +86,53 @@ function hpt_openai_model_callback()
     }
 }
 
-function hpt_ai_usage_callback()
+/**
+ * Détail des coûts, affiché par le bouton (?) de la carte « Traitement en masse » :
+ * tarifs, comparatif des modèles sur les données du site et consommation réelle.
+ */
+function hpt_ai_costs_panel()
+{
+    ?>
+    <p class="optimizr-field__help">
+        <?php
+        printf(
+            'Tarifs OpenAI relevés le %s (<a href="%s" target="_blank" rel="noopener">grille officielle</a>), en dollars US hors taxes.',
+            esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
+            esc_url(HPT_AI_PRICING_SOURCE)
+        );
+        ?>
+    </p>
+    <?php
+    hpt_ai_costs_table();
+    hpt_ai_usage_summary();
+}
+
+function hpt_ai_usage_summary()
 {
     $month = hpt_ai_usage_this_month();
-    $all = (array) get_option('hpt_ai_usage', []);
+    $previous = array_slice((array) get_option('hpt_ai_usage', []), 1, 5, true);
 
     printf(
-        '<p class="optimizr-ai-usage"><strong>%s</strong> ce mois-ci <span class="optimizr-muted">(%s)</span></p>',
+        '<p class="optimizr-ai-usage"><strong>Consommation réelle ce mois-ci : %s</strong> <span class="optimizr-muted">(%s)</span></p>',
         esc_html(hpt_ai_format_cost($month['cost'])),
         esc_html(sprintf('%d requête(s), %s tokens envoyés, %s reçus', $month['requests'], number_format_i18n($month['input']), number_format_i18n($month['output'])))
     );
 
-    $previous = array_slice($all, 1, 5, true);
     if ($previous) {
-        echo '<details class="optimizr-details"><summary>Mois précédents</summary><ul>';
+        echo '<ul class="optimizr-ai-usage__history">';
         foreach ($previous as $key => $entry) {
             printf('<li>%s : %s · %d requête(s)</li>', esc_html(date_i18n('F Y', strtotime($key . '-01'))), esc_html(hpt_ai_format_cost($entry['cost'])), (int) $entry['requests']);
         }
-        echo '</ul></details>';
+        echo '</ul>';
     }
 
     echo '<p class="optimizr-field__help">Mesurée à partir des réponses d\'OpenAI pour les requêtes envoyées par ce site. La facture fait foi : <a href="https://platform.openai.com/usage" target="_blank" rel="noopener">tableau de bord OpenAI</a>.</p>';
 }
 
 /**
- * Comparatif : coût d'une image, d'une description, et de ce qui reste à traiter sur le site, pour chaque modèle.
+ * Comparatif : tarif de chaque modèle, coût d'une image, d'une description, et de ce qui reste à traiter sur le site.
  */
-function hpt_ai_costs_callback()
+function hpt_ai_costs_table()
 {
     $models = array_keys(hpt_ai_models());
     $alt_ids = function_exists('hpt_ai_bulk_ids') ? hpt_ai_bulk_ids('alt') : [];
@@ -151,6 +151,7 @@ function hpt_ai_costs_callback()
             <thead>
                 <tr>
                     <th scope="col">Modèle</th>
+                    <th scope="col">Tarif (1 M tokens)</th>
                     <th scope="col">1 balise ALT</th>
                     <th scope="col">1 description</th>
                     <?php if ($alt_ids) : ?><th scope="col"><?php echo esc_html(sprintf('%d ALT manquantes', count($alt_ids))); ?></th><?php endif; ?>
@@ -161,9 +162,11 @@ function hpt_ai_costs_callback()
                 <?php foreach ($models as $model) :
                     $a = $alt['per_model'][$model];
                     $d = $desc['per_model'][$model];
+                    $pricing = hpt_ai_models()[$model];
                     ?>
                     <tr<?php echo $model === $current ? ' class="is-current"' : ''; ?>>
                         <th scope="row"><?php echo esc_html($model); ?><?php echo $model === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
+                        <td><?php echo esc_html(sprintf('%s $ / %s $', number_format_i18n($pricing['input'], 2), number_format_i18n($pricing['output'], 2))); ?></td>
                         <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
                         <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
                         <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
@@ -173,7 +176,7 @@ function hpt_ai_costs_callback()
             </tbody>
         </table>
     </div>
-    <p class="optimizr-field__help">Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, et chaque image selon ses dimensions réelles et la méthode de décompte du modèle. Changez de modèle ci-dessus puis enregistrez pour l'appliquer.</p>
+    <p class="optimizr-field__help">Tarif : entrée / sortie. Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, et chaque image selon ses dimensions réelles et la méthode de décompte du modèle. Le modèle se change dans « Connexion à OpenAI ».</p>
     <?php
 }
 

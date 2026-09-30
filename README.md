@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.6 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.7 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 

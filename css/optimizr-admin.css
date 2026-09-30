@@ -1399,9 +1399,8 @@
 }
 
 .optimizr-bulk__estimate {
-    color: var(--o-text);
+    color: var(--o-muted);
     font-size: 13px;
-    font-weight: 500;
 }
 
 /* ---------- Tableau (comparatif des coûts IA) ---------- */
@@ -1454,7 +1453,69 @@
 
 .optimizr-ai-usage {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.optimizr-ai-usage__history {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--o-muted);
+    font-size: 12px;
+}
+
+/* Bouton (?) discret, ouvre un panneau de détail */
+.optimizr-help-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    padding: 0;
+    border: 1px solid var(--o-border-input);
+    border-radius: 999px;
+    background: var(--o-surface);
+    color: var(--o-muted);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    vertical-align: 1px;
+    cursor: pointer;
+}
+
+/* Zone cliquable élargie sans agrandir le rond */
+.optimizr-help-toggle::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+}
+
+.optimizr-help-toggle:hover,
+.optimizr-help-toggle[aria-expanded="true"] {
+    border-color: var(--o-accent);
+    background: var(--o-accent-soft);
+    color: var(--o-accent-strong);
+}
+
+.optimizr-costs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+    padding: 16px;
+    border-radius: var(--o-radius-sm);
+    background: var(--o-bg);
+}
+
+.optimizr-costs p {
+    margin: 0;
+}
+
+.optimizr-costs .optimizr-table-wrap {
+    background: var(--o-surface);
 }
 
 /* ---------- Onglet Outils ---------- */

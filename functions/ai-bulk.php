@@ -210,6 +210,7 @@ function hpt_ai_bulk_callback()
                                 hpt_ai_format_unit($estimate['unit']),
                                 $model
                             ));
+                            echo hpt_ai_costs_toggle();
                             ?>
                         </span>
                     <?php endif; ?>
@@ -229,5 +230,22 @@ function hpt_ai_bulk_callback()
     }
 
     echo '</div>';
-    echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par OpenAI. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.</p>';
+
+    // Détail des coûts, replié par défaut
+    echo '<div class="optimizr-costs" id="optimizr-ai-costs" hidden>';
+    hpt_ai_costs_panel();
+    echo '</div>';
+
+    echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par OpenAI. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
+    // Tout est déjà traité : le détail des coûts reste accessible
+    if (!array_filter(array_map('hpt_ai_bulk_count', array_keys(hpt_ai_bulk_tasks())))) {
+        echo ' Détail des coûts ' . hpt_ai_costs_toggle();
+    }
+    echo '</p>';
+}
+
+/** Bouton (?) qui ouvre le détail des coûts (js/optimizr-admin.js). */
+function hpt_ai_costs_toggle()
+{
+    return '<button type="button" class="optimizr-help-toggle" aria-expanded="false" aria-controls="optimizr-ai-costs" aria-label="Détail des coûts et comparatif des modèles" data-costs-toggle>?</button>';
 }
