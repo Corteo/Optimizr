@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
  */
 
 /** Date de relevé des tarifs ci-dessous. */
-const HPT_AI_PRICING_DATE = '2026-09-30';
+const HPT_AI_PRICING_DATE = '2026-10-01';
 
 const HPT_AI_DEFAULT_PROVIDER = 'openai';
 
@@ -21,6 +21,7 @@ const HPT_AI_DEFAULT_PROVIDER = 'openai';
  * Fournisseurs et modèles proposés.
  *
  * Tarifs : dollars US pour 1 million de tokens (entrée, sortie), grilles officielles relevées à HPT_AI_PRICING_DATE.
+ * 'price_changes' : nouveaux tarifs déjà annoncés, appliqués automatiquement à leur date.
  * 'vision' : méthode de décompte des tokens d'une image (voir hpt_ai_image_tokens()).
  * 'hidden_output' : tokens de réflexion facturés en sortie, estimés pour une tâche courte.
  * 'options' : réglages propres au modèle, appliqués par les adaptateurs (functions/ai-providers.php).
@@ -39,19 +40,12 @@ function hpt_ai_providers()
             'usage_url'    => 'https://platform.openai.com/usage',
             'pricing_url'  => 'https://developers.openai.com/api/docs/pricing',
             'models'       => [
-                'gpt-5-nano' => [
-                    'label' => 'GPT-5 Nano — le moins cher',
-                    'input' => 0.05, 'output' => 0.40,
-                    'vision' => ['method' => 'patch', 'multiplier' => 1.5],
-                    'hidden_output' => 150,
-                    'options' => ['reasoning_effort' => 'minimal'],
-                ],
-                'gpt-5-mini' => [
-                    'label' => 'GPT-5 Mini — récent, bon rapport qualité/prix',
-                    'input' => 0.25, 'output' => 2.00,
-                    'vision' => ['method' => 'patch', 'multiplier' => 1.2],
-                    'hidden_output' => 150,
-                    'options' => ['reasoning_effort' => 'minimal'],
+                'gpt-5.6-luna' => [
+                    'label' => 'GPT-5.6 Luna — récent et économique',
+                    'input' => 0.20, 'output' => 1.20,
+                    // Détail « auto » : image envoyée sans réduction (taille « large » du site)
+                    'vision' => ['method' => 'patch', 'multiplier' => 1.2, 'max_patches' => 0],
+                    'options' => ['reasoning_effort' => 'none'],
                 ],
                 'gpt-4.1-mini' => [
                     'label' => 'GPT-4.1 Mini — réponses stables et prévisibles',
@@ -77,6 +71,18 @@ function hpt_ai_providers()
                     'label' => 'GPT-4o Mini — économique en texte, cher en images',
                     'input' => 0.15, 'output' => 0.60,
                     'vision' => ['method' => 'tile', 'base' => 2833, 'tile' => 5667],
+                ],
+                'gpt-5.6-terra' => [
+                    'label' => 'GPT-5.6 Terra',
+                    'input' => 2.00, 'output' => 12.00,
+                    'vision' => ['method' => 'patch', 'multiplier' => 1.2, 'max_patches' => 0],
+                    'options' => ['reasoning_effort' => 'none'],
+                ],
+                'gpt-5.6-sol' => [
+                    'label' => 'GPT-5.6 Sol — le plus capable',
+                    'input' => 4.00, 'output' => 20.00,
+                    'vision' => ['method' => 'patch', 'multiplier' => 1.2, 'max_patches' => 0],
+                    'options' => ['reasoning_effort' => 'none'],
                 ],
             ],
         ],
@@ -114,27 +120,30 @@ function hpt_ai_providers()
             'label'        => 'Google (Gemini)',
             'key_option'   => 'hpt_gemini_api_key',
             'model_option' => 'hpt_gemini_model',
-            'default'      => 'gemini-2.5-flash-lite',
+            'default'      => 'gemini-3.5-flash-lite',
             'key_url'      => 'https://aistudio.google.com/apikey',
             'usage_url'    => 'https://aistudio.google.com/usage',
             'pricing_url'  => 'https://ai.google.dev/gemini-api/docs/pricing',
             'models'       => [
-                'gemini-2.5-flash-lite' => [
-                    'label' => 'Gemini 2.5 Flash-Lite — le moins cher',
-                    'input' => 0.10, 'output' => 0.40,
-                    'vision' => ['method' => 'gemini25'],
+                'gemini-3.5-flash-lite' => [
+                    'label' => 'Gemini 3.5 Flash-Lite — recommandé par Google, économique',
+                    'input' => 0.30, 'output' => 2.50,
+                    'vision' => ['method' => 'fixed', 'tokens' => 1120],
+                    'hidden_output' => 50,
                 ],
                 'gemini-3.1-flash-lite' => [
-                    'label' => 'Gemini 3.1 Flash-Lite',
+                    'label' => 'Gemini 3.1 Flash-Lite — arrêt prévu le 7 mai 2027',
                     'input' => 0.25, 'output' => 1.50,
                     'vision' => ['method' => 'fixed', 'tokens' => 1120],
                     'hidden_output' => 50,
                 ],
-                'gemini-3.5-flash-lite' => [
-                    'label' => 'Gemini 3.5 Flash-Lite — le plus récent',
-                    'input' => 0.30, 'output' => 2.50,
+                'gemini-3.8-flash' => [
+                    'label' => 'Gemini 3.8 Flash — le plus capable (tarif doublé au 1er janvier 2027)',
+                    'input' => 0.75, 'output' => 3.75,
+                    'price_changes' => ['2027-01-01' => ['input' => 1.50, 'output' => 7.50]],
                     'vision' => ['method' => 'fixed', 'tokens' => 1120],
-                    'hidden_output' => 50,
+                    // Réflexion « moyenne » par défaut sur ce modèle
+                    'hidden_output' => 400,
                 ],
             ],
         ],
@@ -172,19 +181,44 @@ function hpt_ai_current_model($provider = null)
 }
 
 /**
- * Modèle utilisé pour décrire les images : le modèle choisi s'il est connu (tous lisent les images),
- * sinon le modèle par défaut du fournisseur.
+ * Modèle réellement utilisé pour les requêtes : le modèle choisi s'il est encore proposé,
+ * sinon le modèle par défaut du fournisseur (un modèle retiré provoquerait une erreur de l'API).
  */
-function hpt_ai_vision_model($provider = null)
+function hpt_ai_request_model($provider = null)
 {
     $model = hpt_ai_current_model($provider);
     return isset(hpt_ai_models($provider)[$model]) ? $model : hpt_ai_provider_config($provider)['default'];
+}
+
+/** Modèle utilisé pour décrire les images (tous les modèles proposés lisent les images). */
+function hpt_ai_vision_model($provider = null)
+{
+    return hpt_ai_request_model($provider);
 }
 
 /** Réglages d'un modèle, ou null s'il n'est pas dans la liste. */
 function hpt_ai_model_config($model, $provider = null)
 {
     return hpt_ai_models($provider)[$model] ?? null;
+}
+
+/**
+ * Tarif en vigueur aujourd'hui (changements de prix annoncés compris).
+ *
+ * @return array ['input' => float, 'output' => float]
+ */
+function hpt_ai_model_price(array $config)
+{
+    $price = ['input' => $config['input'], 'output' => $config['output']];
+    $today = current_time('Y-m-d');
+
+    foreach ((array) ($config['price_changes'] ?? []) as $date => $change) {
+        if ($today >= $date) {
+            $price = $change;
+        }
+    }
+
+    return $price;
 }
 
 /**
@@ -196,13 +230,14 @@ function hpt_ai_cost($model, $input_tokens, $output_tokens, $provider = null)
     if (!$config) {
         return null;
     }
-    return ($input_tokens * $config['input'] + $output_tokens * $config['output']) / 1000000;
+    $price = hpt_ai_model_price($config);
+    return ($input_tokens * $price['input'] + $output_tokens * $price['output']) / 1000000;
 }
 
 /**
  * Tokens facturés pour une image de largeur × hauteur donnée, selon la documentation de chaque fournisseur :
  * - tile     (OpenAI) : tokens de base + tuiles de 512 px, après mise à l'échelle ;
- * - patch    (OpenAI) : carrés de 32 px (1 536 au maximum) × coefficient du modèle ;
+ * - patch    (OpenAI) : carrés de 32 px (1 536 au maximum, sans plafond pour GPT-5.6) × coefficient du modèle ;
  * - claude   (Anthropic) : carrés de 28 px, image réduite sous la limite de bord et de tokens du modèle ;
  * - gemini25 (Google) : 258 tokens par tuile de 768 px (258 au total sous 384 px) ;
  * - fixed    (Google Gemini 3.x) : forfait par image (résolution par défaut).
@@ -250,17 +285,18 @@ function hpt_ai_image_tokens($model, $width, $height, $provider = null)
 
         case 'patch':
             $patches = ceil($width / 32) * ceil($height / 32);
-            if ($patches > 1536) {
+            $budget = $vision['max_patches'] ?? 1536;
+            if ($budget && $patches > $budget) {
                 // Réduction pour tenir dans 1 536 carrés de 32 px, puis ajustement de la largeur
                 // sur un nombre entier de carrés (formule de la documentation OpenAI)
-                $shrink = sqrt(32 * 32 * 1536 / ($width * $height));
+                $shrink = sqrt(32 * 32 * $budget / ($width * $height));
                 $width *= $shrink;
                 $height *= $shrink;
                 $adjust = floor($width / 32) / ($width / 32);
                 $width *= $adjust;
                 $height *= $adjust;
                 // Arrondi à 6 décimales : évite qu'une imprécision de calcul ajoute une rangée de carrés
-                $patches = min(1536, ceil(round($width / 32, 6)) * ceil(round($height / 32, 6)));
+                $patches = min($budget, ceil(round($width / 32, 6)) * ceil(round($height / 32, 6)));
             }
             return (int) ceil($patches * $vision['multiplier']);
 
@@ -304,7 +340,7 @@ function hpt_ai_estimate_description_tokens($post_id, $model = null, $provider =
 
     return [
         'input'  => $prompt + hpt_ai_text_tokens(mb_substr($content, 0, 6000)),
-        'output' => hpt_ai_estimated_output($model ?: hpt_ai_current_model($provider), 60, $provider),
+        'output' => hpt_ai_estimated_output($model ?: hpt_ai_request_model($provider), 60, $provider),
     ];
 }
 
@@ -339,7 +375,7 @@ function hpt_ai_estimate($task, array $ids, array $targets = [])
     $count = count($ids);
     if (!$targets) {
         $provider = hpt_ai_provider();
-        $targets = [[$provider, $task === 'alt' ? hpt_ai_vision_model() : hpt_ai_current_model()]];
+        $targets = [[$provider, $task === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model()]];
     }
 
     // Échantillon réparti sur toute la liste

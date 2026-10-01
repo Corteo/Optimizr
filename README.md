@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.8 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.9 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -27,7 +27,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - robots.txt personnalisable, avec test d'accessibilité.
 
 ### Assistant IA (OpenAI, Claude, Gemini)
-- Trois fournisseurs au choix, chacun avec sa clé et son modèle : **OpenAI** (GPT-5 Nano/Mini, GPT-4.1, GPT-4o), **Anthropic** (Claude Haiku 4.5, Sonnet 5.5, Opus 5.5) et **Google** (Gemini 2.5, 3.1 et 3.5 Flash-Lite).
+- Trois fournisseurs au choix, chacun avec sa clé et son modèle : **OpenAI** (GPT-5.6 Luna/Terra/Sol, GPT-4.1, GPT-4o), **Anthropic** (Claude Haiku 4.5, Sonnet 5.5, Opus 5.5) et **Google** (Gemini 3.5 Flash-Lite, 3.1 Flash-Lite, 3.8 Flash). Un modèle retiré par son fournisseur est automatiquement remplacé par le modèle par défaut.
 - Génération de la meta description d'un contenu depuis sa metabox SEO.
 - Génération de la balise ALT des images, à l'import et à la demande depuis la médiathèque.
 - Contexte du site (activité, ton) ajouté à chaque demande.

@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
 function hpt_ai_chat($system, array $parts, $max_tokens, $temperature = 0.7, $model = null)
 {
     $provider = hpt_ai_provider();
-    $model = $model ?: hpt_ai_current_model();
+    $model = $model ?: hpt_ai_request_model();
 
     if (hpt_ai_api_key() === '') {
         return new WP_Error('hpt_ai_no_key', sprintf('Clé API %s manquante (onglet Assistant IA).', hpt_ai_provider_config()['label']));

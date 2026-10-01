@@ -193,7 +193,7 @@ function hpt_ai_bulk_callback()
     foreach (hpt_ai_bulk_tasks() as $slug => $task) {
         $ids = hpt_ai_bulk_ids($slug);
         $count = count($ids);
-        $model = $slug === 'alt' ? hpt_ai_vision_model() : hpt_ai_current_model();
+        $model = $slug === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model();
         $estimate = $count ? hpt_ai_estimate_current($slug, $ids) : null;
         ?>
         <div class="optimizr-bulk__task" data-task="<?php echo esc_attr($slug); ?>" data-count="<?php echo esc_attr($count); ?>" data-unit="<?php echo esc_attr($task['unit']); ?>" data-empty="<?php echo esc_attr($task['empty']); ?>">

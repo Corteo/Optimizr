@@ -6,6 +6,21 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.9] - 2026-10-01
+
+### Ajouté
+- OpenAI : GPT-5.6 Luna (0,20 $ / 1,20 $), Terra et Sol, utilisés sans réflexion (`reasoning_effort: none`).
+- Gemini : Gemini 3.8 Flash (0,75 $ / 3,75 $, puis 1,50 $ / 7,50 $ au 1er janvier 2027).
+- Changements de prix déjà annoncés pris en compte automatiquement à leur date dans les estimations et la consommation.
+
+### Modifié
+- Gemini : modèle par défaut Gemini 3.5 Flash-Lite, recommandé par Google pour les nouveaux projets. Gemini 3.1 Flash-Lite indique sa date d'arrêt (7 mai 2027).
+- Un modèle enregistré qui n'est plus proposé est remplacé par le modèle par défaut du fournisseur au lieu d'être envoyé tel quel ; la liste des modèles l'indique.
+
+### Supprimé
+- Gemini 2.5 Flash-Lite, désormais réservé par Google aux comptes qui l'utilisaient déjà (erreur « no longer available to new users »).
+- GPT-5 Nano et GPT-5 Mini, arrêtés par OpenAI le 11 décembre 2026 (remplacés par GPT-5.6 Luna et Terra).
+
 ## [2.0.0-beta.8] - 2026-09-30
 
 ### Ajouté

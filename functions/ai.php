@@ -94,7 +94,7 @@ function hpt_ai_model_callback($args)
     echo '<select name="' . esc_attr($config['model_option']) . '" id="' . esc_attr($config['model_option']) . '">';
     // Ancien modèle enregistré (GPT-4, GPT-3.5…) : conservé tant qu'on n'en choisit pas un autre
     if (!isset($config['models'][$current])) {
-        echo '<option value="' . esc_attr($current) . '" selected>' . esc_html($current . ' — ancien modèle, tarif non suivi') . '</option>';
+        echo '<option value="' . esc_attr($current) . '" selected>' . esc_html($current . ' — retiré, remplacé par ' . $config['default']) . '</option>';
     }
     foreach ($config['models'] as $value => $model) {
         printf('<option value="%s" %s>%s</option>', esc_attr($value), selected($current, $value, false), esc_html($model['label']));
@@ -102,7 +102,7 @@ function hpt_ai_model_callback($args)
     echo '</select>';
 
     if (!isset($config['models'][$current])) {
-        echo '<p class="optimizr-field__help">Ce modèle n\'est plus proposé. Les balises ALT utilisent ' . esc_html($config['default']) . ' ; choisissez un modèle de la liste pour suivre les coûts.</p>';
+        echo '<p class="optimizr-field__help">' . esc_html(sprintf('Ce modèle n\'est plus proposé par le fournisseur : %s est utilisé à la place. Choisissez un modèle de la liste et enregistrez.', $config['default'])) . '</p>';
     }
 }
 
@@ -196,7 +196,7 @@ function hpt_ai_costs_table()
 
     $alt = hpt_ai_estimate('alt', $alt_sample, $targets);
     $desc = hpt_ai_estimate('descriptions', $desc_sample, $targets);
-    $current = hpt_ai_provider() . ':' . hpt_ai_current_model();
+    $current = hpt_ai_provider() . ':' . hpt_ai_request_model();
     $columns = 4 + ($alt_ids ? 1 : 0) + ($desc_ids ? 1 : 0);
     ?>
     <div class="optimizr-table-wrap">
@@ -221,7 +221,17 @@ function hpt_ai_costs_table()
                         ?>
                         <tr<?php echo $key === $current ? ' class="is-current"' : ''; ?>>
                             <th scope="row"><?php echo esc_html($model); ?><?php echo $key === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
-                            <td><?php echo esc_html(sprintf('%s $ / %s $', number_format_i18n($config['input'], 2), number_format_i18n($config['output'], 2))); ?></td>
+                            <td>
+                                <?php
+                                $price = hpt_ai_model_price($config);
+                                echo esc_html(sprintf('%s $ / %s $', number_format_i18n($price['input'], 2), number_format_i18n($price['output'], 2)));
+                                foreach ((array) ($config['price_changes'] ?? []) as $date => $change) {
+                                    if (current_time('Y-m-d') < $date) {
+                                        printf('<br><span class="optimizr-muted">%s : %s $ / %s $</span>', esc_html(date_i18n('j M Y', strtotime($date))), esc_html(number_format_i18n($change['input'], 2)), esc_html(number_format_i18n($change['output'], 2)));
+                                    }
+                                }
+                                ?>
+                            </td>
                             <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
                             <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
                             <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
