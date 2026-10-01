@@ -1696,3 +1696,79 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* ---------- Module Sécurité ---------- */
+
+.optimizr-prefixed {
+    display: flex;
+    max-width: 640px;
+    border: 1px solid var(--o-border-input);
+    border-radius: var(--o-radius-sm);
+    background: var(--o-surface);
+    overflow: hidden;
+}
+
+.optimizr-prefixed:focus-within {
+    border-color: var(--o-accent);
+    box-shadow: 0 0 0 1px var(--o-accent);
+}
+
+.optimizr-prefixed__prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 12px;
+    background: var(--o-bg);
+    color: var(--o-muted);
+    font-family: var(--o-mono);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.optimizr .optimizr-prefixed input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: var(--o-mono);
+    font-size: 13px;
+}
+
+/* Même spécificité que « .optimizr input[type="number"] », déclarée après : l'emporte */
+.optimizr input.optimizr-input-small {
+    width: 72px;
+    max-width: 72px;
+    min-height: 36px;
+    padding: 4px 8px;
+}
+
+.optimizr-checks__icon--off {
+    background: var(--o-border-soft);
+    color: var(--o-muted);
+}
+
+.optimizr-sec-log {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+}
+
+.optimizr-sec-log li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 10px 20px;
+    border-top: 1px solid var(--o-border-soft);
+}
+
+@media (max-width: 782px) {
+    .optimizr-prefixed {
+        flex-direction: column;
+    }
+    .optimizr-prefixed__prefix {
+        padding: 6px 12px;
+    }
+}

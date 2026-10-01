@@ -47,6 +47,12 @@ function hpt_modules()
             'icon'  => 'mail',
             'tab'   => 'advanced',
         ],
+        'security' => [
+            'label' => 'Sécurité',
+            'desc'  => 'Adresse de connexion personnalisée, limitation des tentatives, version masquée, XML-RPC et en-têtes de sécurité.',
+            'icon'  => 'lock',
+            'tab'   => 'security',
+        ],
         'devtools' => [
             'label' => 'Outils développeur',
             'desc'  => 'Mode debug, inspection vd() et journal des erreurs PHP, réservés aux admins.',
@@ -90,6 +96,7 @@ function hpt_admin_tabs()
         'seo'       => ['label' => 'SEO', 'modules' => ['seo']],
         'ai'        => ['label' => 'Assistant IA', 'modules' => ['ai']],
         'content'   => ['label' => 'Contenus', 'modules' => ['cpts', 'thumbnails']],
+        'security'  => ['label' => 'Sécurité', 'modules' => ['security']],
         'advanced'  => ['label' => 'Avancé', 'modules' => ['emails', 'devtools']],
         // Onglet sans réglages : ses propres formulaires, pas de barre d'enregistrement
         'tools'     => ['label' => 'Outils', 'modules' => [], 'render' => 'hpt_render_tools_tab'],
@@ -166,6 +173,7 @@ function hpt_icon($name, $size = 20)
         'alert'    => '<path d="M12 8v5"/><path d="M12 17h.01"/>',
         'refresh'  => '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
         'info'     => '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+        'lock'     => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     ];
 
     if (!isset($paths[$name])) {
@@ -302,6 +310,7 @@ function hpt_render_settings_tab($slug, $tab)
         'seo'      => 'Titres et descriptions par défaut, plan du site et consignes pour les robots d\'indexation.',
         'ai'       => 'Génération de contenus avec OpenAI, Claude ou Gemini : meta descriptions et balises ALT des images.',
         'content'  => 'Types de contenu personnalisés et images de couverture.',
+        'security' => 'Protections activables une à une. Aucune n\'est active tant que vous ne l\'activez pas.',
         'advanced' => 'Notifications et outils réservés aux développeurs.',
     ];
 

@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.9 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.10 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -45,6 +45,15 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 ### Emails
 - Désactivation des emails envoyés après les mises à jour automatiques des extensions et de WordPress.
 
+### Sécurité
+Toutes les protections sont désactivées par défaut et s'activent une à une.
+- **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php.
+- **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
+- **Discrétion** : version de WordPress masquée (balise generator, flux, `?ver=`, en-tête X-Powered-By), liste des comptes bloquée (`?author=`, API REST, oEmbed), pages auteur masquées.
+- **Fonctions inutilisées désactivées** : XML-RPC, mots de passe d'application, éditeur de fichiers, exécution de PHP dans les médias (Apache).
+- **En-têtes de sécurité** (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) et HSTS en option.
+- **Bilan** : HTTPS, compte « admin », affichage des erreurs PHP, version de PHP, journal des verrouillages et alertes (30 jours).
+
 ### Outils développeur
 - Mode debug : journal dans `logs/debug.log` et alerte des erreurs PHP dans l'administration.
 - Fonction `vd($variable)` : affiche le contenu d'une variable dans une fenêtre, visible par les seuls administrateurs.
@@ -82,6 +91,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | Constante (`wp-config.php`) | Rôle |
 |---|---|
 | `OPTIMIZR_GITHUB_TOKEN` | Token GitHub utilisé pour les mises à jour depuis un dépôt privé. Prioritaire sur le token distant. |
+| `OPTIMIZR_DISABLE_CUSTOM_LOGIN` | `true` désactive l'adresse de connexion personnalisée (retour à wp-login.php), en cas de blocage. |
 
 ### Points d'extension
 
@@ -117,6 +127,7 @@ functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
+functions/security.php   Module Sécurité (+ security-admin.php : onglet de réglages)
 functions/settings.php   Module Outils développeur (+ functions/utils.php)
 functions/updates.php    Mises à jour depuis GitHub
 css/, js/                Interface de la page d'options

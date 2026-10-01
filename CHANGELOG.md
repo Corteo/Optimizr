@@ -6,6 +6,18 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.10] - 2026-10-01
+
+### Ajouté
+- Module **Sécurité** (onglet dédié, toutes les protections désactivées par défaut) :
+  - adresse de connexion personnalisée, avec email de rappel à chaque changement, prise en charge des permaliens simples, blocage des raccourcis /login et /admin qui la révéleraient, et constante de secours `OPTIMIZR_DISABLE_CUSTOM_LOGIN` ;
+  - limitation des tentatives de connexion par adresse IP (seuil, durée, liste blanche), messages d'erreur neutres, alerte email lors d'une connexion administrateur depuis une nouvelle adresse IP ;
+  - version de WordPress masquée, blocage de l'énumération des comptes (`?author=`, API REST, oEmbed, sitemap natif) et des pages auteur ;
+  - désactivation de XML-RPC, des mots de passe d'application et de l'éditeur de fichiers ; blocage de l'exécution de PHP dans les médias (Apache) ;
+  - en-têtes HTTP de sécurité et HSTS en option ;
+  - bilan de sécurité (HTTPS, compte « admin », affichage des erreurs, version de PHP) et journal des verrouillages et alertes conservé 30 jours.
+- L'adresse de connexion et le journal de sécurité ne sont jamais inclus dans l'export des réglages.
+
 ## [2.0.0-beta.9] - 2026-10-01
 
 ### Ajouté

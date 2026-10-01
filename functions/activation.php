@@ -14,6 +14,13 @@ function hpt_options_activate()
 function hpt_options_deactivate()
 {
     hpt_sitemap_delete_files();
+
+    // Règle « pas de PHP dans les médias » du module Sécurité
+    $htaccess = trailingslashit(wp_upload_dir()['basedir']) . '.htaccess';
+    if (is_writable($htaccess)) {
+        require_once ABSPATH . 'wp-admin/includes/misc.php';
+        insert_with_markers($htaccess, 'Optimizr', []);
+    }
 }
 
 /** Marqueur présent dans chaque fichier de sitemap généré par Optimizr. */
