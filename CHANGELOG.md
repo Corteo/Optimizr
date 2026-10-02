@@ -6,6 +6,42 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0] - 2026-10-02
+
+Première version finale de la 2.0 : nouvelle interface, cinq nouveaux modules et de nombreuses corrections. Une migration s'exécute automatiquement à la mise à jour ; aucun réglage existant n'est perdu. Le détail se trouve dans les versions de test ci-dessous (2.0.0-beta.1 à 2.0.0-beta.13).
+
+**Mise à jour depuis la 1.5 :** la 1.5 ne détecte pas les mises à jour (adresse du dépôt mal formée). Installez la 2.0 une fois à la main (Extensions › Ajouter › Téléverser, « Remplacer la version installée ») ; les mises à jour suivantes seront automatiques.
+
+### Ajouté
+- Nouvelle interface d'administration : menu **Optimizr**, tableau de bord avec activation des modules et état du site, un onglet par module, barre d'enregistrement, onglets défilants.
+- Module **Redirections & liens** : redirections 301/302/307/410 avec jokers et import/export CSV, redirection automatique des contenus déplacés, journal des pages introuvables, analyse des liens cassés.
+- Module **SEO local** : fiche de l'établissement en données structurées LocalBusiness, horaires, liens d'avis Google et d'itinéraire, shortcodes de coordonnées.
+- Module **Pages spéciales** : page 404 rédigée dans l'éditeur avec suggestions de contenus, mode maintenance (503) avec réouverture automatique.
+- Module **Sécurité** : adresse de connexion personnalisée, limitation des tentatives de connexion, masquage de la version de WordPress et des comptes, désactivation de XML-RPC et de l'éditeur de fichiers, en-têtes de sécurité, bilan et journal.
+- Onglet **Outils** : export et import des réglages entre sites.
+- SEO : aperçus Google et réseaux sociaux en direct, éditeur de motifs au clavier et par glisser-déposer, balises OpenGraph complètes, sitemap régénéré en arrière-plan et découpé au-delà de 50 000 URL, shortcode `[optimizr_plan_du_site]`, options d'indexation, vérification Google/Bing, IndexNow, données structurées schema.org.
+- Assistant IA : trois fournisseurs (OpenAI, Claude, Gemini), traitement en masse des balises ALT et des meta descriptions, estimation des coûts et consommation réelle.
+
+### Modifié
+- Chaque onglet enregistre ses propres réglages ; les réglages « Balises meta » et « OpenGraph » sont désormais respectés.
+- Le motif « Titre » s'applique à la balise `<title>` ; les balises SEO du socle de thème Haptic sont remplacées, sans doublon.
+- Un seul sitemap publié (celui de WordPress est désactivé quand le module SEO est actif) ; pages WooCommerce privées, contenus « ne pas indexer » et protégés exclus.
+
+### Supprimé
+- FontAwesome et Bootstrap ne sont plus inclus ni chargés par le plugin.
+- Fichier statique `sitemap.html` (remplacé par le shortcode).
+- Anciens modèles d'IA (GPT-4, GPT-3.5, GPT-4 Turbo…).
+
+### Corrigé
+- Les mises à jour du plugin n'étaient jamais détectées.
+- Les motifs SEO n'étaient jamais enregistrés ; balises meta et OpenGraph en double sur les thèmes Haptic.
+- Erreur JavaScript sur tout le site quand le bandeau cookies était désactivé ; Google reCAPTCHA ne se chargeait jamais.
+- Contenu du robots.txt écrasé à chaque affichage.
+
+### Sécurité
+- Nonces et contrôle des droits sur toutes les actions d'administration et AJAX.
+- Clés API jamais exportées par défaut ; journal du sitemap retiré de l'espace public.
+
 ## [2.0.0-beta.13] - 2026-10-02
 
 ### Modifié

@@ -1,10 +1,10 @@
 # Haptic Optimizr
 
-Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), SEO, génération de textes par IA, types de contenu personnalisés et quelques outils de maintenance.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), SEO et SEO local, redirections et liens cassés, page 404 et mode maintenance, sécurité, génération de textes par IA, types de contenu personnalisés et quelques outils de maintenance.
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.13 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -93,6 +93,12 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 3. Activez **Haptic Optimizr**.
 
 Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, comme pour toute extension. Le bouton « Vérifier les mises à jour » en haut de la page du plugin force une vérification immédiate.
+
+### Mise à jour depuis la 1.5
+
+La version 1.5 ne détecte pas les mises à jour (adresse du dépôt mal formée). Sur ces sites, installez la 2.0 **une seule fois à la main** : **Extensions › Ajouter une extension › Téléverser une extension**, puis « Remplacer la version installée ». Les réglages sont conservés et migrés automatiquement ; les mises à jour suivantes seront proposées normalement.
+
+Après la mise à jour, tous les modules sont actifs. Les nouveaux (SEO local, Pages spéciales, Sécurité) n'ont aucun effet tant qu'ils ne sont pas réglés ; seul le module Redirections agit d'emblée, avec le journal des pages introuvables et la redirection automatique des contenus déplacés. Désactivez depuis le tableau de bord du plugin les modules inutiles. FontAwesome n'est plus chargé par le plugin ; un thème qui en utilise les icônes doit le charger lui-même.
 
 ## Utilisation
 
