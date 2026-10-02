@@ -30,6 +30,11 @@ function hpt_settings_internal_options()
         'hpt_indexnow_last',
         // Propre à chaque site, et à ne pas diffuser
         'hpt_sec_login_slug',
+        // Identifiants de pages propres à chaque site ; un import ne doit pas fermer le site
+        'hpt_404_page',
+        'hpt_maintenance',
+        'hpt_maintenance_page',
+        'hpt_maintenance_until',
     ]);
 }
 

@@ -6,6 +6,16 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.12] - 2026-10-02
+
+### Ajouté
+- Module **Pages spéciales** :
+  - page 404 rédigée dans l'éditeur, affichée dans le gabarit du thème avec le code 404, suggestions de contenus proches de l'adresse demandée et champ de recherche (shortcode `[optimizr_suggestions]`) ;
+  - mode maintenance : code 503 et Retry-After, page autonome ou `maintenance.php` du thème, réouverture automatique à une date, accès normal pour les personnes connectées qui peuvent modifier le contenu, rappel dans la barre d'administration ;
+  - pages choisies exclues du sitemap, non indexées et signalées dans la liste des pages.
+- Toutes les pages 404 sont marquées noindex.
+- Les réglages de ce module ne font pas partie de l'export : un import ne peut pas fermer un site.
+
 ## [2.0.0-beta.11] - 2026-10-02
 
 ### Ajouté

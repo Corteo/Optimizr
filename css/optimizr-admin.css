@@ -1912,7 +1912,8 @@
     max-width: 100%;
 }
 
-.optimizr input[type="time"] {
+.optimizr input[type="time"],
+.optimizr input[type="datetime-local"] {
     min-height: 36px;
     padding: 4px 8px;
     border: 1px solid var(--o-border-input);

@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.11 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.12 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -47,6 +47,11 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - **Coûts maîtrisés** : estimation avant chaque traitement, calculée sur les images et les contenus du site aux tarifs en vigueur ; comparatif de tous les modèles des trois fournisseurs ; consommation réelle mesurée et cumulée par mois.
 - Génération automatique de la balise ALT à l'import des images (désactivable).
 - **Traitement en masse** : génère d'un coup les balises ALT manquantes de la médiathèque et les meta descriptions manquantes des contenus, avec progression, journal et arrêt à tout moment. Les éléments déjà renseignés ne sont jamais modifiés.
+
+### Pages spéciales
+- **Page 404** : une page WordPress rédigée dans l'éditeur, affichée avec la mise en page du thème, en gardant le code 404. Suggestions de contenus proches de l'adresse demandée et champ de recherche (shortcode `[optimizr_suggestions]`, utilisable aussi dans le `404.php` du thème).
+- **Mode maintenance** : page d'attente autonome (ou `maintenance.php` du thème) avec code 503 et en-tête Retry-After, réouverture automatique à une date choisie, site visible normalement pour les personnes connectées qui peuvent modifier le contenu, rappel dans la barre d'administration.
+- Les pages choisies sont exclues du sitemap, non indexées et signalées dans la liste des pages.
 
 ### Types de contenu
 - Type « Évènements » prêt à l'emploi : date de début, date de fin, lieu, horaires (champs [ACF Pro](https://www.advancedcustomfields.com/pro/)).
@@ -138,6 +143,7 @@ functions/ai-providers.php Appels HTTP aux API OpenAI, Anthropic et Gemini
 functions/ai-bulk.php    Traitement en masse (+ media.php : médiathèque)
 functions/redirects.php  Module Redirections (+ redirects-admin.php : onglet, links.php : liens cassés)
 functions/local-seo.php  Module SEO local
+functions/pages.php      Module Pages spéciales (page 404, maintenance)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une

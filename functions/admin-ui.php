@@ -41,6 +41,12 @@ function hpt_modules()
             'icon'  => 'pin',
             'tab'   => 'local',
         ],
+        'pages' => [
+            'label' => 'Pages spéciales',
+            'desc'  => 'Page 404 rédigée dans l\'éditeur avec suggestions de contenus, et mode maintenance (503) avec date de réouverture.',
+            'icon'  => 'file',
+            'tab'   => 'pages',
+        ],
         'cpts' => [
             'label' => 'Types de contenu',
             'desc'  => 'CPT Évènements prêt à l\'emploi et types personnalisés créés depuis l\'admin.',
@@ -108,6 +114,7 @@ function hpt_admin_tabs()
         'seo'       => ['label' => 'SEO', 'modules' => ['seo']],
         'redirects' => ['label' => 'Redirections', 'modules' => ['redirects'], 'render' => 'hpt_render_redirects_tab'],
         'local'     => ['label' => 'SEO local', 'modules' => ['local']],
+        'pages'     => ['label' => 'Pages spéciales', 'modules' => ['pages']],
         'ai'        => ['label' => 'Assistant IA', 'modules' => ['ai']],
         'content'   => ['label' => 'Contenus', 'modules' => ['cpts', 'thumbnails']],
         'security'  => ['label' => 'Sécurité', 'modules' => ['security']],
@@ -189,6 +196,7 @@ function hpt_icon($name, $size = 20)
         'info'     => '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
         'lock'     => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
         'redirect' => '<path d="M15 14l5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>',
+        'file'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/>',
         'pin'      => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
     ];
 
@@ -325,6 +333,7 @@ function hpt_render_settings_tab($slug, $tab)
         'cookies'  => 'Consentement des visiteurs et services tiers chargés uniquement après autorisation.',
         'seo'      => 'Titres et descriptions par défaut, plan du site et consignes pour les robots d\'indexation.',
         'local'    => 'Informations de l\'établissement reprises par Google (recherche locale, Maps) et affichables sur le site.',
+        'pages'    => 'Contenu de la page introuvable et fermeture temporaire du site, avec la mise en page du thème.',
         'ai'       => 'Génération de contenus avec OpenAI, Claude ou Gemini : meta descriptions et balises ALT des images.',
         'content'  => 'Types de contenu personnalisés et images de couverture.',
         'security' => 'Protections activables une à une. Aucune n\'est active tant que vous ne l\'activez pas.',
