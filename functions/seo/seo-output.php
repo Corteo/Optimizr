@@ -155,10 +155,7 @@ function hpt_generate_meta_tags()
 
     $post_id = get_queried_object_id();
 
-    // Le noindex est un choix par contenu : toujours respecté
-    if (get_post_meta($post_id, '_hpt_noindex', true)) {
-        echo '<meta name="robots" content="noindex, nofollow">' . PHP_EOL;
-    }
+    // Le « ne pas indexer » de la metabox passe par le filtre wp_robots (functions/seo/seo-extras.php)
 
     $meta_enabled = (bool) get_option('hpt_enable_seo');
     $og_enabled = (bool) get_option('hpt_enable_opengraph');

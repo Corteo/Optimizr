@@ -382,6 +382,7 @@ add_action('hpt_admin_aside_seo', function () {
 require_once('seo-meta.php');
 require_once('seo-sitemap.php');
 require_once('seo-output.php');
+require_once('seo-extras.php');
 
 // Filtre pour personnaliser le robots.txt
 add_filter('robots_txt', function ($output, $public) {

@@ -440,6 +440,117 @@
         });
     }
 
+    /* ---------- Redirections : type 410 et analyse des liens cassés ---------- */
+
+    // Une page supprimée (410) n'a pas de destination
+    function initRedirectForm() {
+        var code = document.querySelector('[data-redirect-code]');
+        var target = document.querySelector('[data-redirect-target]');
+        if (!code || !target) return;
+
+        var field = target.closest('label');
+        var sync = function () {
+            var gone = code.value === '410';
+            field.hidden = gone;
+            target.disabled = gone;
+            code.closest('.optimizr-redirect-form').classList.toggle('is-gone', gone);
+        };
+        code.addEventListener('change', sync);
+        sync();
+    }
+
+    function initLinksScan() {
+        var root = document.querySelector('[data-links-scan]');
+        if (!root) return;
+
+        var start = root.querySelector('[data-links-start]');
+        var progress = root.querySelector('[data-links-progress]');
+        var bar = progress.querySelector('.optimizr-progress');
+        var status = root.querySelector('[data-links-status]');
+        var summary = root.querySelector('[data-links-summary]');
+        var results = root.querySelector('[data-links-results]');
+        var rows = root.querySelector('[data-links-rows]');
+        var issues = 0;
+
+        function call(step) {
+            var body = new FormData();
+            body.append('action', 'hpt_links_scan');
+            body.append('nonce', root.getAttribute('data-nonce'));
+            body.append('step', step);
+            return fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
+                .then(function (response) { return response.json(); })
+                .then(function (json) {
+                    if (!json || !json.success) throw new Error((json && json.data) || 'Réponse inattendue du serveur.');
+                    return json.data;
+                });
+        }
+
+        function setProgress(checked, total) {
+            var percent = total ? Math.round(checked / total * 100) : 100;
+            bar.firstElementChild.style.width = percent + '%';
+            bar.setAttribute('aria-valuenow', percent);
+            status.textContent = checked + ' / ' + total + ' lien(s) vérifié(s)…';
+        }
+
+        function finish(message) {
+            start.disabled = false;
+            progress.hidden = true;
+            summary.hidden = false;
+            summary.textContent = message;
+        }
+
+        function check() {
+            call('check').then(function (data) {
+                data.issues.forEach(function (html) {
+                    rows.insertAdjacentHTML('beforeend', html);
+                    issues++;
+                });
+                results.hidden = issues === 0;
+                setProgress(data.checked, data.total);
+                if (data.remaining > 0) {
+                    check();
+                } else {
+                    finish('Analyse terminée : ' + data.checked + ' lien(s) vérifié(s), ' + issues + ' problème(s).');
+                }
+            }).catch(function (error) {
+                finish('Analyse interrompue : ' + error.message);
+            });
+        }
+
+        start.addEventListener('click', function () {
+            start.disabled = true;
+            issues = 0;
+            rows.innerHTML = '';
+            results.hidden = true;
+            summary.hidden = true;
+            progress.hidden = false;
+            bar.firstElementChild.style.width = '0';
+            status.textContent = 'Recherche des liens dans les contenus…';
+
+            call('collect').then(function (data) {
+                if (!data.total) {
+                    finish('Aucun lien trouvé dans les contenus publiés.');
+                    return;
+                }
+                setProgress(0, data.total);
+                check();
+            }).catch(function (error) {
+                finish('Analyse impossible : ' + error.message);
+            });
+        });
+    }
+
+    /* ---------- SEO local : jours fermés ---------- */
+
+    function initLocalHours() {
+        document.querySelectorAll('[data-hours-closed]').forEach(function (box) {
+            var day = box.closest('.optimizr-hours__day');
+            var sync = function () { day.classList.toggle('is-closed', box.checked); };
+            box.addEventListener('change', sync);
+            sync();
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initSaveBar();
         initHelpToggles();
@@ -450,5 +561,8 @@
         initCookieBanner();
         initServices();
         initSeoPreview();
+        initRedirectForm();
+        initLinksScan();
+        initLocalHours();
     });
 })();

@@ -24,6 +24,10 @@ function hpt_settings_internal_options()
         'hpt_sitemap_last_generated',
         'hpt_ai_usage',
         'hpt_security_log',
+        'hpt_links_queue',
+        'hpt_links_report',
+        'hpt_indexnow_key',
+        'hpt_indexnow_last',
         // Propre à chaque site, et à ne pas diffuser
         'hpt_sec_login_slug',
     ]);

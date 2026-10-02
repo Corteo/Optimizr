@@ -6,6 +6,20 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.11] - 2026-10-02
+
+### Ajouté
+- Module **Redirections & liens** :
+  - redirections 301, 302, 307 et 410 avec jokers, compteur de visites, recherche, import/export CSV ;
+  - redirection automatique des contenus publiés dont l'adresse change (chaînes raccourcies, boucles supprimées) ;
+  - journal des pages introuvables (sans adresse IP, 2 000 entrées au plus) avec création de redirection en un clic ;
+  - analyse des liens et images cassés dans les contenus publiés.
+- Module **SEO local** : fiche de l'établissement en données structurées LocalBusiness (horaires, coordonnées GPS, profils), liens d'avis Google et d'itinéraire, shortcodes de coordonnées et d'horaires, reprise des coordonnées du thème.
+- SEO, options avancées (désactivées par défaut) : noindex des recherches, archives par date et étiquettes ; redirection des pages de médias ; codes de vérification Google et Bing ; IndexNow ; données structurées schema.org (WebSite, Organization, BreadcrumbList, Article, Event).
+
+### Modifié
+- L'option « ne pas indexer » d'un contenu passe par le filtre `wp_robots` : une seule balise meta robots par page.
+
 ## [2.0.0-beta.10] - 2026-10-01
 
 ### Ajouté

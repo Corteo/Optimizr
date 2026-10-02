@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 
 function hpt_options_activate()
 {
+    hpt_redirects_install();
     add_option('hpt_debug_mode', false);
     add_option('hpt_dev_mode', false);
     add_action('admin_notices', 'hpt_options_activation_notice');
@@ -15,6 +16,12 @@ function hpt_options_deactivate()
 {
     hpt_sitemap_delete_files();
 
+    // Fichier de clé IndexNow à la racine du site
+    $key = get_option('hpt_indexnow_key');
+    if ($key && is_file(ABSPATH . $key . '.txt')) {
+        @unlink(ABSPATH . $key . '.txt');
+    }
+
     // Règle « pas de PHP dans les médias » du module Sécurité
     $htaccess = trailingslashit(wp_upload_dir()['basedir']) . '.htaccess';
     if (is_writable($htaccess)) {
@@ -22,6 +29,60 @@ function hpt_options_deactivate()
         insert_with_markers($htaccess, 'Optimizr', []);
     }
 }
+
+/* ---------- Tables du module Redirections (créées même si le module est activé plus tard) ---------- */
+
+function hpt_redirects_table()
+{
+    global $wpdb;
+    return $wpdb->prefix . 'optimizr_redirects';
+}
+
+function hpt_404_table()
+{
+    global $wpdb;
+    return $wpdb->prefix . 'optimizr_404';
+}
+
+/** Création ou mise à jour des tables (activation et migration). */
+function hpt_redirects_install()
+{
+    global $wpdb;
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    $charset = $wpdb->get_charset_collate();
+
+    dbDelta("CREATE TABLE " . hpt_redirects_table() . " (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        source varchar(255) NOT NULL,
+        target text NOT NULL,
+        code smallint(3) unsigned NOT NULL DEFAULT 301,
+        hits bigint(20) unsigned NOT NULL DEFAULT 0,
+        last_hit datetime NULL DEFAULT NULL,
+        note varchar(255) NOT NULL DEFAULT '',
+        created datetime NOT NULL,
+        PRIMARY KEY  (id),
+        UNIQUE KEY source (source(191))
+    ) $charset;");
+
+    dbDelta("CREATE TABLE " . hpt_404_table() . " (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        path varchar(255) NOT NULL,
+        referrer varchar(255) NOT NULL DEFAULT '',
+        hits bigint(20) unsigned NOT NULL DEFAULT 1,
+        first_seen datetime NOT NULL,
+        last_seen datetime NOT NULL,
+        PRIMARY KEY  (id),
+        UNIQUE KEY path (path(191)),
+        KEY last_seen (last_seen)
+    ) $charset;");
+}
+
+// Activation du module depuis le tableau de bord : ses tables doivent exister avant la première visite
+add_action('update_option_hpt_modules', function ($old, $new) {
+    if (is_array($new) && !empty($new['redirects'])) {
+        hpt_redirects_install();
+    }
+}, 10, 2);
 
 /** Marqueur présent dans chaque fichier de sitemap généré par Optimizr. */
 define('HPT_SITEMAP_MARKER', '<!-- Généré par Optimizr -->');
@@ -106,6 +167,10 @@ function hpt_options_maybe_upgrade()
         if (function_exists('haptic_GPT_write_sitemap_to_file')) {
             haptic_GPT_write_sitemap_to_file('mise à jour du plugin');
         }
+    }
+
+    if (version_compare($installed, '2.0.0-beta.11', '<')) {
+        hpt_redirects_install();
     }
 
     update_option('hpt_optimizr_version', HPT_OPTIMIZR_VERSION);

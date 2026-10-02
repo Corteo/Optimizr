@@ -1772,3 +1772,224 @@
         padding: 6px 12px;
     }
 }
+
+/* ---------- Redirections et liens cassés ---------- */
+
+.optimizr-redirect-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(140px, 200px);
+    gap: 12px;
+    align-items: end;
+}
+
+.optimizr-redirect-form label,
+.optimizr-card__body > label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.optimizr-redirect-form .optimizr-field__label,
+.optimizr-card__body > label .optimizr-field__label {
+    display: block;
+    padding-top: 0;
+}
+
+.optimizr-redirect-form__arrow {
+    padding-bottom: 9px;
+    color: var(--o-muted);
+    font-size: 18px;
+}
+
+.optimizr-redirect-form.is-gone .optimizr-redirect-form__arrow {
+    visibility: hidden;
+}
+
+.optimizr .optimizr-card__body > label input {
+    max-width: none;
+}
+
+@media (max-width: 782px) {
+    .optimizr-redirect-form {
+        grid-template-columns: 1fr;
+    }
+
+    .optimizr-redirect-form__arrow {
+        display: none;
+    }
+}
+
+.optimizr-table-wrap--flush {
+    border-width: 1px 0 0;
+    border-radius: 0;
+}
+
+.optimizr-card__body > .optimizr-table-wrap--flush {
+    margin: 0 -24px -24px;
+}
+
+.optimizr-table--left th,
+.optimizr-table--left td {
+    text-align: left;
+    vertical-align: top;
+}
+
+.optimizr-table--left td:first-child {
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.optimizr-table code {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--o-border-soft);
+    font-family: var(--o-mono);
+    font-size: 12px;
+}
+
+.optimizr-table__actions {
+    width: 1%;
+}
+
+.optimizr-table__actions .optimizr-link + .optimizr-link {
+    margin-left: 12px;
+}
+
+.optimizr-link--danger {
+    color: #b32d2e;
+}
+
+.optimizr-link:hover,
+.optimizr-link:focus {
+    text-decoration: underline;
+}
+
+.optimizr .optimizr-search input[type="search"] {
+    width: 220px;
+    min-height: 36px;
+}
+
+.optimizr-pagination {
+    display: flex;
+    gap: 4px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--o-border-soft);
+}
+
+.optimizr-pagination .page-numbers {
+    min-width: 32px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--o-text);
+    text-align: center;
+    text-decoration: none;
+}
+
+.optimizr-pagination .page-numbers.current {
+    background: var(--o-accent);
+    color: #fff;
+}
+
+.optimizr-check-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+}
+
+.optimizr-check-row .optimizr-switch {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* ---------- SEO local ---------- */
+
+.optimizr input.optimizr-input-medium {
+    width: 180px;
+    max-width: 100%;
+}
+
+.optimizr input[type="time"] {
+    min-height: 36px;
+    padding: 4px 8px;
+    border: 1px solid var(--o-border-input);
+    border-radius: var(--o-radius-sm);
+    background: var(--o-surface);
+    font-variant-numeric: tabular-nums;
+}
+
+.optimizr-hours {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.optimizr-hours__day {
+    display: grid;
+    grid-template-columns: 90px 90px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.optimizr-hours__ranges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.optimizr-hours__day.is-closed .optimizr-hours__ranges {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+@media (max-width: 782px) {
+    .optimizr-hours__day {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .optimizr-hours__ranges {
+        grid-column: 1 / -1;
+    }
+}
+
+.optimizr-json {
+    max-height: 320px;
+    margin: 0;
+    padding: 12px;
+    overflow: auto;
+    border-radius: var(--o-radius-sm);
+    background: var(--o-bg);
+    font-family: var(--o-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.optimizr-shortcodes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 16px 24px 24px;
+    list-style: none;
+    font-size: 13px;
+}
+
+.optimizr-shortcodes code {
+    font-family: var(--o-mono);
+    font-size: 12px;
+}
+
+.optimizr-table-wrap--flush .optimizr-table th:first-child,
+.optimizr-table-wrap--flush .optimizr-table td:first-child {
+    padding-left: 24px;
+}
+
+.optimizr-table-wrap--flush .optimizr-table th:last-child,
+.optimizr-table-wrap--flush .optimizr-table td:last-child {
+    padding-right: 24px;
+}

@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.0.0-beta.10 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.0.0-beta.11 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -25,6 +25,19 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 - Sitemap XML pour les types de contenu choisis, avec la page d'accueil, régénéré en arrière-plan après chaque modification et chaque jour. Les contenus « ne pas indexer », protégés par mot de passe et les pages privées de WooCommerce en sont exclus ; découpage automatique au-delà de 50 000 URL.
 - Plan du site pour les visiteurs avec le shortcode `[optimizr_plan_du_site]` (options : `recent="6"`, `types="post,page"`).
 - robots.txt personnalisable, avec test d'accessibilité.
+- Options avancées (désactivées par défaut) : pages de recherche, archives par date et étiquettes exclues de l'indexation, pages de médias redirigées vers leur contenu, codes de vérification Google Search Console et Bing, signalement instantané des contenus publiés à Bing et Yandex (IndexNow), données structurées schema.org (site, organisation, fil d'Ariane, article, événement).
+
+### Redirections & liens
+- Redirections 301, 302, 307 et 410 (page supprimée), avec jokers (`/blog/*` → `/actualites/*`), compteur de visites, recherche et import/export CSV.
+- Redirection automatique quand l'adresse d'un contenu publié change, sans chaîne ni boucle.
+- Journal des pages introuvables (404), sans adresse IP, avec création d'une redirection en un clic.
+- Analyse des liens et images cassés dans les contenus publiés.
+
+### SEO local
+- Fiche de l'établissement (activité, adresse, téléphone, coordonnées GPS, horaires, profils en ligne) publiée pour Google en données structurées LocalBusiness, avec aperçu et lien vers le test des résultats enrichis.
+- Liens « Laisser un avis Google » et « Itinéraire » à partir de l'identifiant de lieu.
+- Shortcodes `[optimizr_adresse]`, `[optimizr_telephone]`, `[optimizr_email]`, `[optimizr_horaires]`, `[optimizr_avis_google]`, `[optimizr_itineraire]`.
+- Reprise des coordonnées saisies dans le thème.
 
 ### Assistant IA (OpenAI, Claude, Gemini)
 - Trois fournisseurs au choix, chacun avec sa clé et son modèle : **OpenAI** (GPT-5.6 Luna/Terra/Sol, GPT-4.1, GPT-4o), **Anthropic** (Claude Haiku 4.5, Sonnet 5.5, Opus 5.5) et **Google** (Gemini 3.5 Flash-Lite, 3.1 Flash-Lite, 3.8 Flash). Un modèle retiré par son fournisseur est automatiquement remplacé par le modèle par défaut.
@@ -118,11 +131,13 @@ hpt_options.php          Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
-functions/seo/           Module SEO (réglages, metabox, sitemap, balises)
+functions/seo/           Module SEO (réglages, metabox, sitemap, balises, options avancées)
 functions/ai.php         Module Assistant IA : réglages et génération
 functions/ai-pricing.php Fournisseurs, modèles, tarifs, estimation et consommation
 functions/ai-providers.php Appels HTTP aux API OpenAI, Anthropic et Gemini
 functions/ai-bulk.php    Traitement en masse (+ media.php : médiathèque)
+functions/redirects.php  Module Redirections (+ redirects-admin.php : onglet, links.php : liens cassés)
+functions/local-seo.php  Module SEO local
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
