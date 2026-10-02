@@ -35,6 +35,8 @@ function hpt_settings_internal_options()
         'hpt_maintenance',
         'hpt_maintenance_page',
         'hpt_maintenance_until',
+        // Ce qu'efface la suppression du plugin sur ce site (cf. functions/uninstall.php)
+        'hpt_uninstall',
     ]);
 }
 
@@ -225,6 +227,10 @@ function hpt_render_tools_tab()
         <?php endif; ?>
     <?php endif; ?>
 
+    <?php if (($_GET['hpt_message'] ?? '') === 'uninstall') : ?>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span><strong>Choix enregistrés.</strong> Ils seront appliqués si le plugin est supprimé.</span></div>
+    <?php endif; ?>
+
     <div class="optimizr-tools">
         <form class="optimizr-card" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
             <input type="hidden" name="action" value="hpt_export_settings">
@@ -265,6 +271,8 @@ function hpt_render_tools_tab()
                 <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Importer</button></div>
             </div>
         </form>
+
+        <?php hpt_render_uninstall_card(); ?>
     </div>
 
     <p class="optimizr-field__help">Pensez à vérifier ensuite les identifiants des services (Google Analytics, Clarity…) : ils sont propres à chaque site.</p>

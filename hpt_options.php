@@ -34,6 +34,8 @@ require_once('functions/updates.php');
 require_once('functions/tabs.php');
 require_once('functions/settings.php');
 require_once('functions/tools.php');
+require_once('functions/uninstall.php');
+require_once('functions/uninstall-admin.php');
 
 // Modules activables depuis le tableau de bord (cf. hpt_modules())
 if (hpt_is_module_active('emails')) {

@@ -78,6 +78,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 ### Outils
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
+- **Suppression du plugin** : à la désactivation (ou dans l'onglet Outils), on choisit ce qui sera effacé si le plugin est ensuite supprimé : réglages, redirections et SEO des contenus, journaux. Par défaut, tout est conservé ; les tâches planifiées, caches et fichiers générés sont toujours supprimés.
 
 ## Prérequis
 
@@ -106,7 +107,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 - **Tableau de bord :** activez les modules utiles et consultez l'état du site (sitemap, bandeau cookies, clé API, indexation).
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
-- **Outils :** export et import des réglages.
+- **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
 
 ## Pour les développeurs
 

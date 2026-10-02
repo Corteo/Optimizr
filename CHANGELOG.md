@@ -6,6 +6,13 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+### Ajouté
+- Suppression du plugin : un fichier `uninstall.php` efface les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow, règle `.htaccess`). Réglages, redirections et SEO des contenus, et journaux ne sont effacés que si on l'a demandé ; par défaut, tout est conservé. Multisite pris en charge.
+- La question est posée au clic sur « Désactiver » dans la liste des extensions (un plugin désactivé n'exécute plus de code), et les choix restent modifiables dans l'onglet **Outils**.
+
+### Corrigé
+- Onglet Outils : les cases à cocher s'affichaient au-dessus de leur texte.
+
 ## [2.0.0] - 2026-10-02
 
 Première version finale de la 2.0 : nouvelle interface, cinq nouveaux modules et de nombreuses corrections. Une migration s'exécute automatiquement à la mise à jour ; aucun réglage existant n'est perdu. Le détail se trouve dans les versions de test ci-dessous (2.0.0-beta.1 à 2.0.0-beta.13).
