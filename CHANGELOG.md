@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.0.0-beta.13] - 2026-10-02
+
+### Modifié
+- Barre d'onglets : quand la largeur manque, des flèches et un fondu signalent les onglets masqués ; défilement à la molette, onglet courant ramené à l'écran au chargement.
+
 ## [2.0.0-beta.12] - 2026-10-02
 
 ### Ajouté

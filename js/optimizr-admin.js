@@ -551,7 +551,58 @@
         });
     }
 
+    /* ---------- Onglets : défilement horizontal quand la largeur manque ---------- */
+
+    function initTabsScroll() {
+        var wrap = document.querySelector('[data-optimizr-tabs]');
+        if (!wrap) return;
+
+        var nav = wrap.querySelector('.optimizr-tabs');
+        var prev = wrap.querySelector('[data-tabs-scroll="-1"]');
+        var next = wrap.querySelector('[data-tabs-scroll="1"]');
+
+        function update() {
+            var max = nav.scrollWidth - nav.clientWidth;
+            var hasPrev = nav.scrollLeft > 2;
+            var hasNext = nav.scrollLeft < max - 2;
+            wrap.classList.toggle('has-prev', hasPrev);
+            wrap.classList.toggle('has-next', hasNext);
+            prev.hidden = !hasPrev;
+            next.hidden = !hasNext;
+        }
+
+        [prev, next].forEach(function (button) {
+            button.addEventListener('click', function () {
+                var step = Math.max(160, nav.clientWidth * 0.6);
+                nav.scrollBy({ left: step * parseInt(button.getAttribute('data-tabs-scroll'), 10) });
+            });
+        });
+
+        // Molette verticale de la souris : défilement horizontal de la barre
+        nav.addEventListener('wheel', function (event) {
+            if (nav.scrollWidth <= nav.clientWidth || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+            event.preventDefault();
+            nav.scrollLeft += event.deltaY;
+        }, { passive: false });
+
+        nav.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+
+        // Onglet courant visible au chargement, sans animation
+        var current = nav.querySelector('[aria-current="page"]');
+        if (current) {
+            var offset = current.offsetLeft - nav.offsetLeft;
+            if (offset + current.offsetWidth > nav.clientWidth) {
+                nav.style.scrollBehavior = 'auto';
+                nav.scrollLeft = offset - (nav.clientWidth - current.offsetWidth) / 2;
+                nav.style.scrollBehavior = '';
+            }
+        }
+        update();
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        initTabsScroll();
         initSaveBar();
         initHelpToggles();
         initAiProvider();

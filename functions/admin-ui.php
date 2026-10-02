@@ -197,6 +197,8 @@ function hpt_icon($name, $size = 20)
         'lock'     => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
         'redirect' => '<path d="M15 14l5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>',
         'file'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/>',
+        'chevron-left'  => '<path d="m15 18-6-6 6-6"/>',
+        'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
         'pin'      => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
     ];
 
@@ -281,11 +283,15 @@ function hpt_options_settings_page()
                     </button>
                 </div>
             </div>
-            <nav class="optimizr-tabs" aria-label="Sections d'Optimizr">
-                <?php foreach ($tabs as $slug => $tab) : ?>
-                    <a href="<?php echo esc_url(hpt_admin_tab_url($slug)); ?>" class="optimizr-tabs__link" <?php echo $slug === $current ? 'aria-current="page"' : ''; ?>><?php echo esc_html($tab['label']); ?></a>
-                <?php endforeach; ?>
-            </nav>
+            <div class="optimizr-tabs-wrap" data-optimizr-tabs>
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-left', 18); ?></button>
+                <nav class="optimizr-tabs" aria-label="Sections d'Optimizr">
+                    <?php foreach ($tabs as $slug => $tab) : ?>
+                        <a href="<?php echo esc_url(hpt_admin_tab_url($slug)); ?>" class="optimizr-tabs__link" <?php echo $slug === $current ? 'aria-current="page"' : ''; ?>><?php echo esc_html($tab['label']); ?></a>
+                    <?php endforeach; ?>
+                </nav>
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-right', 18); ?></button>
+            </div>
         </header>
 
         <hr class="wp-header-end">
