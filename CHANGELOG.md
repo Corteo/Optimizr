@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.2.0] - 2026-10-03
+
+### Ajouté
+- Choix du canal de mise à jour dans le tableau de bord (carte « Mises à jour ») : **Stable** (par défaut) ou **Bêta**, qui propose aussi les versions de test. Réservé à qui peut installer les extensions ; sur un multisite, le canal du site principal vaut pour tout le réseau. Le canal n'est pas exporté avec les réglages.
+
 ## [2.1.1] - 2026-10-03
 
 ### Corrigé

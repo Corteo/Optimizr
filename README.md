@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.1.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.2.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -168,13 +168,15 @@ Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.M
 - **MAJEUR** (3.0.0) : changement qui casse la compatibilité (structure des réglages, fonctionnalité retirée, migration nécessaire).
 - **MINEUR** (2.1.0) : nouvelle fonctionnalité ou nouveau module, sans rien casser.
 - **CORRECTIF** (2.0.1) : correction de bug ou de sécurité, sans nouvelle fonctionnalité.
-- **Pré-version** (`2.1.0-beta.1`) : version de test sur une branche de développement, jamais sur `stable`.
+- **Pré-version** (`2.1.0-beta.1`) : version de test, publiée uniquement sur la branche `beta`, jamais sur `stable`.
 
 Pour publier une version :
 
 1. Modifiez le numéro aux deux endroits de `hpt_options.php` : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION`.
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Fusionnez dans `stable` : les sites installés lisent l'en-tête de cette branche pour proposer la mise à jour. Seule une version finale doit y être fusionnée.
+3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `hpt_options.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
+   - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en bêta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
+   - **Pré-version** : fusionnez seulement dans `beta`.
 
 Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
 
