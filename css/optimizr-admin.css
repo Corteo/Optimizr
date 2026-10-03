@@ -287,9 +287,20 @@
     font-size: 13px;
 }
 
+/* Mobile : icône et texte sur toute la largeur, bouton en dessous */
 @media (max-width: 782px) {
     .optimizr-onboarding-cta {
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        align-items: start;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .optimizr-onboarding-cta .optimizr-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 44px;
     }
 }
 
@@ -1770,7 +1781,13 @@
     .optimizr-header__actions {
         width: 100%;
         margin-left: 0;
+        flex-wrap: wrap;
+        gap: 8px;
         justify-content: space-between;
+    }
+
+    .optimizr-header__actions .optimizr-btn {
+        flex: 1 1 auto;
     }
 
     .optimizr-modules,
