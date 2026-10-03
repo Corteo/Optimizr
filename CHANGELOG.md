@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.3.1] - 2026-10-03
+
+### Modifié
+- Version de test du canal Développement : aucune modification fonctionnelle, sert à vérifier l'installation directe par le lien « Mettre à jour » ajouté en 2.3.0.
+
 ## [2.3.0] - 2026-10-03
 
 ### Ajouté
