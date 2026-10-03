@@ -6,6 +6,17 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.4.0] - 2026-10-03
+
+Version finale regroupant les versions 2.4.0-beta.1 à 2.4.0-beta.3.
+
+### Ajouté
+- Assistant de configuration en plein écran, en plusieurs étapes, avec illustrations animées sur la sécurité, la performance et l'optimisation. Il fait renseigner les vrais réglages : adresse de connexion, verrouillage et liste blanche d'IP, nom du site, motifs SEO et codes de vérification, établissement (SEO local), page 404, identifiants Analytics / Tag Manager / Clarity / Pixel Meta, fournisseur, modèle et contexte de l'assistant IA. Il s'ouvre à la première activation, puis depuis le menu Optimizr › Assistant ; le tableau de bord propose de le lancer tant qu'il n'a été ni terminé ni écarté.
+
+### Corrigé
+- Les actions d'activation et de désactivation du plugin ne s'exécutaient jamais. La désactivation supprime de nouveau le sitemap généré, le fichier de clé IndexNow et la règle .htaccess du module Sécurité.
+- Sur mobile, les boutons de l'en-tête de la page d'options restent dans l'écran au lieu de déborder.
+
 ## [2.4.0-beta.3] - 2026-10-03
 
 ### Corrigé
@@ -32,6 +43,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ### Corrigé
 - Les actions d'activation et de désactivation du plugin ne s'exécutaient jamais (chemin du fichier principal mal résolu). La désactivation supprime de nouveau le sitemap généré, le fichier de clé IndexNow et la règle .htaccess du module Sécurité.
+
+## [2.3.2] - 2026-10-03
+
+### Modifié
+- Orthographe « Beta » au lieu de « Bêta » (canal de mise à jour, carte « Mises à jour »).
 
 ## [2.3.1] - 2026-10-03
 
