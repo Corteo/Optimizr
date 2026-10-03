@@ -104,12 +104,24 @@ function haptic_GPT_ajax_check_github_updates()
     try {
         $update = $checker->checkForUpdates();
 
-        if ($update && !empty($update->new_version)) {
-            hpt_log('[AJAX Updates] Nouvelle version disponible : ' . $update->new_version);
+        // La librairie renvoie un objet Update : le numéro est dans « version » (« new_version » n'existe qu'au format WordPress)
+        if ($update && !empty($update->version)) {
+            hpt_log('[AJAX Updates] Nouvelle version disponible : ' . $update->version);
             wp_send_json_success([
                 'status' => 'update_available',
-                'new_version' => $update->new_version,
-                'details_url' => $update->details_url,
+                'new_version' => $update->version,
+                'details_url' => self_admin_url('update-core.php'),
+            ]);
+        }
+
+        // Dépôt injoignable ou jeton refusé : le signaler plutôt qu'annoncer « à jour »
+        $errors = $checker->getLastRequestApiErrors();
+        if ($errors) {
+            $message = $errors[0]['error'] instanceof WP_Error ? $errors[0]['error']->get_error_message() : 'GitHub injoignable';
+            hpt_log('[AJAX Updates] Erreur lors de la vérification : ' . $message);
+            wp_send_json_error([
+                'status' => 'error',
+                'message' => $message,
             ]);
         } else {
             hpt_log('[AJAX Updates] Aucune mise à jour détectée.');

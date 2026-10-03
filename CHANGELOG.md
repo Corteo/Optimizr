@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.1.1] - 2026-10-03
+
+### Corrigé
+- Bouton « Vérifier les mises à jour » : il annonçait toujours « Optimizr est à jour », même quand une nouvelle version était disponible. Il affiche maintenant la version proposée avec un lien vers la page des mises à jour, et l'erreur réelle si GitHub ne répond pas ou refuse l'accès.
+
 ## [2.1.0] - 2026-10-03
 
 ### Ajouté
