@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.3.0] - 2026-10-03
+
+### Ajouté
+- Le lien « Mettre à jour » qui suit « Vérifier les mises à jour » installe directement la nouvelle version, sans passer par la page des mises à jour de WordPress. La page se recharge ensuite, ce qui exécute les migrations de la base prévues par la nouvelle version. Si WordPress n'a pas accès aux fichiers du site (accès FTP requis), le message l'indique.
+
 ## [2.2.1] - 2026-10-03
 
 ### Modifié

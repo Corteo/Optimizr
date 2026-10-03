@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.2.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.3.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -93,7 +93,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
 3. Activez **Haptic Optimizr**.
 
-Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, comme pour toute extension. Le bouton « Vérifier les mises à jour » en haut de la page du plugin force une vérification immédiate.
+Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, comme pour toute extension. Le bouton « Vérifier les mises à jour » en haut de la page du plugin force une vérification immédiate ; si une version est disponible, « Mettre à jour » l'installe directement, puis la page se recharge et les éventuelles migrations de la base s'exécutent.
 
 ### Mise à jour depuis la 1.5
 

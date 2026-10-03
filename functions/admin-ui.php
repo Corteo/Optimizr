@@ -282,7 +282,7 @@ function hpt_options_settings_page()
                 <span class="optimizr-badge">v<?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">
                     <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
-                    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>">
+                    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
                         <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
                     </button>
                 </div>
@@ -538,7 +538,7 @@ function hpt_render_dashboard()
                         </select>
                         <p class="optimizr-card__hint">Bêta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
                     <?php endif; ?>
-                    <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement.</p>
+                    <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page.</p>
                 </div>
             </section>
         </aside>
