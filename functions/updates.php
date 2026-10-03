@@ -18,7 +18,7 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
  */
 function hpt_update_channels()
 {
-    return ['stable' => 'Stable', 'beta' => 'Bêta', 'main' => 'Développement (main)'];
+    return ['stable' => 'Stable', 'beta' => 'Beta', 'main' => 'Développement (main)'];
 }
 
 /** Canal suivi. Sur un multisite, celui du site principal (les mises à jour concernent tout le réseau). */

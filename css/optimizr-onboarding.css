@@ -821,12 +821,199 @@ body.ob-body {
     background: var(--ob-bg);
     color: var(--ob-text);
     font: inherit;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     font-size: 14px;
+}
+
+/* Identifiants et codes : chasse fixe */
+.ob-field input[spellcheck="false"] {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 .ob-field input:focus {
     border-color: var(--ob-accent);
+}
+
+.ob-field select,
+.ob-field textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid var(--ob-border-strong);
+    border-radius: var(--ob-radius-sm);
+    background: var(--ob-bg);
+    color: var(--ob-text);
+    font: inherit;
+    font-size: 14px;
+}
+
+.ob-field textarea {
+    resize: vertical;
+    line-height: 1.45;
+}
+
+.ob-field input:invalid:not(:placeholder-shown) {
+    border-color: #d63638;
+}
+
+.ob-field select:focus-visible,
+.ob-field textarea:focus-visible,
+.ob-var:focus-visible,
+button.ob-field__link:focus-visible {
+    outline: 2px solid var(--ob-accent);
+    outline-offset: 2px;
+}
+
+button.ob-field__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+button.ob-field__link:disabled {
+    color: var(--ob-ok);
+    text-decoration: none;
+    cursor: default;
+}
+
+.ob-field__help {
+    color: var(--ob-muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.ob-prefixed {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--ob-border-strong);
+    border-radius: var(--ob-radius-sm);
+    background: var(--ob-bg);
+    overflow: hidden;
+}
+
+.ob-prefixed:focus-within {
+    border-color: var(--ob-accent);
+    box-shadow: 0 0 0 1px var(--ob-accent);
+}
+
+.ob-prefixed__prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: var(--ob-surface);
+    border-right: 1px solid var(--ob-border);
+    color: var(--ob-muted);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    white-space: nowrap;
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ob-field .ob-prefixed input {
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+}
+
+.ob-vars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ob-var {
+    padding: 4px 10px;
+    border: 1px dashed var(--ob-border-strong);
+    border-radius: 999px;
+    background: var(--ob-surface);
+    color: var(--ob-text);
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.ob-var:hover {
+    border-color: var(--ob-accent);
+    color: var(--ob-accent-strong);
+}
+
+.ob-subtitle {
+    margin: 28px 0 10px;
+    color: var(--ob-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.ob-fields + .ob-subtitle {
+    margin-top: 28px;
+}
+
+.ob-options + .ob-fields {
+    margin-top: 20px;
+}
+
+.ob-fieldset--first {
+    margin-top: 0;
+}
+
+.ob-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-radius: var(--ob-radius-sm);
+    background: var(--ob-warn-soft);
+    color: var(--ob-warn);
+    font-size: 14px;
+}
+
+.ob-login-card {
+    display: flex;
+    gap: 14px;
+    margin: 0 0 28px;
+    padding: 18px;
+    border: 1px solid color-mix(in srgb, var(--ob-accent) 40%, var(--ob-border));
+    border-radius: var(--ob-radius);
+    background: var(--ob-accent-soft);
+}
+
+.ob-login-card__icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--ob-accent);
+    color: #fff;
+}
+
+.ob-login-card__title {
+    margin: 0 0 2px;
+    font-weight: 600;
+}
+
+.ob-login-card__url {
+    color: var(--ob-accent-strong);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.ob-login-card__help {
+    margin: 6px 0 0;
+    color: var(--ob-muted);
+    font-size: 13px;
 }
 
 .ob-providers {

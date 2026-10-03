@@ -78,6 +78,10 @@ function hpt_onboarding_steps()
             'kicker' => 'Sécurité', 'tagline' => 'Des robots testent des mots de passe en continu : fermez-leur la porte.'],
         'seo'      => ['label' => 'Référencement', 'module' => 'seo', 'pillar' => 'performance',
             'kicker' => 'Performance', 'tagline' => 'Des balises propres et un sitemap à jour : Google indexe plus vite et mieux.'],
+        'local'    => ['label' => 'Établissement', 'module' => 'local', 'pillar' => 'performance',
+            'kicker' => 'SEO local', 'tagline' => 'Adresse, téléphone et activité repris par Google Maps et la recherche locale.'],
+        'pages'    => ['label' => 'Page 404', 'module' => 'pages', 'pillar' => 'optimization',
+            'kicker' => 'Expérience', 'tagline' => 'Une adresse introuvable propose des contenus proches au lieu d\'une impasse.'],
         'cookies'  => ['label' => 'Cookies & RGPD', 'module' => 'cookies', 'pillar' => 'security',
             'kicker' => 'Confidentialité', 'tagline' => 'Aucun traceur avant l\'accord du visiteur, Google Consent Mode v2 inclus.'],
         'ai'       => ['label' => 'Assistant IA', 'module' => 'ai', 'pillar' => 'optimization',
@@ -137,6 +141,61 @@ function hpt_onboarding_ai_providers()
     return hpt_ai_providers();
 }
 
+/** Charge le fichier d'un module pas encore actif dans cette requête (fonctions de nettoyage, listes). */
+function hpt_onboarding_require($function, $file)
+{
+    if (!function_exists($function)) {
+        require_once HPT_OPTIMIZR_PATH . 'functions/' . $file;
+    }
+}
+
+/** Variables proposées pour les motifs de titre et de description. */
+function hpt_onboarding_seo_variables()
+{
+    return function_exists('hpt_seo_pattern_variables') ? hpt_seo_pattern_variables() : [
+        '{titre_page}' => 'Titre de la page',
+        '{nom_site}'   => 'Nom du site',
+        '{slogan}'     => 'Slogan',
+        '{resume}'     => 'Résumé',
+        '{categorie}'  => 'Catégorie',
+    ];
+}
+
+/** Code de vérification Google ou Bing : accepte la balise meta entière ou le seul code. */
+function hpt_onboarding_verification_code($value)
+{
+    $value = trim((string) $value);
+    if (preg_match('/content\s*=\s*["\']([^"\']+)["\']/i', $value, $match)) {
+        $value = $match[1];
+    }
+    return preg_replace('/[^A-Za-z0-9_\-]/', '', $value);
+}
+
+/** Services de mesure proposés à l'étape Cookies : champ du formulaire => [service, clé, libellé, exemple]. */
+function hpt_onboarding_cookie_fields()
+{
+    return [
+        'hpt_ob_service_google_analytics' => ['google_analytics', 'ID', 'Google Analytics 4', 'G-XXXXXXXXXX'],
+        'hpt_ob_service_google_tags'      => ['google_tags', 'ID', 'Google Tag Manager', 'GTM-XXXXXXX'],
+        'hpt_ob_service_clarity'          => ['clarity', 'ID', 'Microsoft Clarity', 'ID du projet'],
+        'hpt_ob_service_facebook_pixel'   => ['facebook_pixel', 'Pixel ID', 'Pixel Meta (Facebook)', 'ID du pixel'],
+    ];
+}
+
+/** Champs de l'étape Établissement : clé de hpt_local => [libellé, type, exemple, autocomplete]. */
+function hpt_onboarding_local_fields()
+{
+    return [
+        'name'        => ['Nom de l\'établissement', 'text', get_bloginfo('name'), 'organization'],
+        'street'      => ['Adresse', 'text', '12 rue de la Paix', 'street-address'],
+        'postal_code' => ['Code postal', 'text', '75002', 'postal-code'],
+        'city'        => ['Ville', 'text', 'Paris', 'address-level2'],
+        'country'     => ['Pays (code à deux lettres)', 'text', 'FR', 'country'],
+        'phone'       => ['Téléphone', 'tel', '+33 1 23 45 67 89', 'tel'],
+        'email'       => ['Email de contact', 'email', 'contact@exemple.fr', 'email'],
+    ];
+}
+
 /* ---------- Enregistrement ---------- */
 
 add_action('admin_post_hpt_onboarding_save', 'hpt_onboarding_save');
@@ -157,9 +216,41 @@ function hpt_onboarding_save()
         return empty($post[$name]) ? 0 : 1;
     };
 
+    $text = function ($name) use ($post) {
+        return isset($post[$name]) ? sanitize_text_field(trim((string) $post[$name])) : null;
+    };
+    // Messages affichés sur l'écran final (réglage refusé, par exemple)
+    $notices = [];
+
     if (!empty($modules['security'])) {
         foreach (array_keys(hpt_onboarding_security_toggles()) as $key) {
             update_option('hpt_sec_' . $key, $flag('hpt_sec_' . $key));
+        }
+
+        if (isset($post['hpt_sec_login_max'])) {
+            update_option('hpt_sec_login_max', min(20, max(2, absint($post['hpt_sec_login_max']) ?: 5)));
+        }
+        if (isset($post['hpt_sec_login_lockout'])) {
+            update_option('hpt_sec_login_lockout', min(1440, max(1, absint($post['hpt_sec_login_lockout']) ?: 15)));
+        }
+        if (isset($post['hpt_sec_login_whitelist'])) {
+            $ips = array_filter(array_map('trim', preg_split('/\R/', (string) $post['hpt_sec_login_whitelist'])), function ($ip) {
+                return filter_var($ip, FILTER_VALIDATE_IP);
+            });
+            update_option('hpt_sec_login_whitelist', implode("\n", array_unique($ips)));
+        }
+
+        // Adresse de connexion : mêmes contrôles que l'onglet Sécurité, et l'email de la nouvelle adresse part à l'enregistrement
+        if (isset($post['hpt_sec_login_slug'])) {
+            hpt_onboarding_require('hpt_sec_sanitize_login_slug', 'security.php');
+            $wanted = sanitize_title((string) $post['hpt_sec_login_slug']);
+            $slug = hpt_sec_sanitize_login_slug($wanted);
+            if ($slug === $wanted) {
+                update_option('hpt_sec_login_slug', $slug);
+            } else {
+                $errors = get_settings_errors('hpt_sec_login_slug');
+                $notices[] = 'Adresse de connexion non modifiée : ' . ($errors ? end($errors)['message'] : 'adresse invalide.');
+            }
         }
     }
 
@@ -173,6 +264,40 @@ function hpt_onboarding_save()
         if (isset($post['blog_public'])) {
             update_option('blog_public', $flag('blog_public'));
         }
+
+        foreach (['blogname', 'blogdescription', 'hpt_seo_title_pattern', 'hpt_seo_desc_pattern'] as $option) {
+            $value = $text($option);
+            if ($value !== null && ($value !== '' || $option === 'blogdescription')) {
+                update_option($option, $value);
+            }
+        }
+        foreach (['hpt_seo_verify_google', 'hpt_seo_verify_bing'] as $option) {
+            if (isset($post[$option])) {
+                update_option($option, hpt_onboarding_verification_code($post[$option]));
+            }
+        }
+    }
+
+    if (!empty($modules['local']) && isset($post['hpt_ob_local']) && is_array($post['hpt_ob_local'])) {
+        hpt_onboarding_require('hpt_local_types', 'local-seo.php');
+        $local = (array) get_option('hpt_local', []);
+        $input = $post['hpt_ob_local'];
+        foreach (array_keys(hpt_onboarding_local_fields()) as $key) {
+            if (isset($input[$key])) {
+                $local[$key] = $key === 'email' ? sanitize_email($input[$key]) : sanitize_text_field(trim((string) $input[$key]));
+            }
+        }
+        $local['country'] = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string) ($local['country'] ?? '')), 0, 2)) ?: 'FR';
+        $local['type'] = isset($input['type']) && array_key_exists($input['type'], hpt_local_types()) ? $input['type'] : ($local['type'] ?? 'LocalBusiness');
+        update_option('hpt_local', $local);
+    }
+
+    if (!empty($modules['pages'])) {
+        if (isset($post['hpt_404_page'])) {
+            $page = absint($post['hpt_404_page']);
+            update_option('hpt_404_page', $page && get_post_type($page) === 'page' ? $page : 0);
+        }
+        update_option('hpt_404_suggestions', $flag('hpt_404_suggestions'));
     }
 
     if (!empty($modules['cookies'])) {
@@ -180,19 +305,18 @@ function hpt_onboarding_save()
         $style = isset($post['hpt_option_tarteaucitron_banner_style']) ? (string) $post['hpt_option_tarteaucitron_banner_style'] : 'middle';
         update_option('hpt_option_tarteaucitron_banner_style', in_array($style, ['top', 'middle', 'bottom'], true) ? $style : 'middle');
 
-        foreach (['google_analytics', 'google_tags'] as $service) {
-            $field = 'hpt_ob_service_' . $service;
-            if (!isset($post[$field])) {
+        foreach (hpt_onboarding_cookie_fields() as $field => list($service, $key)) {
+            $id = $text($field);
+            if ($id === null) {
                 continue;
             }
-            $id = sanitize_text_field(trim((string) $post[$field]));
             $value = get_option('hpt_option_service_' . $service, null);
             // Service jamais configuré et laissé vide : rien à enregistrer
             if ($id === '' && $value === null) {
                 continue;
             }
             $value = (array) $value;
-            $value['ID'] = $id;
+            $value[$key] = $id;
             update_option('hpt_option_service_' . $service, $value);
         }
     }
@@ -207,11 +331,22 @@ function hpt_onboarding_save()
             if ($key !== '') {
                 update_option($providers[$provider]['key_option'], $key);
             }
+            $model_option = $providers[$provider]['model_option'];
+            $model = isset($post[$model_option]) ? (string) $post[$model_option] : '';
+            if (isset($providers[$provider]['models'][$model])) {
+                update_option($model_option, $model);
+            }
+        }
+        if (isset($post['hpt_ai_context'])) {
+            update_option('hpt_ai_context', sanitize_textarea_field((string) $post['hpt_ai_context']));
         }
         update_option('hpt_ai_alt_on_upload', $flag('hpt_ai_alt_on_upload'));
     }
 
     update_option('hpt_onboarding_done', time());
+    if ($notices) {
+        set_transient('hpt_onboarding_notices_' . get_current_user_id(), $notices, 10 * MINUTE_IN_SECONDS);
+    }
 
     wp_safe_redirect(hpt_onboarding_url(['step' => 'done']));
     exit;
@@ -439,22 +574,94 @@ function hpt_onboarding_step_modules($modules)
 
 function hpt_onboarding_step_security($modules)
 {
-    hpt_onboarding_step_head('security', 'Sécurité', 'Verrouillez les accès', 'Les protections recommandées sont présélectionnées. Elles n\'affectent pas les visiteurs du site.');
+    hpt_onboarding_step_head('security', 'Sécurité', 'Verrouillez les accès', 'Une adresse de connexion propre au site arrête la plupart des robots. Les protections recommandées sont présélectionnées et n\'affectent pas les visiteurs.');
+
+    $locked = (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite();
+    $prefix = get_option('permalink_structure') ? home_url('/') : home_url('/') . '?';
+    $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ?: '';
     ?>
+    <div class="ob-fields">
+        <?php if (!$locked) : ?>
+            <div class="ob-field ob-field--wide">
+                <span class="ob-field__label">
+                    <label for="ob-login-slug">Adresse de connexion</label> <span class="ob-tag">Recommandé</span>
+                    <button type="button" class="ob-field__link" data-ob-suggest-slug>Proposer une adresse</button>
+                </span>
+                <div class="ob-prefixed">
+                    <span class="ob-prefixed__prefix" title="<?php echo esc_attr($prefix); ?>"><?php echo esc_html(preg_replace('#^https?://#', '', $prefix)); ?></span>
+                    <input type="text" id="ob-login-slug" name="hpt_sec_login_slug" value="<?php echo esc_attr(get_option('hpt_sec_login_slug', '')); ?>" placeholder="ex. espace-gestion" pattern="[A-Za-z0-9\-]{4,}" title="Au moins 4 caractères : lettres, chiffres et tirets." spellcheck="false" autocomplete="off" data-summary-value="Adresse de connexion" data-summary-prefix="/">
+                </div>
+                <span class="ob-field__help">wp-login.php et /wp-admin/ afficheront une page introuvable aux visiteurs non connectés. La nouvelle adresse est envoyée par email à <?php echo esc_html(get_option('admin_email')); ?>. Laissez vide pour garder wp-login.php.</span>
+            </div>
+        <?php endif; ?>
+        <label class="ob-field">
+            <span class="ob-field__label">Verrouiller après (échecs)</span>
+            <input type="number" name="hpt_sec_login_max" min="2" max="20" value="<?php echo esc_attr(get_option('hpt_sec_login_max', 5)); ?>">
+        </label>
+        <label class="ob-field">
+            <span class="ob-field__label">Durée du verrouillage (minutes)</span>
+            <input type="number" name="hpt_sec_login_lockout" min="1" max="1440" value="<?php echo esc_attr(get_option('hpt_sec_login_lockout', 15)); ?>">
+        </label>
+        <div class="ob-field ob-field--wide">
+            <span class="ob-field__label">
+                <label for="ob-login-whitelist">Adresses IP jamais verrouillées <span class="ob-field__opt">une par ligne</span></label>
+                <?php if ($ip) : ?><button type="button" class="ob-field__link" data-ob-add-ip="<?php echo esc_attr($ip); ?>">Ajouter mon adresse (<?php echo esc_html($ip); ?>)</button><?php endif; ?>
+            </span>
+            <textarea id="ob-login-whitelist" name="hpt_sec_login_whitelist" rows="2" spellcheck="false" data-summary-value="IP jamais verrouillées"><?php echo esc_textarea(get_option('hpt_sec_login_whitelist', '')); ?></textarea>
+            <span class="ob-field__help">Ajoutez la vôtre si elle est fixe (bureau, fibre), pour ne jamais vous bloquer vous-même.</span>
+        </div>
+    </div>
+    <h2 class="ob-subtitle">Protections</h2>
     <div class="ob-options">
         <?php foreach (hpt_onboarding_security_toggles() as $key => $toggle) {
             hpt_onboarding_switch('hpt_sec_' . $key, get_option('hpt_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? 'Recommandé' : '');
         } ?>
     </div>
-    <p class="ob-note"><?php echo hpt_icon('lock', 16); ?>L'adresse de connexion personnalisée, le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
+    <p class="ob-note"><?php echo hpt_icon('lock', 16); ?>Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
     <?php
 }
 
 function hpt_onboarding_step_seo($modules)
 {
-    hpt_onboarding_step_head('seo', 'Référencement', 'Soyez visible et indexé rapidement', 'Des balises cohérentes et un plan du site à jour aident Google à parcourir le site sans gaspiller son temps d\'exploration.');
+    hpt_onboarding_step_head('seo', 'Référencement', 'Soyez visible et indexé rapidement', 'Le nom du site et les motifs ci-dessous servent de titre et de description dans Google pour chaque contenu qui n\'en a pas.');
     $selected = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
     ?>
+    <div class="ob-fields">
+        <label class="ob-field">
+            <span class="ob-field__label">Nom du site</span>
+            <input type="text" name="blogname" value="<?php echo esc_attr(get_option('blogname')); ?>" required data-summary-value="Nom du site">
+        </label>
+        <label class="ob-field">
+            <span class="ob-field__label">Slogan <span class="ob-field__opt">facultatif</span></span>
+            <input type="text" name="blogdescription" value="<?php echo esc_attr(get_option('blogdescription')); ?>" placeholder="Votre activité en quelques mots" data-summary-value="Slogan">
+        </label>
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label">Titre des pages dans Google</span>
+            <input type="text" name="hpt_seo_title_pattern" value="<?php echo esc_attr(get_option('hpt_seo_title_pattern', '{titre_page} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Titre">
+        </label>
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label">Description par défaut</span>
+            <input type="text" name="hpt_seo_desc_pattern" value="<?php echo esc_attr(get_option('hpt_seo_desc_pattern', '{resume} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Description">
+        </label>
+        <div class="ob-field ob-field--wide">
+            <span class="ob-field__help">Insérer une variable dans le dernier motif modifié :</span>
+            <div class="ob-vars">
+                <?php foreach (hpt_onboarding_seo_variables() as $var => $label) : ?>
+                    <button type="button" class="ob-var" data-ob-var="<?php echo esc_attr($var); ?>"><?php echo esc_html($label); ?></button>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <label class="ob-field">
+            <span class="ob-field__label">Google Search Console <span class="ob-field__opt">facultatif</span></span>
+            <input type="text" name="hpt_seo_verify_google" value="<?php echo esc_attr(get_option('hpt_seo_verify_google', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Google">
+        </label>
+        <label class="ob-field">
+            <span class="ob-field__label">Bing Webmaster Tools <span class="ob-field__opt">facultatif</span></span>
+            <input type="text" name="hpt_seo_verify_bing" value="<?php echo esc_attr(get_option('hpt_seo_verify_bing', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Bing">
+        </label>
+    </div>
+
+    <h2 class="ob-subtitle">Indexation</h2>
     <div class="ob-options">
         <?php
         if (!get_option('blog_public')) {
@@ -483,15 +690,83 @@ function hpt_onboarding_step_seo($modules)
     <?php
 }
 
+function hpt_onboarding_step_local($modules)
+{
+    hpt_onboarding_step_head('local', 'SEO local', 'Présentez votre établissement', 'Ces informations sont publiées pour Google (Maps, recherche locale) et réutilisables sur le site avec les shortcodes [optimizr_adresse] ou [optimizr_telephone]. Elles doivent correspondre à votre fiche Google Business Profile.');
+    hpt_onboarding_require('hpt_local_types', 'local-seo.php');
+    $local = (array) get_option('hpt_local', []);
+    $type = $local['type'] ?? 'LocalBusiness';
+    ?>
+    <div class="ob-fields">
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label">Activité</span>
+            <select name="hpt_ob_local[type]" data-summary-value="Activité">
+                <?php foreach (hpt_local_types() as $schema => $label) : ?>
+                    <option value="<?php echo esc_attr($schema); ?>" <?php selected($type, $schema); ?>><?php echo esc_html($label); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <?php foreach (hpt_onboarding_local_fields() as $key => $field) :
+            $value = $local[$key] ?? ($key === 'country' ? 'FR' : '');
+            ?>
+            <label class="ob-field<?php echo $key === 'street' ? ' ob-field--wide' : ''; ?>">
+                <span class="ob-field__label"><?php echo esc_html($field[0]); ?></span>
+                <input type="<?php echo esc_attr($field[1]); ?>" name="hpt_ob_local[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>" placeholder="<?php echo esc_attr($field[2]); ?>" autocomplete="<?php echo esc_attr($field[3]); ?>"<?php echo $key === 'country' ? ' maxlength="2" pattern="[A-Za-z]{2}"' : ''; ?> data-summary-value="<?php echo esc_attr($field[0]); ?>">
+            </label>
+        <?php endforeach; ?>
+    </div>
+    <p class="ob-note"><?php echo hpt_icon('pin', 16); ?>Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local.</p>
+    <?php
+}
+
+function hpt_onboarding_step_pages($modules)
+{
+    hpt_onboarding_step_head('pages', 'Pages spéciales', 'Soignez la page introuvable', 'Choisissez une page rédigée dans l\'éditeur : elle s\'affiche avec la mise en page du thème, garde le code 404 et n\'est pas indexée.');
+    ?>
+    <div class="ob-fields">
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label">Contenu de la page 404</span>
+            <?php
+            $dropdown = wp_dropdown_pages([
+                'name'              => 'hpt_404_page',
+                'id'                => 'ob-404-page',
+                'selected'          => (int) get_option('hpt_404_page'),
+                'show_option_none'  => 'Page 404 du thème',
+                'option_none_value' => 0,
+                'post_status'       => ['publish', 'private', 'draft'],
+                'echo'              => 0,
+            ]);
+            echo $dropdown
+                ? str_replace('<select ', '<select data-summary-value="Page 404" ', $dropdown)
+                : '<span class="ob-field__help">Aucune page sur le site : créez-en une (« Page introuvable ») puis choisissez-la dans l\'onglet Pages spéciales.</span><input type="hidden" name="hpt_404_page" value="0">';
+            ?>
+        </label>
+    </div>
+    <div class="ob-options">
+        <?php hpt_onboarding_switch('hpt_404_suggestions', get_option('hpt_404_suggestions', 1), 'Suggérer des contenus proches', 'Liens vers les pages dont l\'adresse ressemble à celle demandée, et un champ de recherche.', 'Recommandé'); ?>
+    </div>
+    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin.</p>
+    <?php
+}
+
 function hpt_onboarding_step_cookies($modules)
 {
-    hpt_onboarding_step_head('cookies', 'Cookies & RGPD', 'Respectez la vie privée de vos visiteurs', 'Le bandeau Tarteaucitron ne charge les services de mesure qu\'après accord du visiteur.');
+    hpt_onboarding_step_head('cookies', 'Cookies & RGPD', 'Respectez la vie privée de vos visiteurs', 'Renseignez les outils de mesure du site : le bandeau Tarteaucitron ne les charge qu\'après accord du visiteur.');
     $style = get_option('hpt_option_tarteaucitron_banner_style', 'middle');
-    $ga = (array) get_option('hpt_option_service_google_analytics', []);
-    $gtm = (array) get_option('hpt_option_service_google_tags', []);
     ?>
     <div class="ob-options">
         <?php hpt_onboarding_switch('hpt_option_enable_tarteaucitron', get_option('hpt_option_enable_tarteaucitron', 1), 'Afficher le bandeau de consentement', 'Obligatoire dès qu\'un service de mesure d\'audience ou de publicité est utilisé.', 'Recommandé'); ?>
+    </div>
+
+    <div class="ob-fields">
+        <?php foreach (hpt_onboarding_cookie_fields() as $field => list($service, $key, $label, $example)) :
+            $saved = (array) get_option('hpt_option_service_' . $service, []);
+            ?>
+            <label class="ob-field">
+                <span class="ob-field__label"><?php echo esc_html($label); ?> <span class="ob-field__opt">facultatif</span></span>
+                <input type="text" name="<?php echo esc_attr($field); ?>" value="<?php echo esc_attr($saved[$key] ?? ''); ?>" placeholder="<?php echo esc_attr($example); ?>" spellcheck="false" autocomplete="off" data-summary-value="<?php echo esc_attr($label); ?>">
+            </label>
+        <?php endforeach; ?>
     </div>
 
     <fieldset class="ob-fieldset">
@@ -499,36 +774,25 @@ function hpt_onboarding_step_cookies($modules)
         <div class="ob-positions">
             <?php foreach (['top' => 'En haut', 'middle' => 'Au centre', 'bottom' => 'En bas'] as $value => $label) : ?>
                 <label class="ob-position ob-position--<?php echo esc_attr($value); ?>">
-                    <input type="radio" name="hpt_option_tarteaucitron_banner_style" value="<?php echo esc_attr($value); ?>" <?php checked($style, $value); ?>>
+                    <input type="radio" name="hpt_option_tarteaucitron_banner_style" value="<?php echo esc_attr($value); ?>" data-summary="Bandeau : <?php echo esc_attr(strtolower($label)); ?>" <?php checked($style, $value); ?>>
                     <span class="ob-position__preview" aria-hidden="true"><span class="ob-position__banner"></span></span>
                     <span class="ob-position__label"><?php echo esc_html($label); ?></span>
                 </label>
             <?php endforeach; ?>
         </div>
     </fieldset>
-
-    <div class="ob-fields">
-        <label class="ob-field">
-            <span class="ob-field__label">Google Analytics 4 <span class="ob-field__opt">facultatif</span></span>
-            <input type="text" name="hpt_ob_service_google_analytics" value="<?php echo esc_attr($ga['ID'] ?? ''); ?>" placeholder="G-XXXXXXXXXX" spellcheck="false" autocomplete="off" data-summary-value="Google Analytics">
-        </label>
-        <label class="ob-field">
-            <span class="ob-field__label">Google Tag Manager <span class="ob-field__opt">facultatif</span></span>
-            <input type="text" name="hpt_ob_service_google_tags" value="<?php echo esc_attr($gtm['ID'] ?? ''); ?>" placeholder="GTM-XXXXXXX" spellcheck="false" autocomplete="off" data-summary-value="Google Tag Manager">
-        </label>
-    </div>
-    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Couleurs du bandeau et autres services (Clarity, Matomo, Meta, reCAPTCHA…) : onglet Cookies & RGPD.</p>
+    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD.</p>
     <?php
 }
 
 function hpt_onboarding_step_ai($modules)
 {
-    hpt_onboarding_step_head('ai', 'Assistant IA', 'Laissez l\'IA rédiger pour vous', 'Meta descriptions et balises ALT générées à partir du contenu et du contexte du site. Chaque génération est facturée par le fournisseur choisi.');
+    hpt_onboarding_step_head('ai', 'Assistant IA', 'Laissez l\'IA rédiger pour vous', 'Meta descriptions et balises ALT générées à partir du contenu et de la description de votre activité. Chaque génération est facturée par le fournisseur choisi.');
     $providers = hpt_onboarding_ai_providers();
     $current = get_option('hpt_ai_provider', HPT_AI_DEFAULT_PROVIDER);
     $current = isset($providers[$current]) ? $current : HPT_AI_DEFAULT_PROVIDER;
     ?>
-    <fieldset class="ob-fieldset">
+    <fieldset class="ob-fieldset ob-fieldset--first">
         <legend class="ob-fieldset__title">Fournisseur</legend>
         <div class="ob-providers">
             <?php foreach ($providers as $slug => $provider) :
@@ -546,6 +810,23 @@ function hpt_onboarding_step_ai($modules)
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Clé API <a class="ob-field__link" href="#" target="_blank" rel="noopener noreferrer" data-ob-key-link>Obtenir une clé</a></span>
             <input type="password" name="hpt_ob_ai_key" value="" autocomplete="off" spellcheck="false" data-ob-key placeholder="Collez la clé de votre compte" data-placeholder-saved="Clé déjà enregistrée : laissez vide pour la conserver" data-placeholder-empty="Collez la clé de votre compte">
+        </label>
+        <?php foreach ($providers as $slug => $provider) :
+            $model = get_option($provider['model_option'], $provider['default'] ?? '');
+            ?>
+            <label class="ob-field ob-field--wide" data-ob-provider-row="<?php echo esc_attr($slug); ?>"<?php echo $slug === $current ? '' : ' hidden'; ?>>
+                <span class="ob-field__label">Modèle</span>
+                <select name="<?php echo esc_attr($provider['model_option']); ?>" data-summary-value="Modèle">
+                    <?php foreach ($provider['models'] as $id => $info) : ?>
+                        <option value="<?php echo esc_attr($id); ?>" <?php selected($model, $id); ?>><?php echo esc_html($info['label']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+        <?php endforeach; ?>
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label">Description de votre activité</span>
+            <textarea name="hpt_ai_context" rows="3" placeholder="Ex. : école de céramique à Lyon, cours pour adultes et enfants, stages le week-end." data-summary-value="Activité décrite"><?php echo esc_textarea(get_option('hpt_ai_context', '')); ?></textarea>
+            <span class="ob-field__help">Jointe à chaque demande : l'IA rédige avec le bon vocabulaire et le bon ton.</span>
         </label>
     </div>
     <div class="ob-options">
@@ -572,11 +853,32 @@ function hpt_onboarding_render_done()
             $next[$module['tab']] = $module;
         }
     }
+
+    $notices_key = 'hpt_onboarding_notices_' . get_current_user_id();
+    $notices = (array) get_transient($notices_key);
+    delete_transient($notices_key);
+
+    $login_url = hpt_is_module_active('security') && function_exists('hpt_sec_login_slug') && hpt_sec_login_slug() ? hpt_sec_login_url() : '';
     ?>
     <div class="ob-done">
         <p class="ob-step__eyebrow">Configuration terminée</p>
         <h1 class="ob-step__title" tabindex="-1">Optimizr veille sur votre site</h1>
         <p class="ob-step__intro">Les réglages sont enregistrés et actifs. Affinez chaque module depuis son onglet quand vous le souhaitez.</p>
+
+        <?php foreach (array_filter($notices) as $notice) : ?>
+            <p class="ob-alert" role="alert"><?php echo hpt_icon('alert', 18); ?><?php echo esc_html($notice); ?></p>
+        <?php endforeach; ?>
+
+        <?php if ($login_url) : ?>
+            <div class="ob-login-card">
+                <span class="ob-login-card__icon"><?php echo hpt_icon('lock', 20); ?></span>
+                <div>
+                    <p class="ob-login-card__title">Votre adresse de connexion</p>
+                    <a class="ob-login-card__url" href="<?php echo esc_url($login_url); ?>"><?php echo esc_html($login_url); ?></a>
+                    <p class="ob-login-card__help">Ajoutez-la à vos favoris : wp-login.php n'est plus accessible. Elle a aussi été envoyée à <?php echo esc_html(get_option('admin_email')); ?>.</p>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <?php if ($next) : ?>
             <h2 class="ob-fieldset__title">Pour aller plus loin</h2>
@@ -793,6 +1095,60 @@ function hpt_onboarding_illustration($name)
                     <g transform="translate(34 260)" fill="none" stroke="#ffd27a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 3 12h7l-1 6 8-10h-7z"/></g>
                     <text x="58" y="274" class="ob-svg-text">Indexation</text>
                 </g>
+            <?php
+            echo $close;
+            break;
+
+        case 'local':
+            echo $open;
+            ?>
+                <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
+                <g class="ob-a-float">
+                    <rect x="100" y="70" width="280" height="210" rx="20" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".22"/>
+                    <path d="M100 150h280M100 220h280M180 70v210M300 70v210" stroke="#fff" stroke-opacity=".08" stroke-width="8"/>
+                    <path d="M120 250c40-10 60-60 110-70s70 40 120 20" fill="none" stroke="url(#ob-g-cyan)" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10" class="ob-a-flow"/>
+                    <circle cx="120" cy="250" r="7" fill="#8af0ff"/>
+                </g>
+                <ellipse cx="240" cy="196" rx="26" ry="8" fill="#000" opacity=".25"/>
+                <circle cx="240" cy="190" r="30" fill="none" stroke="#7ef0c4" stroke-width="1.5" class="ob-a-ping"/>
+                <g transform="translate(240 190)"><g class="ob-a-pop">
+                    <path d="M0 0c-26-34-40-52-40-72a40 40 0 0 1 80 0c0 20-14 38-40 72z" fill="url(#ob-g-green)" filter="url(#ob-f-glow)"/>
+                    <circle cy="-72" r="15" fill="#fff"/>
+                </g></g>
+                <g class="ob-a-float ob-delay-2">
+                    <rect x="300" y="226" width="150" height="56" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
+                    <text x="316" y="248" class="ob-svg-text">Ouvert · 9:00–19:00</text>
+                    <g fill="#ffd27a"><?php for ($i = 0; $i < 5; $i++) : ?><path transform="translate(<?php echo 316 + $i * 14; ?> 258) scale(.5)" d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21l1.4-7L2 9.3l7-.8z"/><?php endfor; ?></g>
+                </g>
+                <g class="ob-a-float ob-delay-1">
+                    <rect x="30" y="92" width="134" height="40" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
+                    <g transform="translate(42 102)" fill="none" stroke="#8af0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 14.5v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.8 16.8 0 0 1-5.2-5.2A17 17 0 0 1 .9 3.6 1.7 1.7 0 0 1 2.6 1.8h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.6.6 2.4a1.7 1.7 0 0 1-.4 1.8L6 8.6a14 14 0 0 0 5.2 5.2l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.4.6a1.7 1.7 0 0 1 1.5 1.7z"/></g>
+                    <text x="68" y="117" class="ob-svg-text">Appeler</text>
+                </g>
+            <?php
+            echo $close;
+            break;
+
+        case 'pages':
+            echo $open;
+            ?>
+                <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-violet)" class="ob-a-breathe"/>
+                <g class="ob-a-float">
+                    <rect x="120" y="64" width="240" height="232" rx="18" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".22"/>
+                    <path d="M120 92h240" stroke="#fff" stroke-opacity=".14"/>
+                    <circle cx="138" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/><circle cx="150" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/><circle cx="162" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/>
+                    <text x="240" y="158" text-anchor="middle" class="ob-svg-score" style="font-size:52px">404</text>
+                    <rect x="170" y="176" width="140" height="7" rx="3.5" fill="#fff" fill-opacity=".3"/>
+                    <?php foreach ([0, 1, 2] as $i) : ?>
+                        <g transform="translate(150 <?php echo 198 + $i * 28; ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo 0.4 + 0.15 * $i; ?>s">
+                            <rect width="180" height="20" rx="10" fill="#fff" fill-opacity=".1" stroke="#d2c4ff" stroke-opacity=".5"/>
+                            <path d="M12 10h<?php echo [90, 120, 70][$i]; ?>" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M162 6l4 4-4 4" fill="none" stroke="#d2c4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g></g>
+                    <?php endforeach; ?>
+                </g>
+                <?php echo hpt_onboarding_badge(372, 106, hpt_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'); ?>
+                <?php echo hpt_onboarding_badge(108, 250, hpt_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'); ?>
             <?php
             echo $close;
             break;
