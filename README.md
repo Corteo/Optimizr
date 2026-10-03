@@ -178,6 +178,8 @@ Pour publier une version :
    - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en bêta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
    - **Pré-version** : fusionnez seulement dans `beta`.
 
+Un site de test réglé sur le canal **Développement** reçoit chaque version fusionnée dans `main`, avant toute publication. Il ne voit une nouveauté que si le numéro de version a augmenté : chaque PR incrémente donc la version.
+
 Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
 
 Les modèles et tarifs sont dans `hpt_ai_providers()` (`functions/ai-pricing.php`), avec leur date de relevé `HPT_AI_PRICING_DATE` : à vérifier à chaque version sur les grilles officielles d'[OpenAI](https://developers.openai.com/api/docs/pricing), d'[Anthropic](https://platform.claude.com/docs/en/about-claude/pricing) et de [Google](https://ai.google.dev/gemini-api/docs/pricing).

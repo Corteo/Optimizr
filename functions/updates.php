@@ -14,10 +14,11 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 /**
  * Canaux de mise à jour : chacun correspond à la branche GitHub du même nom.
  * « beta » reçoit aussi les versions finales (elles sont publiées sur les deux branches, cf. README.md).
+ * « main » suit la branche de développement, pour tester avant de publier sur stable ou beta.
  */
 function hpt_update_channels()
 {
-    return ['stable' => 'Stable', 'beta' => 'Bêta'];
+    return ['stable' => 'Stable', 'beta' => 'Bêta', 'main' => 'Développement (main)'];
 }
 
 /** Canal suivi. Sur un multisite, celui du site principal (les mises à jour concernent tout le réseau). */
@@ -63,6 +64,15 @@ function haptic_GPT_initialize_updater()
     );
 
     $updater->setBranch(hpt_update_channel());
+
+    // Sur « main », la librairie lirait la dernière release GitHub (donc la version stable) :
+    // on lui fait lire la branche elle-même, comme pour stable et beta.
+    $updater->addFilter('vcs_update_detection_strategies', function ($strategies, $slug) {
+        if ($slug === 'optimizr' && hpt_update_channel() === 'main' && isset($strategies['branch'])) {
+            return ['branch' => $strategies['branch']];
+        }
+        return $strategies;
+    }, 10, 2);
 
     $token = hpt_get_github_token();
     if ($token) {
