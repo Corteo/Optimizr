@@ -177,7 +177,7 @@ Pour publier une version :
 1. Modifiez le numéro aux deux endroits de `hpt_options.php` : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION`.
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
 3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `hpt_options.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
-   - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en bêta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
+   - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en beta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
    - **Pré-version** : fusionnez seulement dans `beta`.
 
 Un site de test réglé sur le canal **Développement** reçoit chaque version fusionnée dans `main`, avant toute publication. Il ne voit une nouveauté que si le numéro de version a augmenté : chaque PR incrémente donc la version.
