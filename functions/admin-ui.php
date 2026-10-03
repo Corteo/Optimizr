@@ -536,7 +536,7 @@ function hpt_render_dashboard()
                                 <option value="<?php echo esc_attr($channel); ?>" <?php selected(hpt_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <p class="optimizr-card__hint">Bêta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
+                        <p class="optimizr-card__hint">Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
                     <?php endif; ?>
                     <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page.</p>
                 </div>

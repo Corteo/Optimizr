@@ -37,7 +37,7 @@ function hpt_settings_internal_options()
         'hpt_maintenance_until',
         // Ce qu'efface la suppression du plugin sur ce site (cf. functions/uninstall.php)
         'hpt_uninstall',
-        // Canal de mise à jour : propre à chaque installation (un site client ne doit pas hériter du canal bêta)
+        // Canal de mise à jour : propre à chaque installation (un site client ne doit pas hériter du canal beta)
         'hpt_update_channel',
     ]);
 }
