@@ -105,14 +105,12 @@
                 .then(function (res) { return res.json(); })
                 .then(function (res) {
                     if (!res.success) {
-                        show('La vérification a échoué.', 'warn');
+                        show('La vérification a échoué' + (res.data && res.data.message ? ' : ' + res.data.message : '.'), 'warn');
                     } else if (res.data.status === 'update_available') {
                         show('Version ' + res.data.new_version + ' disponible. ', 'warn');
                         var link = document.createElement('a');
                         link.href = res.data.details_url;
-                        link.target = '_blank';
-                        link.rel = 'noopener';
-                        link.textContent = 'Détails';
+                        link.textContent = 'Mettre à jour';
                         status.appendChild(link);
                     } else {
                         show('Optimizr est à jour.', 'ok');

@@ -228,11 +228,15 @@ function hpt_options_admin_menu()
     );
 }
 
-// Réglages du tableau de bord : liste des modules actifs
+// Réglages du tableau de bord : liste des modules actifs et canal de mise à jour
 add_action('admin_init', function () {
     register_setting(hpt_settings_group('dashboard'), 'hpt_modules', [
         'type'              => 'array',
         'sanitize_callback' => 'hpt_sanitize_modules',
+    ]);
+    register_setting(hpt_settings_group('dashboard'), 'hpt_update_channel', [
+        'type'              => 'string',
+        'sanitize_callback' => 'hpt_sanitize_update_channel',
     ]);
 });
 
@@ -523,8 +527,17 @@ function hpt_render_dashboard()
                         <dt>Version installée</dt>
                         <dd><?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></dd>
                         <dt>Canal</dt>
-                        <dd>stable</dd>
+                        <dd><?php echo esc_html(hpt_update_channels()[hpt_update_channel()]); ?></dd>
                     </dl>
+                    <?php if (current_user_can('update_plugins') && (!is_multisite() || is_main_site())) : ?>
+                        <label class="optimizr-field__label" for="hpt_update_channel">Canal suivi</label>
+                        <select name="hpt_update_channel" id="hpt_update_channel">
+                            <?php foreach (hpt_update_channels() as $channel => $label) : ?>
+                                <option value="<?php echo esc_attr($channel); ?>" <?php selected(hpt_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="optimizr-card__hint">Bêta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
+                    <?php endif; ?>
                     <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement.</p>
                 </div>
             </section>

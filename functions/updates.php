@@ -12,6 +12,40 @@ require_once plugin_dir_path(__DIR__) . '/assets/plugin-update-checker/5.6/plugi
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 /**
+ * Canaux de mise à jour : chacun correspond à la branche GitHub du même nom.
+ * « beta » reçoit aussi les versions finales (elles sont publiées sur les deux branches, cf. README.md).
+ * « main » suit la branche de développement, pour tester avant de publier sur stable ou beta.
+ */
+function hpt_update_channels()
+{
+    return ['stable' => 'Stable', 'beta' => 'Bêta', 'main' => 'Développement (main)'];
+}
+
+/** Canal suivi. Sur un multisite, celui du site principal (les mises à jour concernent tout le réseau). */
+function hpt_update_channel()
+{
+    $channel = is_multisite() ? get_blog_option(get_main_site_id(), 'hpt_update_channel') : get_option('hpt_update_channel');
+    return isset(hpt_update_channels()[$channel]) ? $channel : 'stable';
+}
+
+function hpt_sanitize_update_channel($value)
+{
+    // Choix réservé à qui peut installer les mises à jour (sinon on garde la valeur actuelle)
+    if (!current_user_can('update_plugins')) {
+        return get_option('hpt_update_channel', 'stable');
+    }
+    return isset(hpt_update_channels()[$value]) ? $value : 'stable';
+}
+
+// Changement de canal : on oublie la dernière vérification, la suivante lit la nouvelle branche
+add_action('update_option_hpt_update_channel', 'hpt_update_channel_reset');
+add_action('add_option_hpt_update_channel', 'hpt_update_channel_reset');
+function hpt_update_channel_reset()
+{
+    delete_site_option('external_updates-optimizr');
+}
+
+/**
  * Initialise le système de mise à jour du plugin (instance unique par requête).
  */
 function haptic_GPT_initialize_updater()
@@ -29,7 +63,16 @@ function haptic_GPT_initialize_updater()
         'optimizr'
     );
 
-    $updater->setBranch('stable');
+    $updater->setBranch(hpt_update_channel());
+
+    // Sur « main », la librairie lirait la dernière release GitHub (donc la version stable) :
+    // on lui fait lire la branche elle-même, comme pour stable et beta.
+    $updater->addFilter('vcs_update_detection_strategies', function ($strategies, $slug) {
+        if ($slug === 'optimizr' && hpt_update_channel() === 'main' && isset($strategies['branch'])) {
+            return ['branch' => $strategies['branch']];
+        }
+        return $strategies;
+    }, 10, 2);
 
     $token = hpt_get_github_token();
     if ($token) {
@@ -104,12 +147,24 @@ function haptic_GPT_ajax_check_github_updates()
     try {
         $update = $checker->checkForUpdates();
 
-        if ($update && !empty($update->new_version)) {
-            hpt_log('[AJAX Updates] Nouvelle version disponible : ' . $update->new_version);
+        // La librairie renvoie un objet Update : le numéro est dans « version » (« new_version » n'existe qu'au format WordPress)
+        if ($update && !empty($update->version)) {
+            hpt_log('[AJAX Updates] Nouvelle version disponible : ' . $update->version);
             wp_send_json_success([
                 'status' => 'update_available',
-                'new_version' => $update->new_version,
-                'details_url' => $update->details_url,
+                'new_version' => $update->version,
+                'details_url' => self_admin_url('update-core.php'),
+            ]);
+        }
+
+        // Dépôt injoignable ou jeton refusé : le signaler plutôt qu'annoncer « à jour »
+        $errors = $checker->getLastRequestApiErrors();
+        if ($errors) {
+            $message = $errors[0]['error'] instanceof WP_Error ? $errors[0]['error']->get_error_message() : 'GitHub injoignable';
+            hpt_log('[AJAX Updates] Erreur lors de la vérification : ' . $message);
+            wp_send_json_error([
+                'status' => 'error',
+                'message' => $message,
             ]);
         } else {
             hpt_log('[AJAX Updates] Aucune mise à jour détectée.');
