@@ -247,6 +247,63 @@
     font-size: 14px;
 }
 
+/* Invitation à lancer l'assistant de configuration (tableau de bord, functions/onboarding.php) */
+.optimizr-onboarding-cta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: var(--o-radius);
+    background: linear-gradient(135deg, #111d4f, #0b1437);
+    color: #fff;
+}
+
+.optimizr-onboarding-cta__icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8aa4ff, #3858e9);
+}
+
+.optimizr-onboarding-cta__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.optimizr .optimizr-onboarding-cta__title {
+    margin: 0 0 2px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.optimizr-onboarding-cta__text p {
+    margin: 0;
+    color: rgba(255, 255, 255, .75);
+    font-size: 13px;
+}
+
+/* Mobile : icône et texte sur toute la largeur, bouton en dessous */
+@media (max-width: 782px) {
+    .optimizr-onboarding-cta {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        align-items: start;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .optimizr-onboarding-cta .optimizr-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
 .optimizr-layout {
     display: grid;
     gap: 24px;
@@ -1724,7 +1781,13 @@
     .optimizr-header__actions {
         width: 100%;
         margin-left: 0;
+        flex-wrap: wrap;
+        gap: 8px;
         justify-content: space-between;
+    }
+
+    .optimizr-header__actions .optimizr-btn {
+        flex: 1 1 auto;
     }
 
     .optimizr-modules,

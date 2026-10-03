@@ -9,6 +9,7 @@ function hpt_options_activate()
     hpt_redirects_install();
     add_option('hpt_debug_mode', false);
     add_option('hpt_dev_mode', false);
+    hpt_onboarding_schedule_redirect();
     add_action('admin_notices', 'hpt_options_activation_notice');
 }
 
@@ -178,5 +179,6 @@ function hpt_options_maybe_upgrade()
 // Sur init (tard) : types de contenu et shortcodes chargés, nécessaires pour comparer les extraits
 add_action('init', 'hpt_options_maybe_upgrade', 99);
 
-register_activation_hook(__DIR__ . '/../hpt_options.php', 'hpt_options_activate');
-register_deactivation_hook(__DIR__ . '/../hpt_options.php', 'hpt_options_deactivate');
+// Chemin sans « .. » : plugin_basename() ne le résout pas, et le hook ne correspondrait à aucune extension
+register_activation_hook(HPT_OPTIMIZR_PATH . 'hpt_options.php', 'hpt_options_activate');
+register_deactivation_hook(HPT_OPTIMIZR_PATH . 'hpt_options.php', 'hpt_options_deactivate');

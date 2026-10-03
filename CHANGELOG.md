@@ -6,6 +6,44 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.4.0] - 2026-10-03
+
+Version finale regroupant les versions 2.4.0-beta.1 à 2.4.0-beta.3.
+
+### Ajouté
+- Assistant de configuration en plein écran, en plusieurs étapes, avec illustrations animées sur la sécurité, la performance et l'optimisation. Il fait renseigner les vrais réglages : adresse de connexion, verrouillage et liste blanche d'IP, nom du site, motifs SEO et codes de vérification, établissement (SEO local), page 404, identifiants Analytics / Tag Manager / Clarity / Pixel Meta, fournisseur, modèle et contexte de l'assistant IA. Il s'ouvre à la première activation, puis depuis le menu Optimizr › Assistant ; le tableau de bord propose de le lancer tant qu'il n'a été ni terminé ni écarté.
+
+### Corrigé
+- Les actions d'activation et de désactivation du plugin ne s'exécutaient jamais. La désactivation supprime de nouveau le sitemap généré, le fichier de clé IndexNow et la règle .htaccess du module Sécurité.
+- Sur mobile, les boutons de l'en-tête de la page d'options restent dans l'écran au lieu de déborder.
+
+## [2.4.0-beta.3] - 2026-10-03
+
+### Corrigé
+- Sur mobile, le bandeau « Configurez l'essentiel » du tableau de bord n'est plus à l'étroit : le texte occupe toute la largeur et le bouton « Lancer l'assistant » passe en dessous.
+- Sur mobile, les boutons de l'en-tête (« Assistant de configuration », « Vérifier les mises à jour ») restent dans l'écran au lieu de déborder.
+
+## [2.4.0-beta.2] - 2026-10-03
+
+### Modifié
+- L'assistant de configuration fait renseigner les réglages au lieu de seulement activer des fonctions :
+  - **Sécurité :** adresse de connexion personnalisée (avec proposition automatique, contrôle et rappel de la nouvelle adresse à la fin), nombre d'échecs et durée du verrouillage, adresses IP jamais verrouillées (bouton « Ajouter mon adresse »).
+  - **Référencement :** nom et slogan du site, motifs du titre et de la description avec insertion des variables, codes de vérification Google Search Console et Bing.
+  - **Établissement** (nouvelle étape, module SEO local) : activité, nom, adresse, téléphone et email publiés pour Google.
+  - **Page 404** (nouvelle étape, module Pages spéciales) : page affichée et suggestions de contenus.
+  - **Cookies & RGPD :** identifiants Microsoft Clarity et Pixel Meta en plus de Google Analytics et Tag Manager.
+  - **Assistant IA :** choix du modèle et description de l'activité.
+- Une étape ne se valide que si ses champs sont corrects (adresse de connexion, email, code pays).
+- Orthographe « Beta » au lieu de « Bêta » (canal de mise à jour, carte « Mises à jour »).
+
+## [2.4.0-beta.1] - 2026-10-03
+
+### Ajouté
+- Assistant de configuration en plein écran, en plusieurs étapes : choix des modules, protections de sécurité recommandées, référencement (balises, données structurées, contenus du sitemap), bandeau de cookies et identifiants Google Analytics / Tag Manager, fournisseur et clé de l'assistant IA, puis récapitulatif avant application. Illustrations animées sur la sécurité, la performance et l'optimisation (animations coupées si le système demande moins de mouvement). Il s'ouvre à la première activation du plugin, puis à la demande depuis le menu Optimizr › Assistant, le bouton « Assistant de configuration » de la page d'options ou la liste des extensions. Tant qu'il n'a été ni terminé ni écarté, le tableau de bord propose de le lancer.
+
+### Corrigé
+- Les actions d'activation et de désactivation du plugin ne s'exécutaient jamais (chemin du fichier principal mal résolu). La désactivation supprime de nouveau le sitemap généré, le fichier de clé IndexNow et la règle .htaccess du module Sécurité.
+
 ## [2.3.2] - 2026-10-03
 
 ### Modifié
