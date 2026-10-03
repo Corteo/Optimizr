@@ -1851,6 +1851,12 @@
     gap: 6px;
 }
 
+/* Case à cocher et son texte sur une ligne (onglet Outils) */
+.optimizr-card__body > label.optimizr-check {
+    flex-direction: row;
+    gap: 10px;
+}
+
 .optimizr-redirect-form .optimizr-field__label,
 .optimizr-card__body > label .optimizr-field__label {
     display: block;
