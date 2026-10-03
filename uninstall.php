@@ -22,3 +22,6 @@ if (is_multisite()) {
 } else {
     hpt_uninstall_site();
 }
+
+// Toujours : cache de l'outil de mise à jour (une seule option pour tout le réseau sur un multisite)
+delete_site_option('external_updates-optimizr');

@@ -6,8 +6,10 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.1.0] - 2026-10-03
+
 ### Ajouté
-- Suppression du plugin : un fichier `uninstall.php` efface les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow, règle `.htaccess`). Réglages, redirections et SEO des contenus, et journaux ne sont effacés que si on l'a demandé ; par défaut, tout est conservé. Multisite pris en charge.
+- Suppression du plugin : un fichier `uninstall.php` efface les tâches planifiées, les caches (dont celui de l'outil de mise à jour) et les fichiers générés (sitemap, clé IndexNow, règle `.htaccess`). Réglages, redirections et SEO des contenus, et journaux ne sont effacés que si on l'a demandé ; par défaut, tout est conservé. Multisite pris en charge.
 - La question est posée au clic sur « Désactiver » dans la liste des extensions (un plugin désactivé n'exécute plus de code), et les choix restent modifiables dans l'onglet **Outils**.
 
 ### Corrigé
