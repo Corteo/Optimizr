@@ -106,7 +106,12 @@
                 if (input.checked) items.push(input.dataset.summary);
             });
             step.querySelectorAll('[data-summary-value]').forEach(function (input) {
-                if (input.value.trim()) items.push(input.dataset.summaryValue + ' : ' + input.value.trim());
+                // Champ masqué (modèle d'un autre fournisseur) : non retenu
+                if (input.closest('[hidden]')) return;
+                var value = input.tagName === 'SELECT'
+                    ? (input.selectedIndex > -1 ? input.options[input.selectedIndex].text : '')
+                    : input.value.trim().split(/\s*\n\s*/).join(', ');
+                if (value) items.push(input.dataset.summaryValue + ' : ' + (input.dataset.summaryPrefix || '') + value);
             });
             var key = step.querySelector('[data-ob-key]');
             if (key && key.value.trim()) items.push('Nouvelle clé API');
@@ -155,16 +160,87 @@
     });
     syncProvider();
 
+    // Modèle proposé selon le fournisseur choisi
+    form.querySelectorAll('input[name="hpt_ai_provider"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            form.querySelectorAll('[data-ob-provider-row]').forEach(function (row) {
+                row.hidden = row.dataset.obProviderRow !== radio.value;
+            });
+        });
+    });
+
+    /* ---------- Sécurité : adresse de connexion et liste blanche ---------- */
+
+    var slugInput = form.querySelector('#ob-login-slug');
+    var suggest = form.querySelector('[data-ob-suggest-slug]');
+    if (suggest && slugInput) {
+        suggest.addEventListener('click', function () {
+            var words = ['espace', 'acces', 'gestion', 'atelier', 'bureau', 'coulisses'];
+            var rand = Math.random().toString(36).slice(2, 6);
+            slugInput.value = words[Math.floor(Math.random() * words.length)] + '-' + rand;
+            slugInput.focus();
+        });
+    }
+
+    var addIp = form.querySelector('[data-ob-add-ip]');
+    if (addIp) {
+        addIp.addEventListener('click', function () {
+            var area = form.querySelector('#ob-login-whitelist');
+            var ip = addIp.dataset.obAddIp;
+            var lines = area.value.split(/\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+            if (lines.indexOf(ip) === -1) lines.push(ip);
+            area.value = lines.join('\n');
+            addIp.disabled = true;
+            addIp.textContent = 'Adresse ajoutée';
+        });
+    }
+
+    /* ---------- Référencement : variables des motifs ---------- */
+
+    var lastPattern = form.querySelector('[data-ob-pattern]');
+    form.querySelectorAll('[data-ob-pattern]').forEach(function (input) {
+        input.addEventListener('focus', function () { lastPattern = input; });
+    });
+    form.querySelectorAll('[data-ob-var]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            if (!lastPattern) return;
+            var value = lastPattern.value;
+            var start = lastPattern.selectionStart != null ? lastPattern.selectionStart : value.length;
+            var end = lastPattern.selectionEnd != null ? lastPattern.selectionEnd : value.length;
+            var text = button.dataset.obVar;
+            lastPattern.value = value.slice(0, start) + text + value.slice(end);
+            lastPattern.focus();
+            lastPattern.setSelectionRange(start + text.length, start + text.length);
+        });
+    });
+
     /* ---------- Navigation ---------- */
 
-    next.addEventListener('click', function () { show(current + 1, false); });
+    // Champs de l'étape affichée : on ne passe à la suivante que s'ils sont valides
+    function stepIsValid() {
+        var step = visibleSteps()[current];
+        var fields = step.querySelectorAll('input, select, textarea');
+        for (var i = 0; i < fields.length; i++) {
+            if (!fields[i].closest('[hidden]') && !fields[i].checkValidity()) {
+                fields[i].reportValidity();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function goNext() {
+        if (stepIsValid()) show(current + 1, false);
+    }
+
+    next.addEventListener('click', goNext);
     prev.addEventListener('click', function () { show(current - 1, true); });
 
     // Entrée dans un champ : étape suivante plutôt qu'enregistrement anticipé
     form.addEventListener('submit', function (event) {
         if (current < visibleSteps().length - 1) {
             event.preventDefault();
-            show(current + 1, false);
+            goNext();
             return;
         }
         submit.setAttribute('aria-busy', 'true');
