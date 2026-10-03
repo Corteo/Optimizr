@@ -6,6 +6,12 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.4.0-beta.3] - 2026-10-03
+
+### Corrigé
+- Sur mobile, le bandeau « Configurez l'essentiel » du tableau de bord n'est plus à l'étroit : le texte occupe toute la largeur et le bouton « Lancer l'assistant » passe en dessous.
+- Sur mobile, les boutons de l'en-tête (« Assistant de configuration », « Vérifier les mises à jour ») restent dans l'écran au lieu de déborder.
+
 ## [2.4.0-beta.2] - 2026-10-03
 
 ### Modifié
