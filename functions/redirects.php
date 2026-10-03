@@ -71,6 +71,15 @@ function hpt_redirects_target_url($target)
     return home_url('/' . ltrim($target, '/'));
 }
 
+/** Destination sur ce site (chemin relatif, ou URL complète du même domaine). */
+function hpt_redirects_target_is_internal($target)
+{
+    if (!preg_match('#^https?://#i', (string) $target)) {
+        return true;
+    }
+    return strcasecmp((string) wp_parse_url($target, PHP_URL_HOST), (string) wp_parse_url(home_url(), PHP_URL_HOST)) === 0;
+}
+
 /* ---------- Règles ---------- */
 
 /**
@@ -137,6 +146,14 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
     }
     if ($code !== 410 && strpos($source, '*') === false && hpt_redirects_normalize(hpt_redirects_target_url($target)) === $source) {
         return new WP_Error('hpt_redirect_loop', 'La destination renvoie vers la source : la redirection tournerait en boucle.');
+    }
+    // Joker : une destination interne couverte par la source (« /blog/* » → « /blog/nouveau/* ») serait redirigée à son tour
+    if ($code !== 410 && substr($source, -1) === '*' && hpt_redirects_target_is_internal($target)) {
+        $prefix = rtrim(substr($source, 0, -1), '/');
+        $target_path = strtok(hpt_redirects_normalize(str_replace('*', '', hpt_redirects_target_url($target))), '?');
+        if ($prefix === '' || stripos($target_path . '/', $prefix . '/') === 0) {
+            return new WP_Error('hpt_redirect_loop', 'La destination fait partie des adresses redirigées par ce joker : la redirection tournerait en boucle.');
+        }
     }
 
     $data = ['source' => $source, 'target' => $target, 'code' => $code, 'note' => mb_substr(sanitize_text_field((string) $note), 0, 255)];

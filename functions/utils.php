@@ -210,7 +210,7 @@ function haptic_GPT_display_php_errors_in_popup()
     }
 
     // Convertir les erreurs en JSON pour les transmettre au script JS
-    $errors_json = json_encode($hpt_collected_errors);
+    $errors_json = wp_json_encode($hpt_collected_errors, JSON_HEX_TAG);
     ?>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -335,7 +335,7 @@ function _hpt_console_execute($message, $context = null)
         $output .= ' | ' . ((is_array($context) || is_object($context)) ? json_encode($context) : $context);
     }
 
-    echo "<script>console.log(" . json_encode($output) . ");</script>";
+    echo "<script>console.log(" . wp_json_encode($output, JSON_HEX_TAG) . ");</script>";
 }
 
 // Dans le footer : un <script> émis pendant admin_init casserait les en-têtes HTTP

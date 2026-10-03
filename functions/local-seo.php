@@ -182,6 +182,7 @@ function hpt_local_hours_callback()
     echo '</div>';
 }
 
+/** Valeurs déjà sans barres obliques d'échappement (options.php, assistant, import du thème). */
 function hpt_local_sanitize($input)
 {
     $input = is_array($input) ? $input : [];
@@ -189,10 +190,10 @@ function hpt_local_sanitize($input)
 
     $clean['type'] = array_key_exists($input['type'] ?? '', hpt_local_types()) ? $input['type'] : 'LocalBusiness';
     foreach (['name', 'street', 'postal_code', 'city', 'region', 'price_range', 'place_id', 'phone'] as $key) {
-        $clean[$key] = sanitize_text_field(wp_unslash($input[$key] ?? ''));
+        $clean[$key] = sanitize_text_field($input[$key] ?? '');
     }
     $clean['country'] = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string) ($input['country'] ?? 'FR')), 0, 2)) ?: 'FR';
-    $clean['description'] = sanitize_textarea_field(wp_unslash($input['description'] ?? ''));
+    $clean['description'] = sanitize_textarea_field($input['description'] ?? '');
     $clean['email'] = sanitize_email($input['email'] ?? '');
     $clean['logo'] = esc_url_raw($input['logo'] ?? '');
     $clean['image'] = esc_url_raw($input['image'] ?? '');
@@ -326,7 +327,7 @@ add_action('wp_head', function () {
     }
     $schema = hpt_local_schema();
     if ($schema) {
-        echo '<script type="application/ld+json">' . wp_json_encode(['@context' => 'https://schema.org'] + $schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
+        echo '<script type="application/ld+json">' . wp_json_encode(['@context' => 'https://schema.org'] + $schema, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
     }
 }, 20);
 

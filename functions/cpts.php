@@ -149,6 +149,20 @@ function haptic_GPT_register_custom_cpts()
 add_action('init', 'haptic_GPT_register_custom_cpts');
 
 /**
+ * Types ajoutés, renommés ou retirés : les règles de réécriture sont recalculées à la requête suivante,
+ * sinon les adresses des nouveaux types renvoient une page introuvable jusqu'au réenregistrement des permaliens.
+ */
+function haptic_GPT_reset_rewrite_rules()
+{
+    delete_option('rewrite_rules');
+}
+foreach (['hpt_custom_cpts', 'hpt_options_settings'] as $hpt_cpt_option) {
+    add_action('update_option_' . $hpt_cpt_option, 'haptic_GPT_reset_rewrite_rules');
+    add_action('add_option_' . $hpt_cpt_option, 'haptic_GPT_reset_rewrite_rules');
+}
+unset($hpt_cpt_option);
+
+/**
  * Ajoute un nouvel onglet dans la page des réglages pour la gestion des CPTs.
  *
  * Cet onglet permet d'activer le CPT prédéfini "Évènements" et de créer de nouveaux CPTs via l'interface.

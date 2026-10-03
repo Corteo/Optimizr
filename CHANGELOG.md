@@ -6,6 +6,18 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.4.1] - 2026-10-03
+
+### Corrigé
+- La suppression du plugin depuis la liste des extensions provoquait une erreur fatale (depuis la 2.4.0) : les fichiers restaient en place et les choix de nettoyage n'étaient pas appliqués.
+- Données structurées (JSON-LD) : un titre ou un résumé contenant « </script> » sous forme d'entités HTML pouvait injecter du code dans les pages publiques. Les chevrons sont désormais échappés.
+- Redirections : un joker dont la destination fait partie des adresses redirigées (« /blog/* » vers « /blog/nouveau/* », ou « /* ») est refusé au lieu de créer une boucle infinie.
+- Types de contenu personnalisés : les adresses d'un type ajouté ou renommé fonctionnent tout de suite, sans réenregistrer les permaliens.
+- Premier enregistrement du tableau de bord ou de l'assistant : désactiver le module SEO supprime bien le sitemap généré, et activer Redirections crée bien ses tables.
+- IndexNow : le fichier de clé est republié à la réactivation du plugin (la désactivation le supprime).
+- SEO local : les barres obliques inverses saisies dans les champs ne disparaissent plus à l'enregistrement.
+- Bandeau cookies : le numéro de version de Tarteaucitron transmis au navigateur correspond à la librairie embarquée (1.21.0), pour que le cache soit renouvelé.
+
 ## [2.4.0] - 2026-10-03
 
 Version finale regroupant les versions 2.4.0-beta.1 à 2.4.0-beta.3.

@@ -387,6 +387,7 @@ add_action('wp_head', function () {
     }
     $graph = hpt_schema_graph();
     if ($graph) {
-        echo '<script type="application/ld+json">' . wp_json_encode(['@context' => 'https://schema.org', '@graph' => array_values($graph)], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
+        // JSON_HEX_TAG : un « </script> » dans un titre ou un résumé ne peut pas fermer la balise
+        echo '<script type="application/ld+json">' . wp_json_encode(['@context' => 'https://schema.org', '@graph' => array_values($graph)], JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
     }
 }, 20);

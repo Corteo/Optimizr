@@ -258,7 +258,7 @@ add_action('hpt_admin_aside_cookies', function () {
 
 add_action('before_hpt_options_enqueue_scripts', function () {
     if (get_option('hpt_option_enable_tarteaucitron')) {
-        wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.19.0', true);
+        wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
     }
 });
 

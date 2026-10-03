@@ -7,6 +7,10 @@ if (!defined('ABSPATH')) {
 function hpt_options_activate()
 {
     hpt_redirects_install();
+    // Le fichier de clé IndexNow, supprimé à la désactivation, est republié
+    if (function_exists('hpt_indexnow_setup') && get_option('hpt_seo_indexnow')) {
+        hpt_indexnow_setup(true);
+    }
     add_option('hpt_debug_mode', false);
     add_option('hpt_dev_mode', false);
     hpt_onboarding_schedule_redirect();
@@ -79,10 +83,18 @@ function hpt_redirects_install()
 }
 
 // Activation du module depuis le tableau de bord : ses tables doivent exister avant la première visite
-add_action('update_option_hpt_modules', function ($old, $new) {
+function hpt_redirects_maybe_install($new)
+{
     if (is_array($new) && !empty($new['redirects'])) {
         hpt_redirects_install();
     }
+}
+add_action('update_option_hpt_modules', function ($old, $new) {
+    hpt_redirects_maybe_install($new);
+}, 10, 2);
+// Premier enregistrement du tableau de bord ou de l'assistant : l'option est créée, pas modifiée
+add_action('add_option_hpt_modules', function ($option, $value) {
+    hpt_redirects_maybe_install($value);
 }, 10, 2);
 
 /** Marqueur présent dans chaque fichier de sitemap généré par Optimizr. */
@@ -120,6 +132,11 @@ function hpt_sitemap_delete_files()
 // Désactivation du module SEO depuis le tableau de bord
 add_action('update_option_hpt_modules', function ($old, $new) {
     if (is_array($new) && empty($new['seo'])) {
+        hpt_sitemap_delete_files();
+    }
+}, 10, 2);
+add_action('add_option_hpt_modules', function ($option, $value) {
+    if (is_array($value) && empty($value['seo'])) {
         hpt_sitemap_delete_files();
     }
 }, 10, 2);
@@ -179,6 +196,7 @@ function hpt_options_maybe_upgrade()
 // Sur init (tard) : types de contenu et shortcodes chargés, nécessaires pour comparer les extraits
 add_action('init', 'hpt_options_maybe_upgrade', 99);
 
-// Chemin sans « .. » : plugin_basename() ne le résout pas, et le hook ne correspondrait à aucune extension
-register_activation_hook(HPT_OPTIMIZR_PATH . 'hpt_options.php', 'hpt_options_activate');
-register_deactivation_hook(HPT_OPTIMIZR_PATH . 'hpt_options.php', 'hpt_options_deactivate');
+// Chemin sans « .. » : plugin_basename() ne le résout pas, et le hook ne correspondrait à aucune extension.
+// dirname() plutôt que HPT_OPTIMIZR_PATH : uninstall.php charge ce fichier sans le fichier principal du plugin.
+register_activation_hook(dirname(__DIR__) . '/hpt_options.php', 'hpt_options_activate');
+register_deactivation_hook(dirname(__DIR__) . '/hpt_options.php', 'hpt_options_deactivate');
