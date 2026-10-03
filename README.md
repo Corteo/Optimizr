@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.3.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.4.0-beta.1 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -105,6 +105,7 @@ Après la mise à jour, tous les modules sont actifs. Les nouveaux (SEO local, P
 
 Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
+- **Assistant de configuration :** s'ouvre en plein écran à la première activation du plugin, puis à la demande (menu **Optimizr › Assistant**, bouton « Assistant de configuration » de la page d'options, lien dans la liste des extensions). En quelques étapes, il fait choisir les modules puis propose les réglages recommandés de sécurité, de référencement, de cookies et d'assistant IA. Rien n'est enregistré avant la dernière étape ; les étapes des modules non choisis sont sautées.
 - **Tableau de bord :** activez les modules utiles et consultez l'état du site (sitemap, bandeau cookies, clé API, indexation).
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 - **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
@@ -141,6 +142,7 @@ Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant
 ```
 hpt_options.php          Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
+functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, sitemap, balises, options avancées)

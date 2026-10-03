@@ -39,6 +39,8 @@ function hpt_settings_internal_options()
         'hpt_uninstall',
         // Canal de mise à jour : propre à chaque installation (un site client ne doit pas hériter du canal bêta)
         'hpt_update_channel',
+        // Assistant de configuration déjà passé sur ce site
+        'hpt_onboarding_done',
     ]);
 }
 

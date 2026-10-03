@@ -281,6 +281,7 @@ function hpt_options_settings_page()
                 <h1 class="optimizr-header__title">Optimizr</h1>
                 <span class="optimizr-badge">v<?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">
+                    <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo hpt_icon('sparkles', 16); ?>Assistant de configuration</a>
                     <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
                     <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
                         <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
@@ -466,6 +467,17 @@ function hpt_render_dashboard()
         <h2 class="optimizr-page-head__title">Vue d'ensemble</h2>
         <p class="optimizr-page-head__intro">Activez les modules dont votre site a besoin. Chaque module actif ajoute son onglet de réglages.</p>
     </div>
+
+    <?php if (!get_option('hpt_onboarding_done')) : ?>
+        <div class="optimizr-onboarding-cta">
+            <span class="optimizr-onboarding-cta__icon"><?php echo hpt_icon('sparkles', 22); ?></span>
+            <div class="optimizr-onboarding-cta__text">
+                <h3 class="optimizr-onboarding-cta__title">Configurez l'essentiel en quelques minutes</h3>
+                <p>L'assistant active les modules utiles et les réglages recommandés de sécurité, de référencement et de confidentialité.</p>
+            </div>
+            <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--primary">Lancer l'assistant</a>
+        </div>
+    <?php endif; ?>
 
     <div class="optimizr-layout optimizr-layout--aside">
         <div class="optimizr-layout__main">

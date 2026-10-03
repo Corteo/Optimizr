@@ -6,6 +6,14 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.4.0-beta.1] - 2026-10-03
+
+### Ajouté
+- Assistant de configuration en plein écran, en plusieurs étapes : choix des modules, protections de sécurité recommandées, référencement (balises, données structurées, contenus du sitemap), bandeau de cookies et identifiants Google Analytics / Tag Manager, fournisseur et clé de l'assistant IA, puis récapitulatif avant application. Illustrations animées sur la sécurité, la performance et l'optimisation (animations coupées si le système demande moins de mouvement). Il s'ouvre à la première activation du plugin, puis à la demande depuis le menu Optimizr › Assistant, le bouton « Assistant de configuration » de la page d'options ou la liste des extensions. Tant qu'il n'a été ni terminé ni écarté, le tableau de bord propose de le lancer.
+
+### Corrigé
+- Les actions d'activation et de désactivation du plugin ne s'exécutaient jamais (chemin du fichier principal mal résolu). La désactivation supprime de nouveau le sitemap généré, le fichier de clé IndexNow et la règle .htaccess du module Sécurité.
+
 ## [2.3.1] - 2026-10-03
 
 ### Modifié
