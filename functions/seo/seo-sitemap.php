@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) {
  *
  * Écrit dans des fichiers statiques à la racine du site (sitemap.xml, et sitemap-N.xml au-delà de
  * 50 000 URL) : ils fonctionnent aussi avec les permaliens simples, sans règle de réécriture.
+ * Sur un multisite, la racine est commune à tous les sites : chaque site sert le sien par WordPress,
+ * depuis un cache. Ce cache sert aussi de secours quand la racine n'est pas accessible en écriture.
  * Régénéré en arrière-plan une minute après une modification de contenu, et une fois par jour.
  */
 
@@ -170,6 +172,85 @@ function hpt_sitemap_write_file($name, $content)
 }
 
 /**
+ * Contenu des fichiers du sitemap, dans l'ordre d'écriture : au-delà de hpt_sitemap_max_urls() URL,
+ * les fichiers de découpage (sitemap-N.xml) puis leur index (sitemap.xml).
+ *
+ * @param int $count Reçoit le nombre d'URL
+ * @return array nom du fichier => XML
+ */
+function hpt_sitemap_build(&$count = 0)
+{
+    $urls = hpt_sitemap_urls();
+    $count = count($urls);
+    $chunks = array_chunk($urls, max(1, hpt_sitemap_max_urls()));
+
+    if (count($chunks) === 1) {
+        return ['sitemap.xml' => hpt_sitemap_urlset_xml($chunks[0])];
+    }
+
+    $files = [];
+    foreach ($chunks as $i => $chunk) {
+        $files['sitemap-' . ($i + 1) . '.xml'] = hpt_sitemap_urlset_xml($chunk);
+    }
+    $files['sitemap.xml'] = hpt_sitemap_index_xml(array_keys($files));
+
+    return $files;
+}
+
+/** Copie servie par WordPress (multisite, ou racine non accessible en écriture). */
+function hpt_sitemap_cache_set(array $files)
+{
+    // Renouvelée à chaque génération : la tâche quotidienne passe avant l'expiration
+    set_transient('hpt_sitemap_cache', $files, 2 * DAY_IN_SECONDS);
+}
+
+/**
+ * Le sitemap est-il publié ? Fichier à la racine sur un site simple, servi par WordPress sur un multisite.
+ */
+function hpt_sitemap_is_published()
+{
+    return is_multisite() || is_file(ABSPATH . 'sitemap.xml');
+}
+
+/**
+ * Publie le sitemap : fichiers à la racine sur un site simple, cache servi par WordPress sur un multisite.
+ * Si l'écriture échoue, WordPress sert le cache en attendant (permaliens personnalisés).
+ *
+ * @param array $files nom du fichier => XML (cf. hpt_sitemap_build())
+ * @return bool false si l'écriture des fichiers a échoué
+ */
+function hpt_sitemap_publish(array $files)
+{
+    // Multisite : jamais de fichier à la racine, commune à tous les sites du réseau
+    if (is_multisite()) {
+        // Fichier commun écrit par une version précédente : il masquerait le sitemap de chaque site
+        hpt_sitemap_delete_physical_files();
+        hpt_sitemap_cache_set($files);
+        return true;
+    }
+
+    $ok = true;
+    foreach ($files as $name => $xml) {
+        $ok = hpt_sitemap_write_file($name, $xml) && $ok;
+    }
+
+    // Fichiers de découpage devenus inutiles (le site a perdu des contenus)
+    foreach ((array) glob(ABSPATH . 'sitemap-*.xml') as $path) {
+        if (!isset($files[basename($path)]) && hpt_sitemap_is_ours($path)) {
+            @unlink($path);
+        }
+    }
+
+    if ($ok) {
+        delete_transient('hpt_sitemap_cache');
+    } else {
+        hpt_sitemap_cache_set($files);
+    }
+
+    return $ok;
+}
+
+/**
  * Régénère les fichiers du sitemap.
  *
  * @param string $origin Déclencheur affiché dans l'historique (manuel, automatique, quotidien…)
@@ -177,31 +258,18 @@ function hpt_sitemap_write_file($name, $content)
  */
 function haptic_GPT_write_sitemap_to_file($origin = 'manuel')
 {
-    $urls = hpt_sitemap_urls();
-    $chunks = array_chunk($urls, max(1, hpt_sitemap_max_urls()));
-    $ok = true;
+    $ok = hpt_sitemap_publish(hpt_sitemap_build($count));
+    hpt_sitemap_record($origin, $count, $ok);
 
-    if (count($chunks) === 1) {
-        $ok = hpt_sitemap_write_file('sitemap.xml', hpt_sitemap_urlset_xml($chunks[0]));
-        $files = ['sitemap.xml'];
-    } else {
-        $files = [];
-        foreach ($chunks as $i => $chunk) {
-            $name = 'sitemap-' . ($i + 1) . '.xml';
-            $ok = hpt_sitemap_write_file($name, hpt_sitemap_urlset_xml($chunk)) && $ok;
-            $files[] = $name;
-        }
-        $ok = hpt_sitemap_write_file('sitemap.xml', hpt_sitemap_index_xml($files)) && $ok;
-        $files[] = 'sitemap.xml';
-    }
+    // L'onglet SEO refait son test d'accessibilité
+    hpt_seo_http_check_reset('sitemap');
 
-    // Fichiers de découpage devenus inutiles (le site a perdu des contenus)
-    foreach ((array) glob(ABSPATH . 'sitemap-*.xml') as $path) {
-        if (!in_array(basename($path), $files, true) && hpt_sitemap_is_ours($path)) {
-            @unlink($path);
-        }
-    }
+    return $ok;
+}
 
+/** Résultat d'une génération : date, message d'erreur et historique. */
+function hpt_sitemap_record($origin, $count, $ok)
+{
     if ($ok) {
         update_option('hpt_sitemap_last_generated', current_time('mysql'));
         delete_option('hpt_sitemap_error');
@@ -212,9 +280,7 @@ function haptic_GPT_write_sitemap_to_file($origin = 'manuel')
         ), false);
     }
 
-    hpt_sitemap_add_history($origin, count($urls), $ok);
-
-    return $ok;
+    hpt_sitemap_add_history($origin, $count, $ok);
 }
 
 /** Historique des 20 dernières générations, affiché dans l'onglet SEO. */
@@ -266,38 +332,74 @@ add_action('haptic_GPT_daily_sitemap_cron', function () {
 // Un seul sitemap publié : celui de WordPress (wp-sitemap.xml) est désactivé
 add_filter('wp_sitemaps_enabled', '__return_false');
 
-// Si le fichier a disparu, /sitemap.xml est régénéré à la demande (permaliens personnalisés)
+// Sans fichier à la racine (multisite, fichier disparu ou non inscriptible), WordPress sert le sitemap (permaliens personnalisés)
 function haptic_GPT_add_sitemap_endpoint()
 {
     add_rewrite_rule('^sitemap\.xml$', 'index.php?hpt_sitemap=1', 'top');
+    add_rewrite_rule('^sitemap-([0-9]+)\.xml$', 'index.php?hpt_sitemap=1&hpt_sitemap_part=$matches[1]', 'top');
+
+    // Règles enregistrées sans celles-ci (mise à jour, activation) : WordPress les recalcule à la prochaine requête
+    $rules = get_option('rewrite_rules');
+    if (is_array($rules) && $rules && !isset($rules['^sitemap-([0-9]+)\.xml$'])) {
+        delete_option('rewrite_rules');
+    }
 }
 add_action('init', 'haptic_GPT_add_sitemap_endpoint');
 
 function haptic_GPT_sitemap_query_var($vars)
 {
     $vars[] = 'hpt_sitemap';
+    $vars[] = 'hpt_sitemap_part';
     return $vars;
 }
 add_filter('query_vars', 'haptic_GPT_sitemap_query_var');
 
-add_action('template_redirect', function () {
+/**
+ * Sert le sitemap depuis le cache. Une seule génération par requête quand il est absent ou expiré,
+ * et aucun historique en cas d'échec : chaque visite la répéterait.
+ */
+function hpt_sitemap_serve()
+{
     if (!get_query_var('hpt_sitemap')) {
         return;
     }
 
-    $path = ABSPATH . 'sitemap.xml';
-    if (!file_exists($path)) {
-        haptic_GPT_write_sitemap_to_file('à la demande');
+    // /sitemap-0.xml ne doit pas servir l'index
+    $part = (string) get_query_var('hpt_sitemap_part');
+    $name = $part === '' ? 'sitemap.xml' : 'sitemap-' . absint($part) . '.xml';
+
+    // Site simple : fichier présent, mais la requête arrive tout de même à WordPress (configuration du serveur)
+    if (!is_multisite() && is_file(ABSPATH . $name)) {
+        header('Content-Type: application/xml; charset=utf-8');
+        readfile(ABSPATH . $name);
+        exit;
+    }
+
+    $files = get_transient('hpt_sitemap_cache');
+    if (!is_array($files) && !is_multisite() && is_file(ABSPATH . 'sitemap.xml')) {
+        // Site simple, sitemap publié : ce fichier de découpage n'existe pas, rien à régénérer
+        $files = [];
+    } elseif (!is_array($files)) {
+        $files = hpt_sitemap_build($count);
+        // Site simple : le fichier disparu est réécrit ; en cas d'échec, le cache prend le relais
+        if (hpt_sitemap_publish($files) && !is_multisite()) {
+            hpt_sitemap_record('à la demande', $count, true);
+        }
+    }
+
+    if (!isset($files[$name])) {
+        global $wp_query;
+        $wp_query->set_404();
+        status_header(404);
+        return;
     }
 
     header('Content-Type: application/xml; charset=utf-8');
-    if (file_exists($path)) {
-        readfile($path);
-    } else {
-        echo hpt_sitemap_urlset_xml(array_slice(hpt_sitemap_urls(), 0, hpt_sitemap_max_urls()));
-    }
+    echo $files[$name];
     exit;
-});
+}
+// Avant redirect_canonical(), qui redirigerait vers /sitemap.xml/
+add_action('template_redirect', 'hpt_sitemap_serve', 1);
 
 // Le robots.txt indique l'adresse du sitemap
 function haptic_GPT_add_robots_sitemap($output, $public)

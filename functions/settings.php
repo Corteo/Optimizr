@@ -29,7 +29,7 @@ add_action('admin_init', function () {
         },
         hpt_settings_page('advanced'),
         'hpt_debug_section',
-        ['description' => 'Journal dans logs/debug.log et alerte des erreurs PHP dans l\'admin.']
+        ['description' => 'Journal dans wp-content/uploads/optimizr-logs/ (requêtes des admins, tâches planifiées et WP-CLI) et alerte des erreurs PHP dans l\'admin.']
     );
 
     add_settings_field(

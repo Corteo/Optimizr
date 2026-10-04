@@ -47,12 +47,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     imageInput.addEventListener("input", function () {
+        const url = effective(imageInput);
         let img = previewBox.querySelector("img");
+        // Sans image par défaut, le placeholder n'est qu'un texte d'aide : pas d'aperçu plutôt qu'une image cassée
+        if (!/^https?:\/\//i.test(url)) {
+            if (img) img.remove();
+            return;
+        }
         if (!img) {
             img = document.createElement("img");
             previewBox.appendChild(img);
         }
-        img.src = effective(imageInput);
+        img.src = url;
         img.alt = "Prévisualisation SEO";
     });
 

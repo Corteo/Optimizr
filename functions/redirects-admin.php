@@ -31,7 +31,7 @@ function hpt_redirects_check_request($action)
 
 add_action('admin_post_hpt_redirect_save', function () {
     hpt_redirects_check_request('hpt_redirect_save');
-    $result = hpt_redirects_save($_POST['source'] ?? '', $_POST['target'] ?? '', (int) ($_POST['code'] ?? 301), wp_unslash($_POST['note'] ?? ''), (int) ($_POST['id'] ?? 0));
+    $result = hpt_redirects_save(wp_unslash($_POST['source'] ?? ''), wp_unslash($_POST['target'] ?? ''), (int) ($_POST['code'] ?? 301), wp_unslash($_POST['note'] ?? ''), (int) ($_POST['id'] ?? 0));
 
     if (is_wp_error($result)) {
         hpt_redirects_notice('warn', $result->get_error_message());
@@ -44,7 +44,7 @@ add_action('admin_post_hpt_redirect_save', function () {
 
     // Une adresse qui redirige ne doit plus figurer parmi les pages introuvables
     global $wpdb;
-    $wpdb->delete(hpt_404_table(), ['path' => hpt_redirects_normalize($_POST['source'] ?? '')]);
+    $wpdb->delete(hpt_404_table(), ['path' => hpt_redirects_normalize(wp_unslash($_POST['source'] ?? ''))]);
 
     hpt_redirects_notice('ok', 'Redirection enregistrée.');
     wp_safe_redirect(hpt_redirects_tab_url());
@@ -82,6 +82,16 @@ add_action('admin_post_hpt_redirects_settings', function () {
     exit;
 });
 
+/** Valeur qu'un tableur lirait comme une formule (« = + - @ », tabulation, retour chariot), éventuellement déjà précédée d'apostrophes. */
+const HPT_REDIRECTS_CSV_FORMULA = "/^'*[=+\\-@\\t\\r]/";
+
+/** Cellule exportée : une apostrophe devant une formule potentielle (titre de contenu dans une note…) la garde en texte. */
+function hpt_redirects_csv_cell($value)
+{
+    $value = (string) $value;
+    return preg_match(HPT_REDIRECTS_CSV_FORMULA, $value) ? "'" . $value : $value;
+}
+
 add_action('admin_post_hpt_redirects_export', function () {
     hpt_redirects_check_request('hpt_redirects_export');
     global $wpdb;
@@ -95,7 +105,7 @@ add_action('admin_post_hpt_redirects_export', function () {
     fwrite($out, "\xEF\xBB\xBF");
     fputcsv($out, ['source', 'destination', 'type', 'note', 'visites'], ';');
     foreach ($rows as $row) {
-        fputcsv($out, array_values($row), ';');
+        fputcsv($out, array_map('hpt_redirects_csv_cell', array_values($row)), ';');
     }
     fclose($out);
     exit;
@@ -122,7 +132,9 @@ add_action('admin_post_hpt_redirects_import', function () {
     while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
         $line++;
         $row = array_map(function ($cell) {
-            return trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $cell));
+            $cell = trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $cell));
+            // Apostrophe ajoutée à l'export devant une formule potentielle (hpt_redirects_csv_cell()) : retirée
+            return preg_match(HPT_REDIRECTS_CSV_FORMULA, $cell) && $cell[0] === "'" ? substr($cell, 1) : $cell;
         }, $row);
         // En-tête et lignes vides ignorés
         if (empty($row[0]) || in_array(strtolower($row[0]), ['source', 'from', 'ancienne adresse'], true)) {
@@ -155,6 +167,9 @@ function hpt_render_redirects_tab()
 
     $notice = get_transient('hpt_redirects_notice_' . get_current_user_id());
     delete_transient('hpt_redirects_notice_' . get_current_user_id());
+
+    // Cache des jokers resynchronisé à chaque affichage : table modifiée hors de l'extension (restauration, phpMyAdmin)
+    hpt_redirects_refresh_cache();
 
     // Modification d'une règle, ou création préremplie depuis le journal des 404 / les liens cassés
     $edit = !empty($_GET['edit']) ? $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", (int) $_GET['edit'])) : null;

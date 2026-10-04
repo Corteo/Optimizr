@@ -83,13 +83,26 @@ function hpt_uninstall_site()
 
     $choices = hpt_uninstall_choices();
 
-    // Toujours : fichiers générés (sitemap, clé IndexNow, règle .htaccess) et tâches planifiées.
+    // Toujours : fichiers générés (sitemap, clé IndexNow, robots.txt écrit par Optimizr et inchangé, règle .htaccess) et tâches planifiées.
     // Avant de toucher aux options : la clé IndexNow est lue dans hpt_indexnow_key.
     if (function_exists('hpt_options_deactivate')) {
         hpt_options_deactivate();
     }
     wp_clear_scheduled_hook('haptic_GPT_daily_sitemap_cron');
     wp_clear_scheduled_hook('hpt_sitemap_regenerate');
+    // ALT automatique en attente : une tâche par image (identifiant en argument), que wp_clear_scheduled_hook() sans argument ne retire pas
+    wp_unschedule_hook('hpt_ai_alt_on_upload');
+    // Empreinte du robots.txt écrit par Optimizr : gardée si le fichier n'a pas pu être supprimé, inutile désormais
+    delete_option('hpt_robots_txt_hash');
+
+    // Toujours : journal de debug (uploads/optimizr-logs, cf. hpt_log_dir()), autrefois effacé avec le dossier du plugin
+    $log_dir = trailingslashit(wp_upload_dir(null, false)['basedir']) . 'optimizr-logs';
+    if (is_dir($log_dir)) {
+        foreach (array_diff((array) scandir($log_dir), ['.', '..']) as $file) {
+            @unlink($log_dir . '/' . $file);
+        }
+        @rmdir($log_dir);
+    }
 
     // Toujours : caches temporaires (verrous de connexion, notices, token de mise à jour…)
     $wpdb->query(

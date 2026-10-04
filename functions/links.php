@@ -16,6 +16,12 @@ if (!defined('ABSPATH')) {
 /** Nombre maximal d'adresses vérifiées par analyse. */
 const HPT_LINKS_MAX = 2000;
 
+/**
+ * Adresses vérifiées par requête AJAX : au pire 2 × (5 s HEAD + 5 s GET), loin des délais
+ * d'exécution courants (30 s pour PHP, 60 s pour nginx).
+ */
+const HPT_LINKS_BATCH = 2;
+
 /** Types de contenu analysés : ceux du sitemap s'il est configuré, sinon articles et pages. */
 function hpt_links_post_types()
 {
@@ -63,20 +69,40 @@ function hpt_links_is_internal($url)
  */
 function hpt_links_check($url)
 {
+    $internal = hpt_links_is_internal($url);
+
+    // Domaine accentué d'un autre site : forme ASCII (punycode), seule résolue par wp_http_validate_url()
+    // (celui du site, même accentué, est reconnu tel quel)
+    $host = (string) wp_parse_url($url, PHP_URL_HOST);
+    if (!$internal && preg_match('/[^\x00-\x7F]/', $host) && class_exists('WpOrg\Requests\IdnaEncoder')) {
+        try {
+            $url = substr_replace($url, \WpOrg\Requests\IdnaEncoder::encode($host), strpos($url, $host), strlen($host));
+        } catch (Exception $e) {
+            // Domaine invalide : refusé ci-dessous
+        }
+    }
+
+    // Liens saisis par les auteurs : jamais de requête vers le réseau local du serveur ni vers un port inhabituel
+    // (wp_http_validate_url, comme wp_safe_remote_* ; les adresses du site lui-même restent autorisées)
+    if (!wp_http_validate_url($url)) {
+        return ['state' => 'error', 'code' => 0, 'label' => 'Inaccessible (domaine introuvable ou adresse non autorisée)'];
+    }
+
     $args = [
-        'timeout'     => 10,
+        'timeout'     => 5,
         'redirection' => 5,
         'user-agent'  => 'Mozilla/5.0 (compatible; Optimizr-LinkChecker; +' . home_url('/') . ')',
         // Sites locaux et certificats auto-signés de préproduction
-        'sslverify'   => !hpt_links_is_internal($url),
+        'sslverify'   => !$internal,
     ];
 
-    $response = wp_remote_head($url, $args);
+    // Versions « safe » : chaque redirection suivie est contrôlée de la même façon
+    $response = wp_safe_remote_head($url, $args);
     $code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
 
     // Certains serveurs refusent HEAD : seconde tentative en GET
     if (is_wp_error($response) || in_array($code, [403, 405, 501], true)) {
-        $response = wp_remote_get($url, $args + ['limit_response_size' => 4096]);
+        $response = wp_safe_remote_get($url, $args + ['limit_response_size' => 4096]);
         $code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
     }
 
@@ -132,7 +158,7 @@ add_action('wp_ajax_hpt_links_scan', function () {
     if ($step === 'check') {
         $queue = (array) get_option('hpt_links_queue', []);
         $report = (array) get_option('hpt_links_report', []);
-        $batch = array_slice($queue, 0, 5, true);
+        $batch = array_slice($queue, 0, HPT_LINKS_BATCH, true);
         $found = [];
 
         foreach ($batch as $url => $sources) {

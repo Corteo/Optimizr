@@ -116,7 +116,7 @@ function hpt_ai_bulk_next()
 {
     check_ajax_referer('hpt_ai_bulk', 'nonce');
 
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('manage_options') || !hpt_ai_user_can()) {
         wp_send_json_error(['status' => 'fatal', 'message' => 'Permissions insuffisantes.']);
     }
 
@@ -125,7 +125,12 @@ function hpt_ai_bulk_next()
         wp_send_json_error(['status' => 'fatal', 'message' => 'Tâche inconnue.']);
     }
 
-    $skip = array_slice(array_filter(array_map('intval', (array) ($_POST['skip'] ?? []))), 0, 1000);
+    // Éléments ignorés : gardés côté serveur, par utilisateur et par tâche. La liste envoyée par le navigateur
+    // grossit à chaque élément ignoré et PHP la tronque (max_input_vars) : les éléments manquants seraient
+    // retraités, et refacturés, en boucle. Le navigateur n'en envoie aucun en début de traitement : liste remise à zéro.
+    $skip_key = 'hpt_ai_bulk_skip_' . get_current_user_id() . '_' . $task;
+    $posted = array_filter(array_map('intval', (array) ($_POST['skip'] ?? [])));
+    $skip = $posted ? array_values(array_unique(array_merge(array_map('intval', (array) get_transient($skip_key)), $posted))) : [];
     $id = hpt_ai_bulk_next_id($task, $skip);
 
     if (!$id) {
@@ -144,6 +149,10 @@ function hpt_ai_bulk_next()
         // Clé absente ou refusée, quota atteint, service injoignable ou surchargé : inutile de continuer
         $fatal = $result->get_error_code() === 'hpt_ai_no_key'
             || ($result->get_error_code() === 'hpt_ai_http' && in_array($status, [0, 401, 403, 404, 429, 503, 529], true));
+
+        if (!$fatal) {
+            set_transient($skip_key, array_merge($skip, [$id]), WEEK_IN_SECONDS);
+        }
 
         wp_send_json_success($item + [
             'status'    => $fatal ? 'fatal' : 'skipped',
@@ -215,7 +224,7 @@ function hpt_ai_bulk_callback()
                         </span>
                     <?php endif; ?>
                 </div>
-                <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count); ?>>
+                <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count || !hpt_ai_user_can()); ?>>
                     <?php echo hpt_icon('sparkles', 16); ?>Générer
                 </button>
                 <button type="button" class="optimizr-btn optimizr-btn--ghost" data-bulk-stop hidden>Arrêter</button>

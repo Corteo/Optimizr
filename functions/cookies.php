@@ -32,10 +32,8 @@ function hpt_cookie_services()
             'label' => 'Contenus intégrés',
             'services' => [
                 'google_fonts' => ['name' => 'Google Fonts', 'mono' => 'Aa', 'fields' => ['Families' => 'Familles, séparées par des virgules']],
-                'google_maps'  => ['name' => 'Google Maps', 'mono' => 'GM', 'note' => 'Avec clé API', 'fields' => [
-                    'API Key' => 'Clé API', 'Zoom' => 'Zoom', 'Latitude' => 'Latitude',
-                    'Longitude' => 'Longitude', 'Width' => 'Largeur (px)', 'Height' => 'Hauteur (px)',
-                ]],
+                // Zoom, coordonnées et taille se règlent sur chaque carte (bloc googlemaps-canvas), pas ici
+                'google_maps'  => ['name' => 'Google Maps', 'mono' => 'GM', 'note' => 'Avec clé API', 'fields' => ['API Key' => 'Clé API']],
             ],
         ],
         'antispam' => [
@@ -115,7 +113,7 @@ function hpt_options_register_cookie_settings()
         'hpt-cookies-banner',
         'Bandeau de consentement',
         function () {
-            echo '<p>Propulsé par Tarteaucitron. Les services ci-dessous ne sont chargés qu\'après accord du visiteur.</p>';
+            echo '<p>Propulsé par Tarteaucitron. Les services ci-dessous ne sont chargés qu\'après accord du visiteur. Le bandeau renvoie vers la politique de confidentialité choisie dans <a href="' . esc_url(admin_url('options-privacy.php')) . '">Réglages › Confidentialité</a>, une fois cette page publiée.</p>';
         },
         $page,
         ['toggle' => 'hpt_option_enable_tarteaucitron', 'toggle_label' => 'Afficher le bandeau de consentement']
@@ -210,6 +208,15 @@ function hpt_options_services_callback()
                     esc_attr($service['name'] . ' – ' . $placeholder)
                 );
             }
+            // Champs retirés (Google Maps : zoom, coordonnées, taille), inutilisés par Tarteaucitron : valeurs enregistrées conservées
+            foreach (array_diff_key($option, $service['fields']) as $field_key => $value) {
+                printf(
+                    '<input type="hidden" name="hpt_option_service_%1$s[%2$s]" value="%3$s">',
+                    esc_attr($service_key),
+                    esc_attr($field_key),
+                    esc_attr($value)
+                );
+            }
             echo '</div>';
 
             echo '<span class="optimizr-status optimizr-status--' . ($active ? 'ok' : 'off') . '">' . ($active ? 'Actif' : 'Inactif') . '</span>';
@@ -258,7 +265,7 @@ add_action('hpt_admin_aside_cookies', function () {
 
 add_action('before_hpt_options_enqueue_scripts', function () {
     if (get_option('hpt_option_enable_tarteaucitron')) {
-        wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.19.0', true);
+        wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
     }
 });
 
@@ -273,7 +280,7 @@ function hpt_options_enqueue_tracking_scripts()
     // Initialize tarteaucitron
     echo "<script type=\"text/javascript\">
         tarteaucitron.init({
-            \"privacyUrl\": \"\", /* Privacy policy url */
+            \"privacyUrl\": " . wp_json_encode(esc_url_raw(get_privacy_policy_url())) . ", /* Page choisie dans Réglages > Confidentialité */
             \"bodyPosition\": \"bottom\", /* or top to bring it as first element for accessibility */
             \"hashtag\": \"#tarteaucitron\", /* Open the panel with this hashtag */
             \"cookieName\": \"tarteaucitron\", /* Cookie name */
@@ -449,7 +456,7 @@ function hpt_options_enqueue_tracking_scripts()
     </script>";
         }
 
-        if ($service_key === 'google_maps' && !empty($option['API Key']) && !empty($option['Zoom']) && !empty($option['Latitude']) && !empty($option['Longitude']) && !empty($option['Width']) && !empty($option['Height'])) {
+        if ($service_key === 'google_maps' && !empty($option['API Key'])) {
             echo "<!-- TAC : Google Maps -->
             <script type=\"text/javascript\">
                 tarteaucitron.user.googlemapsKey = '{$option['API Key']}';
@@ -491,4 +498,5 @@ function hpt_options_enqueue_tracking_scripts()
     echo "<!-- TAC : End -->";
 }
 
-add_action('wp_footer', 'hpt_options_enqueue_tracking_scripts', 20);
+// Après wp_print_footer_scripts (priorité 20), qui imprime tarteaucitron.js : tarteaucitron.init() a besoin de la librairie
+add_action('wp_footer', 'hpt_options_enqueue_tracking_scripts', 21);

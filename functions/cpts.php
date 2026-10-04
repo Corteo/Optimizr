@@ -116,9 +116,17 @@ function haptic_GPT_register_custom_cpts()
 {
     $custom_cpts = get_option('hpt_custom_cpts', array());
     if (! empty($custom_cpts)) {
+        $registered = array();
         foreach ($custom_cpts as $cpt) {
-            if (! empty($cpt['name'])) {
-                $slug = sanitize_title($cpt['name']);
+            // Chaîne attendue : une liste importée sans nettoyage (module désactivé à l'import) est lue ici avant d'être nettoyée
+            if (! empty($cpt['name']) && is_string($cpt['name'])) {
+                $slug = haptic_GPT_custom_cpt_key($cpt);
+                // Identifiant refusé par register_post_type() (vide, plus de 20 caractères) ou qui écraserait
+                // un type déjà enregistré (post, page, Évènements, autre plugin, doublon de la liste)
+                $key = sanitize_key($slug);
+                if ($key === '' || strlen($key) > 20 || post_type_exists($key)) {
+                    continue;
+                }
                 $labels = array(
                     'name'              => $cpt['name'],
                     'singular_name'     => $cpt['name'],
@@ -142,11 +150,103 @@ function haptic_GPT_register_custom_cpts()
                     'supports'            => array('title', 'editor', 'thumbnail', 'revisions'),
                 );
                 register_post_type($slug, $args);
+                $registered[] = $key;
             }
         }
+        // Types enregistrés par Optimizr : à ne pas confondre avec ceux d'un autre plugin à l'enregistrement des réglages
+        $GLOBALS['hpt_custom_cpt_keys'] = $registered;
     }
 }
 add_action('init', 'haptic_GPT_register_custom_cpts');
+
+/**
+ * Identifiant (post type) d'un type personnalisé : fixé à sa création, il ne change pas quand le type est renommé.
+ * Types enregistrés avant l'identifiant fixe : déduit du nom, comme alors.
+ */
+function haptic_GPT_custom_cpt_key($cpt)
+{
+    return ! empty($cpt['key']) && is_string($cpt['key']) ? sanitize_key($cpt['key']) : sanitize_title((string) ($cpt['name'] ?? ''));
+}
+
+/**
+ * Identifiant d'un nouveau type, déduit de son nom : 20 caractères au plus (limite de register_post_type()).
+ */
+function haptic_GPT_new_cpt_key($name)
+{
+    $key = sanitize_key(sanitize_title($name));
+    if (strlen($key) > 20) {
+        // Coupé entre deux mots si possible
+        $cut = strrpos(substr($key, 0, 21), '-');
+        $key = substr($key, 0, $cut ?: 20);
+    }
+    return trim($key, '-_');
+}
+
+/**
+ * Identifiants interdits : types de WordPress, termes réservés et variables de requête (un type du même nom
+ * détournerait les adresses du site).
+ */
+function haptic_GPT_reserved_cpt_keys()
+{
+    // Valeurs par défaut de la classe : $wp contient aussi les variables ajoutées par les types déjà enregistrés
+    $wp_defaults = new WP();
+
+    return array_merge(
+        array('post', 'page', 'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'oembed_cache', 'user_request', 'action', 'author', 'order', 'theme', 'type', 'types', 'status', 'terms', 'custom', 'nonce', 'debug'),
+        $wp_defaults->public_query_vars,
+        $wp_defaults->private_query_vars
+    );
+}
+
+/**
+ * Motif de refus d'un identifiant de type, ou chaîne vide s'il est utilisable.
+ *
+ * @param string $key   Identifiant (post type)
+ * @param array  $taken Identifiants déjà retenus pour les types précédents de la liste
+ */
+function haptic_GPT_custom_cpt_key_error($key, $taken = array())
+{
+    // Comme register_post_type()
+    $key = sanitize_key($key);
+
+    if ($key === '') {
+        return 'son nom doit contenir au moins une lettre ou un chiffre';
+    }
+    if (strlen($key) > 20) {
+        return sprintf('son identifiant « %s » dépasse 20 caractères', $key);
+    }
+    if (in_array($key, $taken, true)) {
+        return sprintf('son identifiant « %s » est déjà utilisé par un autre type de contenu', $key);
+    }
+    // Type existant, enregistré par Optimizr : conservé même si son identifiant ne serait plus accepté (ses contenus en dépendent)
+    $ours = isset($GLOBALS['hpt_custom_cpt_keys']) ? (array) $GLOBALS['hpt_custom_cpt_keys'] : array();
+    if (in_array($key, $ours, true)) {
+        return '';
+    }
+    if (strpos($key, 'wp_') === 0 || in_array($key, haptic_GPT_reserved_cpt_keys(), true)) {
+        return sprintf('son identifiant « %s » est réservé par WordPress', $key);
+    }
+    // Type Évènements d'Optimizr (même désactivé), taxonomies, types d'un autre plugin
+    if ($key === 'evenements' || taxonomy_exists($key) || post_type_exists($key)) {
+        return sprintf('son identifiant « %s » est déjà utilisé par un autre type de contenu', $key);
+    }
+
+    return '';
+}
+
+/**
+ * Types ajoutés, renommés ou retirés : les règles de réécriture sont recalculées à la requête suivante,
+ * sinon les adresses des nouveaux types renvoient une page introuvable jusqu'au réenregistrement des permaliens.
+ */
+function haptic_GPT_reset_rewrite_rules()
+{
+    delete_option('rewrite_rules');
+}
+foreach (['hpt_custom_cpts', 'hpt_options_settings'] as $hpt_cpt_option) {
+    add_action('update_option_' . $hpt_cpt_option, 'haptic_GPT_reset_rewrite_rules');
+    add_action('add_option_' . $hpt_cpt_option, 'haptic_GPT_reset_rewrite_rules');
+}
+unset($hpt_cpt_option);
 
 /**
  * Ajoute un nouvel onglet dans la page des réglages pour la gestion des CPTs.
@@ -179,10 +279,13 @@ function haptic_GPT_add_cpt_settings_fields()
         'haptic_GPT_custom_cpts_callback',
         hpt_settings_page('content'),
         'hpt_cpt_section',
-        ['description' => 'Nom affiché et icône Dashicons (ex. dashicons-portfolio).']
+        ['description' => 'Nom affiché et icône Dashicons (ex. dashicons-portfolio). Renommer un type ne change ni ses contenus ni ses adresses.']
     );
 
-    register_setting(hpt_settings_group('content'), 'hpt_options_settings');
+    register_setting(hpt_settings_group('content'), 'hpt_options_settings', [
+        'type' => 'array',
+        'sanitize_callback' => 'haptic_GPT_sanitize_options_settings',
+    ]);
     register_setting(hpt_settings_group('content'), 'hpt_custom_cpts', [
         'type' => 'array',
         'sanitize_callback' => 'haptic_GPT_sanitize_custom_cpts',
@@ -191,19 +294,50 @@ function haptic_GPT_add_cpt_settings_fields()
 add_action('admin_init', 'haptic_GPT_add_cpt_settings_fields');
 
 /**
- * Nettoie la liste des CPT : lignes vides retirées, index renumérotés.
+ * Nettoie les réglages des types prédéfinis : seul l'interrupteur du type Évènements est conservé.
+ */
+function haptic_GPT_sanitize_options_settings($input)
+{
+    $input = is_array($input) ? $input : [];
+    return [
+        'enable_evenements' => empty($input['enable_evenements']) ? 0 : 1,
+    ];
+}
+
+/**
+ * Nettoie la liste des CPT : lignes vides retirées, index renumérotés, identifiant fixé à la création.
+ * Un nouveau type dont l'identifiant est inutilisable (réservé, déjà pris) n'est pas enregistré et un message l'explique.
  */
 function haptic_GPT_sanitize_custom_cpts($input)
 {
     $clean = [];
+    $taken = [];
     foreach ((array) $input as $cpt) {
         $name = isset($cpt['name']) ? sanitize_text_field($cpt['name']) : '';
         if ($name === '') {
             continue;
         }
+
+        // Identifiant transmis par le champ caché (type existant) ; nouveau type ou identifiant invalide : déduit du nom
+        $key = isset($cpt['key']) && is_string($cpt['key']) ? $cpt['key'] : '';
+        if ($key === '' || $key !== sanitize_key($key) || strlen($key) > 20) {
+            $key = haptic_GPT_new_cpt_key($name);
+        }
+
+        $error = haptic_GPT_custom_cpt_key_error($key, $taken);
+        if ($error !== '') {
+            // Fonction de l'administration : absente si l'option est enregistrée depuis un autre contexte
+            if (function_exists('add_settings_error')) {
+                add_settings_error('hpt_custom_cpts', 'hpt_custom_cpts_' . md5($name), sprintf('Le type « %s » n\'a pas été enregistré : %s. Choisissez un autre nom.', esc_html($name), $error));
+            }
+            continue;
+        }
+
+        $taken[] = $key;
         $clean[] = [
             'name' => $name,
             'icon' => isset($cpt['icon']) ? sanitize_html_class($cpt['icon']) : '',
+            'key'  => $key,
         ];
     }
     return $clean;
@@ -239,6 +373,8 @@ function haptic_GPT_custom_cpts_callback()
             echo '<div class="hpt_custom_cpt optimizr-repeater__row">';
             echo '<input type="text" name="hpt_custom_cpts[' . (int) $index . '][name]" placeholder="Nom du type" aria-label="Nom du type" value="' . esc_attr($cpt['name']) . '" />';
             echo '<input type="text" name="hpt_custom_cpts[' . (int) $index . '][icon]" placeholder="dashicons-admin-post" aria-label="Icône Dashicons" value="' . esc_attr($cpt['icon']) . '" />';
+            // Identifiant fixé à la création : conservé quand le nom change (les nouvelles lignes n'en ont pas)
+            echo '<input type="hidden" name="hpt_custom_cpts[' . (int) $index . '][key]" value="' . esc_attr(haptic_GPT_custom_cpt_key($cpt)) . '" />';
             echo '<button type="button" class="remove-cpt optimizr-btn optimizr-btn--ghost">Supprimer</button>';
             echo '</div>';
         }

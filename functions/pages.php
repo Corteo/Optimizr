@@ -223,7 +223,7 @@ function hpt_404_suggestions_html()
 
     $html = '<div class="optimizr-suggestions">';
     if ($posts) {
-        $html .= '<p class="optimizr-suggestions__title">' . esc_html__('Vous cherchiez peut-être :', 'optimizr') . '</p><ul>';
+        $html .= '<p class="optimizr-suggestions__title">' . esc_html__('Vous cherchiez peut-être :', 'hpt-options') . '</p><ul>';
         foreach ($posts as $item) {
             $html .= '<li><a href="' . esc_url(get_permalink($item)) . '">' . esc_html(get_the_title($item)) . '</a></li>';
         }
@@ -263,7 +263,7 @@ function hpt_maintenance_can_bypass()
     return current_user_can(apply_filters('hpt_maintenance_capability', 'edit_posts'));
 }
 
-// Les requêtes d'administration, de connexion, AJAX, cron et REST ne passent pas par template_redirect
+// Les requêtes d'administration, de connexion, AJAX, cron et REST ne passent pas par template_redirect (REST : voir plus bas)
 add_action('template_redirect', function () {
     if (!hpt_maintenance_active() || hpt_maintenance_can_bypass()) {
         return;
@@ -289,6 +289,15 @@ add_action('template_redirect', function () {
     }
     exit;
 }, 1);
+
+// API REST fermée aux mêmes personnes : /wp-json/wp/v2/posts exposerait le contenu du site.
+// Après la vérification du cookie et du nonce de WordPress (priorité 100) : l'éditeur des personnes connectées fonctionne toujours.
+add_filter('rest_authentication_errors', function ($result) {
+    if (is_wp_error($result) || !hpt_maintenance_active() || hpt_maintenance_can_bypass()) {
+        return $result;
+    }
+    return new WP_Error('hpt_maintenance', 'Site en maintenance.', ['status' => 503]);
+}, 110);
 
 function hpt_maintenance_render($until)
 {

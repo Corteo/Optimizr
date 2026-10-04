@@ -71,7 +71,7 @@ function hpt_seo_meta_callback($post)
         <small class="hpt-seo-hint">Idéalement entre 120 et 160 caractères.</small>
     </p>
 
-    <?php if (hpt_is_module_active('ai')) : ?>
+    <?php if (hpt_is_module_active('ai') && function_exists('hpt_ai_user_can') && hpt_ai_user_can()) : ?>
         <p>
             <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_ai_nonce')); ?>">
                 Générer la description avec l'IA
@@ -98,7 +98,12 @@ function hpt_seo_meta_callback($post)
                                 nonce: this.dataset.nonce
                             })
                         })
-                        .then(res => res.json())
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(res.status);
+                            }
+                            return res.json();
+                        })
                         .then(data => {
                             if (data.success) {
                                 textarea.value = data.data.description;
@@ -106,6 +111,12 @@ function hpt_seo_meta_callback($post)
                             } else {
                                 alert('Erreur : ' + data.data);
                             }
+                        })
+                        // Réseau coupé, délai dépassé ou réponse invalide : le bouton redevient utilisable
+                        .catch(() => {
+                            alert('La requête a échoué. Vérifiez votre connexion.');
+                        })
+                        .finally(() => {
                             button.disabled = false;
                             button.innerText = 'Générer la description avec l\'IA';
                         });
