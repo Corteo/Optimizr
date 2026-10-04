@@ -66,14 +66,14 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 ### Sécurité
 Toutes les protections sont désactivées par défaut et s'activent une à une.
 - **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php.
-- **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
+- **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche, proxys de confiance et Cloudflare), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
 - **Discrétion** : version de WordPress masquée (balise generator, flux, `?ver=`, en-tête X-Powered-By), liste des comptes bloquée (`?author=`, API REST, oEmbed), pages auteur masquées.
 - **Fonctions inutilisées désactivées** : XML-RPC, mots de passe d'application, éditeur de fichiers, exécution de PHP dans les médias (Apache).
 - **En-têtes de sécurité** (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) et HSTS en option.
 - **Bilan** : HTTPS, compte « admin », affichage des erreurs PHP, version de PHP, journal des verrouillages et alertes (30 jours).
 
 ### Outils développeur
-- Mode debug : journal dans `logs/debug.log` et alerte des erreurs PHP dans l'administration.
+- Mode debug : journal dans `wp-content/uploads/optimizr-logs/` (requêtes des administrateurs, tâches planifiées et WP-CLI) et alerte des erreurs PHP dans l'administration.
 - Fonction `vd($variable)` : affiche le contenu d'une variable dans une fenêtre, visible par les seuls administrateurs.
 
 ### Outils
@@ -130,6 +130,8 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `hpt_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
 | `hpt_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
 | `hpt_ai_providers` | filtre | Fournisseurs, modèles proposés et tarifs (dollars pour 1 million de tokens), à ajuster quand un fournisseur change ses prix ou ses modèles. |
+| `hpt_ai_capability` | filtre | Droit requis pour lancer une génération IA facturée (`publish_posts` par défaut). |
+| `hpt_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
 | `hpt_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
 | `hpt_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |

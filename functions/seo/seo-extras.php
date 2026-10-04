@@ -131,6 +131,12 @@ add_action('template_redirect', function () {
     $parent = $attachment->post_parent ? get_post($attachment->post_parent) : null;
     $url = $parent && $parent->post_status === 'publish' ? get_permalink($parent) : wp_get_attachment_url($attachment->ID);
     if ($url) {
+        // Fichier servi par un autre domaine (CDN, stockage externe) : ce domaine, issu de l'adresse du média
+        // et non de la requête, est autorisé pour cette redirection, sinon WordPress renverrait vers l'administration
+        $host = wp_parse_url($url, PHP_URL_HOST);
+        add_filter('allowed_redirect_hosts', function ($hosts) use ($host) {
+            return $host ? array_merge((array) $hosts, [$host]) : $hosts;
+        });
         wp_safe_redirect($url, 301, 'Optimizr');
         exit;
     }
@@ -276,10 +282,21 @@ function hpt_schema_breadcrumb($post_id)
     return ['@type' => 'BreadcrumbList', '@id' => get_permalink($post_id) . '#fil-ariane', 'itemListElement' => $list];
 }
 
+/** Pages /author/identifiant/ introuvables pour les visiteurs (module Sécurité, functions/security.php). */
+function hpt_schema_author_pages_hidden()
+{
+    return hpt_is_module_active('security') && get_option('hpt_sec_block_enumeration') && get_option('hpt_sec_block_author_pages');
+}
+
 function hpt_schema_article($post_id)
 {
     $seo = hpt_seo_resolve($post_id);
     $author_id = (int) get_post_field('post_author', $post_id);
+    $author = ['@type' => 'Person', 'name' => get_the_author_meta('display_name', $author_id)];
+    // Pas de lien vers une page auteur masquée
+    if (!hpt_schema_author_pages_hidden()) {
+        $author['url'] = get_author_posts_url($author_id);
+    }
 
     return array_filter([
         '@type'            => 'Article',
@@ -289,7 +306,7 @@ function hpt_schema_article($post_id)
         'image'            => $seo['image'] ?: null,
         'datePublished'    => get_post_time('c', false, $post_id),
         'dateModified'     => get_post_modified_time('c', false, $post_id),
-        'author'           => ['@type' => 'Person', 'name' => get_the_author_meta('display_name', $author_id), 'url' => get_author_posts_url($author_id)],
+        'author'           => $author,
         'publisher'        => ['@id' => home_url('/#organisation')],
         'mainEntityOfPage' => get_permalink($post_id),
         'inLanguage'       => get_bloginfo('language'),

@@ -578,7 +578,9 @@ function hpt_onboarding_step_security($modules)
 
     $locked = (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite();
     $prefix = get_option('permalink_structure') ? home_url('/') : home_url('/') . '?';
-    $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ?: '';
+    // Même adresse que l'onglet Sécurité (proxys de confiance pris en compte quand le module est actif)
+    $ip = function_exists('hpt_sec_client_ip') ? hpt_sec_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? '');
+    $ip = $ip !== '0.0.0.0' && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
     ?>
     <div class="ob-fields">
         <?php if (!$locked) : ?>

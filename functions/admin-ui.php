@@ -391,7 +391,8 @@ function hpt_site_health_checks()
     }
 
     if (hpt_is_module_active('seo')) {
-        $sitemap = file_exists(ABSPATH . 'sitemap.xml') && !get_option('hpt_sitemap_error');
+        // Multisite : pas de fichier à la racine, chaque site sert le sien (cf. hpt_sitemap_is_published())
+        $sitemap = (function_exists('hpt_sitemap_is_published') ? hpt_sitemap_is_published() : file_exists(ABSPATH . 'sitemap.xml')) && !get_option('hpt_sitemap_error');
         $checks[] = [
             'status' => $sitemap ? 'ok' : 'warn',
             'label' => $sitemap ? 'Sitemap XML généré' : (get_option('hpt_sitemap_error') ? 'Échec d\'écriture du sitemap XML' : 'Sitemap XML absent'),

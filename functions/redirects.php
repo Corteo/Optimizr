@@ -25,10 +25,11 @@ const HPT_REDIRECT_CODES = [
 /**
  * Adresse normalisée, relative au site : « /chemin » (sans barre finale) et sa requête éventuelle.
  * Accepte une URL complète du site, un chemin, ou un chemin avec « ?requête ».
+ * Valeur déjà sans barres obliques inverses ajoutées par WordPress : wp_unslash() est à la charge de l'appelant ($_POST, $_SERVER…).
  */
 function hpt_redirects_normalize($url)
 {
-    $url = trim(wp_unslash((string) $url));
+    $url = trim((string) $url);
     if ($url === '') {
         return '';
     }
@@ -58,7 +59,7 @@ function hpt_redirects_normalize($url)
 /** Adresse demandée par le visiteur, normalisée. */
 function hpt_redirects_current_request()
 {
-    return hpt_redirects_normalize($_SERVER['REQUEST_URI'] ?? '/');
+    return hpt_redirects_normalize(wp_unslash($_SERVER['REQUEST_URI'] ?? '/'));
 }
 
 /** URL complète de destination (chemin du site ou adresse externe). */
@@ -83,6 +84,30 @@ function hpt_redirects_target_is_internal($target)
 /* ---------- Règles ---------- */
 
 /**
+ * Règles à joker « /chemin/* », la plus longue source en premier.
+ * Gardées en cache (transient sans expiration, chargé avec les options) : pas de parcours de la table à chaque page.
+ *
+ * @return array[] id, source, target, code
+ */
+function hpt_redirects_wildcards()
+{
+    $rules = get_transient('hpt_redirects_wildcards');
+    return is_array($rules) ? $rules : hpt_redirects_refresh_cache();
+}
+
+/** Recalcule le cache des jokers : à appeler après chaque écriture dans la table des redirections. */
+function hpt_redirects_refresh_cache()
+{
+    global $wpdb;
+    $rules = (array) $wpdb->get_results('SELECT id, source, target, code FROM ' . hpt_redirects_table() . " WHERE source LIKE '%*' ORDER BY CHAR_LENGTH(source) DESC", ARRAY_A);
+    // Table inaccessible : rien en cache, nouvel essai à la prochaine page
+    if (!$wpdb->last_error) {
+        set_transient('hpt_redirects_wildcards', $rules);
+    }
+    return $rules;
+}
+
+/**
  * Règle applicable à une adresse : correspondance exacte (avec ou sans requête), puis jokers « /chemin/* ».
  *
  * @return object|null Règle, avec la destination déjà résolue pour un joker
@@ -103,8 +128,8 @@ function hpt_redirects_match($request)
     }
 
     // Jokers : la plus longue source qui correspond l'emporte
-    $wildcards = $wpdb->get_results("SELECT * FROM $table WHERE source LIKE '%*' ORDER BY CHAR_LENGTH(source) DESC");
-    foreach ($wildcards as $rule) {
+    foreach (hpt_redirects_wildcards() as $rule) {
+        $rule = (object) $rule;
         $prefix = rtrim(substr($rule->source, 0, -1), '/');
         if ($prefix === '' || stripos($path, $prefix . '/') === 0 || strcasecmp($path, $prefix) === 0) {
             $rest = ltrim(substr($path, strlen($prefix)), '/');
@@ -119,7 +144,7 @@ function hpt_redirects_match($request)
 }
 
 /**
- * Ajoute ou modifie une règle.
+ * Ajoute ou modifie une règle. Valeurs sans barres obliques inverses de WordPress (wp_unslash() par l'appelant).
  *
  * @return int|WP_Error Identifiant de la règle
  */
@@ -130,7 +155,7 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
 
     $source = hpt_redirects_normalize($source);
     $code = isset(HPT_REDIRECT_CODES[(int) $code]) ? (int) $code : 301;
-    $target = $code === 410 ? '' : trim(sanitize_text_field(wp_unslash((string) $target)));
+    $target = $code === 410 ? '' : trim(sanitize_text_field((string) $target));
 
     if ($source === '' || $source === '/') {
         return new WP_Error('hpt_redirect_source', 'Indiquez l\'adresse à rediriger (la page d\'accueil ne peut pas l\'être).');
@@ -170,18 +195,29 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
 
     if ($id) {
         $wpdb->update($table, $data, ['id' => (int) $id]);
+        // Jokers recalculés pour un joker, ou si la source a changé (l'ancienne a pu en être un) : rien par règle exacte réimportée
+        if (strpos($source, '*') !== false || $existing !== (int) $id) {
+            hpt_redirects_refresh_cache();
+        }
         return (int) $id;
     }
 
     $data['created'] = current_time('mysql');
     $wpdb->insert($table, $data);
-    return (int) $wpdb->insert_id;
+    $id = (int) $wpdb->insert_id;
+    // Nouvelle règle exacte : jokers inchangés (import CSV sans requête superflue)
+    if (strpos($source, '*') !== false) {
+        hpt_redirects_refresh_cache();
+    }
+    return $id;
 }
 
 function hpt_redirects_delete($id)
 {
     global $wpdb;
-    return (bool) $wpdb->delete(hpt_redirects_table(), ['id' => (int) $id]);
+    $deleted = (bool) $wpdb->delete(hpt_redirects_table(), ['id' => (int) $id]);
+    hpt_redirects_refresh_cache();
+    return $deleted;
 }
 
 /* ---------- Application ---------- */
@@ -215,7 +251,7 @@ add_action('template_redirect', function () {
     $url = hpt_redirects_target_url($rule->target);
 
     // Paramètres de la demande conservés si la destination n'en a pas (campagnes, suivi)
-    $query = (string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY);
+    $query = (string) wp_parse_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_QUERY);
     if ($query !== '' && strpos($rule->source, '?') === false && strpos($url, '?') === false) {
         $url .= '?' . $query;
     }
@@ -231,10 +267,12 @@ add_action('template_redirect', function () {
         return;
     }
 
-    $path = hpt_redirects_current_request();
+    // Chemin seul : la requête (« ?… ») peut contenir des données personnelles (adresse e-mail, jeton)
+    $path = strtok(hpt_redirects_current_request(), '?');
 
-    // Bruit sans intérêt : icônes demandées automatiquement par les navigateurs, fichiers de débogage
-    if (preg_match('#^/(favicon\.ico|apple-touch-icon[^/]*\.png)$|\.map$#i', $path)) {
+    // Bruit sans intérêt : icônes demandées automatiquement par les navigateurs, fichiers de débogage,
+    // page d'accueil avec une requête (« /?author=… », « /?p=… ») : sans celle-ci, adresse impossible à rediriger
+    if ($path === '/' || preg_match('#^/(favicon\.ico|apple-touch-icon[^/]*\.png)$|\.map$#i', $path)) {
         return;
     }
 
@@ -267,12 +305,80 @@ add_action('template_redirect', function () {
 
 /* ---------- Redirection automatique des contenus déplacés ---------- */
 
-// Adresse avant l'enregistrement…
-add_action('pre_post_update', function ($post_id) {
-    if (get_post_status($post_id) === 'publish') {
-        $GLOBALS['hpt_redirects_old_links'][$post_id] = get_permalink($post_id);
+/**
+ * Contenus publiés placés sous un contenu hiérarchique (pages enfants, petits-enfants…) et leur adresse actuelle.
+ *
+ * @return array identifiant => adresse
+ */
+function hpt_redirects_descendant_links(WP_Post $post)
+{
+    $links = [];
+    $seen = [$post->ID => true];
+    $parents = [$post->ID];
+    while ($parents) {
+        $children = get_posts([
+            'post_type'              => $post->post_type,
+            'post_status'            => 'any',
+            'post_parent__in'        => $parents,
+            'numberposts'            => -1,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+        ]);
+        $parents = [];
+        foreach ($children as $child) {
+            // Hiérarchie en boucle (données corrompues) : chaque contenu une seule fois
+            if (isset($seen[$child->ID])) {
+                continue;
+            }
+            $seen[$child->ID] = true;
+            // Un brouillon peut avoir des enfants publiés : on descend quand même
+            $parents[] = $child->ID;
+            if ($child->post_status === 'publish') {
+                $links[$child->ID] = get_permalink($child);
+            }
+        }
     }
-});
+    return $links;
+}
+
+/** Redirige l'ancienne adresse d'un contenu vers la nouvelle (301), sans boucle ni chaîne. */
+function hpt_redirects_auto($old_link, $new_link, $post_id)
+{
+    $old = hpt_redirects_normalize($old_link);
+    $new = hpt_redirects_normalize($new_link);
+    if ($old === $new || $old === '/' || strpos($old, '?') !== false) {
+        return;
+    }
+
+    global $wpdb;
+    $table = hpt_redirects_table();
+    // Une ancienne règle qui partait de la nouvelle adresse créerait une boucle
+    $wpdb->delete($table, ['source' => $new]);
+    // Les règles qui pointaient vers l'ancienne adresse vont directement à la nouvelle (pas de chaîne)
+    $repointed = $wpdb->update($table, ['target' => $new], ['target' => $old]);
+
+    hpt_redirects_save($old, $new, 301, 'Automatique : adresse de « ' . get_the_title($post_id) . ' » modifiée');
+    // Un joker a pu changer de destination ci-dessus
+    if ($repointed) {
+        hpt_redirects_refresh_cache();
+    }
+}
+
+// Adresse avant l'enregistrement…
+add_action('pre_post_update', function ($post_id, $data = []) {
+    if (get_post_status($post_id) !== 'publish') {
+        return;
+    }
+    $GLOBALS['hpt_redirects_old_links'][$post_id] = get_permalink($post_id);
+
+    // … et celle des pages enfants, qui contient l'identifiant (slug) du parent : elle change avec lui
+    $post = get_post($post_id);
+    $moved = (isset($data['post_name']) && $data['post_name'] !== $post->post_name)
+        || (isset($data['post_parent']) && (int) $data['post_parent'] !== (int) $post->post_parent);
+    $GLOBALS['hpt_redirects_old_children'][$post_id] = $moved && get_option('hpt_redir_auto', 1) && is_post_type_hierarchical($post->post_type)
+        ? hpt_redirects_descendant_links($post)
+        : [];
+}, 10, 2);
 
 // … comparée à l'adresse après l'enregistrement
 add_action('post_updated', function ($post_id, $after) {
@@ -283,18 +389,10 @@ add_action('post_updated', function ($post_id, $after) {
         return;
     }
 
-    $old = hpt_redirects_normalize($GLOBALS['hpt_redirects_old_links'][$post_id]);
-    $new = hpt_redirects_normalize(get_permalink($post_id));
-    if ($old === $new || $old === '/' || strpos($old, '?') !== false) {
-        return;
+    hpt_redirects_auto($GLOBALS['hpt_redirects_old_links'][$post_id], get_permalink($post_id), $post_id);
+
+    // Pages enfants : nouvelle adresse calculée avec celle du parent, déjà enregistrée
+    foreach ($GLOBALS['hpt_redirects_old_children'][$post_id] ?? [] as $child_id => $old_link) {
+        hpt_redirects_auto($old_link, get_permalink($child_id), $child_id);
     }
-
-    global $wpdb;
-    $table = hpt_redirects_table();
-    // Une ancienne règle qui partait de la nouvelle adresse créerait une boucle
-    $wpdb->delete($table, ['source' => $new]);
-    // Les règles qui pointaient vers l'ancienne adresse vont directement à la nouvelle (pas de chaîne)
-    $wpdb->update($table, ['target' => $new], ['target' => $old]);
-
-    hpt_redirects_save($old, $new, 301, 'Automatique : adresse de « ' . get_the_title($post_id) . ' » modifiée');
 }, 10, 2);

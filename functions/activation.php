@@ -13,13 +13,14 @@ function hpt_options_activate()
     }
     add_option('hpt_debug_mode', false);
     add_option('hpt_dev_mode', false);
+    // Première activation : l'assistant de configuration s'ouvre (WordPress confirme déjà l'activation)
     hpt_onboarding_schedule_redirect();
-    add_action('admin_notices', 'hpt_options_activation_notice');
 }
 
 function hpt_options_deactivate()
 {
     hpt_sitemap_delete_files();
+    hpt_robots_txt_delete_file();
 
     // Fichier de clé IndexNow à la racine du site
     $key = get_option('hpt_indexnow_key');
@@ -112,11 +113,8 @@ function hpt_sitemap_is_ours($path)
     return strpos($head, HPT_SITEMAP_MARKER) !== false;
 }
 
-/**
- * Supprime les fichiers de sitemap générés et les tâches planifiées.
- * Appelé à la désactivation du plugin ou du module SEO : aucun sitemap périmé ne reste en ligne.
- */
-function hpt_sitemap_delete_files()
+/** Supprime les fichiers de sitemap générés par Optimizr à la racine du site. */
+function hpt_sitemap_delete_physical_files()
 {
     $paths = array_merge([ABSPATH . 'sitemap.xml'], (array) glob(ABSPATH . 'sitemap-*.xml'));
     foreach ($paths as $path) {
@@ -124,6 +122,16 @@ function hpt_sitemap_delete_files()
             @unlink($path);
         }
     }
+}
+
+/**
+ * Supprime les fichiers de sitemap générés, leur copie en cache et les tâches planifiées.
+ * Appelé à la désactivation du plugin ou du module SEO : aucun sitemap périmé ne reste en ligne.
+ */
+function hpt_sitemap_delete_files()
+{
+    hpt_sitemap_delete_physical_files();
+    delete_transient('hpt_sitemap_cache');
 
     wp_clear_scheduled_hook('haptic_GPT_daily_sitemap_cron');
     wp_clear_scheduled_hook('hpt_sitemap_regenerate');
@@ -141,9 +149,32 @@ add_action('add_option_hpt_modules', function ($option, $value) {
     }
 }, 10, 2);
 
-function hpt_options_activation_notice()
+/* ---------- robots.txt écrit par le bouton de l'onglet SEO ---------- */
+
+/**
+ * Le robots.txt à la racine est-il celui qu'Optimizr a écrit, sans modification depuis ?
+ * (empreinte du contenu enregistrée à l'écriture)
+ */
+function hpt_robots_txt_is_ours()
 {
-    echo '<div class="notice notice-success is-dismissible"><p>Haptic Optimizr a été activé avec succès !</p></div>';
+    $hash = (string) get_option('hpt_robots_txt_hash', '');
+    $path = ABSPATH . 'robots.txt';
+
+    return $hash !== '' && is_file($path) && hash_equals($hash, md5((string) file_get_contents($path)));
+}
+
+/**
+ * Supprime le robots.txt écrit par Optimizr, s'il n'a pas été modifié depuis.
+ * Appelé à la désactivation et à la suppression du plugin : un fichier d'une autre origine est conservé.
+ */
+function hpt_robots_txt_delete_file()
+{
+    // Suppression impossible : l'empreinte est gardée pour un nouvel essai à la suppression du plugin
+    if (hpt_robots_txt_is_ours() && !@unlink(ABSPATH . 'robots.txt')) {
+        return;
+    }
+
+    delete_option('hpt_robots_txt_hash');
 }
 
 /**
@@ -189,6 +220,31 @@ function hpt_options_maybe_upgrade()
 
     if (version_compare($installed, '2.0.0-beta.11', '<')) {
         hpt_redirects_install();
+    }
+
+    if (version_compare($installed, '2.4.1', '<')) {
+        // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
+        global $wpdb;
+        $wpdb->query('DELETE FROM ' . hpt_404_table() . " WHERE path LIKE '%?%'");
+
+        // Ancien journal de debug public (logs/ du plugin), désormais dans uploads/optimizr-logs (cf. hpt_log_dir()) :
+        // une mise à jour manuelle (FTP, git) le laisse en place
+        @unlink(HPT_OPTIMIZR_PATH . 'logs/debug.log');
+        @rmdir(HPT_OPTIMIZR_PATH . 'logs');
+    }
+
+    if (version_compare($installed, '2.4.1', '<') && is_multisite()) {
+        // Ancien sitemap commun à tout le réseau : il masquerait celui de chaque site, désormais servi par WordPress
+        hpt_sitemap_delete_physical_files();
+    }
+
+    if (version_compare($installed, '2.4.1', '<') && !is_multisite() && get_option('hpt_robots_txt_hash') === false) {
+        // robots.txt écrit par le bouton d'une version précédente, sans empreinte : reconnu comme celui d'Optimizr
+        // s'il est identique au réglage (inchangé depuis), comme ceux écrits désormais (cf. hpt_robots_txt_is_ours())
+        $robots = (string) get_option('hpt_custom_robots_txt', '');
+        if (trim($robots) !== '' && is_file(ABSPATH . 'robots.txt') && hash_equals(md5($robots), md5((string) file_get_contents(ABSPATH . 'robots.txt')))) {
+            update_option('hpt_robots_txt_hash', md5($robots), false);
+        }
     }
 
     update_option('hpt_optimizr_version', HPT_OPTIMIZR_VERSION);

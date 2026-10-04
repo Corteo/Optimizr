@@ -392,7 +392,8 @@
                 }
 
                 var body = new URLSearchParams({ action: 'hpt_ai_bulk_next', nonce: nonce, task: task.dataset.task });
-                state.skipped.forEach(function (id) { body.append('skip[]', id); });
+                // Liste complète gardée par le serveur : les 500 derniers suffisent (sous max_input_vars de PHP), en secours si son cache est perdu
+                state.skipped.slice(-500).forEach(function (id) { body.append('skip[]', id); });
 
                 fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
                     .then(function (res) { return res.json(); })

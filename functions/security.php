@@ -21,11 +21,111 @@ function hpt_sec_option($name, $default = 0)
     return get_option('hpt_sec_' . $name, $default);
 }
 
-/** Adresse IP du visiteur (REMOTE_ADDR uniquement : les en-têtes de proxy sont falsifiables). */
+/**
+ * Adresse IP du visiteur.
+ *
+ * REMOTE_ADDR par défaut : les en-têtes de proxy sont falsifiables. Ils ne sont lus que pour une requête
+ * qui vient d'un proxy de confiance (réglage « Proxys de confiance »), sinon tous les visiteurs d'un site
+ * derrière Cloudflare ou un répartiteur de charge auraient la même adresse.
+ */
 function hpt_sec_client_ip()
 {
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
+    if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        return '0.0.0.0';
+    }
+    $proxies = hpt_sec_trusted_proxies();
+    if (!hpt_sec_ip_in_ranges($ip, $proxies)) {
+        return $ip;
+    }
+
+    // Cloudflare remplace toujours cet en-tête : fiable seulement si la requête vient directement de ses serveurs
+    if (hpt_sec_option('proxy_cloudflare') && hpt_sec_ip_in_ranges($ip, hpt_sec_cloudflare_ranges())) {
+        $cf = trim((string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+        if (filter_var($cf, FILTER_VALIDATE_IP)) {
+            return $cf;
+        }
+    }
+
+    // « visiteur, proxy 1, proxy 2 » : chaque proxy ajoute à droite l'adresse qui l'a contacté, le début de la liste est falsifiable.
+    // On remonte depuis la droite jusqu'à la première adresse qui n'est pas un proxy de confiance.
+    $forwarded = array_map('trim', explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')));
+    foreach (array_reverse($forwarded) as $candidate) {
+        if (!filter_var($candidate, FILTER_VALIDATE_IP)) {
+            break;
+        }
+        if (!hpt_sec_ip_in_ranges($candidate, $proxies)) {
+            return $candidate;
+        }
+    }
+    return $ip;
+}
+
+/** Adresse IP seule ou plage CIDR (10.0.0.0/8, 2001:db8::/32). */
+function hpt_sec_is_ip_range($range)
+{
+    $parts = explode('/', (string) $range, 2);
+    if (!filter_var($parts[0], FILTER_VALIDATE_IP)) {
+        return false;
+    }
+    if (!isset($parts[1])) {
+        return true;
+    }
+    $max = filter_var($parts[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? 32 : 128;
+    return ctype_digit($parts[1]) && (int) $parts[1] <= $max;
+}
+
+/** L'adresse appartient-elle à l'une des plages (adresses seules ou CIDR, cf. hpt_sec_is_ip_range) ? */
+function hpt_sec_ip_in_ranges($ip, $ranges)
+{
+    $packed = filter_var($ip, FILTER_VALIDATE_IP) ? inet_pton($ip) : false;
+    if ($packed === false) {
+        return false;
+    }
+    foreach ($ranges as $range) {
+        if (!hpt_sec_is_ip_range($range)) {
+            continue;
+        }
+        $parts = explode('/', $range, 2);
+        $subnet = inet_pton($parts[0]);
+        // IPv4 et IPv6 ne se comparent pas
+        if (strlen($subnet) !== strlen($packed)) {
+            continue;
+        }
+        $bits = isset($parts[1]) ? (int) $parts[1] : strlen($packed) * 8;
+        $bytes = intdiv($bits, 8);
+        if (substr($packed, 0, $bytes) !== substr($subnet, 0, $bytes)) {
+            continue;
+        }
+        // Octet partiellement couvert par le masque (/20, /29…)
+        $mask = $bits % 8 ? chr((0xff << (8 - $bits % 8)) & 0xff) : '';
+        if ($mask === '' || ($packed[$bytes] & $mask) === ($subnet[$bytes] & $mask)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** Plages d'adresses des serveurs de Cloudflare (https://www.cloudflare.com/ips/). */
+function hpt_sec_cloudflare_ranges()
+{
+    return apply_filters('hpt_sec_cloudflare_ranges', [
+        '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18',
+        '108.162.192.0/18', '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17',
+        '162.158.0.0/15', '104.16.0.0/13', '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
+        '2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32', '2405:8100::/32',
+        '2a06:98c0::/29', '2c0f:f248::/32',
+    ]);
+}
+
+/** Proxys de confiance : plages saisies (une par ligne), et celles de Cloudflare si l'option est active. Vide par défaut. */
+function hpt_sec_trusted_proxies()
+{
+    $ranges = array_filter(array_map('trim', preg_split('/\R/', (string) hpt_sec_option('trusted_proxies', ''))), 'hpt_sec_is_ip_range');
+    if (hpt_sec_option('proxy_cloudflare')) {
+        $ranges = array_merge($ranges, hpt_sec_cloudflare_ranges());
+    }
+    return array_values($ranges);
 }
 
 /** Adresses IP jamais limitées (une par ligne). */
@@ -43,14 +143,26 @@ function hpt_sec_whitelist()
  */
 function hpt_sec_log($event, $detail = '')
 {
-    $log = (array) get_option('hpt_security_log', []);
-    $limit = time() - 30 * DAY_IN_SECONDS;
-    $log = array_filter($log, function ($entry) use ($limit) {
-        return ($entry['time'] ?? 0) >= $limit;
-    });
+    $log = hpt_sec_get_log();
     array_unshift($log, ['time' => time(), 'ip' => hpt_sec_client_ip(), 'event' => $event, 'detail' => $detail]);
-    update_option('hpt_security_log', array_slice(array_values($log), 0, 100), false);
+    update_option('hpt_security_log', array_slice($log, 0, 100), false);
 }
+
+/** Évènements des 30 derniers jours. Les plus anciens sont supprimés de la base au passage, même sans nouvel évènement. */
+function hpt_sec_get_log()
+{
+    $stored = array_values((array) get_option('hpt_security_log', []));
+    $limit = time() - 30 * DAY_IN_SECONDS;
+    $log = array_values(array_filter($stored, function ($entry) use ($limit) {
+        return ($entry['time'] ?? 0) >= $limit;
+    }));
+    if ($log !== $stored) {
+        update_option('hpt_security_log', $log, false);
+    }
+    return $log;
+}
+// Purge quotidienne (tâche planifiée de WordPress), même si personne n'ouvre l'onglet Sécurité
+add_action('wp_scheduled_delete', 'hpt_sec_get_log');
 
 /* ---------- Adresse de connexion personnalisée ---------- */
 

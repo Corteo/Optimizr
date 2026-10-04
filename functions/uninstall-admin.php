@@ -73,7 +73,7 @@ function hpt_render_uninstall_card()
                     <span>Effacer : <?php echo esc_html($group['label']); ?> <span class="optimizr-muted">(<?php echo esc_html($group['help']); ?>)</span></span>
                 </label>
             <?php endforeach; ?>
-            <p class="optimizr-field__help">Les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés. La simple désactivation ne supprime aucune donnée.</p>
+            <p class="optimizr-field__help">Les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow, journal de debug, robots.txt écrit par Optimizr s'il n'a pas été modifié) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés. La simple désactivation ne supprime aucune donnée.</p>
             <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Enregistrer</button></div>
         </div>
     </form>

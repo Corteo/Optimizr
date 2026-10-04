@@ -30,6 +30,8 @@ function hpt_settings_internal_options()
         'hpt_indexnow_last',
         // Propre à chaque site, et à ne pas diffuser
         'hpt_sec_login_slug',
+        // Proxys de confiance : propres à l'hébergement de chaque site (importés ailleurs, ils pourraient falsifier X-Forwarded-For)
+        'hpt_sec_trusted_proxies',
         // Identifiants de pages propres à chaque site ; un import ne doit pas fermer le site
         'hpt_404_page',
         'hpt_maintenance',
@@ -41,6 +43,13 @@ function hpt_settings_internal_options()
         'hpt_update_channel',
         // Assistant de configuration déjà passé sur ce site
         'hpt_onboarding_done',
+        // Empreinte du robots.txt écrit par Optimizr (cf. functions/activation.php)
+        'hpt_robots_txt_hash',
+        // Outils développeur : un site client ne doit pas hériter du mode debug d'un site de développement
+        'hpt_debug_mode',
+        'hpt_dev_mode',
+        // Réglages importés en attente de nettoyage (cf. hpt_import_sanitize_pending())
+        'hpt_import_unsanitized',
     ]);
 }
 
@@ -149,6 +158,7 @@ function hpt_import_settings(array $data, $adapt_urls = true)
     $from = untrailingslashit((string) ($data['site'] ?? ''));
     $to = untrailingslashit(home_url());
     $result = ['imported' => [], 'ignored' => []];
+    $unsanitized = [];
 
     foreach ($data['settings'] as $name => $value) {
         if (!is_string($name) || !hpt_is_exportable_option($name) || !hpt_is_importable_value($value)) {
@@ -160,9 +170,22 @@ function hpt_import_settings(array $data, $adapt_urls = true)
             $value = hpt_replace_site_url($value, $from, $to);
         }
 
-        // Les fonctions de nettoyage des réglages enregistrés (register_setting) s'appliquent ici
+        // Les fonctions de nettoyage des réglages enregistrés (register_setting) s'appliquent ici ;
+        // celles d'un module désactivé ne sont pas chargées : le réglage sera nettoyé à son activation
+        if (!has_filter("sanitize_option_{$name}")) {
+            $unsanitized[] = $name;
+        }
         update_option($name, $value);
         $result['imported'][] = $name;
+    }
+
+    // Un réglage réimporté avec sa fonction de nettoyage n'est plus en attente
+    $pending = array_diff((array) get_option('hpt_import_unsanitized', []), array_diff($result['imported'], $unsanitized));
+    $pending = array_values(array_unique(array_merge($pending, $unsanitized)));
+    if ($pending) {
+        update_option('hpt_import_unsanitized', $pending);
+    } else {
+        delete_option('hpt_import_unsanitized');
     }
 
     // Le sitemap suit les nouveaux réglages
@@ -172,6 +195,49 @@ function hpt_import_settings(array $data, $adapt_urls = true)
 
     return $result;
 }
+
+/**
+ * Réglages importés sans fonction de nettoyage (module désactivé à l'import) : dès qu'elle est enregistrée,
+ * c'est-à-dire à la première page d'administration après l'activation du module, le réglage repasse par update_option().
+ */
+function hpt_import_sanitize_pending()
+{
+    $pending = get_option('hpt_import_unsanitized');
+    if (!$pending || !is_array($pending)) {
+        return;
+    }
+
+    $left = [];
+    foreach ($pending as $name) {
+        $value = get_option($name, null);
+        if ($value === null) {
+            continue; // Réglage supprimé depuis
+        }
+        if (!has_filter("sanitize_option_{$name}")) {
+            $left[] = $name;
+            continue;
+        }
+        update_option($name, $value);
+    }
+
+    // Tous les modules actifs : ce qui reste n'aura jamais de fonction de nettoyage (réglage enregistré hors Settings API)
+    $inactive = array_filter(array_keys(hpt_modules()), function ($slug) {
+        return !hpt_is_module_active($slug);
+    });
+    if (!$inactive) {
+        $left = [];
+    }
+
+    if ($left !== $pending) {
+        if ($left) {
+            update_option('hpt_import_unsanitized', $left);
+        } else {
+            delete_option('hpt_import_unsanitized');
+        }
+    }
+}
+// Après les register_setting des modules (admin_init, priorité 10)
+add_action('admin_init', 'hpt_import_sanitize_pending', 1000);
 
 add_action('admin_post_hpt_import_settings', function () {
     if (!current_user_can('manage_options')) {

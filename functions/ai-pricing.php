@@ -406,11 +406,55 @@ function hpt_ai_estimate($task, array $ids, array $targets = [])
     return $result;
 }
 
+/**
+ * Coût estimé d'un élément pour chacun des modèles de tous les fournisseurs, mis en cache 12 heures :
+ * le calcul parcourt jusqu'à 300 éléments pour chaque modèle, à chaque affichage de l'onglet Assistant IA.
+ * Recalculé dès que la liste des éléments, les modèles, les tarifs, le contexte du site ou la version du plugin changent.
+ *
+ * @param string $task 'alt' ou 'descriptions'
+ * @param int[]  $ids
+ * @return array 'fournisseur:modèle' => float|null
+ */
+function hpt_ai_estimate_units($task, array $ids)
+{
+    $targets = [];
+    foreach (hpt_ai_providers() as $slug => $provider) {
+        foreach (array_keys($provider['models']) as $model) {
+            $targets[] = [$slug, $model];
+        }
+    }
+
+    $transient = 'hpt_ai_estimate_' . $task;
+    $hash = md5(wp_json_encode([$ids, hpt_ai_providers(), get_option('hpt_ai_context', ''), current_time('Y-m-d'), HPT_OPTIMIZR_VERSION]));
+    $cache = get_transient($transient);
+    if (is_array($cache) && ($cache['hash'] ?? '') === $hash) {
+        return (array) $cache['units'];
+    }
+
+    $units = array_map(function ($estimate) {
+        return $estimate['unit'];
+    }, hpt_ai_estimate($task, $ids, $targets)['per_model']);
+    set_transient($transient, ['hash' => $hash, 'units' => $units], 12 * HOUR_IN_SECONDS);
+
+    return $units;
+}
+
 /** Estimation pour le modèle actuellement utilisé par une tâche. */
 function hpt_ai_estimate_current($task, array $ids)
 {
-    $estimate = hpt_ai_estimate($task, $ids);
-    return reset($estimate['per_model']);
+    $key = hpt_ai_provider() . ':' . ($task === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model());
+    $units = hpt_ai_estimate_units($task, $ids);
+
+    // Modèle absent du comparatif (filtre hpt_ai_providers) : calcul direct
+    if (!array_key_exists($key, $units)) {
+        $estimate = hpt_ai_estimate($task, $ids);
+        return reset($estimate['per_model']);
+    }
+
+    return [
+        'total' => $units[$key] === null ? null : $units[$key] * count($ids),
+        'unit'  => $units[$key],
+    ];
 }
 
 /** Montant en dollars lisible : « 0,42 $ », « < 0,01 $ ». */

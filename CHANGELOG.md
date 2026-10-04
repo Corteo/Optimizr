@@ -6,9 +6,49 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
-## [2.4.1] - 2026-10-03
+## [2.4.1] - 2026-10-04
+
+### Sécurité
+- Clés API de l'assistant IA : elles ne figurent plus dans le code HTML de l'onglet IA. Le champ reste vide (seuls les 4 derniers caractères sont rappelés) : le laisser vide conserve la clé, une case permet de la supprimer.
+- Assistant IA : les générations facturées (description SEO, ALT, ALT automatique à l'import) sont réservées aux rôles qui peuvent publier (auteurs, éditeurs, administrateurs), modifiable par le filtre `hpt_ai_capability`. Les contributeurs ne voient plus les boutons.
+- Liens cassés : les adresses externes sont vérifiées avec les requêtes « sûres » de WordPress ; les liens vers le réseau local ou un port inhabituel sont signalés sans être appelés.
+- Journal de debug : déplacé du dossier du plugin, lisible publiquement, vers `wp-content/uploads/optimizr-logs/` (accès refusé par .htaccess, nom de fichier non devinable). L'ancien fichier est supprimé à la mise à jour.
+- Journal des 404 : l'adresse est enregistrée sans sa requête (« ?… »), qui pouvait contenir des données personnelles ; les entrées existantes avec requête sont supprimées à la mise à jour.
+- Export CSV des redirections : les cellules qui commencent par = + - @ sont neutralisées pour ne pas devenir des formules dans un tableur (l'import retire ce préfixe).
+- Mode maintenance : l'API REST est fermée aux visiteurs, comme le site.
+- Mode debug et mode développeur ne sont plus exportés ni importés : un site client n'hérite plus du mode debug d'un site de développement.
+
+### Ajouté
+- Sécurité : réglage « Proxys de confiance » (et option Cloudflare) pour les sites derrière un CDN ou un répartiteur de charge. La limitation des connexions lit alors l'adresse réelle du visiteur au lieu de verrouiller tout le monde ensemble. Sans réglage, rien ne change.
+- SEO : bouton « Supprimer le fichier » quand un robots.txt physique masque le réglage.
+
+### Modifié
+- ALT automatique à l'import : la génération se fait en arrière-plan quelques secondes après l'import, au lieu de bloquer le téléversement. Elle est ignorée pendant les imports WordPress et sans clé API.
+- Types de contenu personnalisés : l'identifiant d'un type est fixé à sa création. Le renommer ne change plus son adresse et ne masque plus ses contenus. Un identifiant trop long (plus de 20 caractères) ou réservé par WordPress est refusé avec un message.
+- Redirections : un changement d'adresse d'une page parente crée aussi les redirections de ses pages enfants.
+- Le robots.txt écrit par le bouton de l'onglet SEO est supprimé à la désactivation et à la suppression du plugin, s'il n'a pas été modifié depuis.
+- Multisite : chaque site sert son propre sitemap (auparavant un fichier unique à la racine, commun à tout le réseau).
+- Cookies : le service Google Maps ne demande plus que la clé API ; le lien vers la politique de confidentialité reprend la page définie dans WordPress.
+
+### Performances
+- Redirections : la liste des jokers est gardée en cache, au lieu d'une recherche dans toute la table à chaque page vue.
+- SEO : les variables des motifs (titre, description, résumé…) sont calculées une fois par contenu et seulement si le motif les utilise.
+- Onglet SEO : les tests d'accès au robots.txt et au sitemap sont gardés 5 minutes au lieu d'appeler le site à chaque affichage.
+- Onglet IA : les estimations de coût sont gardées en cache.
+- Liens cassés : chaque requête de l'analyse reste sous la durée maximale d'exécution de PHP.
 
 ### Corrigé
+- Sitemap : sans fichier sitemap.xml (racine non accessible en écriture), chaque visite de /sitemap.xml relançait une génération complète et ajoutait une ligne à l'historique. Il est désormais servi depuis un cache. /sitemap.xml répond directement au lieu d'être redirigé vers /sitemap.xml/.
+- Robots.txt : l'échec d'écriture du fichier est signalé au lieu d'afficher un succès.
+- Traitement IA en masse : au-delà de 1 000 éléments en échec, les mêmes éléments étaient retraités (et facturés) en boucle.
+- Journal de sécurité : les entrées de plus de 30 jours sont supprimées même sans nouvel évènement.
+- Pages de médias redirigées : la redirection fonctionne aussi quand les fichiers sont sur un CDN.
+- Données structurées Article : plus de lien vers la page auteur quand le module Sécurité la masque.
+- Metabox SEO : le bouton IA se réactive après une erreur réseau, et l'aperçu n'affiche plus d'image cassée quand le champ image est vidé.
+- Éditeur de blocs : le script de la metabox SEO n'est plus chargé deux fois.
+- Le journal de debug est aussi écrit pendant les tâches planifiées et WP-CLI ; le gestionnaire d'erreurs du mode debug n'écrase plus celui des autres extensions.
+- Import des réglages : les valeurs des modules désactivés sont nettoyées à l'activation du module.
+- La notice « activé avec succès », jamais affichée, est retirée.
 - La suppression du plugin depuis la liste des extensions provoquait une erreur fatale (depuis la 2.4.0) : les fichiers restaient en place et les choix de nettoyage n'étaient pas appliqués.
 - Données structurées (JSON-LD) : un titre ou un résumé contenant « </script> » sous forme d'entités HTML pouvait injecter du code dans les pages publiques. Les chevrons sont désormais échappés.
 - Redirections : un joker dont la destination fait partie des adresses redirigées (« /blog/* » vers « /blog/nouveau/* », ou « /* ») est refusé au lieu de créer une boucle infinie.

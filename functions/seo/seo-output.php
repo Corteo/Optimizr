@@ -4,6 +4,76 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/** Codes des variables de motif, dans l'ordre où ils sont remplacés. */
+function hpt_seo_variable_codes()
+{
+    return ['{titre_page}', '{nom_site}', '{slogan}', '{categorie}', '{resume}', '{auteur}', '{type_contenu}', '{date_publication}'];
+}
+
+/**
+ * Valeur d'une variable de motif pour un contenu.
+ * Calculée une seule fois par contenu et par requête : titre, description, JSON-LD et en-tête
+ * des thèmes classiques résolvent le même contenu plusieurs fois, et le résumé d'un contenu
+ * sans extrait manuel exécute les filtres the_content.
+ */
+function hpt_seo_variable($code, $post_id)
+{
+    $post = get_post($post_id);
+    // Multisite : un même identifiant existe sur chaque site du réseau
+    $key = $post ? get_current_blog_id() . '-' . $post->ID : null;
+    $cached = $key ? ($GLOBALS['hpt_seo_variables'][$key] ?? []) : [];
+
+    if (array_key_exists($code, $cached)) {
+        return $cached[$code];
+    }
+
+    switch ($code) {
+        case '{titre_page}':
+            $value = get_the_title($post_id);
+            break;
+        case '{nom_site}':
+            $value = get_bloginfo('name');
+            break;
+        case '{slogan}':
+            $value = get_bloginfo('description');
+            break;
+        case '{categorie}':
+            $categories = get_the_category($post_id);
+            $value = (!empty($categories)) ? implode(', ', wp_list_pluck($categories, 'name')) : 'Sans catégorie';
+            break;
+        case '{resume}':
+            $value = html_entity_decode(get_the_excerpt($post_id), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            break;
+        case '{auteur}':
+            $value = get_the_author_meta('display_name', $post->post_author);
+            break;
+        case '{type_contenu}':
+            $value = get_post_type_object(get_post_type($post_id))->labels->singular_name;
+            break;
+        case '{date_publication}':
+            $value = get_the_date('d/m/Y', $post_id);
+            break;
+        default:
+            $value = '';
+    }
+
+    if ($key) {
+        $GLOBALS['hpt_seo_variables'][$key][$code] = $value;
+    }
+
+    return $value;
+}
+
+/** Contenu modifié pendant la requête (enregistrement, catégories) : ses variables sont recalculées. */
+function hpt_seo_forget_variables($post_id)
+{
+    unset($GLOBALS['hpt_seo_variables'][get_current_blog_id() . '-' . $post_id]);
+}
+add_action('clean_post_cache', 'hpt_seo_forget_variables');
+// L'API REST (éditeur de blocs) enregistre les catégories après le contenu, sans vider son cache
+add_action('set_object_terms', 'hpt_seo_forget_variables');
+add_action('deleted_term_relationships', 'hpt_seo_forget_variables');
+
 /**
  * Valeurs des variables de motif pour un contenu donné.
  *
@@ -11,34 +81,24 @@ if (!defined('ABSPATH')) {
  */
 function hpt_seo_variables($post_id)
 {
-    $post = get_post($post_id);
-    $site_name = get_bloginfo('name');
-    $site_slogan = get_bloginfo('description');
-    $post_title = get_the_title($post_id);
-    $post_excerpt = get_the_excerpt($post_id);
-    $post_excerpt = html_entity_decode($post_excerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $author_name = get_the_author_meta('display_name', $post->post_author);
-    $categories = get_the_category($post_id);
-    $category_names = (!empty($categories)) ? implode(', ', wp_list_pluck($categories, 'name')) : 'Sans catégorie';
-    $post_type = get_post_type_object(get_post_type($post_id))->labels->singular_name;
-    $post_date = get_the_date('d/m/Y', $post_id);
+    $values = [];
+    foreach (hpt_seo_variable_codes() as $code) {
+        $values[$code] = hpt_seo_variable($code, $post_id);
+    }
 
-    return [
-        '{titre_page}' => $post_title,
-        '{nom_site}' => $site_name,
-        '{slogan}' => $site_slogan,
-        '{categorie}' => $category_names,
-        '{resume}' => $post_excerpt,
-        '{auteur}' => $author_name,
-        '{type_contenu}' => $post_type,
-        '{date_publication}' => $post_date,
-    ];
+    return $values;
 }
 
 function hpt_generate_seo_content($pattern, $post_id)
 {
-    $replacements = hpt_seo_variables($post_id);
-    $text = str_replace(array_keys($replacements), array_values($replacements), $pattern);
+    // Même résultat qu'un str_replace() de toutes les variables dans cet ordre (une valeur peut
+    // elle-même contenir une variable), mais seules les variables présentes sont calculées
+    $text = $pattern;
+    foreach (hpt_seo_variable_codes() as $code) {
+        if (strpos((string) $text, $code) !== false) {
+            $text = str_replace($code, hpt_seo_variable($code, $post_id), $text);
+        }
+    }
 
     return hpt_seo_clean_text($text);
 }

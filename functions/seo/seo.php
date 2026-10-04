@@ -98,15 +98,71 @@ function hpt_enable_opengraph_callback()
     echo hpt_switch_input('hpt_enable_opengraph', get_option('hpt_enable_opengraph', 0), 'Générer les balises OpenGraph');
 }
 
+/**
+ * Code HTTP d'une adresse du site, gardé quelques minutes : l'onglet SEO ne refait pas
+ * une requête bloquante vers le site à chaque affichage.
+ *
+ * @param string $key    robots ou sitemap (cf. hpt_seo_http_check_reset())
+ * @param string $url
+ * @param string $method GET ou HEAD
+ * @return int 0 si le site ne répond pas
+ */
+function hpt_seo_http_check($key, $url, $method = 'GET')
+{
+    $cached = get_transient('hpt_seo_http_' . $key);
+    if (is_array($cached) && isset($cached['url'], $cached['code']) && $cached['url'] === $url) {
+        return (int) $cached['code'];
+    }
+
+    $response = $method === 'HEAD' ? wp_remote_head($url) : wp_remote_get($url);
+    $code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
+    set_transient('hpt_seo_http_' . $key, ['url' => $url, 'code' => $code], 5 * MINUTE_IN_SECONDS);
+
+    return $code;
+}
+
+/** Test refait au prochain affichage : réglages enregistrés, fichier écrit ou supprimé, sitemap régénéré. */
+function hpt_seo_http_check_reset($key)
+{
+    delete_transient('hpt_seo_http_' . $key);
+}
+
+function hpt_seo_robots_check_reset()
+{
+    hpt_seo_http_check_reset('robots');
+}
+add_action('update_option_hpt_enable_robots', 'hpt_seo_robots_check_reset');
+add_action('add_option_hpt_enable_robots', 'hpt_seo_robots_check_reset');
+add_action('update_option_hpt_custom_robots_txt', 'hpt_seo_robots_check_reset');
+add_action('add_option_hpt_custom_robots_txt', 'hpt_seo_robots_check_reset');
+
 function hpt_custom_robots_txt_callback()
 {
     $db_value = get_option('hpt_custom_robots_txt', '');
     $file_path = ABSPATH . 'robots.txt';
+    $file_exists = file_exists($file_path);
+
+    // Fichier physique : le serveur l'envoie sans passer par WordPress, ce réglage est ignoré
+    if ($file_exists) {
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>Un fichier robots.txt existe à la racine du site : il est servi à la place de ce réglage.</strong> ';
+        if (is_multisite()) {
+            echo 'Il est commun à tous les sites du réseau.';
+        } elseif (hpt_robots_txt_is_ours()) {
+            echo 'Écrit par Optimizr, il est supprimé à la désactivation du plugin.';
+        } else {
+            echo 'Il n\'a pas été écrit par Optimizr, ou a été modifié depuis.';
+        }
+        echo '</span>';
+        if (current_user_can(is_multisite() ? 'manage_network_options' : 'manage_options')) {
+            echo '<a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=hpt_delete_robots_txt'), 'hpt_delete_robots_txt')) . '" onclick="return confirm(\'Supprimer le fichier robots.txt de la racine du site ?\');">Supprimer le fichier</a>';
+        }
+        echo '</div>';
+    }
 
     // La valeur enregistrée prime ; le fichier existant ne sert qu'à pré-remplir le champ
     if (!empty($db_value)) {
         $value = $db_value;
-    } elseif (file_exists($file_path)) {
+    } elseif ($file_exists) {
         $value = file_get_contents($file_path);
     } else {
         $value = "User-agent: *\nDisallow:\nSitemap: " . home_url('/sitemap.xml');
@@ -116,25 +172,25 @@ function hpt_custom_robots_txt_callback()
 
     echo '<div class="optimizr-inline">';
 
-    // Test d'accessibilité du robots.txt
+    // Test d'accessibilité du robots.txt, seulement quand ce réglage s'applique
     $robots_url = home_url('/robots.txt');
-    $response = wp_remote_get($robots_url);
-    if (is_wp_error($response)) {
-        echo '<span class="optimizr-status optimizr-status--warn">Inaccessible</span>';
+    if (!get_option('hpt_enable_robots')) {
+        echo '<span class="optimizr-status optimizr-status--off">Personnalisation désactivée</span>';
     } else {
-        $code = wp_remote_retrieve_response_code($response);
-        if ($code === 200) {
+        $code = hpt_seo_http_check('robots', $robots_url);
+        if ($code === 0) {
+            echo '<span class="optimizr-status optimizr-status--warn">Inaccessible</span>';
+        } elseif ($code === 200) {
             echo '<a href="' . esc_url($robots_url) . '" target="_blank" rel="noopener" class="optimizr-status optimizr-status--ok">Accessible (HTTP 200)</a>';
         } else {
             echo '<span class="optimizr-status optimizr-status--warn">Réponse HTTP ' . esc_html($code) . '</span>';
         }
     }
 
-    if (file_exists($file_path)) {
-        echo '<span class="optimizr-muted">Un fichier robots.txt physique existe à la racine : il est prioritaire sur ce réglage.</span>';
+    // Multisite : la racine est commune à tous les sites du réseau
+    if (!is_multisite()) {
+        echo '<a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_robots_txt'), 'hpt_generate_robots_txt')) . '" class="optimizr-btn optimizr-btn--secondary optimizr-push">Écrire le fichier robots.txt</a>';
     }
-
-    echo '<a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_robots_txt'), 'hpt_generate_robots_txt')) . '" class="optimizr-btn optimizr-btn--secondary optimizr-push">Écrire le fichier robots.txt</a>';
     echo '</div>';
 
     echo '<details class="optimizr-details"><summary>Exemples de directives</summary><ul>
@@ -176,15 +232,11 @@ function hpt_generate_sitemap_button_callback()
     $url = wp_nonce_url(admin_url('admin-post.php?action=hpt_generate_sitemap_now'), 'hpt_generate_sitemap_now');
     $error = get_option('hpt_sitemap_error');
     $history = (array) get_option('hpt_sitemap_history', []);
-    $file_exists = file_exists(ABSPATH . 'sitemap.xml');
+    $file_exists = hpt_sitemap_is_published();
     $file_url = home_url('/sitemap.xml');
 
     // Vérifie l'accessibilité HTTP
-    $http_ok = false;
-    if ($file_exists) {
-        $response = wp_remote_head($file_url);
-        $http_ok = !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200;
-    }
+    $http_ok = $file_exists && hpt_seo_http_check('sitemap', $file_url, 'HEAD') === 200;
 
     $details = '';
     if (!empty($history[0])) {
@@ -231,6 +283,8 @@ function hpt_flush_rewrite_and_generate_sitemap()
 
 // Changement des types de contenu inclus : régénération immédiate
 add_action('update_option_hpt_sitemap_post_types', 'hpt_flush_rewrite_and_generate_sitemap');
+// Premier enregistrement : l'option est créée, pas modifiée
+add_action('add_option_hpt_sitemap_post_types', 'hpt_flush_rewrite_and_generate_sitemap');
 
 // Traitement de l'action
 add_action('admin_post_hpt_generate_sitemap_now', function () {
@@ -253,11 +307,19 @@ function hpt_show_sitemap_notice()
     $messages = [
         'sitemap_regenerated' => 'Le sitemap a été régénéré.',
         'robots_generated'    => 'Le fichier robots.txt a été généré avec succès.',
+        'robots_deleted'      => 'Le fichier robots.txt a été supprimé : le robots.txt est de nouveau généré par WordPress.',
+    ];
+    $errors = [
+        'robots_empty'         => 'Enregistrez d\'abord le contenu du robots.txt.',
+        'robots_failed'        => 'Impossible d\'écrire le fichier robots.txt. Vérifiez les droits d\'écriture du dossier racine du site.',
+        'robots_delete_failed' => 'Impossible de supprimer le fichier robots.txt. Vérifiez les droits d\'écriture du dossier racine du site.',
     ];
 
     $key = sanitize_key($_GET['hpt_message']);
     if ($key === 'sitemap_failed') {
         echo '<div class="notice notice-error is-dismissible"><p>' . esc_html(get_option('hpt_sitemap_error', 'La génération du sitemap a échoué.')) . '</p></div>';
+    } elseif (isset($errors[$key])) {
+        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($errors[$key]) . '</p></div>';
     } elseif (isset($messages[$key])) {
         echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($messages[$key]) . '</p></div>';
     }
@@ -379,10 +441,10 @@ add_action('hpt_admin_aside_seo', function () {
     <?php
 });
 
-require_once('seo-meta.php');
-require_once('seo-sitemap.php');
-require_once('seo-output.php');
-require_once('seo-extras.php');
+require_once(__DIR__ . '/seo-meta.php');
+require_once(__DIR__ . '/seo-sitemap.php');
+require_once(__DIR__ . '/seo-output.php');
+require_once(__DIR__ . '/seo-extras.php');
 
 // Filtre pour personnaliser le robots.txt
 add_filter('robots_txt', function ($output, $public) {
@@ -395,19 +457,44 @@ add_filter('robots_txt', function ($output, $public) {
 }, 10, 2);
 
 
+// Multisite : jamais d'écriture, la racine est commune à tous les sites du réseau
 add_action('admin_post_hpt_generate_robots_txt', function () {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('manage_options') || is_multisite()) {
         wp_die('Accès refusé');
     }
     check_admin_referer('hpt_generate_robots_txt');
 
-    $content = get_option('hpt_custom_robots_txt', '');
+    $content = (string) get_option('hpt_custom_robots_txt', '');
     $file = ABSPATH . 'robots.txt';
 
-    if (!empty($content)) {
-        file_put_contents($file, $content);
+    if (trim($content) === '') {
+        $message = 'robots_empty';
+    } elseif (@file_put_contents($file, $content) === strlen($content)) {
+        // Empreinte du contenu écrit : le fichier n'est supprimé à la désactivation que s'il n'a pas été modifié depuis
+        update_option('hpt_robots_txt_hash', md5($content), false);
+        $message = 'robots_generated';
+    } else {
+        $message = 'robots_failed';
     }
 
-    wp_redirect(add_query_arg('hpt_message', 'robots_generated', hpt_admin_tab_url('seo')));
+    hpt_seo_http_check_reset('robots');
+    wp_redirect(add_query_arg('hpt_message', $message, hpt_admin_tab_url('seo')));
+    exit;
+});
+
+add_action('admin_post_hpt_delete_robots_txt', function () {
+    if (!current_user_can(is_multisite() ? 'manage_network_options' : 'manage_options')) {
+        wp_die('Accès refusé');
+    }
+    check_admin_referer('hpt_delete_robots_txt');
+
+    $file = ABSPATH . 'robots.txt';
+    $ok = !file_exists($file) || @unlink($file);
+    if ($ok) {
+        delete_option('hpt_robots_txt_hash');
+    }
+
+    hpt_seo_http_check_reset('robots');
+    wp_redirect(add_query_arg('hpt_message', $ok ? 'robots_deleted' : 'robots_delete_failed', hpt_admin_tab_url('seo')));
     exit;
 });

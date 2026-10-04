@@ -19,7 +19,14 @@ function hpt_enqueue_debug_assets()
     wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
 
     // Injecter un script pour vérifier la présence de Bootstrap côté client (compatibilité v3/v4/v5)
-    add_action('wp_footer', function () {
+    // wp_footer ne se déclenche pas dans l'administration
+    add_action(is_admin() ? 'admin_footer' : 'wp_footer', function () {
+        global $hpt_debug_entries;
+
+        // Bootstrap seulement si vd() a quelque chose à afficher : ses styles s'appliquent à toute la page
+        if (empty($hpt_debug_entries)) {
+            return;
+        }
 ?>
         <script type="text/javascript">
             (function() {
@@ -161,25 +168,30 @@ function haptic_GPT_set_custom_error_handler()
         return;
     }
 
-    set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    // Gestionnaire déjà installé (autre plugin, Query Monitor…) : appelé à notre suite pour qu'il continue de fonctionner
+    $previous = null;
+    $previous = set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$previous) {
         global $hpt_collected_errors;
 
         // Respecte error_reporting() et l'opérateur @
-        if (!(error_reporting() & $errno)) {
-            return false;
+        if (error_reporting() & $errno) {
+            // Construire un message d'erreur
+            $error_message = sprintf(
+                "PHP Error [%d]: %s in %s on line %d",
+                $errno,
+                $errstr,
+                $errfile,
+                $errline
+            );
+
+            // Stocker le message dans le tableau global
+            $hpt_collected_errors[] = $error_message;
         }
 
-        // Construire un message d'erreur
-        $error_message = sprintf(
-            "PHP Error [%d]: %s in %s on line %d",
-            $errno,
-            $errstr,
-            $errfile,
-            $errline
-        );
-
-        // Stocker le message dans le tableau global
-        $hpt_collected_errors[] = $error_message;
+        // Sa valeur de retour décide de la suite, comme s'il était seul
+        if (is_callable($previous)) {
+            return call_user_func($previous, $errno, $errstr, $errfile, $errline);
+        }
 
         // Laisse PHP poursuivre son traitement normal (debug.log, affichage)
         return false;
@@ -195,8 +207,8 @@ function haptic_GPT_display_php_errors_in_popup()
 {
     global $hpt_collected_errors;
 
-    // On vérifie si l'utilisateur est administrateur
-    if (!current_user_can('administrator')) {
+    // On vérifie si l'utilisateur est administrateur (capacité, pas rôle : multisite, rôles personnalisés)
+    if (!current_user_can('manage_options')) {
         return;
     }
 
@@ -260,7 +272,7 @@ add_action('plugins_loaded', 'haptic_GPT_register_shutdown_handler');
 add_action('admin_print_footer_scripts', 'haptic_GPT_display_php_errors_in_popup');
 
 /**
- * Écrit un message de log dans logs/debug.log (plugin).
+ * Écrit un message de log dans le journal d'Optimizr (cf. hpt_log_file()).
  *
  * @param string $message
  * @param mixed $context
@@ -271,12 +283,55 @@ function hpt_log($message, $context = null)
     $hpt_log_queue[] = ['message' => $message, 'context' => $context];
 }
 
+/**
+ * Dossier du journal : dans uploads, il survit aux mises à jour du plugin (qui remplacent son dossier).
+ */
+function hpt_log_dir()
+{
+    $uploads = wp_upload_dir(null, false);
+    return trailingslashit($uploads['basedir']) . 'optimizr-logs/';
+}
+
+/**
+ * Journal de debug. Nom suffixé d'une empreinte propre au site : introuvable par une adresse devinée,
+ * même sur un serveur qui ignore le .htaccess (Nginx).
+ */
+function hpt_log_file()
+{
+    return hpt_log_dir() . 'debug-' . substr(wp_hash('hpt_debug_log'), 0, 12) . '.log';
+}
+
+/**
+ * Crée le dossier du journal, fermé à la lecture directe (.htaccess) et sans listing (index.php).
+ *
+ * @return bool Dossier prêt à recevoir le journal
+ */
+function hpt_log_prepare_dir()
+{
+    $dir = hpt_log_dir();
+    if ((!is_dir($dir) && !wp_mkdir_p($dir)) || !wp_is_writable($dir)) {
+        return false;
+    }
+
+    if (!file_exists($dir . '.htaccess')) {
+        file_put_contents($dir . '.htaccess', "# Journal d'Optimizr : aucun accès direct\n<IfModule mod_authz_core.c>\n    Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n    Order deny,allow\n    Deny from all\n</IfModule>\n");
+    }
+    if (!file_exists($dir . 'index.php')) {
+        file_put_contents($dir . 'index.php', "<?php\n// Silence is golden.\n");
+    }
+
+    return true;
+}
+
 function _hpt_log_execute($message, $context = null)
 {
     if (!function_exists('current_user_can') || !function_exists('get_option')) return;
-    if (!function_exists('wp_get_current_user') || !is_user_logged_in()) return;
-    if (!current_user_can('manage_options')) return;
+    if (!function_exists('wp_get_current_user')) return;
     if (!get_option('hpt_debug_mode')) return;
+
+    // Tâches planifiées et WP-CLI : aucun utilisateur connecté, on journalise quand même
+    $background = wp_doing_cron() || (defined('WP_CLI') && WP_CLI);
+    if (!$background && (!is_user_logged_in() || !current_user_can('manage_options'))) return;
 
     $output = '[HPT LOG] ' . date('Y-m-d H:i:s') . ' - ' . $message;
 
@@ -290,12 +345,14 @@ function _hpt_log_execute($message, $context = null)
         }
     }
 
-    $log_dir = plugin_dir_path(__DIR__) . 'logs/';
-    if (!file_exists($log_dir)) {
-        wp_mkdir_p($log_dir);
+    if (!hpt_log_prepare_dir()) {
+        return;
     }
 
-    file_put_contents($log_dir . 'debug.log', $output . PHP_EOL, FILE_APPEND);
+    // Plus vidé par les mises à jour du plugin : le journal repart de zéro au-delà de 5 Mo
+    $file = hpt_log_file();
+    $flags = (is_file($file) && filesize($file) > 5 * MB_IN_BYTES) ? 0 : FILE_APPEND;
+    file_put_contents($file, $output . PHP_EOL, $flags);
 }
 
 // Écriture en fin de requête : l'utilisateur courant est alors connu
@@ -332,7 +389,7 @@ function _hpt_console_execute($message, $context = null)
     $output = '[HPT CONSOLE] ' . $message;
 
     if ($context !== null) {
-        $output .= ' | ' . ((is_array($context) || is_object($context)) ? json_encode($context) : $context);
+        $output .= ' | ' . ((is_array($context) || is_object($context)) ? wp_json_encode($context) : $context);
     }
 
     echo "<script>console.log(" . wp_json_encode($output, JSON_HEX_TAG) . ");</script>";

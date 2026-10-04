@@ -32,7 +32,12 @@ function hpt_register_ai_settings()
     // Un modèle et une clé par fournisseur : seuls ceux du fournisseur choisi sont affichés (js/optimizr-admin.js)
     foreach (hpt_ai_providers() as $slug => $provider) {
         register_setting($group, $provider['model_option'], ['sanitize_callback' => 'sanitize_text_field']);
-        register_setting($group, $provider['key_option'], ['sanitize_callback' => 'sanitize_text_field']);
+        $key_option = $provider['key_option'];
+        register_setting($group, $key_option, [
+            'sanitize_callback' => function ($value) use ($key_option) {
+                return hpt_ai_sanitize_api_key($value, $key_option);
+            },
+        ]);
 
         $class = 'hpt-ai-provider-row hpt-ai-provider-' . $slug . ($slug === $current ? '' : ' optimizr-field--hidden');
 
@@ -52,7 +57,7 @@ function hpt_register_ai_settings()
     add_settings_field('hpt_ai_alt_on_upload', 'ALT automatique à l\'import', function () {
         echo hpt_switch_input('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'Générer la balise ALT à l\'import des images');
     }, $page, 'hpt_ai_settings_section', [
-        'description' => 'Génère la balise ALT de chaque image importée dans la médiathèque (une requête facturée par image).',
+        'description' => 'Génère la balise ALT de chaque image importée dans la médiathèque, en arrière-plan quelques secondes après l\'import (une requête facturée par image).',
     ]);
 
     add_settings_section(
@@ -106,14 +111,44 @@ function hpt_ai_model_callback($args)
     }
 }
 
+/**
+ * Clé API enregistrée : le champ n'étant jamais prérempli, un champ laissé vide conserve la clé,
+ * sauf si « Supprimer la clé enregistrée » est cochée. Une valeur non vide (formulaire, import des réglages) la remplace.
+ */
+function hpt_ai_sanitize_api_key($value, $option)
+{
+    $value = sanitize_text_field($value);
+    if ($value !== '') {
+        return $value;
+    }
+
+    $delete = ($_POST['option_page'] ?? '') === hpt_settings_group('ai')
+        && in_array($option, (array) ($_POST['hpt_ai_key_delete'] ?? []), true);
+
+    return $delete ? '' : (string) get_option($option, '');
+}
+
 function hpt_ai_api_key_callback($args)
 {
     $config = hpt_ai_provider_config($args['provider']);
+    $saved = trim((string) get_option($config['key_option'], ''));
+
+    // Jamais de clé dans la page : seuls ses 4 derniers caractères sont rappelés (clé assez longue)
     printf(
-        '<input type="password" name="%1$s" id="%1$s" value="%2$s" autocomplete="off" spellcheck="false" />',
+        '<input type="password" name="%1$s" id="%1$s" value="" placeholder="%2$s" autocomplete="new-password" spellcheck="false" />',
         esc_attr($config['key_option']),
-        esc_attr(get_option($config['key_option'], ''))
+        esc_attr($saved !== '' ? 'Clé enregistrée : laissez vide pour la conserver' : 'Collez la clé de votre compte')
     );
+    if ($saved !== '') {
+        printf(
+            '<p class="optimizr-field__help">%s</p>',
+            esc_html(mb_strlen($saved) >= 12 ? sprintf('Clé enregistrée, se terminant par « %s ».', mb_substr($saved, -4)) : 'Clé enregistrée.')
+        );
+        printf(
+            '<label class="optimizr-check"><input type="checkbox" name="hpt_ai_key_delete[]" value="%s"><span>Supprimer la clé enregistrée</span></label>',
+            esc_attr($config['key_option'])
+        );
+    }
     printf(
         '<p class="optimizr-field__help">À créer sur <a href="%s" target="_blank" rel="noopener">%s</a>. Elle n\'est jamais affichée en clair.</p>',
         esc_url($config['key_url']),
@@ -180,13 +215,6 @@ function hpt_ai_usage_summary()
  */
 function hpt_ai_costs_table()
 {
-    $targets = [];
-    foreach (hpt_ai_providers() as $slug => $provider) {
-        foreach (array_keys($provider['models']) as $model) {
-            $targets[] = [$slug, $model];
-        }
-    }
-
     $alt_ids = function_exists('hpt_ai_bulk_ids') ? hpt_ai_bulk_ids('alt') : [];
     $desc_ids = function_exists('hpt_ai_bulk_ids') && hpt_is_module_active('seo') ? hpt_ai_bulk_ids('descriptions') : [];
 
@@ -194,8 +222,9 @@ function hpt_ai_costs_table()
     $alt_sample = $alt_ids ?: array_map('intval', get_posts(['post_type' => 'attachment', 'post_mime_type' => 'image', 'post_status' => 'inherit', 'numberposts' => 50, 'fields' => 'ids']));
     $desc_sample = $desc_ids ?: array_map('intval', get_posts(['post_type' => (array) get_option('hpt_sitemap_post_types', ['post', 'page']), 'numberposts' => 50, 'fields' => 'ids']));
 
-    $alt = hpt_ai_estimate('alt', $alt_sample, $targets);
-    $desc = hpt_ai_estimate('descriptions', $desc_sample, $targets);
+    // Coût d'un élément pour chaque modèle (mis en cache, cf. hpt_ai_estimate_units())
+    $alt = hpt_ai_estimate_units('alt', $alt_sample);
+    $desc = hpt_ai_estimate_units('descriptions', $desc_sample);
     $current = hpt_ai_provider() . ':' . hpt_ai_request_model();
     $columns = 4 + ($alt_ids ? 1 : 0) + ($desc_ids ? 1 : 0);
     ?>
@@ -216,8 +245,8 @@ function hpt_ai_costs_table()
                     <tr class="optimizr-table__group"><th scope="rowgroup" colspan="<?php echo (int) $columns; ?>"><?php echo esc_html($provider['label']); ?></th></tr>
                     <?php foreach ($provider['models'] as $model => $config) :
                         $key = $slug . ':' . $model;
-                        $a = $alt['per_model'][$key];
-                        $d = $desc['per_model'][$key];
+                        $a = $alt[$key] ?? null;
+                        $d = $desc[$key] ?? null;
                         ?>
                         <tr<?php echo $key === $current ? ' class="is-current"' : ''; ?>>
                             <th scope="row"><?php echo esc_html($model); ?><?php echo $key === $current ? ' <span class="optimizr-badge">actuel</span>' : ''; ?></th>
@@ -232,10 +261,10 @@ function hpt_ai_costs_table()
                                 }
                                 ?>
                             </td>
-                            <td><?php echo esc_html(hpt_ai_format_unit($a['unit'])); ?></td>
-                            <td><?php echo esc_html(hpt_ai_format_unit($d['unit'])); ?></td>
-                            <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a['unit'] === null ? null : $a['unit'] * count($alt_ids))); ?></td><?php endif; ?>
-                            <?php if ($desc_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($d['unit'] === null ? null : $d['unit'] * count($desc_ids))); ?></td><?php endif; ?>
+                            <td><?php echo esc_html(hpt_ai_format_unit($a)); ?></td>
+                            <td><?php echo esc_html(hpt_ai_format_unit($d)); ?></td>
+                            <?php if ($alt_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($a === null ? null : $a * count($alt_ids))); ?></td><?php endif; ?>
+                            <?php if ($desc_ids) : ?><td><?php echo esc_html(hpt_ai_format_cost($d === null ? null : $d * count($desc_ids))); ?></td><?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
@@ -247,6 +276,16 @@ function hpt_ai_costs_table()
 }
 
 /* ---------- Génération ---------- */
+
+/**
+ * Droit de lancer une génération (requête facturée) : publish_posts par défaut, soit les auteurs,
+ * éditeurs et administrateurs. Modifiable par le filtre hpt_ai_capability.
+ * S'ajoute au droit de modifier le contenu concerné.
+ */
+function hpt_ai_user_can()
+{
+    return current_user_can(apply_filters('hpt_ai_capability', 'publish_posts'));
+}
 
 add_action('wp_ajax_hpt_generate_ai_seo_description', 'hpt_generate_ai_seo_description');
 
@@ -348,7 +387,7 @@ function hpt_generate_ai_seo_description()
     check_ajax_referer('hpt_ai_nonce', 'nonce');
 
     $post_id = intval($_POST['post_id'] ?? 0);
-    if (!$post_id || !current_user_can('edit_post', $post_id)) {
+    if (!$post_id || !hpt_ai_user_can() || !current_user_can('edit_post', $post_id)) {
         wp_send_json_error('Permissions insuffisantes');
     }
 
@@ -377,7 +416,7 @@ function haptic_GPT_generate_image_meta()
         wp_send_json_error('ID de fichier manquant');
     }
 
-    if (!current_user_can('edit_post', $post_id)) {
+    if (!hpt_ai_user_can() || !current_user_can('edit_post', $post_id)) {
         wp_send_json_error('Permissions insuffisantes');
     }
 

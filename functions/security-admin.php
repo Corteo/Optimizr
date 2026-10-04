@@ -15,7 +15,7 @@ function hpt_sec_register_settings()
     $group = hpt_settings_group('security');
     $page = hpt_settings_page('security');
 
-    $toggles = ['limit_login', 'generic_errors', 'login_alert', 'hide_version', 'block_enumeration', 'block_author_pages',
+    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert', 'hide_version', 'block_enumeration', 'block_author_pages',
         'disable_xmlrpc', 'disable_app_passwords', 'disable_file_edit', 'uploads_php', 'headers', 'hsts'];
     foreach ($toggles as $toggle) {
         register_setting($group, 'hpt_sec_' . $toggle, ['sanitize_callback' => 'absint']);
@@ -33,6 +33,10 @@ function hpt_sec_register_settings()
         });
         return implode("\n", array_unique($ips));
     }]);
+    register_setting($group, 'hpt_sec_trusted_proxies', ['sanitize_callback' => function ($v) {
+        $ranges = array_filter(array_map('trim', preg_split('/\R/', (string) $v)), 'hpt_sec_is_ip_range');
+        return implode("\n", array_unique($ranges));
+    }]);
 
     /* Connexion */
     add_settings_section('hpt_sec_login_section', 'Connexion', function () {
@@ -45,6 +49,9 @@ function hpt_sec_register_settings()
     ]);
     add_settings_field('hpt_sec_limit_login', 'Limiter les tentatives', 'hpt_sec_limit_login_callback', $page, 'hpt_sec_login_section', [
         'description' => 'Verrouille temporairement une adresse IP après plusieurs mots de passe erronés.',
+    ]);
+    add_settings_field('hpt_sec_trusted_proxies', 'Proxys de confiance', 'hpt_sec_proxies_callback', $page, 'hpt_sec_login_section', [
+        'description' => 'Derrière Cloudflare, un CDN ou un répartiteur de charge, tous les visiteurs semblent venir de l\'adresse du proxy : un verrouillage bloquerait tout le monde.',
     ]);
     hpt_sec_add_toggle('generic_errors', 'Messages d\'erreur neutres', 'Affiche « Identifiant ou mot de passe incorrect » sans préciser lequel : un robot ne peut plus deviner les identifiants existants.', 'hpt_sec_login_section');
     hpt_sec_add_toggle('login_alert', 'Alerte de connexion', 'Envoie un email à l\'administrateur concerné lorsqu\'il se connecte depuis une adresse IP inconnue.', 'hpt_sec_login_section');
@@ -126,6 +133,34 @@ function hpt_sec_limit_login_callback()
     <?php
 }
 
+function hpt_sec_proxies_callback()
+{
+    $remote = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ?: '';
+    $client = hpt_sec_client_ip();
+    // En-têtes qui contiennent déjà l'adresse vue par le serveur : il les a lui-même traités (mod_remoteip, real_ip de nginx), rien à déclarer
+    $forwarded = array_filter(array_map('trim', array_merge(
+        [(string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? '')],
+        explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''))
+    )));
+    $proxied = $forwarded && !in_array($remote, $forwarded, true);
+    ?>
+    <div class="optimizr-check-row">
+        <?php echo hpt_switch_input('hpt_sec_proxy_cloudflare', hpt_sec_option('proxy_cloudflare'), 'Site derrière Cloudflare'); ?>
+        <span><strong>Site derrière Cloudflare</strong><br><span class="optimizr-muted">Adresse du visiteur lue dans l'en-tête CF-Connecting-IP, pour les seules requêtes venant des serveurs de Cloudflare.</span></span>
+    </div>
+    <label for="hpt_sec_trusted_proxies" class="optimizr-muted">Autres proxys : adresses IP ou plages CIDR, une par ligne</label>
+    <textarea name="hpt_sec_trusted_proxies" id="hpt_sec_trusted_proxies" rows="2" class="optimizr-code" spellcheck="false" placeholder="10.0.0.0/8"><?php echo esc_textarea(hpt_sec_option('trusted_proxies', '')); ?></textarea>
+    <p class="optimizr-field__help">Pour une requête venant de ces adresses, celle du visiteur est lue dans l'en-tête X-Forwarded-For. N'ajoutez que les adresses de vos proxys (hébergeur, CDN, répartiteur de charge) : une adresse déclarée peut transmettre n'importe quelle adresse de visiteur. Laissez vide si le site n'est derrière aucun proxy.</p>
+    <?php if ($remote !== '' && $client !== $remote) : ?>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span>Votre requête passe par le proxy <code><?php echo esc_html($remote); ?></code> : votre adresse retenue est <code><?php echo esc_html($client); ?></code>.</span></div>
+    <?php elseif ($remote !== '' && hpt_sec_ip_in_ranges($remote, hpt_sec_trusted_proxies())) : ?>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Votre requête vient du proxy déclaré <code><?php echo esc_html($remote); ?></code>, mais il ne transmet aucune adresse de visiteur lisible : c'est la sienne qui est retenue.</span></div>
+    <?php elseif ($proxied) : ?>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Votre requête semble passer par un proxy (adresse vue par le serveur : <code><?php echo esc_html($remote); ?></code>). S'il est le vôtre, déclarez-le ici.</span></div>
+    <?php endif; ?>
+    <?php
+}
+
 function hpt_sec_file_edit_callback()
 {
     if (defined('DISALLOW_FILE_EDIT') && !hpt_sec_option('disable_file_edit')) {
@@ -172,7 +207,7 @@ add_action('hpt_admin_aside_security', function () {
         'En-têtes de sécurité' => (bool) hpt_sec_option('headers'),
     ];
     $active = count(array_filter($protections));
-    $log = array_slice((array) get_option('hpt_security_log', []), 0, 8);
+    $log = array_slice(hpt_sec_get_log(), 0, 8);
     ?>
     <div class="optimizr-sticky">
         <section class="optimizr-card">
