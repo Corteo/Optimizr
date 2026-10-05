@@ -228,15 +228,11 @@ function hpt_options_admin_menu()
     );
 }
 
-// Réglages du tableau de bord : liste des modules actifs et canal de mise à jour
+// Réglages du tableau de bord : liste des modules actifs (le canal de mise à jour est dans functions/updates.php)
 add_action('admin_init', function () {
     register_setting(hpt_settings_group('dashboard'), 'hpt_modules', [
         'type'              => 'array',
         'sanitize_callback' => 'hpt_sanitize_modules',
-    ]);
-    register_setting(hpt_settings_group('dashboard'), 'hpt_update_channel', [
-        'type'              => 'string',
-        'sanitize_callback' => 'hpt_sanitize_update_channel',
     ]);
 });
 
@@ -282,10 +278,7 @@ function hpt_options_settings_page()
                 <span class="optimizr-badge">v<?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">
                     <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo hpt_icon('sparkles', 16); ?>Assistant de configuration</a>
-                    <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
-                    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
-                        <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
-                    </button>
+                    <?php do_action('hpt_header_actions'); ?>
                 </div>
             </div>
             <div class="optimizr-tabs-wrap" data-optimizr-tabs>
@@ -539,19 +532,12 @@ function hpt_render_dashboard()
                     <dl class="optimizr-dl">
                         <dt>Version installée</dt>
                         <dd><?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></dd>
-                        <dt>Canal</dt>
-                        <dd><?php echo esc_html(hpt_update_channels()[hpt_update_channel()]); ?></dd>
                     </dl>
-                    <?php if (current_user_can('update_plugins') && (!is_multisite() || is_main_site())) : ?>
-                        <label class="optimizr-field__label" for="hpt_update_channel">Canal suivi</label>
-                        <select name="hpt_update_channel" id="hpt_update_channel">
-                            <?php foreach (hpt_update_channels() as $channel => $label) : ?>
-                                <option value="<?php echo esc_attr($channel); ?>" <?php selected(hpt_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <p class="optimizr-card__hint">Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
+                    <?php if (has_action('hpt_dashboard_updates')) : ?>
+                        <?php do_action('hpt_dashboard_updates'); ?>
+                    <?php else : ?>
+                        <p class="optimizr-card__hint">Les nouvelles versions sont proposées par WordPress, dans Extensions et Tableau de bord › Mises à jour.</p>
                     <?php endif; ?>
-                    <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page.</p>
                 </div>
             </section>
         </aside>

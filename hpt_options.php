@@ -2,12 +2,13 @@
 
 /**
  * Plugin Name: Haptic Optimizr
- * Plugin URI: https://alexandrevergnaud.fr/
  * Description: Cookies et RGPD (Tarteaucitron), SEO, assistant IA, types de contenu personnalisés et outils de maintenance, réunis dans une seule page de réglages et activables module par module.
- * Version: 2.4.1
- * Author: Alexandre Vergnaud
+ * Version: 2.5.0
+ * Requires at least: 6.1
+ * Requires PHP: 7.4
+ * Author: Haptic
  * Author URI: https://alexandrevergnaud.fr/
- * License: GPL2
+ * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: hpt-options
  */
@@ -17,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HPT_OPTIMIZR_VERSION', '2.4.1');
+define('HPT_OPTIMIZR_VERSION', '2.5.0');
 define('HPT_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HPT_OPTIMIZR_URL', plugin_dir_url(__FILE__));
 // Hook de la page d'options (menu de premier niveau, cf. functions/admin-ui.php)
@@ -30,7 +31,7 @@ require_once(__DIR__ . '/functions/assets.php');
 
 require_once(__DIR__ . '/hpt_admin-page.php');
 require_once(__DIR__ . '/functions/utils.php');
-require_once(__DIR__ . '/functions/updates.php');
+require_once(__DIR__ . '/functions/updates.php'); // build:github-only (retiré de la version WordPress.org)
 require_once(__DIR__ . '/functions/tabs.php');
 require_once(__DIR__ . '/functions/settings.php');
 require_once(__DIR__ . '/functions/tools.php');

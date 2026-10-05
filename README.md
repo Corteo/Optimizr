@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.4.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.5.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -161,7 +161,7 @@ functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité (+ security-admin.php : onglet de réglages)
 functions/settings.php   Module Outils développeur (+ functions/utils.php)
-functions/updates.php    Mises à jour depuis GitHub
+functions/updates.php    Mises à jour depuis GitHub (absent de la version WordPress.org)
 css/, js/                Interface de la page d'options
 ```
 
@@ -176,13 +176,22 @@ Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.M
 
 Pour publier une version :
 
-1. Modifiez le numéro aux deux endroits de `hpt_options.php` : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION`.
+1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION` de `hpt_options.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
 3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `hpt_options.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
    - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en beta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
    - **Pré-version** : fusionnez seulement dans `beta`.
 
 Un site de test réglé sur le canal **Développement** reçoit chaque version fusionnée dans `main`, avant toute publication. Il ne voit une nouveauté que si le numéro de version a augmenté : chaque PR incrémente donc la version.
+
+### Version WordPress.org
+
+Le plugin existe en deux distributions construites à partir du même code :
+
+- **GitHub** (ce dépôt tel quel) : mises à jour par GitHub avec les canaux Stable, Beta et Développement.
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `js/optimizr-updates.js`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`.
+
+Le bouton « Vérifier les mises à jour » et la carte du canal sont ajoutés par `functions/updates.php` via les actions `hpt_header_actions` et `hpt_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 
 Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
 
