@@ -112,6 +112,8 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 = 3.0.0 =
 * All functions, options, hooks and constants now use the `haptic_` prefix. Existing settings, SEO data and scheduled tasks are migrated automatically on update; custom code using the old `hpt_` hooks must be updated.
 * Developer tools removed (debug mode, debug log, `vd()` function).
+* Plugin translatable: English source strings, French translation included.
+* Main file renamed to `optimizr.php`: reactivate the plugin after updating.
 * Security hardening: all output escaped, inline scripts and styles printed with the WordPress APIs, prepared SQL queries, request data sanitized.
 * File operations use the WordPress Filesystem API.
 * Requires WordPress 6.2 or later.
@@ -123,4 +125,4 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 == Upgrade Notice ==
 
 = 3.0.0 =
-Settings are migrated automatically to the new `haptic_` prefix. Custom code using `hpt_` hooks or functions must be renamed.
+The main plugin file is renamed: reactivate the plugin after updating. Settings are migrated automatically to the new `haptic_` prefix. Custom code using `hpt_` hooks or functions must be renamed.

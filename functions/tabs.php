@@ -16,7 +16,7 @@ function haptic_do_settings_sections($page)
     global $wp_settings_sections, $wp_settings_fields;
 
     if (empty($wp_settings_sections[$page])) {
-        echo '<p class="optimizr-empty">Aucun réglage dans cet onglet.</p>';
+        echo '<p class="optimizr-empty">' . esc_html__('No settings in this tab.', 'optimizr') . '</p>';
         return;
     }
 

@@ -12,35 +12,35 @@ function haptic_cookie_services()
 {
     return [
         'audience' => [
-            'label' => 'Mesure d\'audience',
+            'label' => __('Audience measurement', 'optimizr'),
             'services' => [
                 'google_analytics' => ['name' => 'Google Analytics 4', 'mono' => 'GA', 'note' => 'Consent Mode v2', 'fields' => ['ID' => 'G-XXXXXXXXXX']],
                 'google_tags'      => ['name' => 'Google Tag Manager', 'mono' => 'GTM', 'fields' => ['ID' => 'GTM-XXXXXXX']],
-                'clarity'          => ['name' => 'Microsoft Clarity', 'mono' => 'MC', 'note' => 'Bing Consent Mode', 'fields' => ['ID' => 'ID du projet']],
-                'matomo'           => ['name' => 'Matomo Tag Manager', 'mono' => 'M', 'fields' => ['ID' => 'URL du conteneur']],
-                'hotjar'           => ['name' => 'Hotjar', 'mono' => 'HJ', 'fields' => ['Site ID' => 'ID du site', 'Version' => 'Version']],
+                'clarity'          => ['name' => 'Microsoft Clarity', 'mono' => 'MC', 'note' => 'Bing Consent Mode', 'fields' => ['ID' => __('Project ID', 'optimizr')]],
+                'matomo'           => ['name' => 'Matomo Tag Manager', 'mono' => 'M', 'fields' => ['ID' => __('Container URL', 'optimizr')]],
+                'hotjar'           => ['name' => 'Hotjar', 'mono' => 'HJ', 'fields' => ['Site ID' => __('Site ID', 'optimizr'), 'Version' => __('Version', 'optimizr')]],
             ],
         ],
         'ads' => [
-            'label' => 'Publicité',
+            'label' => __('Advertising', 'optimizr'),
             'services' => [
                 'google_ads'     => ['name' => 'Google Ads', 'mono' => 'Ads', 'note' => 'Consent Mode v2', 'fields' => ['ID' => 'AW-XXXXXXXXX']],
-                'facebook_pixel' => ['name' => 'Pixel Meta (Facebook)', 'mono' => 'FB', 'fields' => ['Pixel ID' => 'ID du pixel']],
+                'facebook_pixel' => ['name' => __('Meta Pixel (Facebook)', 'optimizr'), 'mono' => 'FB', 'fields' => ['Pixel ID' => __('Pixel ID', 'optimizr')]],
             ],
         ],
         'embeds' => [
-            'label' => 'Contenus intégrés',
+            'label' => __('Embedded content', 'optimizr'),
             'services' => [
-                'google_fonts' => ['name' => 'Google Fonts', 'mono' => 'Aa', 'fields' => ['Families' => 'Familles, séparées par des virgules']],
+                'google_fonts' => ['name' => 'Google Fonts', 'mono' => 'Aa', 'fields' => ['Families' => __('Families, comma-separated', 'optimizr')]],
                 // Zoom, coordonnées et taille se règlent sur chaque carte (bloc googlemaps-canvas), pas ici
-                'google_maps'  => ['name' => 'Google Maps', 'mono' => 'GM', 'note' => 'Avec clé API', 'fields' => ['API Key' => 'Clé API']],
+                'google_maps'  => ['name' => 'Google Maps', 'mono' => 'GM', 'note' => __('With API key', 'optimizr'), 'fields' => ['API Key' => __('API key', 'optimizr')]],
             ],
         ],
         'antispam' => [
-            'label' => 'Anti-spam',
+            'label' => __('Anti-spam', 'optimizr'),
             'services' => [
-                'google_recaptcha' => ['name' => 'Google reCAPTCHA', 'mono' => 'rC', 'fields' => ['API Key' => 'Clé du site']],
-                'hcaptcha'         => ['name' => 'hCaptcha', 'mono' => 'hC', 'fields' => ['Site Key' => 'Clé du site']],
+                'google_recaptcha' => ['name' => 'Google reCAPTCHA', 'mono' => 'rC', 'fields' => ['API Key' => __('Site key', 'optimizr')]],
+                'hcaptcha'         => ['name' => 'hCaptcha', 'mono' => 'hC', 'fields' => ['Site Key' => __('Site key', 'optimizr')]],
             ],
         ],
     ];
@@ -52,11 +52,11 @@ function haptic_cookie_services()
 function haptic_tac_colors()
 {
     return [
-        'haptic_option_tarteaucitron_highlight_color' => ['Fond du bandeau', '#e0e0e0'],
-        'haptic_option_tarteaucitron_banner_bg'       => ['Fond du panneau de préférences', '#f9f9f9'],
-        'haptic_option_tarteaucitron_btn_accept'      => ['Bouton Accepter', '#1e7f4f'],
-        'haptic_option_tarteaucitron_btn_deny'        => ['Bouton Refuser', '#b3261e'],
-        'haptic_option_tarteaucitron_btn_customize'   => ['Bouton Personnaliser', '#9a4a00'],
+        'haptic_option_tarteaucitron_highlight_color' => [__('Banner background', 'optimizr'), '#e0e0e0'],
+        'haptic_option_tarteaucitron_banner_bg'       => [__('Preferences panel background', 'optimizr'), '#f9f9f9'],
+        'haptic_option_tarteaucitron_btn_accept'      => [__('Accept button', 'optimizr'), '#1e7f4f'],
+        'haptic_option_tarteaucitron_btn_deny'        => [__('Deny button', 'optimizr'), '#b3261e'],
+        'haptic_option_tarteaucitron_btn_customize'   => [__('Customize button', 'optimizr'), '#9a4a00'],
     ];
 }
 
@@ -111,23 +111,24 @@ function haptic_options_register_cookie_settings()
 
     add_settings_section(
         'haptic-cookies-banner',
-        'Bandeau de consentement',
+        __('Consent banner', 'optimizr'),
         function () {
-            echo '<p>Propulsé par Tarteaucitron. Les services ci-dessous ne sont chargés qu\'après accord du visiteur. Le bandeau renvoie vers la politique de confidentialité choisie dans <a href="' . esc_url(admin_url('options-privacy.php')) . '">Réglages › Confidentialité</a>, une fois cette page publiée.</p>';
+            /* translators: %s: URL of the Settings > Privacy screen */
+            echo '<p>' . wp_kses_post(sprintf(__('Powered by Tarteaucitron. The services below are only loaded after the visitor consents. The banner links to the privacy policy chosen in <a href="%s">Settings › Privacy</a>, once that page is published.', 'optimizr'), esc_url(admin_url('options-privacy.php')))) . '</p>';
         },
         $page,
-        ['toggle' => 'haptic_option_enable_tarteaucitron', 'toggle_label' => 'Afficher le bandeau de consentement']
+        ['toggle' => 'haptic_option_enable_tarteaucitron', 'toggle_label' => __('Show the consent banner', 'optimizr')]
     );
-    add_settings_field('haptic-tac-position', 'Position', 'haptic_options_tarteaucitron_banner_style_callback', $page, 'haptic-cookies-banner');
-    add_settings_field('haptic-tac-colors', 'Couleurs', 'haptic_options_tarteaucitron_colors_callback', $page, 'haptic-cookies-banner', [
-        'description' => 'Le ratio affiché mesure la lisibilité du texte blanc sur chaque bouton (4,5:1 minimum).',
+    add_settings_field('haptic-tac-position', __('Position', 'optimizr'), 'haptic_options_tarteaucitron_banner_style_callback', $page, 'haptic-cookies-banner');
+    add_settings_field('haptic-tac-colors', __('Colors', 'optimizr'), 'haptic_options_tarteaucitron_colors_callback', $page, 'haptic-cookies-banner', [
+        'description' => __('The ratio shown measures how readable white text is on each button (4.5:1 minimum).', 'optimizr'),
     ]);
 
     add_settings_section(
         'haptic-cookies-services',
-        'Services',
+        __('Services', 'optimizr'),
         function () {
-            echo '<p>Un service est actif dès que son identifiant est renseigné.</p>';
+            echo '<p>' . esc_html__('A service is active as soon as its ID is filled in.', 'optimizr') . '</p>';
         },
         $page
     );
@@ -138,13 +139,13 @@ add_action('admin_init', 'haptic_options_register_cookie_settings');
 function haptic_options_tarteaucitron_banner_style_callback()
 {
     $styles = [
-        'top' => 'En haut',
-        'middle' => 'Centré',
-        'bottom' => 'En bas',
+        'top' => _x('Top', 'cookie banner position', 'optimizr'),
+        'middle' => _x('Center', 'cookie banner position', 'optimizr'),
+        'bottom' => _x('Bottom', 'cookie banner position', 'optimizr'),
     ];
     $selected = get_option('haptic_option_tarteaucitron_banner_style', 'middle');
 
-    echo '<div class="optimizr-segmented" role="radiogroup" aria-label="Position du bandeau">';
+    echo '<div class="optimizr-segmented" role="radiogroup" aria-label="' . esc_attr__('Banner position', 'optimizr') . '">';
     foreach ($styles as $value => $label) {
         printf(
             '<label class="optimizr-segmented__option"><input type="radio" name="haptic_option_tarteaucitron_banner_style" value="%s" data-tac-position %s><span>%s</span></label>',
@@ -176,7 +177,7 @@ function haptic_options_tarteaucitron_colors_callback()
 function haptic_options_services_callback()
 {
     echo '<div class="optimizr-services" data-optimizr-services>';
-    echo '<div class="optimizr-services__search">' . wp_kses(haptic_icon('search', 16), haptic_kses_ui()) . '<input type="search" placeholder="Rechercher un service" aria-label="Rechercher un service" data-optimizr-services-search></div>';
+    echo '<div class="optimizr-services__search">' . wp_kses(haptic_icon('search', 16), haptic_kses_ui()) . '<input type="search" placeholder="' . esc_attr__('Search for a service', 'optimizr') . '" aria-label="' . esc_attr__('Search for a service', 'optimizr') . '" data-optimizr-services-search></div>';
 
     foreach (haptic_cookie_services() as $category) {
         echo '<div class="optimizr-services__group" data-optimizr-services-group>';
@@ -218,14 +219,14 @@ function haptic_options_services_callback()
             }
             echo '</div>';
 
-            echo '<span class="optimizr-status optimizr-status--' . ($active ? 'ok' : 'off') . '">' . ($active ? 'Actif' : 'Inactif') . '</span>';
+            echo '<span class="optimizr-status optimizr-status--' . ($active ? 'ok' : 'off') . '">' . ($active ? esc_html_x('Active', 'service status', 'optimizr') : esc_html_x('Inactive', 'service status', 'optimizr')) . '</span>';
             echo '</div>';
         }
         echo '</div>';
     }
 
-    echo '<p class="optimizr-services__empty" data-optimizr-services-empty hidden>Aucun service ne correspond à cette recherche.</p>';
-    echo '<p class="optimizr-services__footer">Toujours proposés au visiteur, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé.</p>';
+    echo '<p class="optimizr-services__empty" data-optimizr-services-empty hidden>' . esc_html__('No service matches this search.', 'optimizr') . '</p>';
+    echo '<p class="optimizr-services__footer">' . esc_html__('Always offered to visitors, no setup needed: YouTube, Dailymotion, X (Twitter), Facebook, Google Maps without a key.', 'optimizr') . '</p>';
     echo '</div>';
 }
 
@@ -235,29 +236,29 @@ add_action('haptic_admin_aside_cookies', function () {
     ?>
     <section class="optimizr-card optimizr-sticky">
         <div class="optimizr-card__header">
-            <h2 class="optimizr-card__title">Aperçu du bandeau</h2>
+            <h2 class="optimizr-card__title"><?php esc_html_e('Banner preview', 'optimizr'); ?></h2>
         </div>
         <div class="optimizr-card__body">
             <div class="optimizr-tac-preview" data-tac-preview data-position="<?php echo esc_attr(get_option('haptic_option_tarteaucitron_banner_style', 'middle')); ?>">
                 <div class="optimizr-tac-preview__bar" aria-hidden="true"><span></span><span></span><span></span></div>
                 <div class="optimizr-tac-preview__page">
                     <div class="optimizr-tac-preview__banner" data-tac-preview-banner style="background: <?php echo esc_attr($banner); ?>; color: <?php echo esc_attr(haptic_readable_text_color($banner)); ?>;">
-                        <strong>Ce site utilise des cookies</strong>
-                        <p>Vous choisissez les services autorisés. Votre choix est modifiable à tout moment.</p>
+                        <strong><?php esc_html_e('This site uses cookies', 'optimizr'); ?></strong>
+                        <p><?php esc_html_e('You choose which services are allowed. You can change your choice at any time.', 'optimizr'); ?></p>
                         <div class="optimizr-tac-preview__buttons">
-                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_accept" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_accept')); ?>;">Tout accepter</span>
-                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_deny" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_deny')); ?>;">Tout refuser</span>
-                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_customize" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_customize')); ?>;">Personnaliser</span>
+                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_accept" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_accept')); ?>;"><?php esc_html_e('Accept all', 'optimizr'); ?></span>
+                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_deny" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_deny')); ?>;"><?php esc_html_e('Deny all', 'optimizr'); ?></span>
+                            <span data-tac-preview-btn="haptic_option_tarteaucitron_btn_customize" style="background: <?php echo esc_attr(haptic_tac_color('haptic_option_tarteaucitron_btn_customize')); ?>;"><?php esc_html_e('Customize', 'optimizr'); ?></span>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="optimizr-card__hint">Aperçu indicatif : le rendu final dépend aussi du thème.</p>
+            <p class="optimizr-card__hint"><?php esc_html_e('Approximate preview: the final look also depends on the theme.', 'optimizr'); ?></p>
         </div>
     </section>
     <div class="optimizr-callout">
         <?php echo wp_kses(haptic_icon('info', 18), haptic_kses_ui()); ?>
-        <span>Google Consent Mode v2 et Bing Consent Mode sont transmis automatiquement à GA4, Google Ads et Clarity.</span>
+        <span><?php esc_html_e('Google Consent Mode v2 and Bing Consent Mode are sent automatically to GA4, Google Ads and Clarity.', 'optimizr'); ?></span>
     </div>
     <?php
 });
@@ -454,6 +455,6 @@ function haptic_cookie_button()
         return;
     }
     ?>
-    <button type="button" id="haptic-cookie-button" aria-label="Gérer les cookies" style="position:fixed;bottom:15px;right:15px;z-index:99999;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#fff;color:#1e1e1e;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;opacity:.6;transition:opacity .2s ease"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg></button>
+    <button type="button" id="haptic-cookie-button" aria-label="<?php esc_attr_e('Manage cookies', 'optimizr'); ?>" style="position:fixed;bottom:15px;right:15px;z-index:99999;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#fff;color:#1e1e1e;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;opacity:.6;transition:opacity .2s ease"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg></button>
     <?php
 }

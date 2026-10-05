@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const { __ } = wp.i18n;
     const titleInput = document.getElementById("haptic_og_title");
     const descInput = document.getElementById("haptic_og_desc");
     const imageInput = document.getElementById("haptic_og_image");
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             previewBox.appendChild(img);
         }
         img.src = url;
-        img.alt = "Prévisualisation SEO";
+        img.alt = __("SEO preview", "optimizr");
     });
 
     // Initialisation de la prévisualisation et des compteurs avec les valeurs actuelles

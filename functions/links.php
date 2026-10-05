@@ -85,7 +85,7 @@ function haptic_links_check($url)
     // Liens saisis par les auteurs : jamais de requête vers le réseau local du serveur ni vers un port inhabituel
     // (wp_http_validate_url, comme wp_safe_remote_* ; les adresses du site lui-même restent autorisées)
     if (!wp_http_validate_url($url)) {
-        return ['state' => 'error', 'code' => 0, 'label' => 'Inaccessible (domaine introuvable ou adresse non autorisée)'];
+        return ['state' => 'error', 'code' => 0, 'label' => __('Unreachable (domain not found or address not allowed)', 'optimizr')];
     }
 
     $args = [
@@ -107,23 +107,35 @@ function haptic_links_check($url)
     }
 
     if (is_wp_error($response)) {
-        return ['state' => 'error', 'code' => 0, 'label' => 'Inaccessible (' . $response->get_error_message() . ')'];
+        /* translators: %s: HTTP error message */
+        return ['state' => 'error', 'code' => 0, 'label' => sprintf(__('Unreachable (%s)', 'optimizr'), $response->get_error_message())];
     }
     if ($code >= 200 && $code < 400) {
         return ['state' => 'ok', 'code' => $code, 'label' => (string) $code];
     }
     if (in_array($code, [401, 403, 429], true)) {
         // Protection anti-robots fréquente sur les sites externes : à vérifier à la main
-        return ['state' => 'blocked', 'code' => $code, 'label' => $code . ' — accès refusé au vérificateur, à contrôler'];
+        /* translators: %d: HTTP status code */
+        return ['state' => 'blocked', 'code' => $code, 'label' => sprintf(__('%d — access denied to the checker, check manually', 'optimizr'), $code)];
     }
-    $labels = [404 => 'Page introuvable', 410 => 'Supprimée définitivement'];
-    return ['state' => 'broken', 'code' => $code, 'label' => $code . ' — ' . ($labels[$code] ?? ($code >= 500 ? 'Erreur du serveur' : 'Erreur'))];
+    $labels = [
+        /* translators: %d: HTTP status code (404) */
+        404 => __('%d — Page not found', 'optimizr'),
+        /* translators: %d: HTTP status code (410) */
+        410 => __('%d — Permanently deleted', 'optimizr'),
+    ];
+    $label = $labels[$code] ?? ($code >= 500
+        /* translators: %d: HTTP status code (5xx) */
+        ? __('%d — Server error', 'optimizr')
+        /* translators: %d: HTTP status code */
+        : __('%d — Error', 'optimizr'));
+    return ['state' => 'broken', 'code' => $code, 'label' => sprintf($label, $code)];
 }
 
 add_action('wp_ajax_haptic_links_scan', function () {
     check_ajax_referer('haptic_links_scan', 'nonce');
     if (!current_user_can('manage_options')) {
-        wp_send_json_error('Permissions insuffisantes.');
+        wp_send_json_error(__('Insufficient permissions.', 'optimizr'));
     }
 
     $step = sanitize_key($_POST['step'] ?? '');
@@ -191,5 +203,5 @@ add_action('wp_ajax_haptic_links_scan', function () {
         ]);
     }
 
-    wp_send_json_error('Étape inconnue.');
+    wp_send_json_error(__('Unknown step.', 'optimizr'));
 });

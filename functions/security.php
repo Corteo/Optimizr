@@ -230,7 +230,7 @@ function haptic_sec_not_found()
         }
     }
 
-    echo '<!doctype html><html lang="fr"><meta charset="utf-8"><title>Page introuvable</title><p>Page introuvable.</p><p><a href="' . esc_url(home_url('/')) . '">Retour à l\'accueil</a></p></html>';
+    echo '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><meta charset="utf-8"><title>' . esc_html__('Page not found', 'optimizr') . '</title><p>' . esc_html__('Page not found.', 'optimizr') . '</p><p><a href="' . esc_url(home_url('/')) . '">' . esc_html__('Back to the home page', 'optimizr') . '</a></p></html>';
     exit;
 }
 
@@ -302,11 +302,11 @@ function haptic_sec_sanitize_login_slug($value)
     $reserved = ['wp-admin', 'wp-login', 'wp-login-php', 'admin', 'login', 'dashboard', 'wp-content', 'wp-includes', 'wp-json', 'feed', 'xmlrpc', 'sitemap'];
     $error = '';
     if (strlen($value) < 4) {
-        $error = 'L\'adresse de connexion doit contenir au moins 4 caractères.';
+        $error = __('The login address must be at least 4 characters long.', 'optimizr');
     } elseif (in_array($value, $reserved, true)) {
-        $error = 'Cette adresse de connexion est réservée par WordPress.';
+        $error = __('This login address is reserved by WordPress.', 'optimizr');
     } elseif (get_page_by_path($value, OBJECT, get_post_types(['public' => true]))) {
-        $error = 'Un contenu du site utilise déjà cette adresse.';
+        $error = __('Some content on the site already uses this address.', 'optimizr');
     }
 
     if ($error) {
@@ -328,9 +328,11 @@ function haptic_sec_mail_login_url($old, $new)
     }
     wp_mail(
         get_option('admin_email'),
-        sprintf('[%s] Nouvelle adresse de connexion', wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
+        /* translators: %s: site name */
+        sprintf(__('[%s] New login address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
         sprintf(
-            "L'adresse de connexion à l'administration a été modifiée.\n\nNouvelle adresse : %s\n\nL'ancienne adresse (wp-login.php) affiche désormais une page introuvable.\nConservez cet email. En cas de blocage, ajoutez define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); dans wp-config.php.",
+            /* translators: %s: new login URL */
+            __("The admin login address has been changed.\n\nNew address: %s\n\nThe old address (wp-login.php) now shows a not-found page.\nKeep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php.", 'optimizr'),
             haptic_sec_login_url(null, $new)
         )
     );
@@ -361,9 +363,11 @@ if (haptic_sec_option('limit_login')) {
         }
         $until = (int) get_transient(haptic_sec_lock_key($ip));
         if ($until > time()) {
+            $minutes = max(1, (int) ceil(($until - time()) / 60));
             return new WP_Error('haptic_sec_locked', sprintf(
-                'Trop de tentatives de connexion. Réessayez dans %d minute(s).',
-                max(1, (int) ceil(($until - time()) / 60))
+                /* translators: %s: number of minutes */
+                _n('Too many login attempts. Try again in %s minute.', 'Too many login attempts. Try again in %s minutes.', $minutes, 'optimizr'),
+                number_format_i18n($minutes)
             ));
         }
         return $user;
@@ -382,7 +386,9 @@ if (haptic_sec_option('limit_login')) {
         if ($fails >= $max) {
             delete_transient(haptic_sec_fail_key($ip));
             set_transient(haptic_sec_lock_key($ip), time() + $lockout, $lockout);
-            haptic_sec_log('Verrouillage', sprintf('%d échecs, dernier identifiant essayé : %s', $fails, sanitize_user((string) $username)));
+            // Type d'évènement enregistré tel quel (clé du journal), libellé traduit à l'affichage ; détail traduit à l'écriture
+            /* translators: 1: number of failed attempts, 2: last username tried */
+            haptic_sec_log('Verrouillage', sprintf(_n('%1$s failed attempt, last username tried: %2$s', '%1$s failed attempts, last username tried: %2$s', $fails, 'optimizr'), number_format_i18n($fails), sanitize_user((string) $username)));
         } else {
             set_transient(haptic_sec_fail_key($ip), $fails, $lockout);
         }
@@ -397,7 +403,7 @@ if (haptic_sec_option('limit_login')) {
 if (haptic_sec_option('generic_errors')) {
     add_filter('authenticate', function ($user) {
         if (is_wp_error($user) && array_intersect($user->get_error_codes(), ['invalid_username', 'invalid_email', 'incorrect_password'])) {
-            return new WP_Error('haptic_sec_invalid', 'Identifiant ou mot de passe incorrect.');
+            return new WP_Error('haptic_sec_invalid', __('Incorrect username or password.', 'optimizr'));
         }
         return $user;
     }, 100);
@@ -420,16 +426,21 @@ if (haptic_sec_option('login_alert')) {
         if ($known) {
             wp_mail(
                 $user->user_email,
-                sprintf('[%s] Connexion administrateur depuis une nouvelle adresse', wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
+                /* translators: %s: site name */
+                sprintf(__('[%s] Administrator login from a new address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
                 sprintf(
-                    "Le compte « %s » vient de se connecter depuis une adresse IP inconnue.\n\nDate : %s\nAdresse IP : %s\nNavigateur : %s\n\nSi ce n'est pas vous, changez immédiatement votre mot de passe.",
+                    /* translators: 1: username, 2: date and time, 3: IP address, 4: browser user agent */
+                    __("The account \"%1\$s\" has just logged in from an unknown IP address.\n\nDate: %2\$s\nIP address: %3\$s\nBrowser: %4\$s\n\nIf this wasn't you, change your password immediately.", 'optimizr'),
                     $user->user_login,
-                    wp_date('j F Y à H:i'),
+                    /* translators: date format in the login alert email, see https://www.php.net/manual/datetime.format.php */
+                    wp_date(__('F j, Y \a\t H:i', 'optimizr')),
                     haptic_sec_client_ip(),
-                    sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? 'inconnu'))
+                    sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? __('unknown', 'optimizr')))
                 )
             );
-            haptic_sec_log('Alerte de connexion', 'Compte ' . $user->user_login);
+            // Type d'évènement enregistré tel quel (clé du journal), libellé traduit à l'affichage
+            /* translators: %s: username */
+            haptic_sec_log('Alerte de connexion', sprintf(__('Account %s', 'optimizr'), $user->user_login));
         }
         array_unshift($known, $hash);
         update_user_meta($user->ID, 'haptic_sec_known_ips', array_slice(array_values(array_filter($known)), 0, 20));
@@ -475,7 +486,7 @@ if (haptic_sec_option('block_enumeration')) {
     // Liste des comptes de l'API REST réservée aux utilisateurs connectés
     add_filter('rest_pre_dispatch', function ($result, $server, $request) {
         if (!is_user_logged_in() && preg_match('#^/wp/v2/users#', $request->get_route())) {
-            return new WP_Error('rest_user_cannot_view', 'Accès refusé.', ['status' => 401]);
+            return new WP_Error('rest_user_cannot_view', __('Access denied.', 'optimizr'), ['status' => 401]);
         }
         return $result;
     }, 10, 3);
@@ -502,10 +513,12 @@ if (haptic_sec_option('disable_xmlrpc')) {
         unset($headers['X-Pingback']);
         return $headers;
     });
-    // xmlrpc.php refusé avant tout traitement
+    // xmlrpc.php refusé avant tout traitement (sur « init » : message traduit, traductions chargées)
     if (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) {
-        status_header(403);
-        exit('XML-RPC est désactivé sur ce site.');
+        add_action('init', function () {
+            status_header(403);
+            exit(esc_html__('XML-RPC is disabled on this site.', 'optimizr'));
+        }, 0);
     }
 }
 
@@ -592,22 +605,24 @@ function haptic_sec_environment_checks()
     $checks = [];
 
     $checks[] = is_ssl() || strpos(home_url(), 'https://') === 0
-        ? ['status' => 'ok', 'label' => 'Site servi en HTTPS']
-        : ['status' => 'warn', 'label' => 'Site servi sans HTTPS : identifiants transmis en clair'];
+        ? ['status' => 'ok', 'label' => __('Site served over HTTPS', 'optimizr')]
+        : ['status' => 'warn', 'label' => __('Site served without HTTPS: credentials sent in clear text', 'optimizr')];
 
     $admin = get_user_by('login', 'admin');
     $checks[] = $admin && user_can($admin, 'manage_options')
-        ? ['status' => 'warn', 'label' => 'Un administrateur s\'appelle « admin », le premier identifiant essayé par les robots']
-        : ['status' => 'ok', 'label' => 'Aucun administrateur nommé « admin »'];
+        ? ['status' => 'warn', 'label' => __('An administrator is named "admin", the first username bots try', 'optimizr')]
+        : ['status' => 'ok', 'label' => __('No administrator named "admin"', 'optimizr')];
 
     $display = defined('WP_DEBUG') && WP_DEBUG && (!defined('WP_DEBUG_DISPLAY') || WP_DEBUG_DISPLAY);
     $checks[] = $display
-        ? ['status' => 'warn', 'label' => 'Les erreurs PHP s\'affichent aux visiteurs (WP_DEBUG_DISPLAY)']
-        : ['status' => 'ok', 'label' => 'Erreurs PHP masquées aux visiteurs'];
+        ? ['status' => 'warn', 'label' => __('PHP errors are shown to visitors (WP_DEBUG_DISPLAY)', 'optimizr')]
+        : ['status' => 'ok', 'label' => __('PHP errors hidden from visitors', 'optimizr')];
 
     $checks[] = version_compare(PHP_VERSION, '8.2', '<')
-        ? ['status' => 'warn', 'label' => sprintf('PHP %s n\'est plus maintenu : demandez une version récente à l\'hébergeur', PHP_VERSION)]
-        : ['status' => 'ok', 'label' => sprintf('PHP %s maintenu', PHP_VERSION)];
+        /* translators: %s: PHP version */
+        ? ['status' => 'warn', 'label' => sprintf(__('PHP %s is no longer maintained: ask your host for a recent version', 'optimizr'), PHP_VERSION)]
+        /* translators: %s: PHP version */
+        : ['status' => 'ok', 'label' => sprintf(__('PHP %s is maintained', 'optimizr'), PHP_VERSION)];
 
     return $checks;
 }

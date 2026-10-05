@@ -10,17 +10,17 @@ function haptic_render_mail_settings()
     register_setting(haptic_settings_group('advanced'), 'haptic_disable_plugin_update_emails', ['sanitize_callback' => 'absint']);
     register_setting(haptic_settings_group('advanced'), 'haptic_disable_core_update_emails', ['sanitize_callback' => 'absint']);
 
-    add_settings_section('haptic-email-settings', 'Emails', function () {
-        echo '<p>Emails envoyés à l\'administrateur après les mises à jour automatiques.</p>';
+    add_settings_section('haptic-email-settings', __('Emails', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Emails sent to the administrator after automatic updates.', 'optimizr') . '</p>';
     }, haptic_settings_page('advanced'));
 
-    add_settings_field('haptic_disable_plugin_update_emails', 'Couper les emails des extensions', function () {
-        echo wp_kses(haptic_switch_input('haptic_disable_plugin_update_emails', get_option('haptic_disable_plugin_update_emails', false), 'Couper les emails de mise à jour des extensions'), haptic_kses_ui());
-    }, haptic_settings_page('advanced'), 'haptic-email-settings', ['description' => 'Aucun email après la mise à jour automatique d\'une extension.']);
+    add_settings_field('haptic_disable_plugin_update_emails', __('Turn off plugin emails', 'optimizr'), function () {
+        echo wp_kses(haptic_switch_input('haptic_disable_plugin_update_emails', get_option('haptic_disable_plugin_update_emails', false), __('Turn off plugin update emails', 'optimizr')), haptic_kses_ui());
+    }, haptic_settings_page('advanced'), 'haptic-email-settings', ['description' => __('No email after a plugin is updated automatically.', 'optimizr')]);
 
-    add_settings_field('haptic_disable_core_update_emails', 'Couper les emails de WordPress', function () {
-        echo wp_kses(haptic_switch_input('haptic_disable_core_update_emails', get_option('haptic_disable_core_update_emails', false), 'Couper les emails de mise à jour de WordPress'), haptic_kses_ui());
-    }, haptic_settings_page('advanced'), 'haptic-email-settings', ['description' => 'Aucun email après une mise à jour automatique du cœur de WordPress.']);
+    add_settings_field('haptic_disable_core_update_emails', __('Turn off WordPress emails', 'optimizr'), function () {
+        echo wp_kses(haptic_switch_input('haptic_disable_core_update_emails', get_option('haptic_disable_core_update_emails', false), __('Turn off WordPress update emails', 'optimizr')), haptic_kses_ui());
+    }, haptic_settings_page('advanced'), 'haptic-email-settings', ['description' => __('No email after an automatic WordPress core update.', 'optimizr')]);
 }
 add_action('admin_init', 'haptic_render_mail_settings');
 

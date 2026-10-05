@@ -13,12 +13,16 @@ if (!defined('ABSPATH')) {
  * - {prefix}optimizr_404       : adresses introuvables, visites, provenance.
  */
 
-const HAPTIC_REDIRECT_CODES = [
-    301 => 'Permanente (301)',
-    302 => 'Temporaire (302)',
-    307 => 'Temporaire, méthode conservée (307)',
-    410 => 'Supprimée définitivement (410)',
-];
+/** Types de redirection et leur libellé (fonction et non constante : libellés traduits, après le chargement des traductions). */
+function haptic_redirect_codes()
+{
+    return [
+        301 => __('Permanent (301)', 'optimizr'),
+        302 => __('Temporary (302)', 'optimizr'),
+        307 => __('Temporary, method preserved (307)', 'optimizr'),
+        410 => __('Permanently deleted (410)', 'optimizr'),
+    ];
+}
 
 /* ---------- Adresses ---------- */
 
@@ -155,30 +159,30 @@ function haptic_redirects_save($source, $target, $code = 301, $note = '', $id = 
     $table = haptic_redirects_table();
 
     $source = haptic_redirects_normalize($source);
-    $code = isset(HAPTIC_REDIRECT_CODES[(int) $code]) ? (int) $code : 301;
+    $code = isset(haptic_redirect_codes()[(int) $code]) ? (int) $code : 301;
     $target = $code === 410 ? '' : trim(sanitize_text_field((string) $target));
 
     if ($source === '' || $source === '/') {
-        return new WP_Error('haptic_redirect_source', 'Indiquez l\'adresse à rediriger (la page d\'accueil ne peut pas l\'être).');
+        return new WP_Error('haptic_redirect_source', __('Enter the address to redirect (the home page cannot be redirected).', 'optimizr'));
     }
     if ($code !== 410 && $target === '') {
-        return new WP_Error('haptic_redirect_target', 'Indiquez la destination de la redirection.');
+        return new WP_Error('haptic_redirect_target', __('Enter the redirect destination.', 'optimizr'));
     }
     if ($code !== 410 && !preg_match('#^https?://#i', $target)) {
         $target = haptic_redirects_normalize($target);
     }
     if ($code !== 410 && strcasecmp($target, $source) === 0) {
-        return new WP_Error('haptic_redirect_loop', 'La destination est identique à la source : la redirection tournerait en boucle.');
+        return new WP_Error('haptic_redirect_loop', __('The destination is the same as the source: the redirect would loop.', 'optimizr'));
     }
     if ($code !== 410 && strpos($source, '*') === false && haptic_redirects_normalize(haptic_redirects_target_url($target)) === $source) {
-        return new WP_Error('haptic_redirect_loop', 'La destination renvoie vers la source : la redirection tournerait en boucle.');
+        return new WP_Error('haptic_redirect_loop', __('The destination leads back to the source: the redirect would loop.', 'optimizr'));
     }
     // Joker : une destination interne couverte par la source (« /blog/* » → « /blog/nouveau/* ») serait redirigée à son tour
     if ($code !== 410 && substr($source, -1) === '*' && haptic_redirects_target_is_internal($target)) {
         $prefix = rtrim(substr($source, 0, -1), '/');
         $target_path = strtok(haptic_redirects_normalize(str_replace('*', '', haptic_redirects_target_url($target))), '?');
         if ($prefix === '' || stripos($target_path . '/', $prefix . '/') === 0) {
-            return new WP_Error('haptic_redirect_loop', 'La destination fait partie des adresses redirigées par ce joker : la redirection tournerait en boucle.');
+            return new WP_Error('haptic_redirect_loop', __('The destination is one of the addresses redirected by this wildcard: the redirect would loop.', 'optimizr'));
         }
     }
 
@@ -190,7 +194,7 @@ function haptic_redirects_save($source, $target, $code = 301, $note = '', $id = 
             // Même source : la règle existante est mise à jour
             $id = $existing;
         } else {
-            return new WP_Error('haptic_redirect_duplicate', 'Une autre redirection existe déjà pour cette adresse.');
+            return new WP_Error('haptic_redirect_duplicate', __('Another redirect already exists for this address.', 'optimizr'));
         }
     }
 
@@ -360,7 +364,8 @@ function haptic_redirects_auto($old_link, $new_link, $post_id)
     // Les règles qui pointaient vers l'ancienne adresse vont directement à la nouvelle (pas de chaîne)
     $repointed = $wpdb->update($table, ['target' => $new], ['target' => $old]);
 
-    haptic_redirects_save($old, $new, 301, 'Automatique : adresse de « ' . get_the_title($post_id) . ' » modifiée');
+    /* translators: %s: content title */
+    haptic_redirects_save($old, $new, 301, sprintf(__('Automatic: address of "%s" changed', 'optimizr'), get_the_title($post_id)));
     // Un joker a pu changer de destination ci-dessus
     if ($repointed) {
         haptic_redirects_refresh_cache();

@@ -113,7 +113,7 @@ function haptic_replace_site_url($value, $from, $to)
 
 add_action('admin_post_haptic_export_settings', function () {
     if (!current_user_can('manage_options')) {
-        wp_die('Accès refusé');
+        wp_die(esc_html__('Access denied', 'optimizr'));
     }
     check_admin_referer('haptic_export_settings');
 
@@ -146,10 +146,10 @@ add_action('admin_post_haptic_export_settings', function () {
 function haptic_import_settings(array $data, $adapt_urls = true)
 {
     if (($data['plugin'] ?? '') !== 'optimizr' || !isset($data['settings']) || !is_array($data['settings'])) {
-        return new WP_Error('haptic_import_invalid', 'Ce fichier n\'est pas un export d\'Optimizr.');
+        return new WP_Error('haptic_import_invalid', __('This file is not an Optimizr export.', 'optimizr'));
     }
     if ((int) ($data['format'] ?? 0) > HAPTIC_EXPORT_FORMAT) {
-        return new WP_Error('haptic_import_format', 'Ce fichier vient d\'une version plus récente d\'Optimizr. Mettez d\'abord le plugin à jour.');
+        return new WP_Error('haptic_import_format', __('This file comes from a newer version of Optimizr. Update the plugin first.', 'optimizr'));
     }
 
     $from = untrailingslashit((string) ($data['site'] ?? ''));
@@ -242,7 +242,7 @@ add_action('admin_init', 'haptic_import_sanitize_pending', 1000);
 
 add_action('admin_post_haptic_import_settings', function () {
     if (!current_user_can('manage_options')) {
-        wp_die('Accès refusé');
+        wp_die(esc_html__('Access denied', 'optimizr'));
     }
     check_admin_referer('haptic_import_settings');
 
@@ -250,14 +250,14 @@ add_action('admin_post_haptic_import_settings', function () {
     $result = null;
 
     if (!$file || $file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
-        $result = new WP_Error('haptic_import_upload', 'Aucun fichier reçu. Choisissez un fichier .json exporté depuis Optimizr.');
+        $result = new WP_Error('haptic_import_upload', __('No file received. Choose a .json file exported from Optimizr.', 'optimizr'));
     } elseif ($file['size'] > MB_IN_BYTES) {
-        $result = new WP_Error('haptic_import_size', 'Fichier trop volumineux (1 Mo maximum).');
+        $result = new WP_Error('haptic_import_size', __('File too large (1 MB maximum).', 'optimizr'));
     } else {
         $data = json_decode((string) file_get_contents($file['tmp_name']), true);
         $result = is_array($data)
             ? haptic_import_settings($data, !empty($_POST['adapt_urls']))
-            : new WP_Error('haptic_import_json', 'Le fichier n\'est pas un JSON valide.');
+            : new WP_Error('haptic_import_json', __('The file is not valid JSON.', 'optimizr'));
     }
 
     set_transient('haptic_import_result_' . get_current_user_id(), is_wp_error($result)
@@ -282,24 +282,30 @@ function haptic_render_tools_tab()
     $count = count(haptic_exportable_settings());
     ?>
     <div class="optimizr-page-head">
-        <h2 class="optimizr-page-head__title">Outils</h2>
-        <p class="optimizr-page-head__intro">Reproduisez la configuration de ce site sur un autre en quelques secondes.</p>
+        <h2 class="optimizr-page-head__title"><?php esc_html_e('Tools', 'optimizr'); ?></h2>
+        <p class="optimizr-page-head__intro"><?php esc_html_e('Copy this site\'s configuration to another one in seconds.', 'optimizr'); ?></p>
     </div>
 
     <?php if ($result) : ?>
         <?php if (!empty($result['error'])) : ?>
-            <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><strong>Import impossible.</strong> <?php echo esc_html($result['error']); ?></span></div>
+            <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Import failed.', 'optimizr'); ?></strong> <?php echo esc_html($result['error']); ?></span></div>
         <?php else : ?>
-            <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php echo esc_html(sprintf('%d réglage(s) importé(s).', count($result['imported']))); ?></strong>
+            <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php
+                /* translators: %s: number of imported settings */
+                echo esc_html(sprintf(_n('%s setting imported.', '%s settings imported.', count($result['imported']), 'optimizr'), number_format_i18n(count($result['imported']))));
+                ?></strong>
                 <?php if ($result['ignored']) : ?>
-                    <?php echo esc_html(sprintf('%d ignoré(s) : %s.', count($result['ignored']), implode(', ', $result['ignored']))); ?>
+                    <?php
+                    /* translators: 1: number of ignored settings, 2: comma-separated list of their names */
+                    echo esc_html(sprintf(_n('%1$s ignored: %2$s.', '%1$s ignored: %2$s.', count($result['ignored']), 'optimizr'), number_format_i18n(count($result['ignored'])), implode(', ', $result['ignored'])));
+                    ?>
                 <?php endif; ?>
-                Vérifiez les onglets concernés.</span></div>
+                <?php esc_html_e('Check the related tabs.', 'optimizr'); ?></span></div>
         <?php endif; ?>
     <?php endif; ?>
 
     <?php if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'uninstall') : ?>
-        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong>Choix enregistrés.</strong> Ils seront appliqués si le plugin est supprimé.</span></div>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Choices saved.', 'optimizr'); ?></strong> <?php esc_html_e('They will be applied if the plugin is deleted.', 'optimizr'); ?></span></div>
     <?php endif; ?>
 
     <div class="optimizr-tools">
@@ -308,16 +314,19 @@ function haptic_render_tools_tab()
             <?php wp_nonce_field('haptic_export_settings'); ?>
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Exporter les réglages</h2>
-                    <p class="optimizr-card__desc"><?php echo esc_html(sprintf('Télécharge un fichier JSON avec les %d réglages d\'Optimizr de ce site, modules désactivés compris.', $count)); ?></p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Export settings', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php
+                    /* translators: %s: number of settings */
+                    echo esc_html(sprintf(_n('Downloads a JSON file with this site\'s %s Optimizr setting, including disabled modules.', 'Downloads a JSON file with this site\'s %s Optimizr settings, including disabled modules.', $count, 'optimizr'), number_format_i18n($count)));
+                    ?></p>
                 </div>
             </div>
             <div class="optimizr-card__body">
                 <label class="optimizr-check">
                     <input type="checkbox" name="include_api_key" value="1">
-                    <span>Inclure les clés API <span class="optimizr-muted">(à ne transmettre qu'à un site de confiance)</span></span>
+                    <span><?php esc_html_e('Include API keys', 'optimizr'); ?> <span class="optimizr-muted"><?php esc_html_e('(only share with a trusted site)', 'optimizr'); ?></span></span>
                 </label>
-                <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Télécharger le fichier</button></div>
+                <div><button type="submit" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Download file', 'optimizr'); ?></button></div>
             </div>
         </form>
 
@@ -326,26 +335,29 @@ function haptic_render_tools_tab()
             <?php wp_nonce_field('haptic_import_settings'); ?>
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Importer des réglages</h2>
-                    <p class="optimizr-card__desc">Les réglages du fichier remplacent ceux de ce site ; les autres ne changent pas.</p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Import settings', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php esc_html_e('Settings in the file replace those of this site; the others stay unchanged.', 'optimizr'); ?></p>
                 </div>
             </div>
             <div class="optimizr-card__body">
                 <label class="optimizr-file">
-                    <span class="screen-reader-text">Fichier d'export</span>
+                    <span class="screen-reader-text"><?php esc_html_e('Export file', 'optimizr'); ?></span>
                     <input type="file" name="haptic_import_file" accept=".json,application/json" required>
                 </label>
                 <label class="optimizr-check">
                     <input type="checkbox" name="adapt_urls" value="1" checked>
-                    <span>Remplacer l'adresse du site d'origine par <code><?php echo esc_html(home_url()); ?></code> <span class="optimizr-muted">(robots.txt…)</span></span>
+                    <span><?php
+                    /* translators: %s: URL of the current site */
+                    echo wp_kses(sprintf(__('Replace the source site address with %s', 'optimizr'), '<code>' . esc_html(home_url()) . '</code>'), ['code' => []]);
+                    ?> <span class="optimizr-muted"><?php esc_html_e('(robots.txt…)', 'optimizr'); ?></span></span>
                 </label>
-                <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Importer</button></div>
+                <div><button type="submit" class="optimizr-btn optimizr-btn--primary"><?php echo esc_html_x('Import', 'button', 'optimizr'); ?></button></div>
             </div>
         </form>
 
         <?php haptic_render_uninstall_card(); ?>
     </div>
 
-    <p class="optimizr-field__help">Pensez à vérifier ensuite les identifiants des services (Google Analytics, Clarity…) : ils sont propres à chaque site.</p>
+    <p class="optimizr-field__help"><?php esc_html_e('Remember to check the service IDs afterwards (Google Analytics, Clarity…): they are specific to each site.', 'optimizr'); ?></p>
     <?php
 }

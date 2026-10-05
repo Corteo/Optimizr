@@ -15,6 +15,9 @@
 (function () {
     'use strict';
 
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
+
     // Fournies par PHP (haptic_seo_pattern_variables()) : { '{code}': 'Libellé' }
     var VARIABLES = window.hapticSeoVariables || {};
     var CODES = Object.keys(VARIABLES);
@@ -50,7 +53,8 @@
         remove.type = 'button';
         remove.className = 'optimizr-token__remove';
         remove.tabIndex = -1;
-        remove.setAttribute('aria-label', 'Retirer ' + label.textContent);
+        /* translators: %s: variable label */
+        remove.setAttribute('aria-label', sprintf(__('Remove %s', 'optimizr'), label.textContent));
         remove.textContent = '×';
         token.appendChild(remove);
 

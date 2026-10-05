@@ -13,19 +13,19 @@ function haptic_register_predefined_cpts()
     $options = get_option('haptic_options_settings');
     if (isset($options['enable_evenements']) && $options['enable_evenements']) {
         $labels = array(
-            'name'                  => _x('Évènements', 'Post Type General Name', 'optimizr'),
-            'singular_name'         => _x('Évènement', 'Post Type Singular Name', 'optimizr'),
-            'menu_name'             => __('Évènements', 'optimizr'),
-            'name_admin_bar'        => __('Évènement', 'optimizr'),
-            'add_new'               => __('Ajouter nouveau', 'optimizr'),
-            'add_new_item'          => __('Ajouter un nouvel évènement', 'optimizr'),
-            'new_item'              => __('Nouvel évènement', 'optimizr'),
-            'edit_item'             => __('Modifier l\'évènement', 'optimizr'),
-            'view_item'             => __('Voir l\'évènement', 'optimizr'),
-            'all_items'             => __('Tous les évènements', 'optimizr'),
-            'search_items'          => __('Rechercher des évènements', 'optimizr'),
-            'not_found'             => __('Aucun évènement trouvé', 'optimizr'),
-            'not_found_in_trash'    => __('Aucun évènement dans la corbeille', 'optimizr'),
+            'name'                  => _x('Events', 'Post Type General Name', 'optimizr'),
+            'singular_name'         => _x('Event', 'Post Type Singular Name', 'optimizr'),
+            'menu_name'             => __('Events', 'optimizr'),
+            'name_admin_bar'        => __('Event', 'optimizr'),
+            'add_new'               => __('Add New', 'optimizr'),
+            'add_new_item'          => __('Add New Event', 'optimizr'),
+            'new_item'              => __('New Event', 'optimizr'),
+            'edit_item'             => __('Edit Event', 'optimizr'),
+            'view_item'             => __('View Event', 'optimizr'),
+            'all_items'             => __('All Events', 'optimizr'),
+            'search_items'          => __('Search Events', 'optimizr'),
+            'not_found'             => __('No events found', 'optimizr'),
+            'not_found_in_trash'    => __('No events found in Trash', 'optimizr'),
         );
         $args = array(
             'labels'              => $labels,
@@ -60,36 +60,40 @@ function haptic_acf_evenements_fields()
     if (function_exists('acf_add_local_field_group')):
         acf_add_local_field_group(array(
             'key' => 'group_evenements',
-            'title' => 'Champs supplémentaires pour Évènements',
+            'title' => __('Additional fields for Events', 'optimizr'),
             'fields' => array(
                 array(
                     'key' => 'field_date_debut_evenement',
-                    'label' => 'Date de début (journée entière)',
-                    'instructions' => 'Sélectionnez la date de début de l\'évènement. Cette date est obligatoire et doit être au format "journée entière". (slug : date_debut_evenement)',
+                    'label' => __('Start date (all day)', 'optimizr'),
+                    /* translators: %s: field name (slug) */
+                    'instructions' => sprintf(__('Select the event start date. This date is required and must be in "all day" format. (slug: %s)', 'optimizr'), 'date_debut_evenement'),
                     'name' => 'date_debut_evenement',
                     'type' => 'date_picker',
                     'required' => 1,
                 ),
                 array(
                     'key' => 'field_date_fin_evenement',
-                    'label' => 'Date de fin',
-                    'instructions' => 'Sélectionnez la date de fin de l\'évènement. Cette date est facultative et doit être au format "journée entière". (slug : date_fin_evenement)',
+                    'label' => __('End date', 'optimizr'),
+                    /* translators: %s: field name (slug) */
+                    'instructions' => sprintf(__('Select the event end date. This date is optional and must be in "all day" format. (slug: %s)', 'optimizr'), 'date_fin_evenement'),
                     'name' => 'date_fin_evenement',
                     'type' => 'date_picker',
                     'required' => 0,
                 ),
                 array(
                     'key' => 'field_lieu_evenement',
-                    'label' => 'Lieu de l\'évènement',
-                    'instructions' => 'Entrez le lieu de l\'évènement. (slug : lieu_evenement)',
+                    'label' => __('Event location', 'optimizr'),
+                    /* translators: %s: field name (slug) */
+                    'instructions' => sprintf(__('Enter the event location. (slug: %s)', 'optimizr'), 'lieu_evenement'),
                     'name' => 'lieu_evenement',
                     'type' => 'text',
                     'required' => 0,
                 ),
                 array(
                     'key' => 'field_horaires_evenement',
-                    'label' => 'Horaires de l\'évènement',
-                    'instructions' => 'Entrez les horaires de l\'évènement. (slug : horaires_evenement)',
+                    'label' => __('Event times', 'optimizr'),
+                    /* translators: %s: field name (slug) */
+                    'instructions' => sprintf(__('Enter the event times. (slug: %s)', 'optimizr'), 'horaires_evenement'),
                     'name' => 'horaires_evenement',
                     'type' => 'text',
                     'required' => 0,
@@ -210,13 +214,15 @@ function haptic_custom_cpt_key_error($key, $taken = array())
     $key = sanitize_key($key);
 
     if ($key === '') {
-        return 'son nom doit contenir au moins une lettre ou un chiffre';
+        return __('its name must contain at least one letter or digit', 'optimizr');
     }
     if (strlen($key) > 20) {
-        return sprintf('son identifiant « %s » dépasse 20 caractères', $key);
+        /* translators: %s: post type key */
+        return sprintf(__('its key “%s” is longer than 20 characters', 'optimizr'), $key);
     }
     if (in_array($key, $taken, true)) {
-        return sprintf('son identifiant « %s » est déjà utilisé par un autre type de contenu', $key);
+        /* translators: %s: post type key */
+        return sprintf(__('its key “%s” is already used by another content type', 'optimizr'), $key);
     }
     // Type existant, enregistré par Optimizr : conservé même si son identifiant ne serait plus accepté (ses contenus en dépendent)
     $ours = isset($GLOBALS['haptic_custom_cpt_keys']) ? (array) $GLOBALS['haptic_custom_cpt_keys'] : array();
@@ -224,11 +230,13 @@ function haptic_custom_cpt_key_error($key, $taken = array())
         return '';
     }
     if (strpos($key, 'wp_') === 0 || in_array($key, haptic_reserved_cpt_keys(), true)) {
-        return sprintf('son identifiant « %s » est réservé par WordPress', $key);
+        /* translators: %s: post type key */
+        return sprintf(__('its key “%s” is reserved by WordPress', 'optimizr'), $key);
     }
     // Type Évènements d'Optimizr (même désactivé), taxonomies, types d'un autre plugin
     if ($key === 'evenements' || taxonomy_exists($key) || post_type_exists($key)) {
-        return sprintf('son identifiant « %s » est déjà utilisé par un autre type de contenu', $key);
+        /* translators: %s: post type key */
+        return sprintf(__('its key “%s” is already used by another content type', 'optimizr'), $key);
     }
 
     return '';
@@ -257,7 +265,7 @@ function haptic_add_cpt_settings_fields()
 {
     add_settings_section(
         'haptic_cpt_section',
-        'Types de contenu personnalisés',
+        __('Custom content types', 'optimizr'),
         'haptic_cpt_section_callback',
         haptic_settings_page('content')
     );
@@ -265,21 +273,21 @@ function haptic_add_cpt_settings_fields()
     // Toggle pour activer le CPT prédéfini "Évènements"
     add_settings_field(
         'enable_evenements',
-        'Évènements',
+        __('Events', 'optimizr'),
         'haptic_enable_evenements_callback',
         haptic_settings_page('content'),
         'haptic_cpt_section',
-        ['description' => 'Dates de début et de fin, lieu et horaires (champs ACF Pro).']
+        ['description' => __('Start and end dates, location and times (ACF Pro fields).', 'optimizr')]
     );
 
     // Interface pour la création de nouveaux CPTs (Nom et Icône)
     add_settings_field(
         'custom_cpts',
-        'Types personnalisés',
+        __('Custom types', 'optimizr'),
         'haptic_custom_cpts_callback',
         haptic_settings_page('content'),
         'haptic_cpt_section',
-        ['description' => 'Nom affiché et icône Dashicons (ex. dashicons-portfolio). Renommer un type ne change ni ses contenus ni ses adresses.']
+        ['description' => __('Display name and Dashicons icon (e.g. dashicons-portfolio). Renaming a type changes neither its content nor its URLs.', 'optimizr')]
     );
 
     register_setting(haptic_settings_group('content'), 'haptic_options_settings', [
@@ -328,7 +336,8 @@ function haptic_sanitize_custom_cpts($input)
         if ($error !== '') {
             // Fonction de l'administration : absente si l'option est enregistrée depuis un autre contexte
             if (function_exists('add_settings_error')) {
-                add_settings_error('haptic_custom_cpts', 'haptic_custom_cpts_' . md5($name), sprintf('Le type « %s » n\'a pas été enregistré : %s. Choisissez un autre nom.', esc_html($name), $error));
+                /* translators: 1: content type name, 2: reason it was refused */
+                add_settings_error('haptic_custom_cpts', 'haptic_custom_cpts_' . md5($name), sprintf(__('The type “%1$s” was not saved: %2$s. Choose another name.', 'optimizr'), esc_html($name), $error));
             }
             continue;
         }
@@ -348,7 +357,7 @@ function haptic_sanitize_custom_cpts($input)
  */
 function haptic_cpt_section_callback()
 {
-    echo '<p>Activez le type Évènements ou créez vos propres types de contenu.</p>';
+    echo '<p>' . esc_html__('Enable the Events type or create your own content types.', 'optimizr') . '</p>';
 }
 
 /**
@@ -358,7 +367,7 @@ function haptic_enable_evenements_callback()
 {
     $options = get_option('haptic_options_settings');
     $enabled = isset($options['enable_evenements']) && $options['enable_evenements'];
-    echo wp_kses(haptic_switch_input('haptic_options_settings[enable_evenements]', $enabled, 'Activer le type Évènements'), haptic_kses_ui());
+    echo wp_kses(haptic_switch_input('haptic_options_settings[enable_evenements]', $enabled, __('Enable the Events type', 'optimizr')), haptic_kses_ui());
 }
 
 /**
@@ -371,28 +380,34 @@ function haptic_custom_cpts_callback()
     if (! empty($custom_cpts)) {
         foreach ($custom_cpts as $index => $cpt) {
             echo '<div class="haptic_custom_cpt optimizr-repeater__row">';
-            echo '<input type="text" name="haptic_custom_cpts[' . (int) $index . '][name]" placeholder="Nom du type" aria-label="Nom du type" value="' . esc_attr($cpt['name']) . '" />';
-            echo '<input type="text" name="haptic_custom_cpts[' . (int) $index . '][icon]" placeholder="dashicons-admin-post" aria-label="Icône Dashicons" value="' . esc_attr($cpt['icon']) . '" />';
+            echo '<input type="text" name="haptic_custom_cpts[' . (int) $index . '][name]" placeholder="' . esc_attr__('Type name', 'optimizr') . '" aria-label="' . esc_attr__('Type name', 'optimizr') . '" value="' . esc_attr($cpt['name']) . '" />';
+            echo '<input type="text" name="haptic_custom_cpts[' . (int) $index . '][icon]" placeholder="dashicons-admin-post" aria-label="' . esc_attr__('Dashicons icon', 'optimizr') . '" value="' . esc_attr($cpt['icon']) . '" />';
             // Identifiant fixé à la création : conservé quand le nom change (les nouvelles lignes n'en ont pas)
             echo '<input type="hidden" name="haptic_custom_cpts[' . (int) $index . '][key]" value="' . esc_attr(haptic_custom_cpt_key($cpt)) . '" />';
-            echo '<button type="button" class="remove-cpt optimizr-btn optimizr-btn--ghost">Supprimer</button>';
+            echo '<button type="button" class="remove-cpt optimizr-btn optimizr-btn--ghost">' . esc_html__('Delete', 'optimizr') . '</button>';
             echo '</div>';
         }
     }
     echo '</div>';
-    echo '<button id="add_custom_cpt" type="button" class="optimizr-btn optimizr-btn--secondary">+ Ajouter un type</button>';
+    echo '<button id="add_custom_cpt" type="button" class="optimizr-btn optimizr-btn--secondary">' . esc_html__('+ Add a type', 'optimizr') . '</button>';
 ?>
     <?php
-    wp_print_inline_script_tag(<<<'JS'
+    // Libellés traduits, déjà échappés pour être insérés dans le HTML des nouvelles lignes
+    $haptic_cpt_l10n = [
+        'name'   => esc_attr__('Type name', 'optimizr'),
+        'icon'   => esc_attr__('Dashicons icon', 'optimizr'),
+        'delete' => esc_html__('Delete', 'optimizr'),
+    ];
+    wp_print_inline_script_tag('var hapticCptL10n = ' . wp_json_encode($haptic_cpt_l10n) . ";\n" . <<<'JS'
         document.getElementById('add_custom_cpt').addEventListener('click', function() {
             var container = document.getElementById('haptic_custom_cpts_container');
             // Index unique : les lignes supprimées ne doivent pas provoquer de collision
             var index = Date.now();
             var div = document.createElement('div');
             div.className = 'haptic_custom_cpt optimizr-repeater__row';
-            div.innerHTML = '<input type="text" name="haptic_custom_cpts[' + index + '][name]" placeholder="Nom du type" aria-label="Nom du type" />' +
-                '<input type="text" name="haptic_custom_cpts[' + index + '][icon]" placeholder="dashicons-admin-post" aria-label="Icône Dashicons" />' +
-                '<button type="button" class="remove-cpt optimizr-btn optimizr-btn--ghost">Supprimer</button>';
+            div.innerHTML = '<input type="text" name="haptic_custom_cpts[' + index + '][name]" placeholder="' + hapticCptL10n.name + '" aria-label="' + hapticCptL10n.name + '" />' +
+                '<input type="text" name="haptic_custom_cpts[' + index + '][icon]" placeholder="dashicons-admin-post" aria-label="' + hapticCptL10n.icon + '" />' +
+                '<button type="button" class="remove-cpt optimizr-btn optimizr-btn--ghost">' + hapticCptL10n.delete + '</button>';
             container.appendChild(div);
             div.querySelector('input').focus();
             container.dispatchEvent(new Event('change', { bubbles: true }));

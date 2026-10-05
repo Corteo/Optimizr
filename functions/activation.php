@@ -293,7 +293,7 @@ function haptic_options_maybe_upgrade()
 
         // Sitemap régénéré avec les nouvelles règles (exclusions, page d'accueil)
         if (function_exists('haptic_write_sitemap_to_file')) {
-            haptic_write_sitemap_to_file('mise à jour du plugin');
+            haptic_write_sitemap_to_file(_x('plugin update', 'sitemap generation trigger', 'optimizr'));
         }
     }
 

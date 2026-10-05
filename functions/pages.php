@@ -23,41 +23,42 @@ add_action('admin_init', function () {
     }
     register_setting($group, 'haptic_maintenance_until', ['sanitize_callback' => 'haptic_maintenance_sanitize_until']);
 
-    add_settings_section('haptic_404_section', 'Page introuvable (404)', function () {
-        echo '<p>Affichée quand une adresse n\'existe pas. Elle garde le code 404 : Google ne l\'indexe pas et ne la confond pas avec une vraie page.</p>';
+    add_settings_section('haptic_404_section', __('Page not found (404)', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Shown when a URL does not exist. It keeps the 404 status code: Google does not index it or mistake it for a real page.', 'optimizr') . '</p>';
     }, $page);
-    add_settings_field('haptic_404_page', 'Contenu', function () {
-        haptic_pages_dropdown('haptic_404_page', 'Page 404 du thème');
-        echo '<p class="optimizr-field__help">La page choisie s\'affiche avec la mise en page du thème. Elle est retirée du sitemap et n\'est pas indexée.</p>';
+    add_settings_field('haptic_404_page', __('Content', 'optimizr'), function () {
+        haptic_pages_dropdown('haptic_404_page', __('Theme 404 page', 'optimizr'));
+        echo '<p class="optimizr-field__help">' . esc_html__('The chosen page is displayed with the theme layout. It is removed from the sitemap and not indexed.', 'optimizr') . '</p>';
         haptic_pages_edit_link((int) get_option('haptic_404_page'));
     }, $page, 'haptic_404_section', ['label_for' => 'haptic_404_page']);
-    add_settings_field('haptic_404_suggestions', 'Suggestions', function () {
-        echo wp_kses(haptic_switch_input('haptic_404_suggestions', get_option('haptic_404_suggestions', 1), 'Suggestions'), haptic_kses_ui());
+    add_settings_field('haptic_404_suggestions', __('Suggestions', 'optimizr'), function () {
+        echo wp_kses(haptic_switch_input('haptic_404_suggestions', get_option('haptic_404_suggestions', 1), __('Suggestions', 'optimizr')), haptic_kses_ui());
     }, $page, 'haptic_404_section', [
-        'description' => 'Propose les contenus proches de l\'adresse demandée et un champ de recherche, sous le texte de la page. Pour les placer ailleurs : shortcode [optimizr_suggestions].',
+        /* translators: %s: shortcode */
+        'description' => sprintf(__('Suggests content close to the requested URL and a search field, below the page text. To place them elsewhere: shortcode %s.', 'optimizr'), '[optimizr_suggestions]'),
     ]);
 
-    add_settings_section('haptic_maintenance_section', 'Mode maintenance', function () {
-        echo '<p>Pendant une refonte ou avant le lancement : les visiteurs voient une page d\'attente, les personnes connectées qui peuvent modifier le contenu voient le site normalement.</p>';
+    add_settings_section('haptic_maintenance_section', __('Maintenance mode', 'optimizr'), function () {
+        echo '<p>' . esc_html__('During a redesign or before launch: visitors see a holding page, while logged-in users who can edit content see the site normally.', 'optimizr') . '</p>';
     }, $page);
-    add_settings_field('haptic_maintenance', 'Activer', function () {
-        echo wp_kses(haptic_switch_input('haptic_maintenance', get_option('haptic_maintenance'), 'Mode maintenance'), haptic_kses_ui());
+    add_settings_field('haptic_maintenance', __('Enable', 'optimizr'), function () {
+        echo wp_kses(haptic_switch_input('haptic_maintenance', get_option('haptic_maintenance'), __('Maintenance mode', 'optimizr')), haptic_kses_ui());
         if (haptic_maintenance_active()) {
-            echo '<p class="optimizr-field__help"><strong>Le site est actuellement fermé aux visiteurs.</strong></p>';
+            echo '<p class="optimizr-field__help"><strong>' . esc_html__('The site is currently closed to visitors.', 'optimizr') . '</strong></p>';
         }
     }, $page, 'haptic_maintenance_section', [
-        'description' => 'Code 503 « service indisponible » : Google patiente sans retirer les pages de ses résultats. Au-delà de quelques jours, il peut commencer à le faire.',
+        'description' => __('503 “service unavailable” status code: Google waits without removing the pages from its results. After a few days, it may start doing so.', 'optimizr'),
     ]);
-    add_settings_field('haptic_maintenance_page', 'Contenu', function () {
-        haptic_pages_dropdown('haptic_maintenance_page', 'Message par défaut');
-        echo '<p class="optimizr-field__help">Affichée seule, sans menu ni pied de page du thème. Le titre et le texte de la page sont repris.</p>';
+    add_settings_field('haptic_maintenance_page', __('Content', 'optimizr'), function () {
+        haptic_pages_dropdown('haptic_maintenance_page', __('Default message', 'optimizr'));
+        echo '<p class="optimizr-field__help">' . esc_html__('Displayed on its own, without the theme menu or footer. The page title and text are used.', 'optimizr') . '</p>';
         haptic_pages_edit_link((int) get_option('haptic_maintenance_page'));
     }, $page, 'haptic_maintenance_section', ['label_for' => 'haptic_maintenance_page']);
-    add_settings_field('haptic_maintenance_until', 'Réouverture', function () {
+    add_settings_field('haptic_maintenance_until', __('Reopening', 'optimizr'), function () {
         printf('<input type="datetime-local" name="haptic_maintenance_until" id="haptic_maintenance_until" value="%s">', esc_attr(get_option('haptic_maintenance_until', '')));
     }, $page, 'haptic_maintenance_section', [
         'label_for' => 'haptic_maintenance_until',
-        'description' => 'Facultatif. Le site rouvre automatiquement à cette date, annoncée aux visiteurs et aux moteurs de recherche.',
+        'description' => __('Optional. The site reopens automatically on this date, which is announced to visitors and search engines.', 'optimizr'),
     ]);
 });
 
@@ -84,9 +85,10 @@ function haptic_pages_edit_link($page_id)
 {
     if ($page_id && get_post($page_id)) {
         printf(
-            '<p class="optimizr-field__help"><a href="%s">Modifier la page</a>%s</p>',
+            '<p class="optimizr-field__help"><a href="%s">%s</a>%s</p>',
             esc_url(get_edit_post_link($page_id)),
-            get_post_status($page_id) !== 'publish' ? ' · <strong>la page n\'est pas publiée</strong> : elle est tout de même utilisée.' : ''
+            esc_html__('Edit page', 'optimizr'),
+            get_post_status($page_id) !== 'publish' ? ' · ' . wp_kses_post(__('<strong>the page is not published</strong>: it is still used.', 'optimizr')) : ''
         );
     }
 }
@@ -119,10 +121,10 @@ add_filter('wp_robots', function ($robots) {
 // Mention dans la liste des pages, comme « Page d'accueil » ou « Page de politique de confidentialité »
 add_filter('display_post_states', function ($states, $post) {
     if ($post->ID === (int) get_option('haptic_404_page')) {
-        $states['haptic_404'] = 'Page 404';
+        $states['haptic_404'] = __('404 Page', 'optimizr');
     }
     if ($post->ID === (int) get_option('haptic_maintenance_page')) {
-        $states['haptic_maintenance'] = 'Page de maintenance';
+        $states['haptic_maintenance'] = __('Maintenance Page', 'optimizr');
     }
     return $states;
 }, 10, 2);
@@ -223,7 +225,7 @@ function haptic_404_suggestions_html()
 
     $html = '<div class="optimizr-suggestions">';
     if ($posts) {
-        $html .= '<p class="optimizr-suggestions__title">' . esc_html__('Vous cherchiez peut-être :', 'optimizr') . '</p><ul>';
+        $html .= '<p class="optimizr-suggestions__title">' . esc_html__('Maybe you were looking for:', 'optimizr') . '</p><ul>';
         foreach ($posts as $item) {
             $html .= '<li><a href="' . esc_url(get_permalink($item)) . '">' . esc_html(get_the_title($item)) . '</a></li>';
         }
@@ -296,16 +298,16 @@ add_filter('rest_authentication_errors', function ($result) {
     if (is_wp_error($result) || !haptic_maintenance_active() || haptic_maintenance_can_bypass()) {
         return $result;
     }
-    return new WP_Error('haptic_maintenance', 'Site en maintenance.', ['status' => 503]);
+    return new WP_Error('haptic_maintenance', __('Site under maintenance.', 'optimizr'), ['status' => 503]);
 }, 110);
 
 function haptic_maintenance_render($until)
 {
     $page = haptic_pages_get('haptic_maintenance_page');
-    $title = $page ? get_the_title($page) : 'Site en maintenance';
+    $title = $page ? get_the_title($page) : __('Site under maintenance', 'optimizr');
     $content = $page
         ? apply_filters('the_content', $page->post_content) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- filtre du cœur
-        : '<p>Le site est en cours de mise à jour. Merci de revenir un peu plus tard.</p>';
+        : '<p>' . esc_html__('The site is being updated. Please come back a little later.', 'optimizr') . '</p>';
     $name = get_bloginfo('name');
     $logo = get_custom_logo();
     $icon = get_site_icon_url(64);
@@ -338,7 +340,13 @@ function haptic_maintenance_render($until)
     <h1><?php echo esc_html($title); ?></h1>
     <div class="content"><?php echo wp_kses_post($content); ?></div>
     <?php if ($until) : ?>
-        <p class="until"><?php echo esc_html(sprintf('Réouverture prévue le %s.', wp_date('j F Y à H\hi', $until))); ?></p>
+        <p class="until"><?php
+        /* translators: %s: reopening date and time */
+        $haptic_reopen_text = __('Scheduled to reopen on %s.', 'optimizr');
+        /* translators: reopening date and time format, see https://www.php.net/manual/datetime.format.php */
+        $haptic_reopen_format = _x('F j, Y \a\t g:i a', 'maintenance reopening date format', 'optimizr');
+        echo esc_html(sprintf($haptic_reopen_text, wp_date($haptic_reopen_format, $until)));
+        ?></p>
     <?php endif; ?>
 </main>
 </body>
@@ -353,9 +361,9 @@ add_action('admin_bar_menu', function ($bar) {
     }
     $bar->add_node([
         'id'    => 'haptic-maintenance',
-        'title' => 'Maintenance active',
+        'title' => __('Maintenance on', 'optimizr'),
         'href'  => haptic_admin_tab_url('pages'),
-        'meta'  => ['class' => 'haptic-maintenance-flag', 'title' => 'Le site est fermé aux visiteurs'],
+        'meta'  => ['class' => 'haptic-maintenance-flag', 'title' => __('The site is closed to visitors', 'optimizr')],
     ]);
 }, 100);
 
@@ -375,22 +383,25 @@ add_action('haptic_admin_aside_pages', function () {
         <section class="optimizr-card">
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Vérifier</h2>
-                    <p class="optimizr-card__desc">Ouvrez une adresse qui n'existe pas pour voir la page 404 telle que les visiteurs la voient.</p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Check', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php esc_html_e('Open a URL that does not exist to see the 404 page as visitors see it.', 'optimizr'); ?></p>
                 </div>
             </div>
             <div class="optimizr-card__body">
-                <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url(home_url('/page-introuvable-' . wp_rand(100, 999))); ?>" target="_blank" rel="noopener">Voir la page 404</a>
+                <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url(home_url('/page-introuvable-' . wp_rand(100, 999))); ?>" target="_blank" rel="noopener"><?php esc_html_e('View the 404 page', 'optimizr'); ?></a>
                 <?php if ($page_404 === null && get_option('haptic_404_page')) : ?>
-                    <p class="optimizr-field__help">La page 404 choisie a été supprimée : la page du thème est utilisée.</p>
+                    <p class="optimizr-field__help"><?php esc_html_e('The chosen 404 page has been deleted: the theme page is used.', 'optimizr'); ?></p>
                 <?php endif; ?>
             </div>
         </section>
         <section class="optimizr-card">
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Pour le thème</h2>
-                    <p class="optimizr-card__desc">Un fichier <code>maintenance.php</code> dans le thème remplace la page de maintenance autonome. Les suggestions sont aussi disponibles dans <code>404.php</code> avec <code>echo do_shortcode('[optimizr_suggestions]');</code></p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('For the theme', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php
+                    /* translators: 1: maintenance.php file name, 2: 404.php file name, 3: PHP code snippet */
+                    echo wp_kses_post(sprintf(__('A %1$s file in the theme replaces the standalone maintenance page. Suggestions are also available in %2$s with %3$s', 'optimizr'), '<code>maintenance.php</code>', '<code>404.php</code>', '<code>' . esc_html("echo do_shortcode('[optimizr_suggestions]');") . '</code>'));
+                    ?></p>
                 </div>
             </div>
         </section>

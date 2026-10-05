@@ -21,18 +21,18 @@ function haptic_ai_bulk_tasks()
 {
     $tasks = [
         'alt' => [
-            'label' => 'Balises ALT des images',
-            'unit'  => 'image(s) sans balise ALT',
-            'empty' => 'Toutes les images ont une balise ALT.',
+            'label' => __('Image ALT text', 'optimizr'),
+            'unit'  => __('image(s) without ALT text', 'optimizr'),
+            'empty' => __('All images have ALT text.', 'optimizr'),
         ],
     ];
 
     // Les descriptions ne servent que si le module SEO les affiche
     if (haptic_is_module_active('seo')) {
         $tasks['descriptions'] = [
-            'label' => 'Meta descriptions des contenus',
-            'unit'  => 'contenu(s) sans description personnalisée',
-            'empty' => 'Tous les contenus ont une description personnalisée.',
+            'label' => __('Content meta descriptions', 'optimizr'),
+            'unit'  => __('content item(s) without a custom description', 'optimizr'),
+            'empty' => __('All content has a custom description.', 'optimizr'),
         ];
     }
 
@@ -124,12 +124,12 @@ function haptic_ai_bulk_next()
     check_ajax_referer('haptic_ai_bulk', 'nonce');
 
     if (!current_user_can('manage_options') || !haptic_ai_user_can()) {
-        wp_send_json_error(['status' => 'fatal', 'message' => 'Permissions insuffisantes.']);
+        wp_send_json_error(['status' => 'fatal', 'message' => __('Insufficient permissions.', 'optimizr')]);
     }
 
     $task = sanitize_key($_POST['task'] ?? '');
     if (!isset(haptic_ai_bulk_tasks()[$task])) {
-        wp_send_json_error(['status' => 'fatal', 'message' => 'Tâche inconnue.']);
+        wp_send_json_error(['status' => 'fatal', 'message' => __('Unknown task.', 'optimizr')]);
     }
 
     // Éléments ignorés : gardés côté serveur, par utilisateur et par tâche. La liste envoyée par le navigateur
@@ -187,9 +187,9 @@ add_action('wp_ajax_haptic_ai_bulk_next', 'haptic_ai_bulk_next');
 add_action('admin_init', function () {
     add_settings_section(
         'haptic_ai_bulk_section',
-        'Traitement en masse',
+        __('Bulk processing', 'optimizr'),
         function () {
-            echo '<p>Complète en une fois ce qui manque sur le site. Les éléments déjà renseignés ne sont jamais modifiés.</p>';
+            echo '<p>' . esc_html__('Fills in everything that is missing on the site in one go. Items already filled in are never changed.', 'optimizr') . '</p>';
         },
         haptic_settings_page('ai')
     );
@@ -201,7 +201,8 @@ function haptic_ai_bulk_callback()
     $has_key = haptic_ai_api_key() !== '';
 
     if (!$has_key) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(haptic_icon('alert', 18), haptic_kses_ui()) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', haptic_ai_provider_config()['label'])) . '</span></div>';
+        /* translators: %s: AI provider name */
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(haptic_icon('alert', 18), haptic_kses_ui()) . '<span>' . esc_html(sprintf(__('First enter and save the %s API key above.', 'optimizr'), haptic_ai_provider_config()['label'])) . '</span></div>';
     }
 
     echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('haptic_ai_bulk')) . '">';
@@ -221,7 +222,8 @@ function haptic_ai_bulk_callback()
                         <span class="optimizr-bulk__estimate" data-bulk-estimate>
                             <?php
                             echo esc_html(sprintf(
-                                'Coût estimé : %s pour l\'ensemble (≈ %s par élément) avec %s.',
+                                /* translators: 1: total estimated cost, 2: estimated cost per item, 3: AI model name */
+                                __('Estimated cost: %1$s for everything (≈ %2$s per item) with %3$s.', 'optimizr'),
                                 haptic_ai_format_cost($estimate['total']),
                                 haptic_ai_format_unit($estimate['unit']),
                                 $model
@@ -232,9 +234,9 @@ function haptic_ai_bulk_callback()
                     <?php endif; ?>
                 </div>
                 <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count || !haptic_ai_user_can()); ?>>
-                    <?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?>Générer
+                    <?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?><?php esc_html_e('Generate', 'optimizr'); ?>
                 </button>
-                <button type="button" class="optimizr-btn optimizr-btn--ghost" data-bulk-stop hidden>Arrêter</button>
+                <button type="button" class="optimizr-btn optimizr-btn--ghost" data-bulk-stop hidden><?php esc_html_e('Stop', 'optimizr'); ?></button>
             </div>
             <div class="optimizr-bulk__progress" data-bulk-progress hidden>
                 <div class="optimizr-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="<?php echo esc_attr($task['label']); ?>"><span></span></div>
@@ -252,10 +254,10 @@ function haptic_ai_bulk_callback()
     haptic_ai_costs_panel();
     echo '</div>';
 
-    echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par le fournisseur d\'IA choisi. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
+    echo '<p class="optimizr-field__help">' . esc_html__('Each item is one request billed by the chosen AI provider. Keep this page open during processing; you can stop it at any time, and what has already been generated stays saved. Generated texts can be edited afterwards in the media library or in the SEO metabox of each content item.', 'optimizr');
     // Tout est déjà traité : le détail des coûts reste accessible
     if (!array_filter(array_map('haptic_ai_bulk_count', array_keys(haptic_ai_bulk_tasks())))) {
-        echo ' Détail des coûts ' . wp_kses(haptic_ai_costs_toggle(), haptic_kses_ui());
+        echo ' ' . esc_html__('Cost details', 'optimizr') . ' ' . wp_kses(haptic_ai_costs_toggle(), haptic_kses_ui());
     }
     echo '</p>';
 }
@@ -263,5 +265,5 @@ function haptic_ai_bulk_callback()
 /** Bouton (?) qui ouvre le détail des coûts (js/optimizr-admin.js). */
 function haptic_ai_costs_toggle()
 {
-    return '<button type="button" class="optimizr-help-toggle" aria-expanded="false" aria-controls="optimizr-ai-costs" aria-label="Détail des coûts et comparatif des modèles" data-costs-toggle>?</button>';
+    return '<button type="button" class="optimizr-help-toggle" aria-expanded="false" aria-controls="optimizr-ai-costs" aria-label="' . esc_attr__('Cost details and model comparison', 'optimizr') . '" data-costs-toggle>?</button>';
 }

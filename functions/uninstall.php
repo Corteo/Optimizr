@@ -19,16 +19,16 @@ function haptic_uninstall_groups()
 {
     return [
         'settings' => [
-            'label' => 'Réglages',
-            'help'  => 'Modules, motifs SEO, services cookies, clés API, sécurité… Conservés, ils seront retrouvés à la réinstallation.',
+            'label' => __('Settings', 'optimizr'),
+            'help'  => __('Modules, SEO patterns, cookie services, API keys, security… If kept, they will be restored on reinstall.', 'optimizr'),
         ],
         'content'  => [
-            'label' => 'Redirections et SEO des contenus',
-            'help'  => 'Les redirections, et les titres, descriptions, images et « ne pas indexer » saisis sur chaque contenu.',
+            'label' => __('Redirects and content SEO', 'optimizr'),
+            'help'  => __('Redirects, and the titles, descriptions, images and “noindex” settings entered on each piece of content.', 'optimizr'),
         ],
         'logs'     => [
-            'label' => 'Journaux et historiques',
-            'help'  => 'Pages introuvables, journal de sécurité, historique du sitemap, consommation de l\'IA, analyse des liens.',
+            'label' => __('Logs and history', 'optimizr'),
+            'help'  => __('Pages not found, security log, sitemap history, AI usage, link analysis.', 'optimizr'),
         ],
     ];
 }

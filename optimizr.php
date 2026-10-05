@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Haptic Optimizr
- * Description: Cookies et RGPD (Tarteaucitron), SEO, assistant IA, types de contenu personnalisés et outils de maintenance, réunis dans une seule page de réglages et activables module par module.
+ * Description: Cookie consent (Tarteaucitron), SEO, AI assistant, custom post types and maintenance tools in a single settings page, enabled module by module.
  * Version: 3.0.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
@@ -11,6 +11,7 @@
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: optimizr
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) {
@@ -24,6 +25,12 @@ define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
 // Hook de la page d'options (menu de premier niveau, cf. functions/admin-ui.php)
 define('HAPTIC_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_haptic-options');
+
+// Traductions fournies avec le plugin (languages/) : français pour les sites installés depuis GitHub.
+// Sur WordPress.org, les traductions de translate.wordpress.org (wp-content/languages/plugins) passent avant.
+add_action('init', function () {
+    load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages');
+}, 0);
 
 // Plugin core includes (activation, admin UI, assets, updates)
 require_once(__DIR__ . '/functions/activation.php');

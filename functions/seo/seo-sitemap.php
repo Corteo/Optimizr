@@ -256,8 +256,11 @@ function haptic_sitemap_publish(array $files)
  * @param string $origin Déclencheur affiché dans l'historique (manuel, automatique, quotidien…)
  * @return bool
  */
-function haptic_write_sitemap_to_file($origin = 'manuel')
+function haptic_write_sitemap_to_file($origin = null)
 {
+    if ($origin === null) {
+        $origin = _x('manual', 'sitemap generation trigger', 'optimizr');
+    }
     $ok = haptic_sitemap_publish(haptic_sitemap_build($count));
     haptic_sitemap_record($origin, $count, $ok);
 
@@ -275,7 +278,8 @@ function haptic_sitemap_record($origin, $count, $ok)
         delete_option('haptic_sitemap_error');
     } else {
         update_option('haptic_sitemap_error', sprintf(
-            'Impossible d\'écrire dans %s. Vérifiez les droits d\'écriture du dossier racine du site.',
+            /* translators: %s: path of the site root folder */
+            __('Unable to write to %s. Check the write permissions of the site root folder.', 'optimizr'),
             untrailingslashit(ABSPATH)
         ), false);
     }
@@ -318,7 +322,7 @@ add_action('save_post', 'haptic_maybe_write_sitemap_on_post_change');
 add_action('delete_post', 'haptic_maybe_write_sitemap_on_post_change');
 
 add_action('haptic_sitemap_regenerate', function () {
-    haptic_write_sitemap_to_file('automatique');
+    haptic_write_sitemap_to_file(_x('automatic', 'sitemap generation trigger', 'optimizr'));
 });
 
 // Tâche quotidienne
@@ -326,7 +330,7 @@ if (!wp_next_scheduled('haptic_daily_sitemap_cron')) {
     wp_schedule_event(time(), 'daily', 'haptic_daily_sitemap_cron');
 }
 add_action('haptic_daily_sitemap_cron', function () {
-    haptic_write_sitemap_to_file('quotidien');
+    haptic_write_sitemap_to_file(_x('daily', 'sitemap generation trigger', 'optimizr'));
 });
 
 // Un seul sitemap publié : celui de WordPress (wp-sitemap.xml) est désactivé
@@ -383,7 +387,7 @@ function haptic_sitemap_serve()
         $files = haptic_sitemap_build($count);
         // Site simple : le fichier disparu est réécrit ; en cas d'échec, le cache prend le relais
         if (haptic_sitemap_publish($files) && !is_multisite()) {
-            haptic_sitemap_record('à la demande', $count, true);
+            haptic_sitemap_record(_x('on demand', 'sitemap generation trigger', 'optimizr'), $count, true);
         }
     }
 
@@ -445,7 +449,7 @@ function haptic_sitemap_shortcode($atts)
     echo '<div class="optimizr-plan-du-site">';
 
     if ($recent) {
-        echo '<section class="optimizr-plan-du-site__recent"><h2>Dernières mises à jour</h2><ul>';
+        echo '<section class="optimizr-plan-du-site__recent"><h2>' . esc_html__('Latest updates', 'optimizr') . '</h2><ul>';
         foreach ($recent as $item) {
             printf('<li><a href="%s">%s</a> <time>%s</time></li>', esc_url($item['url']), esc_html($item['title']), esc_html($item['date']));
         }

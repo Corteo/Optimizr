@@ -20,36 +20,36 @@ add_action('admin_init', function () {
         register_setting($group, 'haptic_seo_' . $code, ['sanitize_callback' => 'haptic_seo_sanitize_verification']);
     }
 
-    add_settings_section('haptic_seo_indexing_section', 'Indexation', function () {
-        echo '<p>Évite que Google indexe des pages sans valeur, qui diluent le référencement du site.</p>';
+    add_settings_section('haptic_seo_indexing_section', __('Indexing', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Keeps Google from indexing low-value pages that dilute the site’s SEO.', 'optimizr') . '</p>';
     }, $page);
-    haptic_seo_toggle('noindex_search', 'Résultats de recherche interne', 'Les pages de résultats du moteur de recherche du site ne sont pas indexées (recommandation de Google).', 'haptic_seo_indexing_section');
-    haptic_seo_toggle('noindex_date', 'Archives par date', 'Les listes d\'articles par jour, mois ou année ne sont pas indexées.', 'haptic_seo_indexing_section');
-    haptic_seo_toggle('noindex_tag', 'Archives d\'étiquettes', 'Les listes d\'articles par étiquette ne sont pas indexées : utile si les étiquettes sont nombreuses et peu fournies.', 'haptic_seo_indexing_section');
-    haptic_seo_toggle('attachment_redirect', 'Pages des pièces jointes', 'WordPress crée une page par image importée. Elle redirige vers le contenu où l\'image est utilisée, ou vers le fichier.', 'haptic_seo_indexing_section');
+    haptic_seo_toggle('noindex_search', __('Internal search results', 'optimizr'), __('The site’s search results pages are not indexed (Google’s recommendation).', 'optimizr'), 'haptic_seo_indexing_section');
+    haptic_seo_toggle('noindex_date', __('Date archives', 'optimizr'), __('Lists of posts by day, month or year are not indexed.', 'optimizr'), 'haptic_seo_indexing_section');
+    haptic_seo_toggle('noindex_tag', __('Tag archives', 'optimizr'), __('Lists of posts by tag are not indexed: useful when there are many tags with few posts each.', 'optimizr'), 'haptic_seo_indexing_section');
+    haptic_seo_toggle('attachment_redirect', __('Attachment pages', 'optimizr'), __('WordPress creates a page for each uploaded image. It redirects to the content where the image is used, or to the file.', 'optimizr'), 'haptic_seo_indexing_section');
 
-    add_settings_section('haptic_seo_engines_section', 'Moteurs de recherche', function () {
-        echo '<p>Prouve à Google et Bing que vous êtes propriétaire du site, et signale les nouveaux contenus.</p>';
+    add_settings_section('haptic_seo_engines_section', __('Search engines', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Proves to Google and Bing that you own the site, and notifies them of new content.', 'optimizr') . '</p>';
     }, $page);
     add_settings_field('haptic_seo_verify_google', 'Google Search Console', 'haptic_seo_verification_callback', $page, 'haptic_seo_engines_section', [
         'label_for' => 'haptic_seo_verify_google',
         'option' => 'haptic_seo_verify_google',
-        'description' => 'Méthode « Balise HTML » : collez la balise ou seulement son code.',
+        'description' => __('“HTML tag” method: paste the tag or just its code.', 'optimizr'),
     ]);
     add_settings_field('haptic_seo_verify_bing', 'Bing Webmaster Tools', 'haptic_seo_verification_callback', $page, 'haptic_seo_engines_section', [
         'label_for' => 'haptic_seo_verify_bing',
         'option' => 'haptic_seo_verify_bing',
-        'description' => 'Méthode « Balise méta » : collez la balise ou seulement son code.',
+        'description' => __('“Meta tag” method: paste the tag or just its code.', 'optimizr'),
     ]);
     add_settings_field('haptic_seo_indexnow', 'IndexNow', 'haptic_seo_indexnow_callback', $page, 'haptic_seo_engines_section', [
-        'description' => 'Signale chaque publication ou mise à jour à Bing, Yandex, Seznam et Naver en quelques secondes. Google n\'utilise pas IndexNow.',
+        'description' => __('Notifies Bing, Yandex, Seznam and Naver of each publication or update within seconds. Google does not use IndexNow.', 'optimizr'),
     ]);
 
-    add_settings_section('haptic_seo_schema_section', 'Données structurées', function () {
-        echo '<p>Informations lisibles par Google (JSON-LD) : elles permettent les résultats enrichis.</p>';
+    add_settings_section('haptic_seo_schema_section', __('Structured data', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Information Google can read (JSON-LD): it enables rich results.', 'optimizr') . '</p>';
     }, $page);
-    add_settings_field('haptic_seo_schema', 'Activer', 'haptic_seo_schema_callback', $page, 'haptic_seo_schema_section', [
-        'description' => 'Site et organisation sur l\'accueil, fil d\'Ariane sur chaque contenu, Article pour les articles, Évènement pour le type Évènements.',
+    add_settings_field('haptic_seo_schema', _x('Enable', 'settings field label', 'optimizr'), 'haptic_seo_schema_callback', $page, 'haptic_seo_schema_section', [
+        'description' => __('Site and organization on the home page, breadcrumb on every piece of content, Article for posts, Event for the Events post type.', 'optimizr'),
     ]);
 });
 
@@ -82,22 +82,24 @@ function haptic_seo_indexnow_callback()
     if (get_option('haptic_seo_indexnow') && $key) {
         $last = get_option('haptic_indexnow_last');
         printf(
-            '<p class="optimizr-field__help">Clé : <a href="%s" target="_blank" rel="noopener">%s</a>%s</p>',
+            '<p class="optimizr-field__help">%s <a href="%s" target="_blank" rel="noopener">%s</a>%s</p>',
+            esc_html__('Key:', 'optimizr'),
             esc_url(haptic_indexnow_key_url()),
             esc_html($key),
-            $last ? esc_html(sprintf(' · dernier signalement : %s', mysql2date('j F Y à H:i', $last['time']) . ' (' . $last['url'] . ')')) : ''
+            /* translators: 1: date and time of the last notification, 2: notified URL */
+            $last ? esc_html(sprintf(__(' · last notification: %1$s (%2$s)', 'optimizr'), mysql2date(_x('F j, Y \a\t g:i a', 'IndexNow last notification date format', 'optimizr'), $last['time']), $last['url'])) : ''
         );
     }
     if (haptic_indexnow_is_local()) {
-        echo '<p class="optimizr-field__help">Site local : aucun signalement n\'est envoyé tant que le site n\'est pas en ligne.</p>';
+        echo '<p class="optimizr-field__help">' . esc_html__('Local site: no notifications are sent until the site is online.', 'optimizr') . '</p>';
     }
 }
 
 function haptic_seo_schema_callback()
 {
-    echo wp_kses(haptic_switch_input('haptic_seo_schema', get_option('haptic_seo_schema'), 'Données structurées'), haptic_kses_ui());
+    echo wp_kses(haptic_switch_input('haptic_seo_schema', get_option('haptic_seo_schema'), __('Structured data', 'optimizr')), haptic_kses_ui());
     if (get_option('haptic_seo_schema')) {
-        printf('<p class="optimizr-field__help"><a href="%s" target="_blank" rel="noopener">Tester la page d\'accueil avec Google</a></p>', esc_url('https://search.google.com/test/rich-results?url=' . rawurlencode(home_url('/'))));
+        printf('<p class="optimizr-field__help"><a href="%s" target="_blank" rel="noopener">%s</a></p>', esc_url('https://search.google.com/test/rich-results?url=' . rawurlencode(home_url('/'))), esc_html__('Test the home page with Google', 'optimizr'));
     }
 }
 

@@ -14,7 +14,8 @@ function haptic_enqueue_media_ia_script()
         return;
     }
 
-    wp_enqueue_script('haptic-media-ia', plugin_dir_url(__DIR__) . 'assets/js/media-ia.js', ['jquery'], HAPTIC_OPTIMIZR_VERSION, true);
+    wp_enqueue_script('haptic-media-ia', plugin_dir_url(__DIR__) . 'assets/js/media-ia.js', ['jquery', 'wp-i18n'], HAPTIC_OPTIMIZR_VERSION, true);
+    wp_set_script_translations('haptic-media-ia', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
     wp_localize_script('haptic-media-ia', 'hapticMediaIA', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('haptic_ai_nonce'),
@@ -76,10 +77,10 @@ function haptic_add_ia_button_to_media_fields($form_fields, $post)
     }
 
     $form_fields['haptic_ai_generate'] = [
-        'label' => 'Générer la balise ALT',
+        'label' => __('Generate ALT text', 'optimizr'),
         'input' => 'html',
-        'html'  => '<button type="button" class="button haptic-ai-alt" data-post-id="' . esc_attr($post->ID) . '" style="margin-top:5px;">Générer avec l\'IA</button>',
-        'helps' => 'Génère automatiquement une balise ALT optimisée grâce à l’IA à partir du contenu visuel de l’image.',
+        'html'  => '<button type="button" class="button haptic-ai-alt" data-post-id="' . esc_attr($post->ID) . '" style="margin-top:5px;">' . esc_html__('Generate with AI', 'optimizr') . '</button>',
+        'helps' => __('Automatically generates optimized ALT text with AI from the visual content of the image.', 'optimizr'),
     ];
 
     return $form_fields;

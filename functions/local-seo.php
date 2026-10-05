@@ -11,37 +11,41 @@ if (!defined('ABSPATH')) {
  * Toutes les informations sont dans l'option haptic_local (tableau).
  */
 
-const HAPTIC_LOCAL_DAYS = [
-    'Monday'    => 'Lundi',
-    'Tuesday'   => 'Mardi',
-    'Wednesday' => 'Mercredi',
-    'Thursday'  => 'Jeudi',
-    'Friday'    => 'Vendredi',
-    'Saturday'  => 'Samedi',
-    'Sunday'    => 'Dimanche',
-];
+/** Jours de la semaine : clé enregistrée (schema.org) => libellé traduit. */
+function haptic_local_days()
+{
+    return [
+        'Monday'    => __('Monday', 'optimizr'),
+        'Tuesday'   => __('Tuesday', 'optimizr'),
+        'Wednesday' => __('Wednesday', 'optimizr'),
+        'Thursday'  => __('Thursday', 'optimizr'),
+        'Friday'    => __('Friday', 'optimizr'),
+        'Saturday'  => __('Saturday', 'optimizr'),
+        'Sunday'    => __('Sunday', 'optimizr'),
+    ];
+}
 
 /** Types schema.org courants pour une activité locale (liste complète : schema.org/LocalBusiness). */
 function haptic_local_types()
 {
     return apply_filters('haptic_local_types', [
-        'LocalBusiness'          => 'Commerce ou activité locale (générique)',
-        'Store'                  => 'Magasin',
-        'Restaurant'             => 'Restaurant',
-        'CafeOrCoffeeShop'       => 'Café',
-        'BarOrPub'               => 'Bar',
-        'Bakery'                 => 'Boulangerie, pâtisserie',
-        'LodgingBusiness'        => 'Hébergement',
-        'HealthAndBeautyBusiness' => 'Beauté, bien-être',
-        'MedicalBusiness'        => 'Santé',
-        'ProfessionalService'    => 'Services aux entreprises',
-        'LegalService'           => 'Juridique',
-        'RealEstateAgent'        => 'Agence immobilière',
-        'HomeAndConstructionBusiness' => 'Bâtiment, artisan',
-        'AutomotiveBusiness'     => 'Automobile',
-        'SportsActivityLocation' => 'Sport',
-        'EducationalOrganization' => 'Enseignement, formation',
-        'EntertainmentBusiness'  => 'Loisirs, culture',
+        'LocalBusiness'          => __('Local shop or business (generic)', 'optimizr'),
+        'Store'                  => __('Store', 'optimizr'),
+        'Restaurant'             => __('Restaurant', 'optimizr'),
+        'CafeOrCoffeeShop'       => __('Café', 'optimizr'),
+        'BarOrPub'               => __('Bar', 'optimizr'),
+        'Bakery'                 => __('Bakery, pastry shop', 'optimizr'),
+        'LodgingBusiness'        => __('Accommodation', 'optimizr'),
+        'HealthAndBeautyBusiness' => __('Beauty, wellness', 'optimizr'),
+        'MedicalBusiness'        => __('Health', 'optimizr'),
+        'ProfessionalService'    => __('Business services', 'optimizr'),
+        'LegalService'           => __('Legal', 'optimizr'),
+        'RealEstateAgent'        => __('Real estate agency', 'optimizr'),
+        'HomeAndConstructionBusiness' => __('Construction, trades', 'optimizr'),
+        'AutomotiveBusiness'     => __('Automotive', 'optimizr'),
+        'SportsActivityLocation' => __('Sports', 'optimizr'),
+        'EducationalOrganization' => __('Education, training', 'optimizr'),
+        'EntertainmentBusiness'  => __('Leisure, culture', 'optimizr'),
     ]);
 }
 
@@ -64,47 +68,47 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'haptic_local_sanitize',
     ]);
 
-    add_settings_section('haptic_local_identity', 'Établissement', function () {
-        echo '<p>Ces informations doivent être identiques à celles de votre fiche Google Business Profile.</p>';
+    add_settings_section('haptic_local_identity', __('Business', 'optimizr'), function () {
+        echo '<p>' . esc_html__('This information must match your Google Business Profile listing.', 'optimizr') . '</p>';
     }, $page);
-    haptic_local_field('type', 'Activité', 'haptic_local_identity', 'select');
-    haptic_local_field('name', 'Nom', 'haptic_local_identity', 'text', get_bloginfo('name'));
-    haptic_local_field('description', 'Description', 'haptic_local_identity', 'textarea');
-    haptic_local_field('logo', 'Logo (URL)', 'haptic_local_identity', 'url', 'Par défaut : l\'icône du site.');
-    haptic_local_field('image', 'Photo de l\'établissement (URL)', 'haptic_local_identity', 'url', 'Façade ou intérieur, au moins 1200 px de large.');
-    haptic_local_field('price_range', 'Gamme de prix', 'haptic_local_identity', 'text', '€, €€, €€€ ou une fourchette (« 15-30 € »).');
+    haptic_local_field('type', __('Business type', 'optimizr'), 'haptic_local_identity', 'select');
+    haptic_local_field('name', __('Name', 'optimizr'), 'haptic_local_identity', 'text', get_bloginfo('name'));
+    haptic_local_field('description', __('Description', 'optimizr'), 'haptic_local_identity', 'textarea');
+    haptic_local_field('logo', __('Logo (URL)', 'optimizr'), 'haptic_local_identity', 'url', __('Default: the site icon.', 'optimizr'));
+    haptic_local_field('image', __('Business photo (URL)', 'optimizr'), 'haptic_local_identity', 'url', __('Storefront or interior, at least 1200 px wide.', 'optimizr'));
+    haptic_local_field('price_range', __('Price range', 'optimizr'), 'haptic_local_identity', 'text', __('€, €€, €€€ or a range (“€15-30”).', 'optimizr'));
 
-    add_settings_section('haptic_local_contact', 'Coordonnées', null, $page);
-    haptic_local_field('street', 'Adresse', 'haptic_local_contact', 'text');
-    haptic_local_field('postal_code', 'Code postal', 'haptic_local_contact', 'text');
-    haptic_local_field('city', 'Ville', 'haptic_local_contact', 'text');
-    haptic_local_field('region', 'Région', 'haptic_local_contact', 'text');
-    haptic_local_field('country', 'Pays (code)', 'haptic_local_contact', 'text', 'Code à deux lettres : FR, BE, CH…');
-    haptic_local_field('phone', 'Téléphone', 'haptic_local_contact', 'tel', 'Format international conseillé : +33 1 23 45 67 89.');
-    haptic_local_field('email', 'Email', 'haptic_local_contact', 'email');
-    add_settings_field('haptic_local_geo', 'Coordonnées GPS', 'haptic_local_geo_callback', $page, 'haptic_local_contact', [
-        'description' => 'Sur Google Maps, clic droit sur l\'établissement : la latitude et la longitude s\'affichent.',
+    add_settings_section('haptic_local_contact', __('Contact details', 'optimizr'), null, $page);
+    haptic_local_field('street', __('Address', 'optimizr'), 'haptic_local_contact', 'text');
+    haptic_local_field('postal_code', __('Postal code', 'optimizr'), 'haptic_local_contact', 'text');
+    haptic_local_field('city', __('City', 'optimizr'), 'haptic_local_contact', 'text');
+    haptic_local_field('region', __('Region', 'optimizr'), 'haptic_local_contact', 'text');
+    haptic_local_field('country', __('Country (code)', 'optimizr'), 'haptic_local_contact', 'text', __('Two-letter code: FR, BE, CH…', 'optimizr'));
+    haptic_local_field('phone', __('Phone', 'optimizr'), 'haptic_local_contact', 'tel', __('International format recommended: +33 1 23 45 67 89.', 'optimizr'));
+    haptic_local_field('email', __('Email', 'optimizr'), 'haptic_local_contact', 'email');
+    add_settings_field('haptic_local_geo', __('GPS coordinates', 'optimizr'), 'haptic_local_geo_callback', $page, 'haptic_local_contact', [
+        'description' => __('On Google Maps, right-click the business: the latitude and longitude are shown.', 'optimizr'),
     ]);
 
-    add_settings_section('haptic_local_hours_section', 'Horaires d\'ouverture', function () {
-        echo '<p>Deux plages par jour au plus (ex. 9:00–12:30 et 14:00–19:00). Laissez « Fermé » coché pour un jour de fermeture.</p>';
+    add_settings_section('haptic_local_hours_section', __('Opening hours', 'optimizr'), function () {
+        echo '<p>' . esc_html__('Two time ranges per day at most (e.g. 9:00–12:30 and 14:00–19:00). Leave “Closed” checked for a day off.', 'optimizr') . '</p>';
     }, $page);
     add_settings_field('haptic_local_hours', '', 'haptic_local_hours_callback', $page, 'haptic_local_hours_section', ['layout' => 'stacked']);
 
     add_settings_section('haptic_local_google', 'Google', null, $page);
-    add_settings_field('haptic_local_place_id', 'Identifiant de lieu (Place ID)', 'haptic_local_place_id_callback', $page, 'haptic_local_google', [
+    add_settings_field('haptic_local_place_id', __('Place ID', 'optimizr'), 'haptic_local_place_id_callback', $page, 'haptic_local_google', [
         'label_for' => 'haptic_local_place_id',
-        'description' => 'Sert à créer les liens « Laisser un avis » et « Itinéraire ».',
+        'description' => __('Used to create the “Leave a review” and “Directions” links.', 'optimizr'),
     ]);
-    haptic_local_field('same_as', 'Profils en ligne', 'haptic_local_google', 'textarea', 'Une adresse par ligne : fiche Google, Facebook, Instagram, LinkedIn, Pages Jaunes… Google relie ainsi le site à ces profils.');
-    add_settings_field('haptic_local_scope', 'Données structurées', function () {
+    haptic_local_field('same_as', __('Online profiles', 'optimizr'), 'haptic_local_google', 'textarea', __('One URL per line: Google listing, Facebook, Instagram, LinkedIn, Yellow Pages… This lets Google link the site to these profiles.', 'optimizr'));
+    add_settings_field('haptic_local_scope', __('Structured data', 'optimizr'), function () {
         $scope = haptic_local('schema_scope', 'home');
-        echo '<div class="optimizr-segmented" role="radiogroup" aria-label="Pages qui portent les données structurées">';
-        foreach (['home' => 'Page d\'accueil', 'all' => 'Toutes les pages', 'off' => 'Désactivées'] as $value => $label) {
+        echo '<div class="optimizr-segmented" role="radiogroup" aria-label="' . esc_attr__('Pages that carry the structured data', 'optimizr') . '">';
+        foreach (['home' => __('Home page', 'optimizr'), 'all' => __('All pages', 'optimizr'), 'off' => _x('Disabled', 'structured data', 'optimizr')] as $value => $label) {
             printf('<label class="optimizr-segmented__option"><input type="radio" name="haptic_local[schema_scope]" value="%s" %s><span>%s</span></label>', esc_attr($value), checked($scope, $value, false), esc_html($label));
         }
         echo '</div>';
-    }, $page, 'haptic_local_google', ['description' => 'La page d\'accueil suffit dans la plupart des cas.']);
+    }, $page, 'haptic_local_google', ['description' => __('The home page is enough in most cases.', 'optimizr')]);
 });
 
 function haptic_local_field($key, $label, $section, $type = 'text', $help = '')
@@ -135,10 +139,10 @@ function haptic_local_geo_callback()
 {
     ?>
     <div class="optimizr-inline">
-        <label class="screen-reader-text" for="haptic_local_lat">Latitude</label>
-        <input type="text" class="optimizr-input-medium" name="haptic_local[lat]" id="haptic_local_lat" value="<?php echo esc_attr(haptic_local('lat')); ?>" placeholder="Latitude (48.8566)" inputmode="decimal">
-        <label class="screen-reader-text" for="haptic_local_lng">Longitude</label>
-        <input type="text" class="optimizr-input-medium" name="haptic_local[lng]" id="haptic_local_lng" value="<?php echo esc_attr(haptic_local('lng')); ?>" placeholder="Longitude (2.3522)" inputmode="decimal">
+        <label class="screen-reader-text" for="haptic_local_lat"><?php esc_html_e('Latitude', 'optimizr'); ?></label>
+        <input type="text" class="optimizr-input-medium" name="haptic_local[lat]" id="haptic_local_lat" value="<?php echo esc_attr(haptic_local('lat')); ?>" placeholder="<?php esc_attr_e('Latitude (48.8566)', 'optimizr'); ?>" inputmode="decimal">
+        <label class="screen-reader-text" for="haptic_local_lng"><?php esc_html_e('Longitude', 'optimizr'); ?></label>
+        <input type="text" class="optimizr-input-medium" name="haptic_local[lng]" id="haptic_local_lng" value="<?php echo esc_attr(haptic_local('lng')); ?>" placeholder="<?php esc_attr_e('Longitude (2.3522)', 'optimizr'); ?>" inputmode="decimal">
     </div>
     <?php
 }
@@ -147,13 +151,16 @@ function haptic_local_place_id_callback()
 {
     $place_id = haptic_local('place_id');
     echo '<input type="text" name="haptic_local[place_id]" id="haptic_local_place_id" value="' . esc_attr($place_id) . '" spellcheck="false">';
-    echo '<p class="optimizr-field__help">À trouver avec l\'<a href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id" target="_blank" rel="noopener">outil de recherche de Place ID</a> de Google.</p>';
+    /* translators: %s: URL of Google's Place ID finder */
+    echo '<p class="optimizr-field__help">' . wp_kses_post(sprintf(__('Find it with Google\'s <a href="%s" target="_blank" rel="noopener">Place ID finder</a>.', 'optimizr'), 'https://developers.google.com/maps/documentation/places/web-service/place-id#find-id')) . '</p>';
     if ($place_id) {
-        printf(
-            '<p class="optimizr-field__help">Liens générés : <a href="%s" target="_blank" rel="noopener">laisser un avis</a> · <a href="%s" target="_blank" rel="noopener">itinéraire</a></p>',
+        /* translators: 1: Google review URL, 2: Google Maps directions URL */
+        $haptic_links = __('Generated links: <a href="%1$s" target="_blank" rel="noopener">leave a review</a> · <a href="%2$s" target="_blank" rel="noopener">directions</a>', 'optimizr');
+        echo '<p class="optimizr-field__help">' . wp_kses_post(sprintf(
+            $haptic_links,
             esc_url(haptic_local_review_url()),
             esc_url(haptic_local_directions_url())
-        );
+        )) . '</p>';
     }
 }
 
@@ -161,19 +168,25 @@ function haptic_local_hours_callback()
 {
     $hours = (array) haptic_local('hours', []);
     echo '<div class="optimizr-hours">';
-    foreach (HAPTIC_LOCAL_DAYS as $day => $label) {
+    foreach (haptic_local_days() as $day => $label) {
         $h = (array) ($hours[$day] ?? []);
         $closed = !isset($h['closed']) || $h['closed'];
         ?>
         <div class="optimizr-hours__day">
             <strong><?php echo esc_html($label); ?></strong>
-            <label class="optimizr-check"><input type="checkbox" name="haptic_local[hours][<?php echo esc_attr($day); ?>][closed]" value="1" <?php checked($closed); ?> data-hours-closed> Fermé</label>
+            <label class="optimizr-check"><input type="checkbox" name="haptic_local[hours][<?php echo esc_attr($day); ?>][closed]" value="1" <?php checked($closed); ?> data-hours-closed> <?php esc_html_e('Closed', 'optimizr'); ?></label>
             <span class="optimizr-hours__ranges">
                 <?php for ($i = 1; $i <= 2; $i++) : ?>
-                    <input type="time" name="haptic_local[hours][<?php echo esc_attr($day); ?>][open<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['open' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', ouverture ' . $i); ?>">
+                    <input type="time" name="haptic_local[hours][<?php echo esc_attr($day); ?>][open<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['open' . $i] ?? ''); ?>" aria-label="<?php
+                        /* translators: 1: day of the week, 2: time range number */
+                        echo esc_attr(sprintf(__('%1$s, opening %2$d', 'optimizr'), $label, $i));
+                    ?>">
                     <span aria-hidden="true">–</span>
-                    <input type="time" name="haptic_local[hours][<?php echo esc_attr($day); ?>][close<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['close' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', fermeture ' . $i); ?>">
-                    <?php if ($i === 1) : ?><span class="optimizr-muted">et</span><?php endif; ?>
+                    <input type="time" name="haptic_local[hours][<?php echo esc_attr($day); ?>][close<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['close' . $i] ?? ''); ?>" aria-label="<?php
+                        /* translators: 1: day of the week, 2: time range number */
+                        echo esc_attr(sprintf(__('%1$s, closing %2$d', 'optimizr'), $label, $i));
+                    ?>">
+                    <?php if ($i === 1) : ?><span class="optimizr-muted"><?php echo esc_html_x('and', 'between two time ranges', 'optimizr'); ?></span><?php endif; ?>
                 <?php endfor; ?>
             </span>
         </div>
@@ -205,7 +218,7 @@ function haptic_local_sanitize($input)
     $clean['schema_scope'] = in_array($input['schema_scope'] ?? '', ['home', 'all', 'off'], true) ? $input['schema_scope'] : 'home';
 
     $clean['hours'] = [];
-    foreach (array_keys(HAPTIC_LOCAL_DAYS) as $day) {
+    foreach (array_keys(haptic_local_days()) as $day) {
         $h = (array) ($input['hours'][$day] ?? []);
         $day_clean = ['closed' => empty($h['closed']) ? 0 : 1];
         foreach (['open1', 'close1', 'open2', 'close2'] as $key) {
@@ -355,7 +368,7 @@ add_shortcode('optimizr_horaires', function () {
         return '';
     }
     $html = '<table class="optimizr-horaires"><tbody>';
-    foreach (HAPTIC_LOCAL_DAYS as $day => $label) {
+    foreach (haptic_local_days() as $day => $label) {
         $h = (array) ($hours[$day] ?? []);
         $ranges = [];
         if (empty($h['closed'])) {
@@ -365,19 +378,19 @@ add_shortcode('optimizr_horaires', function () {
                 }
             }
         }
-        $html .= '<tr><th scope="row">' . esc_html($label) . '</th><td>' . esc_html($ranges ? implode(', ', $ranges) : 'Fermé') . '</td></tr>';
+        $html .= '<tr><th scope="row">' . esc_html($label) . '</th><td>' . esc_html($ranges ? implode(', ', $ranges) : __('Closed', 'optimizr')) . '</td></tr>';
     }
     return $html . '</tbody></table>';
 });
 
 add_shortcode('optimizr_avis_google', function ($atts) {
-    $atts = shortcode_atts(['texte' => 'Laisser un avis sur Google'], $atts, 'optimizr_avis_google');
+    $atts = shortcode_atts(['texte' => __('Leave a review on Google', 'optimizr')], $atts, 'optimizr_avis_google');
     $url = haptic_local_review_url();
     return $url ? '<a class="optimizr-avis-google" href="' . esc_url($url) . '" target="_blank" rel="noopener">' . esc_html($atts['texte']) . '</a>' : '';
 });
 
 add_shortcode('optimizr_itineraire', function ($atts) {
-    $atts = shortcode_atts(['texte' => 'Itinéraire'], $atts, 'optimizr_itineraire');
+    $atts = shortcode_atts(['texte' => __('Directions', 'optimizr')], $atts, 'optimizr_itineraire');
     return '<a class="optimizr-itineraire" href="' . esc_url(haptic_local_directions_url()) . '" target="_blank" rel="noopener">' . esc_html($atts['texte']) . '</a>';
 });
 
@@ -416,7 +429,7 @@ function haptic_local_theme_values()
 
 add_action('admin_post_haptic_local_import_theme', function () {
     if (!current_user_can('manage_options')) {
-        wp_die('Accès refusé');
+        wp_die(esc_html__('Access denied', 'optimizr'));
     }
     check_admin_referer('haptic_local_import_theme');
 
@@ -434,7 +447,7 @@ add_action('admin_post_haptic_local_import_theme', function () {
 
 add_action('admin_notices', function () {
     if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'local_imported') {
-        echo '<div class="notice notice-success is-dismissible"><p>Coordonnées importées depuis le thème. Vérifiez-les puis enregistrez.</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Contact details imported from the theme. Check them, then save.', 'optimizr') . '</p></div>';
     }
 });
 
@@ -448,12 +461,15 @@ add_action('haptic_admin_aside_local', function () {
             <section class="optimizr-card">
                 <div class="optimizr-card__header">
                     <div>
-                        <h2 class="optimizr-card__title">Coordonnées du thème</h2>
-                        <p class="optimizr-card__desc"><?php echo esc_html(sprintf('%d information(s) trouvée(s) dans le Customizer du thème. Les champs déjà remplis ici sont conservés.', count($theme))); ?></p>
+                        <h2 class="optimizr-card__title"><?php esc_html_e('Theme contact details', 'optimizr'); ?></h2>
+                        <p class="optimizr-card__desc"><?php
+                        /* translators: %s: number of values found */
+                        echo esc_html(sprintf(_n('%s value found in the theme Customizer. Fields already filled in here are kept.', '%s values found in the theme Customizer. Fields already filled in here are kept.', count($theme), 'optimizr'), number_format_i18n(count($theme))));
+                        ?></p>
                     </div>
                 </div>
                 <div class="optimizr-card__body">
-                    <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=haptic_local_import_theme'), 'haptic_local_import_theme')); ?>">Importer depuis le thème</a>
+                    <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=haptic_local_import_theme'), 'haptic_local_import_theme')); ?>"><?php esc_html_e('Import from the theme', 'optimizr'); ?></a>
                 </div>
             </section>
         <?php endif; ?>
@@ -461,14 +477,14 @@ add_action('haptic_admin_aside_local', function () {
         <section class="optimizr-card">
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Données pour Google</h2>
-                    <p class="optimizr-card__desc"><?php echo $schema ? 'Ajoutées à ' . (haptic_local('schema_scope', 'home') === 'all' ? 'toutes les pages.' : (haptic_local('schema_scope', 'home') === 'off' ? 'aucune page (désactivées).' : 'la page d\'accueil.')) : 'Renseignez au moins l\'adresse et la ville.'; ?></p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Data for Google', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php echo esc_html($schema ? (haptic_local('schema_scope', 'home') === 'all' ? __('Added to all pages.', 'optimizr') : (haptic_local('schema_scope', 'home') === 'off' ? __('Added to no page (disabled).', 'optimizr') : __('Added to the home page.', 'optimizr'))) : __('Enter at least the address and the city.', 'optimizr')); ?></p>
                 </div>
             </div>
             <?php if ($schema) : ?>
                 <div class="optimizr-card__body">
                     <pre class="optimizr-json"><?php echo esc_html(wp_json_encode($schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); ?></pre>
-                    <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url('https://search.google.com/test/rich-results?url=' . rawurlencode(home_url('/'))); ?>" target="_blank" rel="noopener">Tester avec Google</a>
+                    <a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url('https://search.google.com/test/rich-results?url=' . rawurlencode(home_url('/'))); ?>" target="_blank" rel="noopener"><?php esc_html_e('Test with Google', 'optimizr'); ?></a>
                 </div>
             <?php endif; ?>
         </section>
@@ -476,17 +492,17 @@ add_action('haptic_admin_aside_local', function () {
         <section class="optimizr-card">
             <div class="optimizr-card__header">
                 <div>
-                    <h2 class="optimizr-card__title">Shortcodes</h2>
-                    <p class="optimizr-card__desc">À placer dans une page ou un widget : ils affichent toujours les informations à jour.</p>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Shortcodes', 'optimizr'); ?></h2>
+                    <p class="optimizr-card__desc"><?php esc_html_e('Place them in a page or widget: they always show up-to-date information.', 'optimizr'); ?></p>
                 </div>
             </div>
             <ul class="optimizr-shortcodes">
-                <li><code>[optimizr_adresse]</code> Adresse complète</li>
-                <li><code>[optimizr_telephone]</code> Téléphone cliquable</li>
-                <li><code>[optimizr_email]</code> Email protégé des robots</li>
-                <li><code>[optimizr_horaires]</code> Tableau des horaires</li>
-                <li><code>[optimizr_avis_google]</code> Lien « Laisser un avis »</li>
-                <li><code>[optimizr_itineraire]</code> Lien d'itinéraire Google Maps</li>
+                <li><code>[optimizr_adresse]</code> <?php esc_html_e('Full address', 'optimizr'); ?></li>
+                <li><code>[optimizr_telephone]</code> <?php esc_html_e('Clickable phone number', 'optimizr'); ?></li>
+                <li><code>[optimizr_email]</code> <?php esc_html_e('Email protected from bots', 'optimizr'); ?></li>
+                <li><code>[optimizr_horaires]</code> <?php esc_html_e('Opening hours table', 'optimizr'); ?></li>
+                <li><code>[optimizr_avis_google]</code> <?php esc_html_e('“Leave a review” link', 'optimizr'); ?></li>
+                <li><code>[optimizr_itineraire]</code> <?php esc_html_e('Google Maps directions link', 'optimizr'); ?></li>
             </ul>
         </section>
     </div>

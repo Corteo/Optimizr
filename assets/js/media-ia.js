@@ -1,16 +1,18 @@
 jQuery(document).ready(function ($) {
+    const { __, sprintf } = wp.i18n;
+
     // Le bouton est rendu côté PHP via le filtre attachment_fields_to_edit (functions/media.php)
     $(document).on('click', '.haptic-ai-alt', function () {
         const attachmentId = $(this).data('post-id');
         const $button = $(this);
-        $button.prop('disabled', true).text('Génération en cours...');
+        $button.prop('disabled', true).text(__('Generating…', 'optimizr'));
 
         $.post(hapticMediaIA.ajaxUrl, {
             action: 'haptic_generate_image_meta',
             post_id: attachmentId,
             nonce: hapticMediaIA.nonce,
         }, function (response) {
-            $button.prop('disabled', false).text('Générer avec l\'IA');
+            $button.prop('disabled', false).text(__('Generate with AI', 'optimizr'));
 
             if (response.success) {
                 // Champ ALT : médiathèque (grille), modale média, puis écran d'édition du média
@@ -20,13 +22,14 @@ jQuery(document).ready(function ($) {
                     $altField.val(response.data.alt).trigger('change');
                 }
 
-                alert('Balise ALT générée avec succès.');
+                alert(__('ALT text generated successfully.', 'optimizr'));
             } else {
-                alert('Erreur : ' + response.data);
+                /* translators: %s: error message */
+                alert(sprintf(__('Error: %s', 'optimizr'), response.data));
             }
         }).fail(function () {
-            $button.prop('disabled', false).text('Générer avec l\'IA');
-            alert('La requête a échoué.');
+            $button.prop('disabled', false).text(__('Generate with AI', 'optimizr'));
+            alert(__('The request failed.', 'optimizr'));
         });
     });
 });

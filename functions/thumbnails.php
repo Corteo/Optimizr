@@ -16,16 +16,16 @@ function haptic_options_thumbnail_init()
 
     add_settings_section(
         'haptic-thumbnails-section',
-        'Images à la une',
+        __('Featured images', 'optimizr'),
         function () {
-            echo '<p>Types de contenu qui proposent une image de couverture dans l\'éditeur.</p>';
+            echo '<p>' . esc_html__('Content types that offer a cover image in the editor.', 'optimizr') . '</p>';
         },
         haptic_settings_page('content')
     );
 
     add_settings_field(
         'haptic-options-featured-image-post-types',
-        'Types de contenu',
+        __('Content types', 'optimizr'),
         'haptic_options_featured_image_post_types_callback',
         haptic_settings_page('content'),
         'haptic-thumbnails-section',

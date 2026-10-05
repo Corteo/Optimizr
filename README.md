@@ -160,6 +160,10 @@ functions/updates.php    Mises à jour depuis GitHub (absent de la version WordP
 css/, js/                Interface de la page d'options
 ```
 
+### Traductions
+
+Les textes du code sont en anglais (domaine `optimizr`) ; la traduction française est dans `languages/optimizr-fr_FR.po`. Après avoir ajouté ou modifié un texte, ajoutez sa traduction au `.po` puis lancez `python3 bin/build-translations.py`, qui produit le `.mo` (PHP), un `.json` par script JS et le modèle `optimizr.pot`. Un script JS traduit dépend de `wp-i18n` et appelle `wp_set_script_translations()`.
+
 ### Numérotation des versions
 
 Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.MINEUR.CORRECTIF`.

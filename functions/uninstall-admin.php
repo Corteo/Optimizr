@@ -43,7 +43,7 @@ function haptic_uninstall_can_edit()
 
 add_action('admin_post_haptic_save_uninstall', function () {
     if (!haptic_uninstall_can_edit()) {
-        wp_die('Accès refusé');
+        wp_die(esc_html__('Access denied', 'optimizr'));
     }
     check_admin_referer('haptic_save_uninstall');
 
@@ -62,19 +62,22 @@ function haptic_render_uninstall_card()
         <?php wp_nonce_field('haptic_save_uninstall'); ?>
         <div class="optimizr-card__header">
             <div>
-                <h2 class="optimizr-card__title">Suppression du plugin</h2>
-                <p class="optimizr-card__desc">Ce qui est effacé quand Optimizr est supprimé depuis la liste des extensions. Ces choix sont aussi proposés quand vous le désactivez.</p>
+                <h2 class="optimizr-card__title"><?php esc_html_e('Plugin deletion', 'optimizr'); ?></h2>
+                <p class="optimizr-card__desc"><?php esc_html_e('What is erased when Optimizr is deleted from the plugins list. These choices are also offered when you deactivate it.', 'optimizr'); ?></p>
             </div>
         </div>
         <div class="optimizr-card__body">
             <?php foreach (haptic_uninstall_groups() as $key => $group) : ?>
                 <label class="optimizr-check">
                     <input type="checkbox" name="haptic_uninstall[<?php echo esc_attr($key); ?>]" value="1" <?php checked($choices[$key]); ?>>
-                    <span>Effacer : <?php echo esc_html($group['label']); ?> <span class="optimizr-muted">(<?php echo esc_html($group['help']); ?>)</span></span>
+                    <span><?php
+                    /* translators: %s: name of a group of data (settings, logs…) */
+                    echo esc_html(sprintf(__('Erase: %s', 'optimizr'), $group['label']));
+                    ?> <span class="optimizr-muted">(<?php echo esc_html($group['help']); ?>)</span></span>
                 </label>
             <?php endforeach; ?>
-            <p class="optimizr-field__help">Les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow, journal de debug, robots.txt écrit par Optimizr s'il n'a pas été modifié) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés. La simple désactivation ne supprime aucune donnée.</p>
-            <div><button type="submit" class="optimizr-btn optimizr-btn--primary">Enregistrer</button></div>
+            <p class="optimizr-field__help"><?php esc_html_e('Scheduled tasks, caches and generated files (sitemap, IndexNow key, robots.txt written by Optimizr if it has not been modified) are always deleted. Pages, media and alt texts are never touched. Simply deactivating the plugin deletes no data.', 'optimizr'); ?></p>
+            <div><button type="submit" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Save', 'optimizr'); ?></button></div>
         </div>
     </form>
     <?php
@@ -85,7 +88,7 @@ function haptic_render_uninstall_card()
 add_action('wp_ajax_haptic_save_uninstall', function () {
     check_ajax_referer('haptic_save_uninstall');
     if (!haptic_uninstall_can_edit()) {
-        wp_send_json_error('Accès refusé', 403);
+        wp_send_json_error(__('Access denied', 'optimizr'), 403);
     }
 
     $choices = json_decode(sanitize_text_field(wp_unslash($_POST['choices'] ?? '')), true);
@@ -101,10 +104,11 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_enqueue_script(
         'optimizr-uninstall',
         HAPTIC_OPTIMIZR_URL . 'js/optimizr-uninstall.js',
-        [],
+        ['wp-i18n'],
         HAPTIC_OPTIMIZR_VERSION,
         true
     );
+    wp_set_script_translations('optimizr-uninstall', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
     wp_localize_script('optimizr-uninstall', 'optimizrUninstall', [
         'plugin'  => haptic_uninstall_plugin_basename(),
         'ajaxUrl' => admin_url('admin-ajax.php'),

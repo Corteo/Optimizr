@@ -1,0 +1,3970 @@
+# Traduction française de Haptic Optimizr.
+# Source : chaînes anglaises du code ; à recompiler avec bin/build-translations.py.
+msgid ""
+msgstr ""
+"Project-Id-Version: Haptic Optimizr\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: optimizr\n"
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "Cookies & GDPR"
+msgstr "Cookies & RGPD"
+
+#: functions/admin-ui.php
+msgid "Tarteaucitron banner, Google Consent Mode v2 and audience measurement services."
+msgstr "Bandeau Tarteaucitron, Google Consent Mode v2 et services de mesure d'audience."
+
+#: functions/admin-ui.php
+msgid "SEO"
+msgstr "SEO"
+
+#: functions/admin-ui.php
+msgid "Meta and OpenGraph tags, XML sitemap, robots.txt file."
+msgstr "Balises meta et OpenGraph, sitemap XML, fichier robots.txt."
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "AI assistant"
+msgstr "Assistant IA"
+
+#: functions/admin-ui.php
+msgid "Meta descriptions and ALT text generated with OpenAI, Claude or Gemini, based on your site context."
+msgstr "Meta descriptions et balises ALT générées avec OpenAI, Claude ou Gemini, à partir du contexte du site."
+
+#: functions/admin-ui.php functions/redirects-admin.php
+msgid "Redirects & links"
+msgstr "Redirections & liens"
+
+#: functions/admin-ui.php
+msgid "301 redirects, 404 log, broken links and automatic redirects for moved content."
+msgstr "Redirections 301, journal des pages introuvables, liens cassés et redirection automatique des contenus déplacés."
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "Local SEO"
+msgstr "SEO local"
+
+#: functions/admin-ui.php
+msgid "Business profile for Google: address, opening hours, reviews, directions and contact detail shortcodes."
+msgstr "Fiche de l'établissement pour Google : adresse, horaires, avis, itinéraire et shortcodes de coordonnées."
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "Special pages"
+msgstr "Pages spéciales"
+
+#: functions/admin-ui.php
+msgid "404 page written in the editor with content suggestions, and maintenance mode (503) with a reopening date."
+msgstr "Page 404 rédigée dans l'éditeur avec suggestions de contenus, et mode maintenance (503) avec date de réouverture."
+
+#: functions/admin-ui.php
+msgid "Content types"
+msgstr "Types de contenu"
+
+#: functions/admin-ui.php
+msgid "Ready-to-use Events CPT and custom post types created from the admin."
+msgstr "CPT Évènements prêt à l'emploi et types personnalisés créés depuis l'admin."
+
+#: functions/admin-ui.php
+msgid "Featured images"
+msgstr "Images à la une"
+
+#: functions/admin-ui.php
+msgid "Choose which content types accept a cover image."
+msgstr "Choisissez les types de contenu qui acceptent une image de couverture."
+
+#: functions/admin-ui.php
+msgid "Emails"
+msgstr "Emails"
+
+#: functions/admin-ui.php
+msgid "Turn off the emails sent after automatic updates."
+msgstr "Coupez les emails envoyés après les mises à jour automatiques."
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "Security"
+msgstr "Sécurité"
+
+#: functions/admin-ui.php
+msgid "Custom login URL, login attempt limits, hidden version, XML-RPC and security headers."
+msgstr "Adresse de connexion personnalisée, limitation des tentatives, version masquée, XML-RPC et en-têtes de sécurité."
+
+#: functions/admin-ui.php
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Redirects"
+msgstr "Redirections"
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Content"
+msgstr "Contenus"
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Advanced"
+msgstr "Avancé"
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Tools"
+msgstr "Outils"
+
+#: functions/admin-ui.php
+msgid "Settings - Optimizr"
+msgstr "Réglages - Optimizr"
+
+#: functions/admin-ui.php functions/onboarding.php
+msgid "Setup wizard"
+msgstr "Assistant de configuration"
+
+#: functions/admin-ui.php
+msgid "Optimizr sections"
+msgstr "Sections d'Optimizr"
+
+#: functions/admin-ui.php js/optimizr-admin.js
+msgid "All changes saved"
+msgstr "Toutes les modifications sont enregistrées"
+
+#: functions/admin-ui.php functions/redirects-admin.php js/optimizr-uninstall.js
+msgid "Cancel"
+msgstr "Annuler"
+
+#: functions/admin-ui.php
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+#: functions/admin-ui.php
+msgid "Visitor consent, with third-party services loaded only once allowed."
+msgstr "Consentement des visiteurs et services tiers chargés uniquement après autorisation."
+
+#: functions/admin-ui.php
+msgid "Default titles and descriptions, sitemap and instructions for search engine crawlers."
+msgstr "Titres et descriptions par défaut, plan du site et consignes pour les robots d'indexation."
+
+#: functions/admin-ui.php
+msgid "Business information used by Google (local search, Maps) and displayable on your site."
+msgstr "Informations de l'établissement reprises par Google (recherche locale, Maps) et affichables sur le site."
+
+#: functions/admin-ui.php
+msgid "Content of the not-found page and temporary site closure, using your theme layout."
+msgstr "Contenu de la page introuvable et fermeture temporaire du site, avec la mise en page du thème."
+
+#: functions/admin-ui.php
+msgid "Content generation with OpenAI, Claude or Gemini: meta descriptions and image ALT text."
+msgstr "Génération de contenus avec OpenAI, Claude ou Gemini : meta descriptions et balises ALT des images."
+
+#: functions/admin-ui.php
+msgid "Custom post types and cover images."
+msgstr "Types de contenu personnalisés et images de couverture."
+
+#: functions/admin-ui.php
+msgid "Protections you can enable one by one. None is active until you turn it on."
+msgstr "Protections activables une à une. Aucune n'est active tant que vous ne l'activez pas."
+
+#: functions/admin-ui.php
+msgid "Notifications sent by WordPress after automatic updates."
+msgstr "Notifications envoyées par WordPress après les mises à jour automatiques."
+
+#: functions/admin-ui.php
+msgid "Search engines are discouraged from indexing the site"
+msgstr "Les moteurs de recherche sont invités à ne pas indexer le site"
+
+#: functions/admin-ui.php
+msgctxt "site health check link"
+msgid "Adjust"
+msgstr "Régler"
+
+#: functions/admin-ui.php
+msgid "XML sitemap generated"
+msgstr "Sitemap XML généré"
+
+#: functions/admin-ui.php
+msgid "Could not write the XML sitemap"
+msgstr "Échec d'écriture du sitemap XML"
+
+#: functions/admin-ui.php
+msgid "XML sitemap missing"
+msgstr "Sitemap XML absent"
+
+#: functions/admin-ui.php
+msgctxt "site health check link"
+msgid "View"
+msgstr "Voir"
+
+#: functions/admin-ui.php
+msgctxt "site health check link"
+msgid "Generate"
+msgstr "Générer"
+
+#: functions/admin-ui.php
+msgid "Custom robots.txt"
+msgstr "robots.txt personnalisé"
+
+#: functions/admin-ui.php
+msgid "robots.txt managed by WordPress"
+msgstr "robots.txt géré par WordPress"
+
+#: functions/admin-ui.php
+msgid "Cookie banner active"
+msgstr "Bandeau cookies actif"
+
+#: functions/admin-ui.php
+msgid "Cookie banner disabled"
+msgstr "Bandeau cookies désactivé"
+
+#: functions/admin-ui.php
+msgctxt "site health check link"
+msgid "Enable"
+msgstr "Activer"
+
+#. %s: AI provider name (OpenAI, Claude, Gemini)
+#: functions/admin-ui.php
+msgid "%s API key missing"
+msgstr "Clé API %s manquante"
+
+#: functions/admin-ui.php
+msgctxt "site health check link"
+msgid "Add"
+msgstr "Ajouter"
+
+#: functions/admin-ui.php
+msgctxt "module status"
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: functions/admin-ui.php
+msgid "API key missing"
+msgstr "Clé API manquante"
+
+#: functions/admin-ui.php
+msgid "Banner disabled"
+msgstr "Bandeau désactivé"
+
+#: functions/admin-ui.php
+msgctxt "module status"
+msgid "Active"
+msgstr "Actif"
+
+#: functions/admin-ui.php
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: functions/admin-ui.php
+msgid "Enable the modules your site needs. Each active module adds its own settings tab."
+msgstr "Activez les modules dont votre site a besoin. Chaque module actif ajoute son onglet de réglages."
+
+#: functions/admin-ui.php
+msgid "Set up the essentials in a few minutes"
+msgstr "Configurez l'essentiel en quelques minutes"
+
+#: functions/admin-ui.php
+msgid "The wizard enables the useful modules and the recommended security, SEO and privacy settings."
+msgstr "L'assistant active les modules utiles et les réglages recommandés de sécurité, de référencement et de confidentialité."
+
+#: functions/admin-ui.php
+msgid "Launch the wizard"
+msgstr "Lancer l'assistant"
+
+#: functions/admin-ui.php
+msgid "Configure →"
+msgstr "Configurer →"
+
+#: functions/admin-ui.php
+msgid "Site status"
+msgstr "État du site"
+
+#: functions/admin-ui.php
+msgid "Checked when this page was opened."
+msgstr "Vérifié à l'ouverture de cette page."
+
+#: functions/admin-ui.php
+msgid "Nothing to report."
+msgstr "Rien à signaler."
+
+#: functions/admin-ui.php
+msgid "Updates"
+msgstr "Mises à jour"
+
+#: functions/admin-ui.php
+msgid "Installed version"
+msgstr "Version installée"
+
+#: functions/admin-ui.php
+msgid "New versions are offered by WordPress, under Plugins and Dashboard › Updates."
+msgstr "Les nouvelles versions sont proposées par WordPress, dans Extensions et Tableau de bord › Mises à jour."
+
+#. %s: module name
+#: functions/admin-ui.php
+msgid "%s module"
+msgstr "Module %s"
+
+#: functions/tabs.php
+msgid "No settings in this tab."
+msgstr "Aucun réglage dans cet onglet."
+
+#: functions/mails.php
+msgid "Turn off plugin emails"
+msgstr "Couper les emails des extensions"
+
+#: functions/mails.php
+msgid "Turn off plugin update emails"
+msgstr "Couper les emails de mise à jour des extensions"
+
+#: functions/mails.php
+msgid "No email after a plugin is updated automatically."
+msgstr "Aucun email après la mise à jour automatique d'une extension."
+
+#: functions/mails.php
+msgid "Turn off WordPress emails"
+msgstr "Couper les emails de WordPress"
+
+#: functions/mails.php
+msgid "Turn off WordPress update emails"
+msgstr "Couper les emails de mise à jour de WordPress"
+
+#: functions/mails.php
+msgid "No email after an automatic WordPress core update."
+msgstr "Aucun email après une mise à jour automatique du cœur de WordPress."
+
+#: functions/mails.php
+msgid "Emails sent to the administrator after automatic updates."
+msgstr "Emails envoyés à l'administrateur après les mises à jour automatiques."
+
+#: functions/thumbnails.php
+msgid "Content types that offer a cover image in the editor."
+msgstr "Types de contenu qui proposent une image de couverture dans l'éditeur."
+
+#: js/optimizr-admin.js
+msgid "Unsaved changes"
+msgstr "Modifications non enregistrées"
+
+#. %s: contrast ratio, e.g. 4.5
+#: js/optimizr-admin.js
+msgid "AA %s:1"
+msgstr "AA %s:1"
+
+#. %s: contrast ratio, e.g. 3.2
+#: js/optimizr-admin.js
+msgid "Low %s:1"
+msgstr "Faible %s:1"
+
+#: js/optimizr-admin.js functions/cookies.php
+msgctxt "service status"
+msgid "Active"
+msgstr "Actif"
+
+#: js/optimizr-admin.js functions/cookies.php
+msgctxt "service status"
+msgid "Inactive"
+msgstr "Inactif"
+
+#. 1: current length, 2: recommended maximum length
+#: js/optimizr-admin.js
+msgid "%1$s / %2$s characters"
+msgstr "%1$s / %2$s caractères"
+
+#: js/optimizr-admin.js
+msgctxt "bulk log status"
+msgid "Generated"
+msgstr "Généré"
+
+#: js/optimizr-admin.js
+msgctxt "bulk log status"
+msgid "Skipped"
+msgstr "Ignoré"
+
+#. %s: amount in US dollars
+#: js/optimizr-admin.js functions/ai-pricing.php
+msgid "$%s"
+msgstr "%s $"
+
+#. 1: items processed so far, 2: total number of items
+#: js/optimizr-admin.js
+msgid "%1$s / %2$s processed"
+msgstr "%1$s / %2$s traité(s)"
+
+#. %s: number of items generated
+#: js/optimizr-admin.js
+msgid "%s generated"
+msgid_plural "%s generated"
+msgstr[0] "%s généré(s)"
+msgstr[1] "%s généré(s)"
+
+#. %s: number of items skipped
+#: js/optimizr-admin.js
+msgid "%s skipped"
+msgid_plural "%s skipped"
+msgstr[0] "%s ignoré(s)"
+msgstr[1] "%s ignoré(s)"
+
+#. %s: cost in US dollars
+#: js/optimizr-admin.js
+msgid "actual cost %s"
+msgstr "coût réel %s"
+
+#. 1: status message, 2: cost in US dollars
+#: js/optimizr-admin.js
+msgid "%1$s Actual cost: %2$s."
+msgstr "%1$s Coût réel : %2$s."
+
+#. %s: number of items generated
+#: js/optimizr-admin.js
+msgid "Processing stopped · %s generated."
+msgid_plural "Processing stopped · %s generated."
+msgstr[0] "Traitement arrêté · %s généré(s)."
+msgstr[1] "Traitement arrêté · %s généré(s)."
+
+#. %s: error message
+#: js/optimizr-admin.js
+msgid "Stopped: %s"
+msgstr "Arrêt : %s"
+
+#: js/optimizr-admin.js
+msgid "unknown error."
+msgstr "erreur inconnue."
+
+#. 1: number of items generated, 2: number of items skipped
+#: js/optimizr-admin.js
+msgid "Done · %1$s generated, %2$s skipped."
+msgstr "Terminé · %1$s généré(s), %2$s ignoré(s)."
+
+#. %s: number of items generated
+#: js/optimizr-admin.js
+msgid "Done · %s generated."
+msgid_plural "Done · %s generated."
+msgstr[0] "Terminé · %s généré(s)."
+msgstr[1] "Terminé · %s généré(s)."
+
+#: js/optimizr-admin.js
+msgid "Stopped: the request failed (connection lost?)."
+msgstr "Arrêt : la requête a échoué (connexion perdue ?)."
+
+#: js/optimizr-admin.js
+msgid "Stopping after the current item…"
+msgstr "Arrêt après l'élément en cours…"
+
+#: js/optimizr-admin.js
+msgid "Unexpected server response."
+msgstr "Réponse inattendue du serveur."
+
+#. 1: links checked so far, 2: total number of links
+#: js/optimizr-admin.js
+msgid "%1$s / %2$s link checked…"
+msgid_plural "%1$s / %2$s links checked…"
+msgstr[0] "%1$s / %2$s lien(s) vérifié(s)…"
+msgstr[1] "%1$s / %2$s lien(s) vérifié(s)…"
+
+#. 1: number of links checked, 2: number of issues found
+#: js/optimizr-admin.js
+msgid "Scan complete: %1$s link(s) checked, %2$s issue(s)."
+msgstr "Analyse terminée : %1$s lien(s) vérifié(s), %2$s problème(s)."
+
+#. %s: error message
+#: js/optimizr-admin.js
+msgid "Scan interrupted: %s"
+msgstr "Analyse interrompue : %s"
+
+#: js/optimizr-admin.js
+msgid "Looking for links in your content…"
+msgstr "Recherche des liens dans les contenus…"
+
+#: js/optimizr-admin.js
+msgid "No links found in published content."
+msgstr "Aucun lien trouvé dans les contenus publiés."
+
+#. %s: error message
+#: js/optimizr-admin.js
+msgid "Scan failed: %s"
+msgstr "Analyse impossible : %s"
+
+#. 1: setting label, 2: entered value
+#: js/optimizr-onboarding.js functions/ai-providers.php
+msgid "%1$s: %2$s"
+msgstr "%1$s : %2$s"
+
+#: functions/onboarding.php
+msgctxt "placeholder example"
+msgid "+1 212 555 0100"
+msgstr "+33 1 23 45 67 89"
+
+#: functions/onboarding.php
+msgctxt "placeholder example"
+msgid "10001"
+msgstr "75002"
+
+#: functions/onboarding.php
+msgctxt "placeholder example"
+msgid "123 Main Street"
+msgstr "12 rue de la Paix"
+
+#: functions/onboarding.php
+msgid "404 page"
+msgstr "Page 404"
+
+#: functions/onboarding.php
+msgid "404 page content"
+msgstr "Contenu de la page 404"
+
+#. %s: site name
+#: functions/onboarding.php
+msgid "A few questions to turn on the essentials on %s. Settings are applied at the last step and can be changed later."
+msgstr "Quelques questions pour activer l'essentiel sur %s. Les réglages sont appliqués à la dernière étape, et restent modifiables ensuite."
+
+#: functions/onboarding.php
+msgid "A hacked account can no longer inject code into themes and plugins."
+msgstr "Un compte piraté ne peut plus injecter de code dans les thèmes et extensions."
+
+#: functions/onboarding.php
+msgid "A login URL unique to the site stops most bots. Recommended protections are preselected and do not affect visitors."
+msgstr "Une adresse de connexion propre au site arrête la plupart des robots. Les protections recommandées sont présélectionnées et n'affectent pas les visiteurs."
+
+#: functions/onboarding.php
+msgid "A missing URL suggests related content instead of a dead end."
+msgstr "Une adresse introuvable propose des contenus proches au lieu d'une impasse."
+
+#: functions/onboarding.php
+msgid "AI-generated text and ALT tags, modules enabled as you need them."
+msgstr "Textes et balises ALT générés par l'IA, modules activés à la carte."
+
+#: functions/onboarding.php
+msgid "ALT generated"
+msgstr "ALT généré"
+
+#: functions/onboarding.php functions/cookies.php functions/ai.php
+msgid "API key"
+msgstr "Clé API"
+
+#: functions/onboarding.php
+msgid "About 3 minutes. You can exit the wizard at any time and reopen it from the Optimizr › Wizard menu."
+msgstr "Environ 3 minutes. Vous pouvez quitter l'assistant à tout moment et le rouvrir depuis le menu Optimizr › Assistant."
+
+#. %s: current visitor IP address
+#: functions/onboarding.php
+msgid "Add my address (%s)"
+msgstr "Ajouter mon adresse (%s)"
+
+#: functions/onboarding.php
+msgid "Add yours if it is static (office, fiber) so you never lock yourself out."
+msgstr "Ajoutez la vôtre si elle est fixe (bureau, fibre), pour ne jamais vous bloquer vous-même."
+
+#: functions/onboarding.php functions/local-seo.php functions/redirects-admin.php
+msgid "Address"
+msgstr "Adresse"
+
+#: js/optimizr-onboarding.js
+msgid "Address added"
+msgstr "Adresse ajoutée"
+
+#: functions/onboarding.php
+msgid "Address, phone and business type picked up by Google Maps and local search."
+msgstr "Adresse, téléphone et activité repris par Google Maps et la recherche locale."
+
+#: functions/onboarding.php
+msgid "Allow search engines to index the site"
+msgstr "Autoriser l'indexation du site"
+
+#: functions/onboarding.php
+msgid "An IP address is blocked for 15 minutes after 5 wrong passwords."
+msgstr "Une adresse IP est bloquée 15 minutes après 5 mots de passe erronés."
+
+#: functions/onboarding.php
+msgid "An email alerts an administrator who logs in from an unknown IP address."
+msgstr "Un email prévient l'administrateur qui se connecte depuis une adresse IP inconnue."
+
+#: functions/onboarding.php
+msgid "Apply settings"
+msgstr "Appliquer la configuration"
+
+#: js/optimizr-onboarding.js
+msgid "Applying…"
+msgstr "Application…"
+
+#: functions/onboarding.php
+msgid "At least 4 characters: letters, numbers and hyphens."
+msgstr "Au moins 4 caractères : lettres, chiffres et tirets."
+
+#: functions/onboarding.php functions/ai.php
+msgid "Automatic ALT on upload"
+msgstr "ALT automatique à l'import"
+
+#: functions/onboarding.php
+msgid "Automatic meta tags"
+msgstr "Balises meta automatiques"
+
+#: functions/onboarding.php
+msgid "Back"
+msgstr "Retour"
+
+#: functions/onboarding.php
+msgid "Banner colors and other services (Matomo, Hotjar, Google Ads, reCAPTCHA…): Cookies & GDPR tab."
+msgstr "Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD."
+
+#: functions/onboarding.php functions/cookies.php
+msgid "Banner position"
+msgstr "Position du bandeau"
+
+#. %s: banner position (top, center, bottom), lowercased
+#: functions/onboarding.php
+msgid "Banner: %s"
+msgstr "Bandeau : %s"
+
+#: functions/onboarding.php
+msgid "Bing verification"
+msgstr "Vérification Bing"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Block user enumeration"
+msgstr "Bloquer la liste des comptes"
+
+#: functions/onboarding.php
+msgid "Blocking PHP in uploads and HSTS are set in the Security tab, once the site has been checked."
+msgstr "Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié."
+
+#. %s: administrator email address
+#: functions/onboarding.php
+msgid "Bookmark it: wp-login.php is no longer accessible. It was also sent to %s."
+msgstr "Ajoutez-la à vos favoris : wp-login.php n'est plus accessible. Elle a aussi été envoyée à %s."
+
+#: functions/onboarding.php
+msgid "Bot blocked"
+msgstr "Robot bloqué"
+
+#: functions/onboarding.php
+msgid "Bots can no longer target known flaws of your version."
+msgstr "Les robots ne peuvent plus cibler les failles connues de votre version."
+
+#: functions/onboarding.php
+msgid "Bots try passwords around the clock: shut the door on them."
+msgstr "Des robots testent des mots de passe en continu : fermez-leur la porte."
+
+#: functions/onboarding.php
+msgid "Bottom"
+msgstr "En bas"
+
+#: functions/onboarding.php functions/local-seo.php
+msgid "Business"
+msgstr "Établissement"
+
+#: functions/onboarding.php
+msgctxt "onboarding summary"
+msgid "Business description"
+msgstr "Activité décrite"
+
+#: functions/onboarding.php
+msgid "Business name"
+msgstr "Nom de l'établissement"
+
+#: functions/onboarding.php functions/local-seo.php
+msgid "Business type"
+msgstr "Activité"
+
+#: functions/onboarding.php
+msgid "Call"
+msgstr "Appeler"
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Category"
+msgstr "Catégorie"
+
+#: functions/onboarding.php
+msgid "Center"
+msgstr "Au centre"
+
+#: functions/onboarding.php
+msgid "Check the choices above before applying the settings."
+msgstr "Vérifiez les choix ci-dessus avant d'appliquer la configuration."
+
+#: functions/onboarding.php
+msgid "Choose a page written in the editor: it is displayed with the theme layout, keeps the 404 status code and is not indexed."
+msgstr "Choisissez une page rédigée dans l'éditeur : elle s'affiche avec la mise en page du thème, garde le code 404 et n'est pas indexée."
+
+#: functions/onboarding.php
+msgid "Choose your modules"
+msgstr "Choisissez vos modules"
+
+#: functions/onboarding.php functions/local-seo.php
+msgid "City"
+msgstr "Ville"
+
+#: functions/onboarding.php
+msgid "Clean tags and an up-to-date sitemap: Google indexes faster and better."
+msgstr "Des balises propres et un sitemap à jour : Google indexe plus vite et mieux."
+
+#: functions/onboarding.php
+msgid "Code or meta tag"
+msgstr "Code ou balise meta"
+
+#: functions/onboarding.php
+msgid "Contact email"
+msgstr "Email de contact"
+
+#: js/optimizr-onboarding.js
+msgid "Continue"
+msgstr "Continuer"
+
+#: functions/onboarding.php
+msgid "Country (two-letter code)"
+msgstr "Pays (code à deux lettres)"
+
+#: functions/onboarding.php
+msgid "Default description"
+msgstr "Description par défaut"
+
+#: functions/onboarding.php functions/local-seo.php functions/seo/seo.php
+msgid "Description"
+msgstr "Description"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Disable XML-RPC"
+msgstr "Désactiver XML-RPC"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Disable the file editor"
+msgstr "Désactiver l'éditeur de fichiers"
+
+#: functions/onboarding.php
+msgid "Do not index internal search"
+msgstr "Ne pas indexer la recherche interne"
+
+#: functions/onboarding.php
+msgid "E.g. pottery school in Lyon, classes for adults and children, weekend workshops."
+msgstr "Ex. : école de céramique à Lyon, cours pour adultes et enfants, stages le week-end."
+
+#: js/optimizr-onboarding.js functions/redirects-admin.php
+msgid "Edit"
+msgstr "Modifier"
+
+#: functions/onboarding.php
+msgid "Enter the site's analytics tools: the Tarteaucitron banner only loads them once the visitor agrees."
+msgstr "Renseignez les outils de mesure du site : le bandeau Tarteaucitron ne les charge qu'après accord du visiteur."
+
+#: functions/onboarding.php
+msgid "Every image added to the media library gets a description (one billed request per image)."
+msgstr "Chaque image ajoutée à la médiathèque reçoit une description (une requête facturée par image)."
+
+#: functions/onboarding.php
+msgid "Everything is ready to apply"
+msgstr "Tout est prêt à être appliqué"
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Excerpt"
+msgstr "Résumé"
+
+#: functions/onboarding.php
+msgid "Exit the wizard"
+msgstr "Quitter l'assistant"
+
+#: functions/onboarding.php
+msgid "Experience"
+msgstr "Expérience"
+
+#: functions/onboarding.php
+msgid "Get a key"
+msgstr "Obtenir une clé"
+
+#: js/optimizr-onboarding.js
+msgid "Get started"
+msgstr "Commencer"
+
+#: functions/onboarding.php
+msgid "Get visible and indexed quickly"
+msgstr "Soyez visible et indexé rapidement"
+
+#: functions/onboarding.php
+msgid "Going further"
+msgstr "Pour aller plus loin"
+
+#: functions/onboarding.php
+msgid "Google verification"
+msgstr "Vérification Google"
+
+#: functions/onboarding.php
+msgid "HTTPS on"
+msgstr "HTTPS actif"
+
+#. %s: user's first name or display name
+#: functions/onboarding.php
+msgid "Hello %s"
+msgstr "Bonjour %s"
+
+#: functions/onboarding.php
+msgid "Here is what will be saved. Go back to change a choice."
+msgstr "Voici ce qui sera enregistré. Revenez en arrière pour changer un choix."
+
+#: functions/onboarding.php
+msgid "Here we go"
+msgstr "C'est parti"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Hide the WordPress version"
+msgstr "Masquer la version de WordPress"
+
+#: functions/onboarding.php
+msgid "IP addresses never locked out"
+msgstr "Adresses IP jamais verrouillées"
+
+#: functions/onboarding.php
+msgid "IPs never locked out"
+msgstr "IP jamais verrouillées"
+
+#: functions/onboarding.php functions/seo/seo-extras.php
+msgid "Indexing"
+msgstr "Indexation"
+
+#: functions/onboarding.php
+msgid "Insert a variable into the last edited pattern:"
+msgstr "Insérer une variable dans le dernier motif modifié :"
+
+#: functions/onboarding.php functions/ai-bulk.php functions/links.php
+msgid "Insufficient permissions."
+msgstr "Permissions insuffisantes."
+
+#: functions/onboarding.php
+msgid "Introduce your business"
+msgstr "Présentez votre établissement"
+
+#: functions/onboarding.php
+msgid "Key already saved: leave empty to keep it"
+msgstr "Clé déjà enregistrée : laissez vide pour la conserver"
+
+#: functions/onboarding.php
+msgid "Key needed"
+msgstr "Clé à ajouter"
+
+#: functions/onboarding.php
+msgid "Key saved"
+msgstr "Clé enregistrée"
+
+#: functions/onboarding.php
+msgid "Last step"
+msgstr "Dernière étape"
+
+#: functions/onboarding.php
+msgid "Legacy interface, a frequent target of password attacks."
+msgstr "Ancienne interface, cible fréquente des attaques par mot de passe."
+
+#: functions/onboarding.php
+msgid "Let AI write for you"
+msgstr "Laissez l'IA rédiger pour vous"
+
+#: functions/onboarding.php
+msgid "Let's set up Optimizr in a few minutes"
+msgstr "Configurons Optimizr en quelques minutes"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Limit login attempts"
+msgstr "Limiter les tentatives de connexion"
+
+#: functions/onboarding.php
+msgid "Links to pages whose URL looks like the requested one, plus a search field."
+msgstr "Liens vers les pages dont l'adresse ressemble à celle demandée, et un champ de recherche."
+
+#: functions/onboarding.php
+msgid "Lock down access"
+msgstr "Verrouillez les accès"
+
+#: functions/onboarding.php
+msgid "Lock out after (failures)"
+msgstr "Verrouiller après (échecs)"
+
+#: functions/onboarding.php
+msgid "Lockout duration (minutes)"
+msgstr "Durée du verrouillage (minutes)"
+
+#: functions/onboarding.php
+msgid "Login URL"
+msgstr "Adresse de connexion"
+
+#. %s: reason why the login URL was rejected
+#: functions/onboarding.php
+msgid "Login URL not changed: %s"
+msgstr "Adresse de connexion non modifiée : %s"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Login alert"
+msgstr "Alerte de connexion"
+
+#: functions/onboarding.php
+msgid "Maintenance mode is set in the Special pages tab, whenever you need it."
+msgstr "Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin."
+
+#: functions/onboarding.php functions/cookies.php
+msgid "Meta Pixel (Facebook)"
+msgstr "Pixel Meta (Facebook)"
+
+#: functions/onboarding.php
+msgid "Meta description"
+msgstr "Meta description"
+
+#: functions/onboarding.php
+msgid "Meta descriptions and ALT tags generated from the content and your business description. Each generation is billed by the chosen provider."
+msgstr "Meta descriptions et balises ALT générées à partir du contenu et de la description de votre activité. Chaque génération est facturée par le fournisseur choisi."
+
+#: functions/onboarding.php
+msgid "Meta descriptions and ALT tags written in seconds."
+msgstr "Meta descriptions et balises ALT rédigées en quelques secondes."
+
+#: functions/onboarding.php functions/ai.php
+msgid "Model"
+msgstr "Modèle"
+
+#: functions/onboarding.php
+msgid "Modules"
+msgstr "Modules"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Neutral error messages"
+msgstr "Messages d'erreur neutres"
+
+#: js/optimizr-onboarding.js
+msgid "New API key"
+msgstr "Nouvelle clé API"
+
+#: functions/onboarding.php
+msgctxt "placeholder example"
+msgid "New York"
+msgstr "Paris"
+
+#: functions/onboarding.php
+msgid "No pages on the site: create one (\"Page not found\") then choose it in the Special pages tab."
+msgstr "Aucune page sur le site : créez-en une (« Page introuvable ») puis choisissez-la dans l'onglet Pages spéciales."
+
+#: functions/onboarding.php
+msgid "No tracker before the visitor agrees, Google Consent Mode v2 included."
+msgstr "Aucun traceur avant l'accord du visiteur, Google Consent Mode v2 inclus."
+
+#: js/optimizr-onboarding.js
+msgid "Nothing enabled."
+msgstr "Rien d'activé."
+
+#: functions/onboarding.php
+msgid "One plugin for a safe, fast and well-ranked site."
+msgstr "Un seul plugin pour un site sûr, rapide et bien référencé."
+
+#: functions/onboarding.php
+msgid "Only enabled modules load their code: nothing unnecessary slows the site down."
+msgstr "Seuls les modules activés chargent leur code : rien d'inutile ne ralentit le site."
+
+#: functions/onboarding.php
+msgid "Open the dashboard"
+msgstr "Ouvrir le tableau de bord"
+
+#: functions/onboarding.php
+msgid "Open · 9 AM–7 PM"
+msgstr "Ouvert · 9:00–19:00"
+
+#: functions/onboarding.php
+msgid "Opening hours, GPS coordinates, Google place ID and online profiles: Local SEO tab."
+msgstr "Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local."
+
+#: functions/onboarding.php
+msgid "Optimization"
+msgstr "Optimisation"
+
+#: functions/onboarding.php
+msgid "Optimization & content"
+msgstr "Optimisation & contenus"
+
+#: functions/onboarding.php
+msgid "Optimizr is watching over your site"
+msgstr "Optimizr veille sur votre site"
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Page title"
+msgstr "Titre de la page"
+
+#: functions/onboarding.php
+msgid "Page title in Google"
+msgstr "Titre des pages dans Google"
+
+#: functions/onboarding.php functions/ai.php
+msgid "Paste your account key"
+msgstr "Collez la clé de votre compte"
+
+#: functions/onboarding.php
+msgid "Performance"
+msgstr "Performance"
+
+#: functions/onboarding.php
+msgid "Performance & visibility"
+msgstr "Performance & visibilité"
+
+#: functions/onboarding.php functions/local-seo.php
+msgid "Phone"
+msgstr "Téléphone"
+
+#: functions/onboarding.php functions/cookies.php
+msgid "Pixel ID"
+msgstr "ID du pixel"
+
+#: functions/onboarding.php
+msgid "Polish the not found page"
+msgstr "Soignez la page introuvable"
+
+#: functions/onboarding.php functions/local-seo.php
+msgid "Postal code"
+msgstr "Code postal"
+
+#: functions/onboarding.php
+msgid "Prevents discovering usernames through ?author=1 and the REST API."
+msgstr "Empêche de découvrir les identifiants par ?author=1 et l'API REST."
+
+#: functions/onboarding.php
+msgid "Privacy"
+msgstr "Confidentialité"
+
+#: functions/onboarding.php functions/cookies.php
+msgid "Project ID"
+msgstr "ID du projet"
+
+#: functions/onboarding.php
+msgid "Protected login, reduced attack surface and GDPR consent."
+msgstr "Connexion protégée, surface d'attaque réduite et consentement RGPD."
+
+#: functions/onboarding.php
+msgid "Protections"
+msgstr "Protections"
+
+#: functions/onboarding.php functions/ai.php
+msgid "Provider"
+msgstr "Fournisseur"
+
+#. %s: AI provider name
+#: functions/onboarding.php
+msgid "Provider: %s"
+msgstr "Fournisseur : %s"
+
+#: functions/onboarding.php
+msgid "Recommended"
+msgstr "Recommandé"
+
+#: functions/onboarding.php
+msgid "Redirect attachment pages"
+msgstr "Rediriger les pages des médias"
+
+#: functions/onboarding.php
+msgid "Required as soon as an analytics or advertising service is used."
+msgstr "Obligatoire dès qu'un service de mesure d'audience ou de publicité est utilisé."
+
+#: functions/onboarding.php
+msgid "Respect your visitors' privacy"
+msgstr "Respectez la vie privée de vos visiteurs"
+
+#: functions/onboarding.php
+msgid "Restart the wizard"
+msgstr "Relancer l'assistant"
+
+#: functions/onboarding.php
+msgid "Review, then apply. Everything can still be changed in Optimizr."
+msgstr "Vérifiez, puis appliquez. Tout reste modifiable dans Optimizr."
+
+#: functions/onboarding.php
+msgctxt "onboarding step"
+msgid "SEO"
+msgstr "Référencement"
+
+#: functions/onboarding.php
+msgid "SEO score"
+msgstr "Score SEO"
+
+#: functions/onboarding.php
+msgid "Security & compliance"
+msgstr "Sécurité & conformité"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Security headers"
+msgstr "En-têtes de sécurité"
+
+#: functions/onboarding.php
+msgid "Security · Performance · Optimization"
+msgstr "Sécurité · Performance · Optimisation"
+
+#: functions/onboarding.php
+msgid "Sent with every request: the AI writes with the right vocabulary and tone."
+msgstr "Jointe à chaque demande : l'IA rédige avec le bon vocabulaire et le bon ton."
+
+#: functions/onboarding.php
+msgid "Settings are saved and active. Fine-tune each module from its tab whenever you like."
+msgstr "Les réglages sont enregistrés et actifs. Affinez chaque module depuis son onglet quand vous le souhaitez."
+
+#: functions/onboarding.php
+msgid "Setup complete"
+msgstr "Configuration terminée"
+
+#: functions/onboarding.php
+msgid "Setup wizard - Optimizr"
+msgstr "Assistant de configuration - Optimizr"
+
+#: functions/onboarding.php
+msgid "Share previews (OpenGraph)"
+msgstr "Aperçus de partage (OpenGraph)"
+
+#: functions/onboarding.php functions/cookies.php
+msgid "Show the consent banner"
+msgstr "Afficher le bandeau de consentement"
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Site name"
+msgstr "Nom du site"
+
+#: functions/onboarding.php
+msgid "Site, organization, breadcrumbs and articles described for rich results."
+msgstr "Site, organisation, fil d'Ariane et articles décrits pour les résultats enrichis."
+
+#. %s: post type name
+#: functions/onboarding.php
+msgid "Sitemap: %s"
+msgstr "Sitemap : %s"
+
+#. 1: current step number, 2: total number of steps
+#: js/optimizr-onboarding.js
+msgid "Step %1$s of %2$s"
+msgstr "Étape %1$s sur %2$s"
+
+#: functions/onboarding.php
+msgid "Suggest a URL"
+msgstr "Proposer une adresse"
+
+#: functions/onboarding.php
+msgid "Suggest related content"
+msgstr "Suggérer des contenus proches"
+
+#: functions/onboarding.php
+msgid "Summary"
+msgstr "Récapitulatif"
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Tagline"
+msgstr "Slogan"
+
+#: functions/onboarding.php
+msgid "Tags, sitemap and indexing for a site Google understands quickly."
+msgstr "Balises, sitemap et indexation pour un site que Google comprend vite."
+
+#: functions/onboarding.php
+msgid "Tailor-made"
+msgstr "Sur mesure"
+
+#: functions/onboarding.php
+msgid "The login page no longer says whether the username or the password is wrong."
+msgstr "La page de connexion ne dit plus si c'est l'identifiant ou le mot de passe qui est faux."
+
+#: functions/onboarding.php
+msgid "The pages created for each image point to their content."
+msgstr "Les pages créées pour chaque image renvoient vers leur contenu."
+
+#: functions/onboarding.php
+msgid "The site currently asks search engines not to index it (Settings › Reading). Leave off on a site still in preparation."
+msgstr "Le site demande actuellement aux moteurs de ne pas l'indexer (Réglages › Lecture). À laisser désactivé sur un site en préparation."
+
+#: functions/onboarding.php
+msgid "The site name and the patterns below are used as title and description in Google for any content that has none."
+msgstr "Le nom du site et les motifs ci-dessous servent de titre et de description dans Google pour chaque contenu qui n'en a pas."
+
+#: functions/onboarding.php
+msgid "The site's search results pages stay out of Google."
+msgstr "Les pages de résultats de recherche du site restent hors de Google."
+
+#: functions/onboarding.php functions/pages.php
+msgid "Theme 404 page"
+msgstr "Page 404 du thème"
+
+#: functions/onboarding.php
+msgid "This information is published for Google (Maps, local search) and can be reused on the site with the [optimizr_adresse] or [optimizr_telephone] shortcodes. It must match your Google Business Profile listing."
+msgstr "Ces informations sont publiées pour Google (Maps, recherche locale) et réutilisables sur le site avec les shortcodes [optimizr_adresse] ou [optimizr_telephone]. Elles doivent correspondre à votre fiche Google Business Profile."
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Title"
+msgstr "Titre"
+
+#: functions/onboarding.php
+msgid "Title and description generated for any content that has none."
+msgstr "Titre et description générés pour chaque contenu qui n'en a pas."
+
+#: functions/onboarding.php functions/seo/seo.php
+msgid "Title, description and image when shared on social networks."
+msgstr "Titre, description et image lors d'un partage sur les réseaux sociaux."
+
+#: functions/onboarding.php
+msgid "Top"
+msgstr "En haut"
+
+#: functions/onboarding.php
+msgid "Turn on what your site needs. The next steps adapt to your choice."
+msgstr "Activez ce dont votre site a besoin. Les étapes suivantes s'adaptent à votre choix."
+
+#: functions/onboarding.php
+msgid "Warning"
+msgstr "Attention"
+
+#: functions/onboarding.php functions/security-admin.php
+msgid "Warning: Jetpack is active and needs XML-RPC."
+msgstr "Attention : Jetpack est actif et a besoin de XML-RPC."
+
+#: functions/onboarding.php
+msgid "Welcome"
+msgstr "Bienvenue"
+
+#: functions/onboarding.php
+msgid "Wizard"
+msgstr "Assistant"
+
+#: functions/onboarding.php
+msgid "X-Content-Type-Options, X-Frame-Options, Referrer-Policy and Permissions-Policy."
+msgstr "X-Content-Type-Options, X-Frame-Options, Referrer-Policy et Permissions-Policy."
+
+#: functions/onboarding.php
+msgid "XML sitemap content"
+msgstr "Contenus du sitemap XML"
+
+#: functions/onboarding.php
+msgid "Your business description"
+msgstr "Description de votre activité"
+
+#: functions/onboarding.php
+msgid "Your business in a few words"
+msgstr "Votre activité en quelques mots"
+
+#: functions/onboarding.php
+msgid "Your login URL"
+msgstr "Votre adresse de connexion"
+
+#: functions/onboarding.php
+msgid "Your site is protected, visible and ready to be optimized."
+msgstr "Votre site est protégé, visible et prêt à être optimisé."
+
+#. comma-separated words used to suggest a login URL; letters a-z only, no spaces or accents
+#: js/optimizr-onboarding.js
+msgid "area,access,manage,workshop,office,backstage"
+msgstr "espace,acces,gestion,atelier,bureau,coulisses"
+
+#: functions/onboarding.php
+msgctxt "placeholder example"
+msgid "contact@example.com"
+msgstr "contact@exemple.fr"
+
+#: functions/onboarding.php
+msgid "e.g. admin-area"
+msgstr "ex. espace-gestion"
+
+#: functions/onboarding.php
+msgid "invalid URL."
+msgstr "adresse invalide."
+
+#: functions/onboarding.php
+msgid "one per line"
+msgstr "une par ligne"
+
+#: functions/onboarding.php
+msgid "optional"
+msgstr "facultatif"
+
+#: functions/onboarding.php
+msgid "schema.org structured data"
+msgstr "Données structurées schema.org"
+
+#. %s: administrator email address
+#: functions/onboarding.php
+msgid "wp-login.php and /wp-admin/ will show a not found page to logged-out visitors. The new URL is emailed to %s. Leave empty to keep wp-login.php."
+msgstr "wp-login.php et /wp-admin/ afficheront une page introuvable aux visiteurs non connectés. La nouvelle adresse est envoyée par email à %s. Laissez vide pour garder wp-login.php."
+
+#: functions/cookies.php
+msgid "Audience measurement"
+msgstr "Mesure d'audience"
+
+#: functions/cookies.php
+msgid "Container URL"
+msgstr "URL du conteneur"
+
+#: functions/cookies.php
+msgid "Site ID"
+msgstr "ID du site"
+
+#: functions/cookies.php
+msgid "Version"
+msgstr "Version"
+
+#: functions/cookies.php
+msgid "Advertising"
+msgstr "Publicité"
+
+#: functions/cookies.php
+msgid "Embedded content"
+msgstr "Contenus intégrés"
+
+#: functions/cookies.php
+msgid "Families, comma-separated"
+msgstr "Familles, séparées par des virgules"
+
+#: functions/cookies.php
+msgid "With API key"
+msgstr "Avec clé API"
+
+#: functions/cookies.php
+msgid "Anti-spam"
+msgstr "Anti-spam"
+
+#: functions/cookies.php
+msgid "Site key"
+msgstr "Clé du site"
+
+#: functions/cookies.php
+msgid "Banner background"
+msgstr "Fond du bandeau"
+
+#: functions/cookies.php
+msgid "Preferences panel background"
+msgstr "Fond du panneau de préférences"
+
+#: functions/cookies.php
+msgid "Accept button"
+msgstr "Bouton Accepter"
+
+#: functions/cookies.php
+msgid "Deny button"
+msgstr "Bouton Refuser"
+
+#: functions/cookies.php
+msgid "Customize button"
+msgstr "Bouton Personnaliser"
+
+#: functions/cookies.php
+msgid "Consent banner"
+msgstr "Bandeau de consentement"
+
+#. %s: URL of the Settings > Privacy screen
+#: functions/cookies.php
+msgid "Powered by Tarteaucitron. The services below are only loaded after the visitor consents. The banner links to the privacy policy chosen in <a href=\"%s\">Settings › Privacy</a>, once that page is published."
+msgstr "Propulsé par Tarteaucitron. Les services ci-dessous ne sont chargés qu'après accord du visiteur. Le bandeau renvoie vers la politique de confidentialité choisie dans <a href=\"%s\">Réglages › Confidentialité</a>, une fois cette page publiée."
+
+#: functions/cookies.php
+msgid "Position"
+msgstr "Position"
+
+#: functions/cookies.php
+msgid "Colors"
+msgstr "Couleurs"
+
+#: functions/cookies.php
+msgid "The ratio shown measures how readable white text is on each button (4.5:1 minimum)."
+msgstr "Le ratio affiché mesure la lisibilité du texte blanc sur chaque bouton (4,5:1 minimum)."
+
+#: functions/cookies.php
+msgid "Services"
+msgstr "Services"
+
+#: functions/cookies.php
+msgid "A service is active as soon as its ID is filled in."
+msgstr "Un service est actif dès que son identifiant est renseigné."
+
+#: functions/cookies.php
+msgctxt "cookie banner position"
+msgid "Top"
+msgstr "En haut"
+
+#: functions/cookies.php
+msgctxt "cookie banner position"
+msgid "Center"
+msgstr "Centré"
+
+#: functions/cookies.php
+msgctxt "cookie banner position"
+msgid "Bottom"
+msgstr "En bas"
+
+#: functions/cookies.php
+msgid "Search for a service"
+msgstr "Rechercher un service"
+
+#: functions/cookies.php
+msgid "No service matches this search."
+msgstr "Aucun service ne correspond à cette recherche."
+
+#: functions/cookies.php
+msgid "Always offered to visitors, no setup needed: YouTube, Dailymotion, X (Twitter), Facebook, Google Maps without a key."
+msgstr "Toujours proposés au visiteur, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé."
+
+#: functions/cookies.php
+msgid "Banner preview"
+msgstr "Aperçu du bandeau"
+
+#: functions/cookies.php
+msgid "This site uses cookies"
+msgstr "Ce site utilise des cookies"
+
+#: functions/cookies.php
+msgid "You choose which services are allowed. You can change your choice at any time."
+msgstr "Vous choisissez les services autorisés. Votre choix est modifiable à tout moment."
+
+#: functions/cookies.php
+msgid "Accept all"
+msgstr "Tout accepter"
+
+#: functions/cookies.php
+msgid "Deny all"
+msgstr "Tout refuser"
+
+#: functions/cookies.php
+msgid "Customize"
+msgstr "Personnaliser"
+
+#: functions/cookies.php
+msgid "Approximate preview: the final look also depends on the theme."
+msgstr "Aperçu indicatif : le rendu final dépend aussi du thème."
+
+#: functions/cookies.php
+msgid "Google Consent Mode v2 and Bing Consent Mode are sent automatically to GA4, Google Ads and Clarity."
+msgstr "Google Consent Mode v2 et Bing Consent Mode sont transmis automatiquement à GA4, Google Ads et Clarity."
+
+#: functions/cookies.php
+msgid "Manage cookies"
+msgstr "Gérer les cookies"
+
+#: functions/cpts.php
+msgctxt "Post Type General Name"
+msgid "Events"
+msgstr "Évènements"
+
+#: functions/cpts.php
+msgctxt "Post Type Singular Name"
+msgid "Event"
+msgstr "Évènement"
+
+#: functions/cpts.php
+msgid "Events"
+msgstr "Évènements"
+
+#: functions/cpts.php
+msgid "Event"
+msgstr "Évènement"
+
+#: functions/cpts.php
+msgid "Add New"
+msgstr "Ajouter nouveau"
+
+#: functions/cpts.php
+msgid "Add New Event"
+msgstr "Ajouter un nouvel évènement"
+
+#: functions/cpts.php
+msgid "New Event"
+msgstr "Nouvel évènement"
+
+#: functions/cpts.php
+msgid "Edit Event"
+msgstr "Modifier l'évènement"
+
+#: functions/cpts.php
+msgid "View Event"
+msgstr "Voir l'évènement"
+
+#: functions/cpts.php
+msgid "All Events"
+msgstr "Tous les évènements"
+
+#: functions/cpts.php
+msgid "Search Events"
+msgstr "Rechercher des évènements"
+
+#: functions/cpts.php
+msgid "No events found"
+msgstr "Aucun évènement trouvé"
+
+#: functions/cpts.php
+msgid "No events found in Trash"
+msgstr "Aucun évènement dans la corbeille"
+
+#: functions/cpts.php
+msgid "Additional fields for Events"
+msgstr "Champs supplémentaires pour Évènements"
+
+#: functions/cpts.php
+msgid "Start date (all day)"
+msgstr "Date de début (journée entière)"
+
+#: functions/cpts.php
+msgid "End date"
+msgstr "Date de fin"
+
+#: functions/cpts.php
+msgid "Event location"
+msgstr "Lieu de l'évènement"
+
+#: functions/cpts.php
+msgid "Event times"
+msgstr "Horaires de l'évènement"
+
+#. %s: field name (slug)
+#: functions/cpts.php
+msgid "Select the event start date. This date is required and must be in \"all day\" format. (slug: %s)"
+msgstr "Sélectionnez la date de début de l'évènement. Cette date est obligatoire et doit être au format \"journée entière\". (slug : %s)"
+
+#. %s: field name (slug)
+#: functions/cpts.php
+msgid "Select the event end date. This date is optional and must be in \"all day\" format. (slug: %s)"
+msgstr "Sélectionnez la date de fin de l'évènement. Cette date est facultative et doit être au format \"journée entière\". (slug : %s)"
+
+#. %s: field name (slug)
+#: functions/cpts.php
+msgid "Enter the event location. (slug: %s)"
+msgstr "Entrez le lieu de l'évènement. (slug : %s)"
+
+#. %s: field name (slug)
+#: functions/cpts.php
+msgid "Enter the event times. (slug: %s)"
+msgstr "Entrez les horaires de l'évènement. (slug : %s)"
+
+#: functions/cpts.php
+msgid "its name must contain at least one letter or digit"
+msgstr "son nom doit contenir au moins une lettre ou un chiffre"
+
+#. %s: post type key
+#: functions/cpts.php
+msgid "its key “%s” is longer than 20 characters"
+msgstr "son identifiant « %s » dépasse 20 caractères"
+
+#. %s: post type key
+#: functions/cpts.php
+msgid "its key “%s” is already used by another content type"
+msgstr "son identifiant « %s » est déjà utilisé par un autre type de contenu"
+
+#. %s: post type key
+#: functions/cpts.php
+msgid "its key “%s” is reserved by WordPress"
+msgstr "son identifiant « %s » est réservé par WordPress"
+
+#. 1: content type name, 2: reason it was refused
+#: functions/cpts.php
+msgid "The type “%1$s” was not saved: %2$s. Choose another name."
+msgstr "Le type « %1$s » n'a pas été enregistré : %2$s. Choisissez un autre nom."
+
+#: functions/cpts.php
+msgid "Custom content types"
+msgstr "Types de contenu personnalisés"
+
+#: functions/cpts.php
+msgid "Start and end dates, location and times (ACF Pro fields)."
+msgstr "Dates de début et de fin, lieu et horaires (champs ACF Pro)."
+
+#: functions/cpts.php
+msgid "Custom types"
+msgstr "Types personnalisés"
+
+#: functions/cpts.php
+msgid "Display name and Dashicons icon (e.g. dashicons-portfolio). Renaming a type changes neither its content nor its URLs."
+msgstr "Nom affiché et icône Dashicons (ex. dashicons-portfolio). Renommer un type ne change ni ses contenus ni ses adresses."
+
+#: functions/cpts.php
+msgid "Enable the Events type or create your own content types."
+msgstr "Activez le type Évènements ou créez vos propres types de contenu."
+
+#: functions/cpts.php
+msgid "Enable the Events type"
+msgstr "Activer le type Évènements"
+
+#: functions/cpts.php
+msgid "Type name"
+msgstr "Nom du type"
+
+#: functions/cpts.php
+msgid "Dashicons icon"
+msgstr "Icône Dashicons"
+
+#: functions/cpts.php functions/redirects-admin.php
+msgid "Delete"
+msgstr "Supprimer"
+
+#: functions/cpts.php
+msgid "+ Add a type"
+msgstr "+ Ajouter un type"
+
+#: functions/pages.php
+msgid "Page not found (404)"
+msgstr "Page introuvable (404)"
+
+#: functions/pages.php
+msgid "Shown when a URL does not exist. It keeps the 404 status code: Google does not index it or mistake it for a real page."
+msgstr "Affichée quand une adresse n'existe pas. Elle garde le code 404 : Google ne l'indexe pas et ne la confond pas avec une vraie page."
+
+#: functions/pages.php functions/seo/seo.php
+msgid "Content"
+msgstr "Contenu"
+
+#: functions/pages.php
+msgid "The chosen page is displayed with the theme layout. It is removed from the sitemap and not indexed."
+msgstr "La page choisie s'affiche avec la mise en page du thème. Elle est retirée du sitemap et n'est pas indexée."
+
+#: functions/pages.php
+msgid "Suggestions"
+msgstr "Suggestions"
+
+#. %s: shortcode
+#: functions/pages.php
+msgid "Suggests content close to the requested URL and a search field, below the page text. To place them elsewhere: shortcode %s."
+msgstr "Propose les contenus proches de l'adresse demandée et un champ de recherche, sous le texte de la page. Pour les placer ailleurs : shortcode %s."
+
+#: functions/pages.php
+msgid "Maintenance mode"
+msgstr "Mode maintenance"
+
+#: functions/pages.php
+msgid "During a redesign or before launch: visitors see a holding page, while logged-in users who can edit content see the site normally."
+msgstr "Pendant une refonte ou avant le lancement : les visiteurs voient une page d'attente, les personnes connectées qui peuvent modifier le contenu voient le site normalement."
+
+#: functions/pages.php
+msgid "Enable"
+msgstr "Activer"
+
+#: functions/pages.php
+msgid "The site is currently closed to visitors."
+msgstr "Le site est actuellement fermé aux visiteurs."
+
+#: functions/pages.php
+msgid "503 “service unavailable” status code: Google waits without removing the pages from its results. After a few days, it may start doing so."
+msgstr "Code 503 « service indisponible » : Google patiente sans retirer les pages de ses résultats. Au-delà de quelques jours, il peut commencer à le faire."
+
+#: functions/pages.php
+msgid "Default message"
+msgstr "Message par défaut"
+
+#: functions/pages.php
+msgid "Displayed on its own, without the theme menu or footer. The page title and text are used."
+msgstr "Affichée seule, sans menu ni pied de page du thème. Le titre et le texte de la page sont repris."
+
+#: functions/pages.php
+msgid "Reopening"
+msgstr "Réouverture"
+
+#: functions/pages.php
+msgid "Optional. The site reopens automatically on this date, which is announced to visitors and search engines."
+msgstr "Facultatif. Le site rouvre automatiquement à cette date, annoncée aux visiteurs et aux moteurs de recherche."
+
+#: functions/pages.php
+msgid "Edit page"
+msgstr "Modifier la page"
+
+#: functions/pages.php
+msgid "<strong>the page is not published</strong>: it is still used."
+msgstr "<strong>la page n'est pas publiée</strong> : elle est tout de même utilisée."
+
+#: functions/pages.php
+msgid "404 Page"
+msgstr "Page 404"
+
+#: functions/pages.php
+msgid "Maintenance Page"
+msgstr "Page de maintenance"
+
+#: functions/pages.php
+msgid "Maybe you were looking for:"
+msgstr "Vous cherchiez peut-être :"
+
+#: functions/pages.php
+msgid "Site under maintenance."
+msgstr "Site en maintenance."
+
+#: functions/pages.php
+msgid "Site under maintenance"
+msgstr "Site en maintenance"
+
+#: functions/pages.php
+msgid "The site is being updated. Please come back a little later."
+msgstr "Le site est en cours de mise à jour. Merci de revenir un peu plus tard."
+
+#. %s: reopening date and time
+#: functions/pages.php
+msgid "Scheduled to reopen on %s."
+msgstr "Réouverture prévue le %s."
+
+#. reopening date and time format, see https://www.php.net/manual/datetime.format.php
+#: functions/pages.php
+msgctxt "maintenance reopening date format"
+msgid "F j, Y \\a\\t g:i a"
+msgstr "j F Y à H\\hi"
+
+#: functions/pages.php
+msgid "Maintenance on"
+msgstr "Maintenance active"
+
+#: functions/pages.php
+msgid "The site is closed to visitors"
+msgstr "Le site est fermé aux visiteurs"
+
+#: functions/pages.php
+msgid "Check"
+msgstr "Vérifier"
+
+#: functions/pages.php
+msgid "Open a URL that does not exist to see the 404 page as visitors see it."
+msgstr "Ouvrez une adresse qui n'existe pas pour voir la page 404 telle que les visiteurs la voient."
+
+#: functions/pages.php
+msgid "View the 404 page"
+msgstr "Voir la page 404"
+
+#: functions/pages.php
+msgid "The chosen 404 page has been deleted: the theme page is used."
+msgstr "La page 404 choisie a été supprimée : la page du thème est utilisée."
+
+#: functions/pages.php
+msgid "For the theme"
+msgstr "Pour le thème"
+
+#. 1: maintenance.php file name, 2: 404.php file name, 3: PHP code snippet
+#: functions/pages.php
+msgid "A %1$s file in the theme replaces the standalone maintenance page. Suggestions are also available in %2$s with %3$s"
+msgstr "Un fichier %1$s dans le thème remplace la page de maintenance autonome. Les suggestions sont aussi disponibles dans %2$s avec %3$s"
+
+#: functions/local-seo.php
+msgid "Monday"
+msgstr "Lundi"
+
+#: functions/local-seo.php
+msgid "Tuesday"
+msgstr "Mardi"
+
+#: functions/local-seo.php
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#: functions/local-seo.php
+msgid "Thursday"
+msgstr "Jeudi"
+
+#: functions/local-seo.php
+msgid "Friday"
+msgstr "Vendredi"
+
+#: functions/local-seo.php
+msgid "Saturday"
+msgstr "Samedi"
+
+#: functions/local-seo.php
+msgid "Sunday"
+msgstr "Dimanche"
+
+#: functions/local-seo.php
+msgid "Local shop or business (generic)"
+msgstr "Commerce ou activité locale (générique)"
+
+#: functions/local-seo.php
+msgid "Store"
+msgstr "Magasin"
+
+#: functions/local-seo.php
+msgid "Restaurant"
+msgstr "Restaurant"
+
+#: functions/local-seo.php
+msgid "Café"
+msgstr "Café"
+
+#: functions/local-seo.php
+msgid "Bar"
+msgstr "Bar"
+
+#: functions/local-seo.php
+msgid "Bakery, pastry shop"
+msgstr "Boulangerie, pâtisserie"
+
+#: functions/local-seo.php
+msgid "Accommodation"
+msgstr "Hébergement"
+
+#: functions/local-seo.php
+msgid "Beauty, wellness"
+msgstr "Beauté, bien-être"
+
+#: functions/local-seo.php
+msgid "Health"
+msgstr "Santé"
+
+#: functions/local-seo.php
+msgid "Business services"
+msgstr "Services aux entreprises"
+
+#: functions/local-seo.php
+msgid "Legal"
+msgstr "Juridique"
+
+#: functions/local-seo.php
+msgid "Real estate agency"
+msgstr "Agence immobilière"
+
+#: functions/local-seo.php
+msgid "Construction, trades"
+msgstr "Bâtiment, artisan"
+
+#: functions/local-seo.php
+msgid "Automotive"
+msgstr "Automobile"
+
+#: functions/local-seo.php
+msgid "Sports"
+msgstr "Sport"
+
+#: functions/local-seo.php
+msgid "Education, training"
+msgstr "Enseignement, formation"
+
+#: functions/local-seo.php
+msgid "Leisure, culture"
+msgstr "Loisirs, culture"
+
+#: functions/local-seo.php
+msgid "This information must match your Google Business Profile listing."
+msgstr "Ces informations doivent être identiques à celles de votre fiche Google Business Profile."
+
+#: functions/local-seo.php
+msgid "Name"
+msgstr "Nom"
+
+#: functions/local-seo.php
+msgid "Logo (URL)"
+msgstr "Logo (URL)"
+
+#: functions/local-seo.php
+msgid "Default: the site icon."
+msgstr "Par défaut : l'icône du site."
+
+#: functions/local-seo.php
+msgid "Business photo (URL)"
+msgstr "Photo de l'établissement (URL)"
+
+#: functions/local-seo.php
+msgid "Storefront or interior, at least 1200 px wide."
+msgstr "Façade ou intérieur, au moins 1200 px de large."
+
+#: functions/local-seo.php
+msgid "Price range"
+msgstr "Gamme de prix"
+
+#: functions/local-seo.php
+msgid "€, €€, €€€ or a range (“€15-30”)."
+msgstr "€, €€, €€€ ou une fourchette (« 15-30 € »)."
+
+#: functions/local-seo.php
+msgid "Region"
+msgstr "Région"
+
+#: functions/local-seo.php
+msgid "Country (code)"
+msgstr "Pays (code)"
+
+#: functions/local-seo.php
+msgid "Two-letter code: FR, BE, CH…"
+msgstr "Code à deux lettres : FR, BE, CH…"
+
+#: functions/local-seo.php
+msgid "International format recommended: +33 1 23 45 67 89."
+msgstr "Format international conseillé : +33 1 23 45 67 89."
+
+#: functions/local-seo.php
+msgid "Email"
+msgstr "Email"
+
+#: functions/local-seo.php
+msgid "Online profiles"
+msgstr "Profils en ligne"
+
+#: functions/local-seo.php
+msgid "One URL per line: Google listing, Facebook, Instagram, LinkedIn, Yellow Pages… This lets Google link the site to these profiles."
+msgstr "Une adresse par ligne : fiche Google, Facebook, Instagram, LinkedIn, Pages Jaunes… Google relie ainsi le site à ces profils."
+
+#: functions/local-seo.php
+msgid "Contact details"
+msgstr "Coordonnées"
+
+#: functions/local-seo.php
+msgid "GPS coordinates"
+msgstr "Coordonnées GPS"
+
+#: functions/local-seo.php
+msgid "On Google Maps, right-click the business: the latitude and longitude are shown."
+msgstr "Sur Google Maps, clic droit sur l'établissement : la latitude et la longitude s'affichent."
+
+#: functions/local-seo.php
+msgid "Opening hours"
+msgstr "Horaires d'ouverture"
+
+#: functions/local-seo.php
+msgid "Two time ranges per day at most (e.g. 9:00–12:30 and 14:00–19:00). Leave “Closed” checked for a day off."
+msgstr "Deux plages par jour au plus (ex. 9:00–12:30 et 14:00–19:00). Laissez « Fermé » coché pour un jour de fermeture."
+
+#: functions/local-seo.php
+msgid "Place ID"
+msgstr "Identifiant de lieu (Place ID)"
+
+#: functions/local-seo.php
+msgid "Used to create the “Leave a review” and “Directions” links."
+msgstr "Sert à créer les liens « Laisser un avis » et « Itinéraire »."
+
+#: functions/local-seo.php functions/seo/seo-extras.php
+msgid "Structured data"
+msgstr "Données structurées"
+
+#: functions/local-seo.php
+msgid "Pages that carry the structured data"
+msgstr "Pages qui portent les données structurées"
+
+#: functions/local-seo.php
+msgid "Home page"
+msgstr "Page d'accueil"
+
+#: functions/local-seo.php
+msgid "All pages"
+msgstr "Toutes les pages"
+
+#: functions/local-seo.php
+msgctxt "structured data"
+msgid "Disabled"
+msgstr "Désactivées"
+
+#: functions/local-seo.php
+msgid "The home page is enough in most cases."
+msgstr "La page d'accueil suffit dans la plupart des cas."
+
+#: functions/local-seo.php
+msgid "Latitude"
+msgstr "Latitude"
+
+#: functions/local-seo.php
+msgid "Longitude"
+msgstr "Longitude"
+
+#: functions/local-seo.php
+msgid "Latitude (48.8566)"
+msgstr "Latitude (48.8566)"
+
+#: functions/local-seo.php
+msgid "Longitude (2.3522)"
+msgstr "Longitude (2.3522)"
+
+#. %s: URL of Google's Place ID finder
+#: functions/local-seo.php
+msgid "Find it with Google's <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Place ID finder</a>."
+msgstr "À trouver avec l'<a href=\"%s\" target=\"_blank\" rel=\"noopener\">outil de recherche de Place ID</a> de Google."
+
+#. 1: Google review URL, 2: Google Maps directions URL
+#: functions/local-seo.php
+msgid "Generated links: <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">leave a review</a> · <a href=\"%2$s\" target=\"_blank\" rel=\"noopener\">directions</a>"
+msgstr "Liens générés : <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">laisser un avis</a> · <a href=\"%2$s\" target=\"_blank\" rel=\"noopener\">itinéraire</a>"
+
+#: functions/local-seo.php
+msgid "Closed"
+msgstr "Fermé"
+
+#. 1: day of the week, 2: time range number
+#: functions/local-seo.php
+msgid "%1$s, opening %2$d"
+msgstr "%1$s, ouverture %2$d"
+
+#. 1: day of the week, 2: time range number
+#: functions/local-seo.php
+msgid "%1$s, closing %2$d"
+msgstr "%1$s, fermeture %2$d"
+
+#: functions/local-seo.php
+msgctxt "between two time ranges"
+msgid "and"
+msgstr "et"
+
+#: functions/local-seo.php
+msgid "Leave a review on Google"
+msgstr "Laisser un avis sur Google"
+
+#: functions/local-seo.php
+msgid "Directions"
+msgstr "Itinéraire"
+
+#: functions/local-seo.php functions/seo/seo.php functions/redirects-admin.php functions/tools.php
+msgid "Access denied"
+msgstr "Accès refusé"
+
+#: functions/local-seo.php
+msgid "Contact details imported from the theme. Check them, then save."
+msgstr "Coordonnées importées depuis le thème. Vérifiez-les puis enregistrez."
+
+#: functions/local-seo.php
+msgid "Theme contact details"
+msgstr "Coordonnées du thème"
+
+#. %s: number of values found
+#: functions/local-seo.php
+msgid "%s value found in the theme Customizer. Fields already filled in here are kept."
+msgid_plural "%s values found in the theme Customizer. Fields already filled in here are kept."
+msgstr[0] "%s information(s) trouvée(s) dans le Customizer du thème. Les champs déjà remplis ici sont conservés."
+msgstr[1] "%s information(s) trouvée(s) dans le Customizer du thème. Les champs déjà remplis ici sont conservés."
+
+#: functions/local-seo.php
+msgid "Import from the theme"
+msgstr "Importer depuis le thème"
+
+#: functions/local-seo.php
+msgid "Data for Google"
+msgstr "Données pour Google"
+
+#: functions/local-seo.php
+msgid "Test with Google"
+msgstr "Tester avec Google"
+
+#: functions/local-seo.php
+msgid "Shortcodes"
+msgstr "Shortcodes"
+
+#: functions/local-seo.php
+msgid "Place them in a page or widget: they always show up-to-date information."
+msgstr "À placer dans une page ou un widget : ils affichent toujours les informations à jour."
+
+#: functions/local-seo.php
+msgid "Added to all pages."
+msgstr "Ajoutées à toutes les pages."
+
+#: functions/local-seo.php
+msgid "Added to no page (disabled)."
+msgstr "Ajoutées à aucune page (désactivées)."
+
+#: functions/local-seo.php
+msgid "Added to the home page."
+msgstr "Ajoutées à la page d'accueil."
+
+#: functions/local-seo.php
+msgid "Enter at least the address and the city."
+msgstr "Renseignez au moins l'adresse et la ville."
+
+#: functions/local-seo.php
+msgid "Full address"
+msgstr "Adresse complète"
+
+#: functions/local-seo.php
+msgid "Clickable phone number"
+msgstr "Téléphone cliquable"
+
+#: functions/local-seo.php
+msgid "Email protected from bots"
+msgstr "Email protégé des robots"
+
+#: functions/local-seo.php
+msgid "Opening hours table"
+msgstr "Tableau des horaires"
+
+#: functions/local-seo.php
+msgid "“Leave a review” link"
+msgstr "Lien « Laisser un avis »"
+
+#: functions/local-seo.php
+msgid "Google Maps directions link"
+msgstr "Lien d'itinéraire Google Maps"
+
+#: functions/seo/seo.php
+msgid "Author"
+msgstr "Auteur"
+
+#: functions/seo/seo.php
+msgid "Content type"
+msgstr "Type de contenu"
+
+#: functions/seo/seo.php
+msgid "Publication date"
+msgstr "Date de publication"
+
+#: functions/seo/seo.php
+msgid "Meta tags"
+msgstr "Balises meta"
+
+#: functions/seo/seo.php
+msgid "Used when a piece of content has no custom title or description."
+msgstr "Utilisées quand un contenu n'a pas de titre ou de description personnalisés."
+
+#: functions/seo/seo.php
+msgid "Generate meta tags"
+msgstr "Générer les balises meta"
+
+#: functions/seo/seo.php
+msgid "OpenGraph tags"
+msgstr "Balises OpenGraph"
+
+#: functions/seo/seo.php
+msgid "Sitemap"
+msgstr "Plan du site"
+
+#: functions/seo/seo.php
+msgid "sitemap.xml, regenerated one minute after each content change and once a day. Content marked “do not index”, password-protected content and WooCommerce private pages are excluded."
+msgstr "sitemap.xml, régénéré une minute après chaque modification de contenu et une fois par jour. Les contenus « ne pas indexer », protégés par mot de passe et les pages privées de WooCommerce en sont exclus."
+
+#: functions/seo/seo.php
+msgid "Included content"
+msgstr "Contenus inclus"
+
+#: functions/seo/seo.php
+msgid "Replaces the file generated by WordPress."
+msgstr "Remplace le fichier généré par WordPress."
+
+#: functions/seo/seo.php
+msgid "Customize robots.txt"
+msgstr "Personnaliser le robots.txt"
+
+#: functions/seo/seo.php
+msgid "Generate OpenGraph tags"
+msgstr "Générer les balises OpenGraph"
+
+#: functions/seo/seo.php
+msgid "A robots.txt file exists at the site root: it is served instead of this setting."
+msgstr "Un fichier robots.txt existe à la racine du site : il est servi à la place de ce réglage."
+
+#: functions/seo/seo.php
+msgid "It is shared by all sites in the network."
+msgstr "Il est commun à tous les sites du réseau."
+
+#: functions/seo/seo.php
+msgid "Written by Optimizr, it is deleted when the plugin is deactivated."
+msgstr "Écrit par Optimizr, il est supprimé à la désactivation du plugin."
+
+#: functions/seo/seo.php
+msgid "It was not written by Optimizr, or has been modified since."
+msgstr "Il n'a pas été écrit par Optimizr, ou a été modifié depuis."
+
+#: functions/seo/seo.php
+msgid "Delete the robots.txt file from the site root?"
+msgstr "Supprimer le fichier robots.txt de la racine du site ?"
+
+#: functions/seo/seo.php
+msgid "Delete the file"
+msgstr "Supprimer le fichier"
+
+#: functions/seo/seo.php
+msgid "Customization disabled"
+msgstr "Personnalisation désactivée"
+
+#: functions/seo/seo.php
+msgid "Unreachable"
+msgstr "Inaccessible"
+
+#: functions/seo/seo.php
+msgid "Reachable (HTTP 200)"
+msgstr "Accessible (HTTP 200)"
+
+#: functions/seo/seo.php
+msgid "Write the robots.txt file"
+msgstr "Écrire le fichier robots.txt"
+
+#: functions/seo/seo.php
+msgid "Example directives"
+msgstr "Exemples de directives"
+
+#: functions/seo/seo.php
+msgid "The last generation failed."
+msgstr "La dernière génération a échoué."
+
+#: functions/seo/seo.php
+msgid "The sitemap.xml file is missing."
+msgstr "Le fichier sitemap.xml est absent."
+
+#: functions/seo/seo.php
+msgid "Regenerate it below."
+msgstr "Régénérez-le ci-dessous."
+
+#: functions/seo/seo.php
+msgid "sitemap.xml exists but does not respond over HTTP"
+msgstr "sitemap.xml existe mais ne répond pas en HTTP"
+
+#: functions/seo/seo.php
+msgid "Open"
+msgstr "Ouvrir"
+
+#: functions/seo/seo.php
+msgid "sitemap.xml is reachable"
+msgstr "sitemap.xml est accessible"
+
+#: functions/seo/seo.php
+msgid "Regenerate now"
+msgstr "Régénérer maintenant"
+
+#: functions/seo/seo.php
+msgid "Generation history"
+msgstr "Historique des générations"
+
+#: functions/seo/seo.php
+msgid "write failed"
+msgstr "échec d'écriture"
+
+#: functions/seo/seo.php
+msgid "The sitemap has been regenerated."
+msgstr "Le sitemap a été régénéré."
+
+#: functions/seo/seo.php
+msgid "The robots.txt file was generated successfully."
+msgstr "Le fichier robots.txt a été généré avec succès."
+
+#: functions/seo/seo.php
+msgid "The robots.txt file has been deleted: robots.txt is generated by WordPress again."
+msgstr "Le fichier robots.txt a été supprimé : le robots.txt est de nouveau généré par WordPress."
+
+#: functions/seo/seo.php
+msgid "Save the robots.txt content first."
+msgstr "Enregistrez d'abord le contenu du robots.txt."
+
+#: functions/seo/seo.php
+msgid "Unable to write the robots.txt file. Check the write permissions of the site root folder."
+msgstr "Impossible d'écrire le fichier robots.txt. Vérifiez les droits d'écriture du dossier racine du site."
+
+#: functions/seo/seo.php
+msgid "Unable to delete the robots.txt file. Check the write permissions of the site root folder."
+msgstr "Impossible de supprimer le fichier robots.txt. Vérifiez les droits d'écriture du dossier racine du site."
+
+#: functions/seo/seo.php
+msgid "Sitemap generation failed."
+msgstr "La génération du sitemap a échoué."
+
+#: functions/seo/seo.php
+msgid "Click or drag:"
+msgstr "Cliquez ou glissez :"
+
+#: functions/seo/seo.php
+msgid "Title pattern"
+msgstr "Motif du titre"
+
+#: functions/seo/seo.php
+msgid "Description pattern"
+msgstr "Motif de la description"
+
+#: functions/seo/seo.php
+msgid "Type your text freely and “{” to pick a variable. Ideally between 50 and 60 characters once the variables are replaced."
+msgstr "Tapez votre texte librement et « { » pour choisir une variable. Idéalement entre 50 et 60 caractères une fois les variables remplacées."
+
+#: functions/seo/seo.php
+msgid "Type your text freely and “{” to pick a variable. Ideally between 120 and 160 characters."
+msgstr "Tapez votre texte librement et « { » pour choisir une variable. Idéalement entre 120 et 160 caractères."
+
+#: functions/seo/seo.php
+msgid "Google preview"
+msgstr "Aperçu dans Google"
+
+#: functions/seo/seo.php
+msgid "Share preview"
+msgstr "Aperçu d'un partage"
+
+#: functions/seo/seo.php
+msgid "No featured image"
+msgstr "Pas d'image à la une"
+
+#. %d: HTTP status code
+#: functions/seo/seo.php
+msgid "HTTP response %d"
+msgstr "Réponse HTTP %d"
+
+#. %s: robots.txt directive
+#: functions/seo/seo.php
+msgid "%s applies to all robots"
+msgstr "%s s'applique à tous les robots"
+
+#. %s: robots.txt directive
+#: functions/seo/seo.php
+msgid "%s blocks access to the admin"
+msgstr "%s empêche l'accès à l'admin"
+
+#. %s: robots.txt directive
+#: functions/seo/seo.php
+msgid "%s allows a subfolder"
+msgstr "%s autorise un sous-dossier"
+
+#. %s: robots.txt directive
+#: functions/seo/seo.php
+msgid "%s points to the sitemap"
+msgstr "%s indique le plan du site"
+
+#. %d: number of URLs in the sitemap
+#: functions/seo/seo.php
+msgid "%d URL"
+msgid_plural "%d URLs"
+msgstr[0] "%d URL"
+msgstr[1] "%d URL"
+
+#. date format for the last sitemap generation, see https://www.php.net/manual/datetime.format.php
+#: functions/seo/seo.php
+msgid "F j, Y \\a\\t g:i a"
+msgstr "j F Y à H:i"
+
+#. 1: number of URLs, 2: date of the last generation
+#: functions/seo/seo.php
+msgid "%1$s · last generated: %2$s"
+msgstr "%1$s · dernière génération : %2$s"
+
+#. date format for the sitemap generation history, see https://www.php.net/manual/datetime.format.php
+#: functions/seo/seo.php
+msgid "M j, Y, g:i a"
+msgstr "j M Y, H:i"
+
+#. %s: shortcode
+#: functions/seo/seo.php
+msgid "Sitemap for visitors: place the %s shortcode in a page."
+msgstr "Plan du site pour les visiteurs : placez le shortcode %s dans une page."
+
+#: functions/seo/seo.php
+msgctxt "sitemap generation trigger"
+msgid "settings"
+msgstr "réglages"
+
+#: functions/seo/seo.php functions/seo/seo-sitemap.php
+msgctxt "sitemap generation trigger"
+msgid "manual"
+msgstr "manuel"
+
+#. %s: title of the latest published content
+#: functions/seo/seo.php
+msgid "Example with “%s”, the latest published content."
+msgstr "Exemple avec « %s », dernier contenu publié."
+
+#: functions/seo/seo-meta.php
+msgid "SEO & sharing"
+msgstr "SEO & partage"
+
+#: functions/seo/seo-meta.php
+msgid "Do not index this content in search engines"
+msgstr "Ne pas indexer ce contenu dans les moteurs de recherche"
+
+#: functions/seo/seo-meta.php
+msgid "SEO title"
+msgstr "Titre SEO"
+
+#: functions/seo/seo-meta.php
+msgid "(browser tab, Google, shares)"
+msgstr "(onglet du navigateur, Google, partages)"
+
+#: functions/seo/seo-meta.php
+msgid "Ideally between 50 and 60 characters."
+msgstr "Idéalement entre 50 et 60 caractères."
+
+#: functions/seo/seo-meta.php
+msgid "SEO description"
+msgstr "Description SEO"
+
+#: functions/seo/seo-meta.php
+msgid "(Google, shares)"
+msgstr "(Google, partages)"
+
+#: functions/seo/seo-meta.php
+msgid "Ideally between 120 and 160 characters."
+msgstr "Idéalement entre 120 et 160 caractères."
+
+#: functions/seo/seo-meta.php
+msgid "Generate the description with AI"
+msgstr "Générer la description avec l'IA"
+
+#: functions/seo/seo-meta.php
+msgid "Generating..."
+msgstr "Génération..."
+
+#: functions/seo/seo-meta.php js/optimizr-updates.js
+msgid "The request failed. Check your connection."
+msgstr "La requête a échoué. Vérifiez votre connexion."
+
+#: functions/seo/seo-meta.php
+msgid "Share image"
+msgstr "Image de partage"
+
+#: functions/seo/seo-meta.php
+msgid "(URL)"
+msgstr "(URL)"
+
+#: functions/seo/seo-meta.php
+msgid "Content featured image"
+msgstr "Image à la une du contenu"
+
+#: functions/seo/seo-meta.php
+msgid "Default: the featured image. Ideal size: 1200 × 630 px."
+msgstr "Par défaut : l'image à la une. Format idéal : 1200 × 630 px."
+
+#. %s: error message
+#: functions/seo/seo-meta.php assets/js/media-ia.js functions/updates.php
+msgid "Error: %s"
+msgstr "Erreur : %s"
+
+#. %s: URL of the Optimizr SEO settings tab
+#: functions/seo/seo-meta.php
+msgid "Leave a field empty to use the pattern set in <a href=\"%s\">Optimizr › SEO</a> (shown in grey)."
+msgstr "Laissez un champ vide pour utiliser le motif défini dans <a href=\"%s\">Optimizr › SEO</a> (affiché en gris)."
+
+#. %s: variable label
+#: functions/seo/seo-dynamic-input.js
+msgid "Remove %s"
+msgstr "Retirer %s"
+
+#: gutenberg/seo-preview.js
+msgid "SEO preview"
+msgstr "Prévisualisation SEO"
+
+#. %s: path of the site root folder
+#: functions/seo/seo-sitemap.php
+msgid "Unable to write to %s. Check the write permissions of the site root folder."
+msgstr "Impossible d'écrire dans %s. Vérifiez les droits d'écriture du dossier racine du site."
+
+#: functions/seo/seo-sitemap.php
+msgctxt "sitemap generation trigger"
+msgid "automatic"
+msgstr "automatique"
+
+#: functions/seo/seo-sitemap.php
+msgctxt "sitemap generation trigger"
+msgid "daily"
+msgstr "quotidien"
+
+#: functions/seo/seo-sitemap.php
+msgctxt "sitemap generation trigger"
+msgid "on demand"
+msgstr "à la demande"
+
+#: functions/seo/seo-sitemap.php
+msgid "Latest updates"
+msgstr "Dernières mises à jour"
+
+#: functions/seo/seo-extras.php
+msgid "Keeps Google from indexing low-value pages that dilute the site’s SEO."
+msgstr "Évite que Google indexe des pages sans valeur, qui diluent le référencement du site."
+
+#: functions/seo/seo-extras.php
+msgid "Internal search results"
+msgstr "Résultats de recherche interne"
+
+#: functions/seo/seo-extras.php
+msgid "The site’s search results pages are not indexed (Google’s recommendation)."
+msgstr "Les pages de résultats du moteur de recherche du site ne sont pas indexées (recommandation de Google)."
+
+#: functions/seo/seo-extras.php
+msgid "Date archives"
+msgstr "Archives par date"
+
+#: functions/seo/seo-extras.php
+msgid "Lists of posts by day, month or year are not indexed."
+msgstr "Les listes d'articles par jour, mois ou année ne sont pas indexées."
+
+#: functions/seo/seo-extras.php
+msgid "Tag archives"
+msgstr "Archives d'étiquettes"
+
+#: functions/seo/seo-extras.php
+msgid "Lists of posts by tag are not indexed: useful when there are many tags with few posts each."
+msgstr "Les listes d'articles par étiquette ne sont pas indexées : utile si les étiquettes sont nombreuses et peu fournies."
+
+#: functions/seo/seo-extras.php
+msgid "Attachment pages"
+msgstr "Pages des pièces jointes"
+
+#: functions/seo/seo-extras.php
+msgid "WordPress creates a page for each uploaded image. It redirects to the content where the image is used, or to the file."
+msgstr "WordPress crée une page par image importée. Elle redirige vers le contenu où l'image est utilisée, ou vers le fichier."
+
+#: functions/seo/seo-extras.php
+msgid "Search engines"
+msgstr "Moteurs de recherche"
+
+#: functions/seo/seo-extras.php
+msgid "Proves to Google and Bing that you own the site, and notifies them of new content."
+msgstr "Prouve à Google et Bing que vous êtes propriétaire du site, et signale les nouveaux contenus."
+
+#: functions/seo/seo-extras.php
+msgid "“HTML tag” method: paste the tag or just its code."
+msgstr "Méthode « Balise HTML » : collez la balise ou seulement son code."
+
+#: functions/seo/seo-extras.php
+msgid "“Meta tag” method: paste the tag or just its code."
+msgstr "Méthode « Balise méta » : collez la balise ou seulement son code."
+
+#: functions/seo/seo-extras.php
+msgid "Notifies Bing, Yandex, Seznam and Naver of each publication or update within seconds. Google does not use IndexNow."
+msgstr "Signale chaque publication ou mise à jour à Bing, Yandex, Seznam et Naver en quelques secondes. Google n'utilise pas IndexNow."
+
+#: functions/seo/seo-extras.php
+msgid "Information Google can read (JSON-LD): it enables rich results."
+msgstr "Informations lisibles par Google (JSON-LD) : elles permettent les résultats enrichis."
+
+#: functions/seo/seo-extras.php
+msgctxt "settings field label"
+msgid "Enable"
+msgstr "Activer"
+
+#: functions/seo/seo-extras.php
+msgid "Site and organization on the home page, breadcrumb on every piece of content, Article for posts, Event for the Events post type."
+msgstr "Site et organisation sur l'accueil, fil d'Ariane sur chaque contenu, Article pour les articles, Évènement pour le type Évènements."
+
+#: functions/seo/seo-extras.php
+msgid "Key:"
+msgstr "Clé :"
+
+#. 1: date and time of the last notification, 2: notified URL
+#: functions/seo/seo-extras.php
+msgid " · last notification: %1$s (%2$s)"
+msgstr " · dernier signalement : %1$s (%2$s)"
+
+#: functions/seo/seo-extras.php
+msgctxt "IndexNow last notification date format"
+msgid "F j, Y \\a\\t g:i a"
+msgstr "j F Y à H:i"
+
+#: functions/seo/seo-extras.php
+msgid "Local site: no notifications are sent until the site is online."
+msgstr "Site local : aucun signalement n'est envoyé tant que le site n'est pas en ligne."
+
+#: functions/seo/seo-extras.php
+msgid "Test the home page with Google"
+msgstr "Tester la page d'accueil avec Google"
+
+#: functions/seo/seo-output.php
+msgid "Uncategorized"
+msgstr "Sans catégorie"
+
+#: functions/ai.php
+msgid "AI provider"
+msgstr "Fournisseur d'IA"
+
+#: functions/ai.php
+msgid "All the models offered can describe images."
+msgstr "Tous les modèles proposés savent décrire les images."
+
+#: functions/ai.php
+msgid "Generate the ALT text when images are uploaded"
+msgstr "Générer la balise ALT à l'import des images"
+
+#: functions/ai.php
+msgid "Generates the ALT text of every image uploaded to the media library, in the background a few seconds after the upload (one billed request per image)."
+msgstr "Génère la balise ALT de chaque image importée dans la médiathèque, en arrière-plan quelques secondes après l'import (une requête facturée par image)."
+
+#: functions/ai.php
+msgid "Site context"
+msgstr "Contexte du site"
+
+#: functions/ai.php
+msgid "Added to every request so that the generated texts match your business."
+msgstr "Ajouté à chaque demande pour que les textes générés collent à votre activité."
+
+#: functions/ai.php
+msgid "Business description"
+msgstr "Description de l'activité"
+
+#: functions/ai.php
+msgid "Used for meta descriptions (SEO metabox) and ALT text (media library). Each provider keeps its own key and model."
+msgstr "Utilisé pour les meta descriptions (metabox SEO) et les balises ALT (médiathèque). Chaque fournisseur garde sa propre clé et son propre modèle."
+
+#: functions/ai.php
+msgid "Save to use this provider: cost estimates will update."
+msgstr "Enregistrez pour utiliser ce fournisseur : les estimations de coût se mettront à jour."
+
+#. 1: retired AI model name, 2: replacement AI model name
+#: functions/ai.php
+msgid "%1$s — retired, replaced by %2$s"
+msgstr "%1$s — retiré, remplacé par %2$s"
+
+#. %s: replacement AI model name
+#: functions/ai.php
+msgid "This model is no longer offered by the provider: %s is used instead. Choose a model from the list and save."
+msgstr "Ce modèle n'est plus proposé par le fournisseur : %s est utilisé à la place. Choisissez un modèle de la liste et enregistrez."
+
+#: functions/ai.php
+msgid "Key saved: leave empty to keep it"
+msgstr "Clé enregistrée : laissez vide pour la conserver"
+
+#. %s: last 4 characters of the saved API key
+#: functions/ai.php
+msgid "Key saved, ending in “%s”."
+msgstr "Clé enregistrée, se terminant par « %s »."
+
+#: functions/ai.php
+msgid "Key saved."
+msgstr "Clé enregistrée."
+
+#: functions/ai.php
+msgid "Delete the saved key"
+msgstr "Supprimer la clé enregistrée"
+
+#. %s: link to the provider's API keys page
+#: functions/ai.php
+msgid "Create it at %s. It is never displayed in clear text."
+msgstr "À créer sur %s. Elle n'est jamais affichée en clair."
+
+#: functions/ai.php
+msgid "Describe here the overall context of your site (e.g. ceramics school, photo studio, travel agency, etc.)"
+msgstr "Décrivez ici le contexte global de votre site (ex. : école de céramique, atelier photo, agence de voyage, etc.)"
+
+#. 1: date the prices were recorded, 2: links to the providers' price lists
+#: functions/ai.php
+msgid "Prices recorded on %1$s from the official price lists (%2$s), in US dollars excluding tax."
+msgstr "Tarifs relevés le %1$s sur les grilles officielles (%2$s), en dollars US hors taxes."
+
+#. %s: cost in US dollars
+#: functions/ai.php
+msgid "Actual usage this month: %s"
+msgstr "Consommation réelle ce mois-ci : %s"
+
+#. 1: number of requests, 2: number of tokens sent, 3: number of tokens received
+#: functions/ai.php
+msgid "%1$d request, %2$s tokens sent, %3$s received"
+msgid_plural "%1$d requests, %2$s tokens sent, %3$s received"
+msgstr[0] "%1$d requête(s), %2$s tokens envoyés, %3$s reçus"
+msgstr[1] "%1$d requête(s), %2$s tokens envoyés, %3$s reçus"
+
+#. 1: month and year, 2: cost in US dollars, 3: number of requests
+#: functions/ai.php
+msgid "%1$s: %2$s · %3$d request"
+msgid_plural "%1$s: %2$s · %3$d requests"
+msgstr[0] "%1$s : %2$s · %3$d requête(s)"
+msgstr[1] "%1$s : %2$s · %3$d requête(s)"
+
+#. %s: link to the provider's usage dashboard
+#: functions/ai.php
+msgid "Measured from the API responses for the requests sent by this site, all providers combined. The invoice is authoritative: %s."
+msgstr "Mesurée à partir des réponses des API pour les requêtes envoyées par ce site, tous fournisseurs confondus. La facture fait foi : %s."
+
+#. %s: AI provider name
+#: functions/ai.php
+msgid "%s dashboard"
+msgstr "tableau de bord %s"
+
+#: functions/ai.php
+msgid "Price (1M tokens)"
+msgstr "Tarif (1 M tokens)"
+
+#: functions/ai.php
+msgid "1 ALT text"
+msgstr "1 balise ALT"
+
+#: functions/ai.php
+msgid "1 description"
+msgstr "1 description"
+
+#. %d: number of images without ALT text
+#: functions/ai.php
+msgid "%d missing ALT text"
+msgid_plural "%d missing ALT texts"
+msgstr[0] "%d ALT manquantes"
+msgstr[1] "%d ALT manquantes"
+
+#. %d: number of content items without a meta description
+#: functions/ai.php
+msgid "%d missing description"
+msgid_plural "%d missing descriptions"
+msgstr[0] "%d descriptions manquantes"
+msgstr[1] "%d descriptions manquantes"
+
+#: functions/ai.php
+msgctxt "AI model currently in use"
+msgid "current"
+msgstr "actuel"
+
+#. 1: input price in US dollars, 2: output price in US dollars
+#: functions/ai.php
+msgid "$%1$s / $%2$s"
+msgstr "%1$s $ / %2$s $"
+
+#. 1: date of the price change, 2: new input price in US dollars, 3: new output price in US dollars
+#: functions/ai.php
+msgid "%1$s: $%2$s / $%3$s"
+msgstr "%1$s : %2$s $ / %3$s $"
+
+#: functions/ai.php
+msgid "Price: input / output. Conservative estimate: a text is counted as 1 token per 3.5 characters, each image according to its actual dimensions and the model’s counting method, and the reasoning of models that use it is estimated for a short task. The provider and the model can be changed in “AI provider”."
+msgstr "Tarif : entrée / sortie. Estimation prudente : un texte français est compté à 1 token pour 3,5 caractères, chaque image selon ses dimensions réelles et la méthode de décompte du modèle, et la réflexion des modèles qui en font est estimée pour une tâche courte. Le fournisseur et le modèle se changent dans « Fournisseur d'IA »."
+
+#: functions/ai.php
+msgid "The content contains no text."
+msgstr "Le contenu ne contient pas de texte."
+
+#. Instruction sent to the AI model, not shown to users. %s: page title
+#: functions/ai.php
+msgid "Write an SEO-optimized meta description of 160 characters maximum (spaces included) for the page “%s”, based on the following text. Reply with the description only."
+msgstr "Rédige une meta description optimisée SEO de 160 caractères maximum (espaces compris) pour la page « %s », à partir du texte suivant. Réponds uniquement par la description."
+
+#. Instruction sent to the AI model, not shown to users. %s: site context entered in the settings
+#: functions/ai.php
+msgid "Site context: %s"
+msgstr "Contexte du site : %s"
+
+#. Instruction sent to the AI model (system prompt), not shown to users.
+#: functions/ai.php
+msgid "You are an assistant specialized in SEO copywriting."
+msgstr "Tu es un assistant expert en rédaction SEO."
+
+#: functions/ai.php
+msgid "This file is not an image."
+msgstr "Ce fichier n'est pas une image."
+
+#. Instruction sent to the AI model (system prompt), not shown to users.
+#: functions/ai.php
+msgid "You are an assistant specialized in accessibility, SEO and image description."
+msgstr "Tu es un assistant expert en accessibilité, SEO et description d’images."
+
+#. Instruction sent to the AI model, not shown to users.
+#: functions/ai.php
+msgid "Describe this image concisely (125 characters maximum) for an accessible, SEO-optimized ALT text. Reply with the content of the ALT text only."
+msgstr "Décris cette image de façon concise (125 caractères maximum) pour une balise ALT accessible et optimisée SEO. Réponds uniquement par le contenu de la balise."
+
+#: functions/ai.php functions/updates.php
+msgid "Insufficient permissions"
+msgstr "Permissions insuffisantes"
+
+#: functions/ai.php
+msgid "Missing file ID"
+msgstr "ID de fichier manquant"
+
+#: functions/ai.php
+msgid "This is not a valid image"
+msgstr "Ce n’est pas une image valide"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — recent and affordable"
+msgstr "%s — récent et économique"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — stable, predictable answers"
+msgstr "%s — réponses stables et prévisibles"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — maximum quality"
+msgstr "%s — qualité maximale"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — affordable for text, expensive for images"
+msgstr "%s — économique en texte, cher en images"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — the most capable"
+msgstr "%s — le plus capable"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — fast and affordable"
+msgstr "%s — rapide et économique"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — better writing"
+msgstr "%s — meilleure rédaction"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — recommended by Google, affordable"
+msgstr "%s — recommandé par Google, économique"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — scheduled for retirement on May 7, 2027"
+msgstr "%s — arrêt prévu le 7 mai 2027"
+
+#. %s: AI model name
+#: functions/ai-pricing.php
+msgid "%s — the most capable (price doubles on January 1, 2027)"
+msgstr "%s — le plus capable (tarif doublé au 1er janvier 2027)"
+
+#: functions/ai-pricing.php
+msgid "unknown price"
+msgstr "tarif inconnu"
+
+#: functions/ai-pricing.php
+msgid "< $0.01"
+msgstr "< 0,01 $"
+
+#. %s: AI provider name
+#: functions/ai-providers.php
+msgid "Missing %s API key (AI Assistant tab)."
+msgstr "Clé API %s manquante (onglet Assistant IA)."
+
+#: functions/ai-providers.php
+msgid "The model returned no text."
+msgstr "Le modèle n'a renvoyé aucun texte."
+
+#. 1: AI provider name, 2: connection error message
+#: functions/ai-providers.php
+msgid "Could not connect to %1$s: %2$s"
+msgstr "Connexion à %1$s impossible : %2$s"
+
+#. %d: HTTP status code
+#: functions/ai-providers.php
+msgctxt "API error message"
+msgid "HTTP response %d"
+msgstr "réponse HTTP %d"
+
+#. %s: AI provider name
+#: functions/ai-providers.php
+msgid "%s: unreadable response."
+msgstr "%s : réponse illisible."
+
+#. %s: AI provider name
+#: functions/ai-providers.php
+msgid "%s: response blocked by the content filter."
+msgstr "%s : réponse bloquée par le filtre de contenu."
+
+#. %s: AI model or provider name
+#: functions/ai-providers.php
+msgid "%s refused to process this item."
+msgstr "%s a refusé de traiter cet élément."
+
+#. %s: AI provider name
+#: functions/ai-providers.php
+msgid "%s: no version of the image is light enough to be sent (4 MB maximum)."
+msgstr "%s : aucune version de l'image assez légère pour être envoyée (4 Mo maximum)."
+
+#: functions/ai-bulk.php
+msgid "Image ALT text"
+msgstr "Balises ALT des images"
+
+#: functions/ai-bulk.php
+msgid "image(s) without ALT text"
+msgstr "image(s) sans balise ALT"
+
+#: functions/ai-bulk.php
+msgid "All images have ALT text."
+msgstr "Toutes les images ont une balise ALT."
+
+#: functions/ai-bulk.php
+msgid "Content meta descriptions"
+msgstr "Meta descriptions des contenus"
+
+#: functions/ai-bulk.php
+msgid "content item(s) without a custom description"
+msgstr "contenu(s) sans description personnalisée"
+
+#: functions/ai-bulk.php
+msgid "All content has a custom description."
+msgstr "Tous les contenus ont une description personnalisée."
+
+#: functions/ai-bulk.php
+msgid "Unknown task."
+msgstr "Tâche inconnue."
+
+#: functions/ai-bulk.php
+msgid "Bulk processing"
+msgstr "Traitement en masse"
+
+#: functions/ai-bulk.php
+msgid "Fills in everything that is missing on the site in one go. Items already filled in are never changed."
+msgstr "Complète en une fois ce qui manque sur le site. Les éléments déjà renseignés ne sont jamais modifiés."
+
+#. %s: AI provider name
+#: functions/ai-bulk.php
+msgid "First enter and save the %s API key above."
+msgstr "Renseignez et enregistrez d'abord la clé API %s ci-dessus."
+
+#. 1: total estimated cost, 2: estimated cost per item, 3: AI model name
+#: functions/ai-bulk.php
+msgid "Estimated cost: %1$s for everything (≈ %2$s per item) with %3$s."
+msgstr "Coût estimé : %1$s pour l'ensemble (≈ %2$s par élément) avec %3$s."
+
+#: functions/ai-bulk.php
+msgid "Generate"
+msgstr "Générer"
+
+#: functions/ai-bulk.php
+msgid "Stop"
+msgstr "Arrêter"
+
+#: functions/ai-bulk.php
+msgid "Each item is one request billed by the chosen AI provider. Keep this page open during processing; you can stop it at any time, and what has already been generated stays saved. Generated texts can be edited afterwards in the media library or in the SEO metabox of each content item."
+msgstr "Chaque élément correspond à une requête facturée par le fournisseur d'IA choisi. Gardez cette page ouverte pendant le traitement ; vous pouvez l'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu."
+
+#: functions/ai-bulk.php
+msgid "Cost details"
+msgstr "Détail des coûts"
+
+#: functions/ai-bulk.php
+msgid "Cost details and model comparison"
+msgstr "Détail des coûts et comparatif des modèles"
+
+#: functions/media.php
+msgid "Generate ALT text"
+msgstr "Générer la balise ALT"
+
+#: assets/js/media-ia.js
+msgid "Generate with AI"
+msgstr "Générer avec l'IA"
+
+#: functions/media.php
+msgid "Automatically generates optimized ALT text with AI from the visual content of the image."
+msgstr "Génère automatiquement une balise ALT optimisée grâce à l’IA à partir du contenu visuel de l’image."
+
+#: assets/js/media-ia.js
+msgid "Generating…"
+msgstr "Génération en cours..."
+
+#: assets/js/media-ia.js
+msgid "ALT text generated successfully."
+msgstr "Balise ALT générée avec succès."
+
+#: assets/js/media-ia.js
+msgid "The request failed."
+msgstr "La requête a échoué."
+
+#: functions/redirects.php
+msgid "Permanent (301)"
+msgstr "Permanente (301)"
+
+#: functions/redirects.php
+msgid "Temporary (302)"
+msgstr "Temporaire (302)"
+
+#: functions/redirects.php
+msgid "Temporary, method preserved (307)"
+msgstr "Temporaire, méthode conservée (307)"
+
+#: functions/redirects.php
+msgid "Permanently deleted (410)"
+msgstr "Supprimée définitivement (410)"
+
+#: functions/redirects.php
+msgid "Enter the address to redirect (the home page cannot be redirected)."
+msgstr "Indiquez l'adresse à rediriger (la page d'accueil ne peut pas l'être)."
+
+#: functions/redirects.php
+msgid "Enter the redirect destination."
+msgstr "Indiquez la destination de la redirection."
+
+#: functions/redirects.php
+msgid "The destination is the same as the source: the redirect would loop."
+msgstr "La destination est identique à la source : la redirection tournerait en boucle."
+
+#: functions/redirects.php
+msgid "The destination leads back to the source: the redirect would loop."
+msgstr "La destination renvoie vers la source : la redirection tournerait en boucle."
+
+#: functions/redirects.php
+msgid "The destination is one of the addresses redirected by this wildcard: the redirect would loop."
+msgstr "La destination fait partie des adresses redirigées par ce joker : la redirection tournerait en boucle."
+
+#: functions/redirects.php
+msgid "Another redirect already exists for this address."
+msgstr "Une autre redirection existe déjà pour cette adresse."
+
+#. %s: content title
+#: functions/redirects.php
+msgid "Automatic: address of \"%s\" changed"
+msgstr "Automatique : adresse de « %s » modifiée"
+
+#: functions/redirects-admin.php
+msgid "Redirect saved."
+msgstr "Redirection enregistrée."
+
+#: functions/redirects-admin.php
+msgid "Redirect deleted."
+msgstr "Redirection supprimée."
+
+#: functions/redirects-admin.php
+msgid "Not-found pages log cleared."
+msgstr "Journal des pages introuvables vidé."
+
+#: functions/redirects-admin.php
+msgid "Address removed from the log."
+msgstr "Adresse retirée du journal."
+
+#: functions/redirects-admin.php
+msgid "Settings saved."
+msgstr "Réglages enregistrés."
+
+#: functions/redirects-admin.php
+msgid "No CSV file received (2 MB maximum)."
+msgstr "Aucun fichier CSV reçu (2 Mo maximum)."
+
+#: functions/redirects-admin.php
+msgid "CSV import"
+msgstr "Import CSV"
+
+#. 1: CSV line number, 2: error message
+#: functions/redirects-admin.php
+msgid "line %1$d: %2$s"
+msgstr "ligne %1$d : %2$s"
+
+#. %s: number of imported redirects
+#: functions/redirects-admin.php
+msgid "%s redirect imported."
+msgid_plural "%s redirects imported."
+msgstr[0] "%s redirection(s) importée(s)."
+msgstr[1] "%s redirection(s) importée(s)."
+
+#. 1: number of skipped lines, 2: list of errors
+#: functions/redirects-admin.php
+msgid "%1$s line skipped — %2$s"
+msgid_plural "%1$s lines skipped — %2$s"
+msgstr[0] "%1$s ligne(s) ignorée(s) — %2$s"
+msgstr[1] "%1$s ligne(s) ignorée(s) — %2$s"
+
+#: functions/redirects-admin.php
+msgctxt "separator between CSV import errors"
+msgid "; "
+msgstr " ; "
+
+#: functions/redirects-admin.php
+msgid "Redirect old addresses, monitor not-found pages and spot broken links."
+msgstr "Redirigez les anciennes adresses, surveillez les pages introuvables et repérez les liens cassés."
+
+#: functions/redirects-admin.php
+msgid "Edit redirect"
+msgstr "Modifier la redirection"
+
+#: functions/redirects-admin.php
+msgid "Add a redirect"
+msgstr "Ajouter une redirection"
+
+#: functions/redirects-admin.php
+msgid "Relative (<code>/old-page</code>) or full address. End the source with <code>*</code> to redirect a whole folder: <code>/blog/*</code> → <code>/news/*</code>."
+msgstr "Adresse relative (<code>/ancienne-page</code>) ou complète. Terminez la source par <code>*</code> pour rediriger tout un dossier : <code>/blog/*</code> → <code>/actualites/*</code>."
+
+#: functions/redirects-admin.php
+msgid "Old address"
+msgstr "Ancienne adresse"
+
+#: functions/redirects-admin.php
+msgid "/old-page"
+msgstr "/ancienne-page"
+
+#: functions/redirects-admin.php
+msgid "Destination"
+msgstr "Destination"
+
+#: functions/redirects-admin.php
+msgid "/new-page or https://…"
+msgstr "/nouvelle-page ou https://…"
+
+#: functions/redirects-admin.php
+msgctxt "redirect type"
+msgid "Type"
+msgstr "Type"
+
+#: functions/redirects-admin.php
+msgctxt "redirect note field"
+msgid "Note"
+msgstr "Note"
+
+#: functions/redirects-admin.php
+msgid "(optional)"
+msgstr "(facultative)"
+
+#: functions/redirects-admin.php functions/uninstall-admin.php
+msgid "Save"
+msgstr "Enregistrer"
+
+#: functions/redirects-admin.php
+msgid "Add redirect"
+msgstr "Ajouter la redirection"
+
+#: functions/redirects-admin.php
+msgid "Redirects"
+msgstr "Redirections"
+
+#: functions/redirects-admin.php
+msgid "Search"
+msgstr "Rechercher"
+
+#: functions/redirects-admin.php
+msgid "Search redirects"
+msgstr "Rechercher une redirection"
+
+#: functions/redirects-admin.php
+msgid "No matching redirects."
+msgstr "Aucune redirection ne correspond."
+
+#: functions/redirects-admin.php
+msgid "No redirects yet."
+msgstr "Aucune redirection pour l'instant."
+
+#: functions/redirects-admin.php
+msgid "Visits"
+msgstr "Visites"
+
+#: functions/redirects-admin.php
+msgid "Actions"
+msgstr "Actions"
+
+#. date format for the last redirect hit, see https://www.php.net/manual/datetime.format.php
+#: functions/redirects-admin.php
+msgid "M j, Y"
+msgstr "j M Y"
+
+#: functions/redirects-admin.php
+msgid "Delete this redirect?"
+msgstr "Supprimer cette redirection ?"
+
+#: functions/redirects-admin.php
+msgid "Not-found pages"
+msgstr "Pages introuvables"
+
+#: functions/redirects-admin.php
+msgid "Addresses requested by visitors or bots that end in a 404 error, most frequent first."
+msgstr "Adresses demandées par les visiteurs ou les robots qui aboutissent à une erreur 404, les plus fréquentes en premier."
+
+#: functions/redirects-admin.php
+msgid "Clear the not-found pages log?"
+msgstr "Vider le journal des pages introuvables ?"
+
+#: functions/redirects-admin.php
+msgid "Clear"
+msgstr "Vider"
+
+#: functions/redirects-admin.php
+msgid "The log is disabled in the settings below."
+msgstr "Le journal est désactivé dans les réglages ci-dessous."
+
+#: functions/redirects-admin.php
+msgid "No not-found pages recorded."
+msgstr "Aucune page introuvable enregistrée."
+
+#: functions/redirects-admin.php
+msgctxt "last visit column"
+msgid "Last"
+msgstr "Dernière"
+
+#: functions/redirects-admin.php
+msgid "Referrer"
+msgstr "Provenance"
+
+#. date format (last visit of a not-found page / security log entry), see https://www.php.net/manual/datetime.format.php
+#: functions/redirects-admin.php,functions/security-admin.php
+msgid "M j, H:i"
+msgstr "j M, H:i"
+
+#: functions/redirects-admin.php
+msgctxt "action: create a redirect"
+msgid "Redirect"
+msgstr "Rediriger"
+
+#: functions/redirects-admin.php
+msgid "Ignore"
+msgstr "Ignorer"
+
+#: functions/redirects-admin.php
+msgid "Broken links"
+msgstr "Liens cassés"
+
+#: functions/redirects-admin.php
+msgid "Checks every link and image in published content. Keep the page open during the scan."
+msgstr "Vérifie chaque lien et chaque image des contenus publiés. Gardez la page ouverte pendant l'analyse."
+
+#: functions/redirects-admin.php
+msgid "Scan links"
+msgstr "Analyser les liens"
+
+#: functions/redirects-admin.php
+msgid "Link scan"
+msgstr "Analyse des liens"
+
+#. 1: date of the last scan, 2: number of links checked (e.g. "12 links checked"), 3: number of issues (e.g. "2 issues")
+#: functions/redirects-admin.php
+msgid "Last scan on %1$s: %2$s, %3$s."
+msgstr "Dernière analyse le %1$s : %2$s, %3$s."
+
+#. date format (last link scan / login alert email), see https://www.php.net/manual/datetime.format.php
+#: functions/redirects-admin.php,functions/security.php
+msgid "F j, Y \\a\\t H:i"
+msgstr "j F Y à H:i"
+
+#. %s: number of links checked
+#: functions/redirects-admin.php
+msgid "%s link checked"
+msgid_plural "%s links checked"
+msgstr[0] "%s lien(s) vérifié(s)"
+msgstr[1] "%s lien(s) vérifié(s)"
+
+#. %s: number of issues found
+#: functions/redirects-admin.php
+msgid "%s issue"
+msgid_plural "%s issues"
+msgstr[0] "%s problème(s)"
+msgstr[1] "%s problème(s)"
+
+#: functions/redirects-admin.php
+msgid "The last scan was interrupted: run it again."
+msgstr "La dernière analyse a été interrompue : relancez-la."
+
+#: functions/redirects-admin.php
+msgid "No scan yet."
+msgstr "Aucune analyse pour l'instant."
+
+#: functions/redirects-admin.php
+msgid "Link"
+msgstr "Lien"
+
+#: functions/redirects-admin.php
+msgid "Issue"
+msgstr "Problème"
+
+#: functions/redirects-admin.php
+msgid "Found in"
+msgstr "Présent dans"
+
+#: functions/redirects-admin.php functions/uninstall.php
+msgid "Settings"
+msgstr "Réglages"
+
+#: functions/redirects-admin.php
+msgid "Automatic redirect"
+msgstr "Redirection automatique"
+
+#: functions/redirects-admin.php
+msgid "When the address of published content changes, the old one redirects to the new one (301)."
+msgstr "Quand l'adresse d'un contenu publié change, l'ancienne redirige vers la nouvelle (301)."
+
+#: functions/redirects-admin.php
+msgid "Not-found pages log"
+msgstr "Journal des pages introuvables"
+
+#: functions/redirects-admin.php
+msgid "No IP address: only the requested address and the referring page are kept."
+msgstr "Sans adresse IP : seules l'adresse demandée et la page de provenance sont conservées."
+
+#: functions/redirects-admin.php
+msgid "CSV import / export"
+msgstr "Import / export CSV"
+
+#: functions/redirects-admin.php
+msgid "Columns: old address; destination; type (301 by default); note. Handy for a site redesign."
+msgstr "Colonnes : ancienne adresse ; destination ; type (301 par défaut) ; note. Pratique pour une refonte de site."
+
+#: functions/redirects-admin.php
+msgid "CSV file"
+msgstr "Fichier CSV"
+
+#: functions/redirects-admin.php
+msgid "Import"
+msgstr "Importer"
+
+#: functions/redirects-admin.php
+msgid "Export redirects"
+msgstr "Exporter les redirections"
+
+#. %s: number of other content items containing the link
+#: functions/redirects-admin.php
+msgid "+ %s other"
+msgid_plural "+ %s others"
+msgstr[0] "+ %s autre(s)"
+msgstr[1] "+ %s autre(s)"
+
+#: functions/links.php
+msgid "Unreachable (domain not found or address not allowed)"
+msgstr "Inaccessible (domaine introuvable ou adresse non autorisée)"
+
+#. %s: HTTP error message
+#: functions/links.php
+msgid "Unreachable (%s)"
+msgstr "Inaccessible (%s)"
+
+#. %d: HTTP status code
+#: functions/links.php
+msgid "%d — access denied to the checker, check manually"
+msgstr "%d — accès refusé au vérificateur, à contrôler"
+
+#. %d: HTTP status code (404)
+#: functions/links.php
+msgid "%d — Page not found"
+msgstr "%d — Page introuvable"
+
+#. %d: HTTP status code (410)
+#: functions/links.php
+msgid "%d — Permanently deleted"
+msgstr "%d — Supprimée définitivement"
+
+#. %d: HTTP status code (5xx)
+#: functions/links.php
+msgid "%d — Server error"
+msgstr "%d — Erreur du serveur"
+
+#. %d: HTTP status code
+#: functions/links.php
+msgid "%d — Error"
+msgstr "%d — Erreur"
+
+#: functions/links.php
+msgid "Unknown step."
+msgstr "Étape inconnue."
+
+#: functions/security.php
+msgid "Page not found"
+msgstr "Page introuvable"
+
+#: functions/security.php
+msgid "Page not found."
+msgstr "Page introuvable."
+
+#: functions/security.php
+msgid "Back to the home page"
+msgstr "Retour à l'accueil"
+
+#: functions/security.php
+msgid "The login address must be at least 4 characters long."
+msgstr "L'adresse de connexion doit contenir au moins 4 caractères."
+
+#: functions/security.php
+msgid "This login address is reserved by WordPress."
+msgstr "Cette adresse de connexion est réservée par WordPress."
+
+#: functions/security.php
+msgid "Some content on the site already uses this address."
+msgstr "Un contenu du site utilise déjà cette adresse."
+
+#. %s: site name
+#: functions/security.php
+msgid "[%s] New login address"
+msgstr "[%s] Nouvelle adresse de connexion"
+
+#. %s: new login URL
+#: functions/security.php
+msgid ""
+"The admin login address has been changed.\n"
+"\n"
+"New address: %s\n"
+"\n"
+"The old address (wp-login.php) now shows a not-found page.\n"
+"Keep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php."
+msgstr ""
+"L'adresse de connexion à l'administration a été modifiée.\n"
+"\n"
+"Nouvelle adresse : %s\n"
+"\n"
+"L'ancienne adresse (wp-login.php) affiche désormais une page introuvable.\n"
+"Conservez cet email. En cas de blocage, ajoutez define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); dans wp-config.php."
+
+#. %s: number of minutes
+#: functions/security.php
+msgid "Too many login attempts. Try again in %s minute."
+msgid_plural "Too many login attempts. Try again in %s minutes."
+msgstr[0] "Trop de tentatives de connexion. Réessayez dans %s minute(s)."
+msgstr[1] "Trop de tentatives de connexion. Réessayez dans %s minute(s)."
+
+#. 1: number of failed attempts, 2: last username tried
+#: functions/security.php
+msgid "%1$s failed attempt, last username tried: %2$s"
+msgid_plural "%1$s failed attempts, last username tried: %2$s"
+msgstr[0] "%1$s échecs, dernier identifiant essayé : %2$s"
+msgstr[1] "%1$s échecs, dernier identifiant essayé : %2$s"
+
+#: functions/security.php
+msgid "Incorrect username or password."
+msgstr "Identifiant ou mot de passe incorrect."
+
+#. %s: site name
+#: functions/security.php
+msgid "[%s] Administrator login from a new address"
+msgstr "[%s] Connexion administrateur depuis une nouvelle adresse"
+
+#. 1: username, 2: date and time, 3: IP address, 4: browser user agent
+#: functions/security.php
+msgid ""
+"The account \"%1$s\" has just logged in from an unknown IP address.\n"
+"\n"
+"Date: %2$s\n"
+"IP address: %3$s\n"
+"Browser: %4$s\n"
+"\n"
+"If this wasn't you, change your password immediately."
+msgstr ""
+"Le compte « %1$s » vient de se connecter depuis une adresse IP inconnue.\n"
+"\n"
+"Date : %2$s\n"
+"Adresse IP : %3$s\n"
+"Navigateur : %4$s\n"
+"\n"
+"Si ce n'est pas vous, changez immédiatement votre mot de passe."
+
+#: functions/security.php
+msgid "unknown"
+msgstr "inconnu"
+
+#. %s: username
+#: functions/security.php
+msgid "Account %s"
+msgstr "Compte %s"
+
+#: functions/security.php
+msgid "Access denied."
+msgstr "Accès refusé."
+
+#: functions/security.php
+msgid "XML-RPC is disabled on this site."
+msgstr "XML-RPC est désactivé sur ce site."
+
+#: functions/security.php
+msgid "Site served over HTTPS"
+msgstr "Site servi en HTTPS"
+
+#: functions/security.php
+msgid "Site served without HTTPS: credentials sent in clear text"
+msgstr "Site servi sans HTTPS : identifiants transmis en clair"
+
+#: functions/security.php
+msgid "An administrator is named \"admin\", the first username bots try"
+msgstr "Un administrateur s'appelle « admin », le premier identifiant essayé par les robots"
+
+#: functions/security.php
+msgid "No administrator named \"admin\""
+msgstr "Aucun administrateur nommé « admin »"
+
+#: functions/security.php
+msgid "PHP errors are shown to visitors (WP_DEBUG_DISPLAY)"
+msgstr "Les erreurs PHP s'affichent aux visiteurs (WP_DEBUG_DISPLAY)"
+
+#: functions/security.php
+msgid "PHP errors hidden from visitors"
+msgstr "Erreurs PHP masquées aux visiteurs"
+
+#. %s: PHP version
+#: functions/security.php
+msgid "PHP %s is no longer maintained: ask your host for a recent version"
+msgstr "PHP %s n'est plus maintenu : demandez une version récente à l'hébergeur"
+
+#. %s: PHP version
+#: functions/security.php
+msgid "PHP %s is maintained"
+msgstr "PHP %s maintenu"
+
+#: functions/security-admin.php
+msgid "Login"
+msgstr "Connexion"
+
+#: functions/security-admin.php
+msgid "Protects the login page against bots that try passwords over and over."
+msgstr "Protège la page de connexion contre les robots qui testent des mots de passe en boucle."
+
+#: functions/security-admin.php
+msgid "Login address"
+msgstr "Adresse de connexion"
+
+#: functions/security-admin.php
+msgid "Limit attempts"
+msgstr "Limiter les tentatives"
+
+#: functions/security-admin.php
+msgid "Temporarily locks out an IP address after several wrong passwords."
+msgstr "Verrouille temporairement une adresse IP après plusieurs mots de passe erronés."
+
+#: functions/security-admin.php
+msgid "Trusted proxies"
+msgstr "Proxys de confiance"
+
+#: functions/security-admin.php
+msgid "Behind Cloudflare, a CDN or a load balancer, all visitors seem to come from the proxy's address: a lockout would block everyone."
+msgstr "Derrière Cloudflare, un CDN ou un répartiteur de charge, tous les visiteurs semblent venir de l'adresse du proxy : un verrouillage bloquerait tout le monde."
+
+#: functions/security-admin.php
+msgid "Shows \"Incorrect username or password\" without saying which one: a bot can no longer guess existing usernames."
+msgstr "Affiche « Identifiant ou mot de passe incorrect » sans préciser lequel : un robot ne peut plus deviner les identifiants existants."
+
+#: functions/security-admin.php
+msgid "Emails the administrator concerned when they log in from an unknown IP address."
+msgstr "Envoie un email à l'administrateur concerné lorsqu'il se connecte depuis une adresse IP inconnue."
+
+#: functions/security-admin.php
+msgid "Discretion"
+msgstr "Discrétion"
+
+#: functions/security-admin.php
+msgid "Reduces the information the site gives to bots looking for known vulnerabilities."
+msgstr "Réduit les informations que le site donne aux robots qui cherchent des failles connues."
+
+#: functions/security-admin.php
+msgid "Removes the \"generator\" tag, the version from RSS feeds and files (?ver=), and PHP's X-Powered-By header."
+msgstr "Retire la balise « generator », la version des flux RSS et des fichiers (?ver=), et l'en-tête X-Powered-By de PHP."
+
+#: functions/security-admin.php
+msgid "Prevents discovering account usernames through ?author=1, the REST API and oEmbed embeds."
+msgstr "Empêche de découvrir les identifiants des comptes par ?author=1, par l'API REST et par les intégrations oEmbed."
+
+#: functions/security-admin.php
+msgid "Hide author pages"
+msgstr "Masquer les pages auteur"
+
+#: functions/security-admin.php
+msgid "/author/username/ pages show a not-found page to visitors (with the previous option)."
+msgstr "Les pages /author/identifiant/ affichent une page introuvable aux visiteurs (avec l'option précédente)."
+
+#: functions/security-admin.php
+msgid "Unused features"
+msgstr "Fonctions inutilisées"
+
+#: functions/security-admin.php
+msgid "Disables entry points that most brochure sites do not need."
+msgstr "Désactive des portes d'entrée dont la plupart des sites vitrines n'ont pas besoin."
+
+#: functions/security-admin.php
+msgid "Legacy interface, a frequent target of password attacks. Only needed for Jetpack and a few mobile apps."
+msgstr "Ancienne interface, cible fréquente des attaques par mot de passe. Nécessaire uniquement pour Jetpack et quelques applications mobiles."
+
+#: functions/security-admin.php
+msgid "Disable application passwords"
+msgstr "Désactiver les mots de passe d'application"
+
+#: functions/security-admin.php
+msgid "These passwords allow logging in to the API without the usual two-step verification. Useless without a connected external application."
+msgstr "Ces mots de passe permettent de se connecter à l'API sans la double vérification habituelle. Inutiles sans application externe connectée."
+
+#: functions/security-admin.php
+msgid "Removes the theme and plugin code editor: a hacked account can no longer inject code there."
+msgstr "Retire l'éditeur de code des thèmes et extensions : un compte piraté ne peut plus y injecter de code."
+
+#: functions/security-admin.php
+msgid "Block PHP in media"
+msgstr "Bloquer le PHP dans les médias"
+
+#: functions/security-admin.php
+msgid "Prevents a PHP script dropped into the media folder through a vulnerability from running."
+msgstr "Empêche l'exécution d'un script PHP déposé dans le dossier des médias par une faille."
+
+#: functions/security-admin.php
+msgid "Instructions sent to browsers to limit hijacking of the site."
+msgstr "Consignes envoyées aux navigateurs pour limiter les détournements du site."
+
+#: functions/security-admin.php
+msgid "Recommended headers"
+msgstr "En-têtes recommandés"
+
+#: functions/security-admin.php
+msgid "X-Content-Type-Options, X-Frame-Options (the site can no longer be displayed in a frame on another site), Referrer-Policy and Permissions-Policy."
+msgstr "X-Content-Type-Options, X-Frame-Options (le site ne peut plus être affiché dans un cadre d'un autre site), Referrer-Policy et Permissions-Policy."
+
+#: functions/security-admin.php
+msgid "Force HTTPS (HSTS)"
+msgstr "Forcer HTTPS (HSTS)"
+
+#: functions/security-admin.php
+msgid "Browsers will refuse any insecure connection to the site for one year."
+msgstr "Les navigateurs refuseront toute connexion non sécurisée au site pendant un an."
+
+#: functions/security-admin.php
+msgid "leave empty to keep wp-login.php"
+msgstr "laisser vide pour garder wp-login.php"
+
+#. %s: OPTIMIZR_DISABLE_CUSTOM_LOGIN constant name
+#: functions/security-admin.php
+msgid "Disabled by the %s constant in wp-config.php: login goes through wp-login.php."
+msgstr "Désactivée par la constante %s dans wp-config.php : la connexion se fait par wp-login.php."
+
+#: functions/security-admin.php
+msgid "Not available on a multisite network."
+msgstr "Non disponible sur un réseau multisite."
+
+#. %s: link to the new login address
+#: functions/security-admin.php
+msgid "<strong>Login:</strong> %s — wp-login.php and /wp-admin/ show a not-found page to visitors."
+msgstr "<strong>Connexion :</strong> %s — wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs."
+
+#. %s: PHP line to add to wp-config.php
+#: functions/security-admin.php
+msgid "Bookmark the new address: an email reminds the administrator of it after each change. If you get locked out, add %s to wp-config.php."
+msgstr "Ajoutez la nouvelle adresse à vos favoris : un email la rappelle à l'administrateur à chaque changement. En cas de blocage, ajoutez %s dans wp-config.php."
+
+#: functions/security-admin.php
+msgid "Lock out after"
+msgstr "Verrouiller après"
+
+#: functions/security-admin.php
+msgid "failures, for"
+msgstr "échecs, pendant"
+
+#: functions/security-admin.php
+msgid "minutes"
+msgstr "minutes"
+
+#: functions/security-admin.php
+msgid "IP addresses never locked out (one per line)"
+msgstr "Adresses IP jamais verrouillées (une par ligne)"
+
+#. %s: current IP address
+#: functions/security-admin.php
+msgid "Your current IP address: %s. Add it if it is static, so you never lock yourself out."
+msgstr "Votre adresse IP actuelle : %s. Ajoutez-la si elle est fixe, pour ne jamais vous bloquer vous-même."
+
+#: functions/security-admin.php
+msgid "Site behind Cloudflare"
+msgstr "Site derrière Cloudflare"
+
+#: functions/security-admin.php
+msgid "Visitor address read from the CF-Connecting-IP header, only for requests coming from Cloudflare servers."
+msgstr "Adresse du visiteur lue dans l'en-tête CF-Connecting-IP, pour les seules requêtes venant des serveurs de Cloudflare."
+
+#: functions/security-admin.php
+msgid "Other proxies: IP addresses or CIDR ranges, one per line"
+msgstr "Autres proxys : adresses IP ou plages CIDR, une par ligne"
+
+#: functions/security-admin.php
+msgid "For a request coming from these addresses, the visitor's address is read from the X-Forwarded-For header. Only add your own proxies' addresses (host, CDN, load balancer): a declared address can pass on any visitor address. Leave empty if the site is not behind a proxy."
+msgstr "Pour une requête venant de ces adresses, celle du visiteur est lue dans l'en-tête X-Forwarded-For. N'ajoutez que les adresses de vos proxys (hébergeur, CDN, répartiteur de charge) : une adresse déclarée peut transmettre n'importe quelle adresse de visiteur. Laissez vide si le site n'est derrière aucun proxy."
+
+#. 1: proxy IP address, 2: visitor IP address used
+#: functions/security-admin.php
+msgid "Your request goes through the proxy %1$s: the address used for you is %2$s."
+msgstr "Votre requête passe par le proxy %1$s : votre adresse retenue est %2$s."
+
+#. %s: proxy IP address
+#: functions/security-admin.php
+msgid "Your request comes from the declared proxy %s, but it does not pass on any readable visitor address: its own address is used."
+msgstr "Votre requête vient du proxy déclaré %s, mais il ne transmet aucune adresse de visiteur lisible : c'est la sienne qui est retenue."
+
+#. %s: IP address seen by the server
+#: functions/security-admin.php
+msgid "Your request seems to go through a proxy (address seen by the server: %s). If it is yours, declare it here."
+msgstr "Votre requête semble passer par un proxy (adresse vue par le serveur : %s). S'il est le vôtre, déclarez-le ici."
+
+#. %s: DISALLOW_FILE_EDIT constant name
+#: functions/security-admin.php
+msgid "Already disabled by the %s constant in wp-config.php."
+msgstr "Déjà désactivé par la constante %s dans wp-config.php."
+
+#. %s: DISALLOW_FILE_EDIT constant name
+#: functions/security-admin.php
+msgid "Already set by the %s constant in wp-config.php."
+msgstr "Déjà réglé par la constante %s dans wp-config.php."
+
+#. %s: path of the .htaccess file
+#: functions/security-admin.php
+msgid "Rule present in %s."
+msgstr "Règle présente dans %s."
+
+#. %s: path of the .htaccess file
+#: functions/security-admin.php
+msgid "Unable to write %s: check the folder permissions."
+msgstr "Impossible d'écrire %s : vérifiez les droits du dossier."
+
+#. %s: uploads folder path
+#: functions/security-admin.php
+msgid "This server is not Apache: the .htaccess rule has no effect. Ask your host to block PHP execution in %s."
+msgstr "Ce serveur n'est pas Apache : la règle .htaccess est sans effet. Demandez à l'hébergeur de bloquer l'exécution de PHP dans %s."
+
+#: functions/security-admin.php
+msgid "Only available for a site served over HTTPS."
+msgstr "Disponible uniquement pour un site servi en HTTPS."
+
+#: functions/security-admin.php
+msgid "Force HTTPS"
+msgstr "Forcer HTTPS"
+
+#: functions/security-admin.php
+msgid "Only enable this if the site and all its subdomains work over HTTPS (together with \"Recommended headers\")."
+msgstr "À n'activer que si le site et tous ses sous-domaines fonctionnent en HTTPS (avec « En-têtes recommandés »)."
+
+#: functions/security-admin.php
+msgid "Custom login address"
+msgstr "Adresse de connexion personnalisée"
+
+#: functions/security-admin.php
+msgid "Login attempts limited"
+msgstr "Tentatives de connexion limitées"
+
+#: functions/security-admin.php
+msgid "WordPress version hidden"
+msgstr "Version de WordPress masquée"
+
+#: functions/security-admin.php
+msgid "User enumeration blocked"
+msgstr "Liste des comptes bloquée"
+
+#: functions/security-admin.php
+msgid "XML-RPC disabled"
+msgstr "XML-RPC désactivé"
+
+#: functions/security-admin.php
+msgid "File editor disabled"
+msgstr "Éditeur de fichiers désactivé"
+
+#: functions/security-admin.php
+msgid "Lockout"
+msgstr "Verrouillage"
+
+#: functions/security-admin.php
+msgid "Security overview"
+msgstr "Bilan de sécurité"
+
+#. 1: number of enabled protections, 2: total number of protections
+#: functions/security-admin.php
+msgid "%1$s of %2$s protection enabled."
+msgid_plural "%1$s of %2$s protections enabled."
+msgstr[0] "%1$s protection(s) sur %2$s activée(s)."
+msgstr[1] "%1$s protection(s) sur %2$s activée(s)."
+
+#: functions/security-admin.php
+msgctxt "security log"
+msgid "Log"
+msgstr "Journal"
+
+#: functions/security-admin.php
+msgid "Lockouts and alerts from the last 30 days."
+msgstr "Verrouillages et alertes des 30 derniers jours."
+
+#: functions/security-admin.php
+msgid "No events."
+msgstr "Aucun évènement."
+
+#: functions/tools.php
+msgid "This file is not an Optimizr export."
+msgstr "Ce fichier n'est pas un export d'Optimizr."
+
+#: functions/tools.php
+msgid "This file comes from a newer version of Optimizr. Update the plugin first."
+msgstr "Ce fichier vient d'une version plus récente d'Optimizr. Mettez d'abord le plugin à jour."
+
+#: functions/tools.php
+msgid "No file received. Choose a .json file exported from Optimizr."
+msgstr "Aucun fichier reçu. Choisissez un fichier .json exporté depuis Optimizr."
+
+#: functions/tools.php
+msgid "File too large (1 MB maximum)."
+msgstr "Fichier trop volumineux (1 Mo maximum)."
+
+#: functions/tools.php
+msgid "The file is not valid JSON."
+msgstr "Le fichier n'est pas un JSON valide."
+
+#: functions/tools.php
+msgid "Tools"
+msgstr "Outils"
+
+#: functions/tools.php
+msgid "Copy this site's configuration to another one in seconds."
+msgstr "Reproduisez la configuration de ce site sur un autre en quelques secondes."
+
+#: functions/tools.php
+msgid "Import failed."
+msgstr "Import impossible."
+
+#. %s: number of imported settings
+#: functions/tools.php
+msgid "%s setting imported."
+msgid_plural "%s settings imported."
+msgstr[0] "%s réglage importé."
+msgstr[1] "%s réglages importés."
+
+#. 1: number of ignored settings, 2: comma-separated list of their names
+#: functions/tools.php
+msgid "%1$s ignored: %2$s."
+msgid_plural "%1$s ignored: %2$s."
+msgstr[0] "%1$s ignoré : %2$s."
+msgstr[1] "%1$s ignorés : %2$s."
+
+#: functions/tools.php
+msgid "Check the related tabs."
+msgstr "Vérifiez les onglets concernés."
+
+#: functions/tools.php
+msgid "Choices saved."
+msgstr "Choix enregistrés."
+
+#: functions/tools.php
+msgid "They will be applied if the plugin is deleted."
+msgstr "Ils seront appliqués si le plugin est supprimé."
+
+#: functions/tools.php
+msgid "Export settings"
+msgstr "Exporter les réglages"
+
+#. %s: number of settings
+#: functions/tools.php
+msgid "Downloads a JSON file with this site's %s Optimizr setting, including disabled modules."
+msgid_plural "Downloads a JSON file with this site's %s Optimizr settings, including disabled modules."
+msgstr[0] "Télécharge un fichier JSON avec le %s réglage d'Optimizr de ce site, modules désactivés compris."
+msgstr[1] "Télécharge un fichier JSON avec les %s réglages d'Optimizr de ce site, modules désactivés compris."
+
+#: functions/tools.php
+msgid "Include API keys"
+msgstr "Inclure les clés API"
+
+#: functions/tools.php
+msgid "(only share with a trusted site)"
+msgstr "(à ne transmettre qu'à un site de confiance)"
+
+#: functions/tools.php
+msgid "Download file"
+msgstr "Télécharger le fichier"
+
+#: functions/tools.php
+msgid "Import settings"
+msgstr "Importer des réglages"
+
+#: functions/tools.php
+msgid "Settings in the file replace those of this site; the others stay unchanged."
+msgstr "Les réglages du fichier remplacent ceux de ce site ; les autres ne changent pas."
+
+#: functions/tools.php
+msgid "Export file"
+msgstr "Fichier d'export"
+
+#. %s: URL of the current site
+#: functions/tools.php
+msgid "Replace the source site address with %s"
+msgstr "Remplacer l'adresse du site d'origine par %s"
+
+#: functions/tools.php
+msgid "(robots.txt…)"
+msgstr "(robots.txt…)"
+
+#: functions/tools.php
+msgctxt "button"
+msgid "Import"
+msgstr "Importer"
+
+#: functions/tools.php
+msgid "Remember to check the service IDs afterwards (Google Analytics, Clarity…): they are specific to each site."
+msgstr "Pensez à vérifier ensuite les identifiants des services (Google Analytics, Clarity…) : ils sont propres à chaque site."
+
+#: functions/uninstall.php
+msgid "Modules, SEO patterns, cookie services, API keys, security… If kept, they will be restored on reinstall."
+msgstr "Modules, motifs SEO, services cookies, clés API, sécurité… Conservés, ils seront retrouvés à la réinstallation."
+
+#: functions/uninstall.php
+msgid "Redirects and content SEO"
+msgstr "Redirections et SEO des contenus"
+
+#: functions/uninstall.php
+msgid "Redirects, and the titles, descriptions, images and “noindex” settings entered on each piece of content."
+msgstr "Les redirections, et les titres, descriptions, images et « ne pas indexer » saisis sur chaque contenu."
+
+#: functions/uninstall.php
+msgid "Logs and history"
+msgstr "Journaux et historiques"
+
+#: functions/uninstall.php
+msgid "Pages not found, security log, sitemap history, AI usage, link analysis."
+msgstr "Pages introuvables, journal de sécurité, historique du sitemap, consommation de l'IA, analyse des liens."
+
+#: functions/uninstall-admin.php
+msgid "Plugin deletion"
+msgstr "Suppression du plugin"
+
+#: functions/uninstall-admin.php
+msgid "What is erased when Optimizr is deleted from the plugins list. These choices are also offered when you deactivate it."
+msgstr "Ce qui est effacé quand Optimizr est supprimé depuis la liste des extensions. Ces choix sont aussi proposés quand vous le désactivez."
+
+#. %s: name of a group of data (settings, logs…)
+#: functions/uninstall-admin.php js/optimizr-uninstall.js
+msgid "Erase: %s"
+msgstr "Effacer : %s"
+
+#: functions/uninstall-admin.php
+msgid "Scheduled tasks, caches and generated files (sitemap, IndexNow key, robots.txt written by Optimizr if it has not been modified) are always deleted. Pages, media and alt texts are never touched. Simply deactivating the plugin deletes no data."
+msgstr "Les tâches planifiées, les caches et les fichiers générés (sitemap, clé IndexNow, robots.txt écrit par Optimizr s'il n'a pas été modifié) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés. La simple désactivation ne supprime aucune donnée."
+
+#: js/optimizr-uninstall.js
+msgid "Deactivate Optimizr"
+msgstr "Désactiver Optimizr"
+
+#: js/optimizr-uninstall.js
+msgid "Deactivating erases nothing. If you then delete the plugin, what should be erased with it? Anything left unchecked is kept and will be restored if you reinstall."
+msgstr "La désactivation n'efface rien. Si vous supprimez ensuite le plugin, que faut-il effacer avec lui ? Ce qui n'est pas coché est conservé et sera retrouvé en cas de réinstallation."
+
+#: js/optimizr-uninstall.js
+msgid "Scheduled tasks, caches and generated files (sitemap, IndexNow key) are always deleted. Pages, media and alt texts are never touched."
+msgstr "Les tâches planifiées, caches et fichiers générés (sitemap, clé IndexNow) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés."
+
+#: js/optimizr-uninstall.js
+msgid "Deactivate"
+msgstr "Désactiver"
+
+#: js/optimizr-uninstall.js
+msgid "Your choices could not be saved. Reload the page and try again."
+msgstr "Les choix n'ont pas pu être enregistrés. Rechargez la page et réessayez."
+
+#: functions/updates.php
+msgctxt "update channel"
+msgid "Stable"
+msgstr "Stable"
+
+#: functions/updates.php
+msgctxt "update channel"
+msgid "Beta"
+msgstr "Beta"
+
+#: functions/updates.php
+msgctxt "update channel"
+msgid "Development (main)"
+msgstr "Développement (main)"
+
+#: functions/updates.php
+msgid "Check for updates"
+msgstr "Vérifier les mises à jour"
+
+#: functions/updates.php
+msgctxt "update channel"
+msgid "Channel"
+msgstr "Canal"
+
+#: functions/updates.php
+msgid "Followed channel"
+msgstr "Canal suivi"
+
+#. %s: name of the development branch, "main"
+#: functions/updates.php
+msgid "Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered."
+msgstr "Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans %s, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée."
+
+#: functions/updates.php
+msgid "The “Check for updates” button at the top of the page queries GitHub immediately, then “Update now” installs the new version without leaving the page."
+msgstr "Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page."
+
+#: functions/updates.php
+msgid "GitHub unreachable"
+msgstr "GitHub injoignable"
+
+#. %s: version number
+#: js/optimizr-updates.js
+msgid "Installing version %s…"
+msgstr "Installation de la version %s…"
+
+#. %s: version number
+#: js/optimizr-updates.js
+msgid "Version %s installed. Reloading…"
+msgstr "Version %s installée. Rechargement…"
+
+#: js/optimizr-updates.js
+msgid "WordPress cannot access the site files. Add the FTP credentials to wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) or update from the Plugins page."
+msgstr "WordPress n'a pas accès aux fichiers du site. Renseignez les accès FTP dans wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) ou mettez à jour depuis la page Extensions."
+
+#. %s: error message
+#: js/optimizr-updates.js
+msgid "The update failed: %s"
+msgstr "La mise à jour a échoué : %s"
+
+#: js/optimizr-updates.js
+msgid "The update failed."
+msgstr "La mise à jour a échoué."
+
+#: js/optimizr-updates.js
+msgid "The update did not complete. Reload the page to check the installed version."
+msgstr "La mise à jour n'a pas abouti. Rechargez la page pour vérifier la version installée."
+
+#: js/optimizr-updates.js
+msgid "Checking…"
+msgstr "Vérification en cours…"
+
+#. %s: error message
+#: js/optimizr-updates.js
+msgid "The check failed: %s"
+msgstr "La vérification a échoué : %s"
+
+#: js/optimizr-updates.js
+msgid "The check failed."
+msgstr "La vérification a échoué."
+
+#. %s: version number
+#: js/optimizr-updates.js
+msgid "Version %s available."
+msgstr "Version %s disponible."
+
+#: js/optimizr-updates.js
+msgid "Update now"
+msgstr "Mettre à jour"
+
+#: js/optimizr-updates.js
+msgid "Optimizr is up to date."
+msgstr "Optimizr est à jour."
+
+#: functions/activation.php
+msgctxt "sitemap generation trigger"
+msgid "plugin update"
+msgstr "mise à jour du plugin"
+
+#. Description of the plugin
+#: optimizr.php
+msgid "Cookie consent (Tarteaucitron), SEO, AI assistant, custom post types and maintenance tools in a single settings page, enabled module by module."
+msgstr "Cookies et RGPD (Tarteaucitron), SEO, assistant IA, types de contenu personnalisés et outils de maintenance, réunis dans une seule page de réglages et activables module par module."

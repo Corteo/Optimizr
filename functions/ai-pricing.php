@@ -41,14 +41,22 @@ function haptic_ai_providers()
             'pricing_url'  => 'https://developers.openai.com/api/docs/pricing',
             'models'       => [
                 'gpt-5.6-luna' => [
-                    'label' => 'GPT-5.6 Luna — récent et économique',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — recent and affordable', 'optimizr'),
+                        'GPT-5.6 Luna'
+                    ),
                     'input' => 0.20, 'output' => 1.20,
                     // Détail « auto » : image envoyée sans réduction (taille « large » du site)
                     'vision' => ['method' => 'patch', 'multiplier' => 1.2, 'max_patches' => 0],
                     'options' => ['reasoning_effort' => 'none'],
                 ],
                 'gpt-4.1-mini' => [
-                    'label' => 'GPT-4.1 Mini — réponses stables et prévisibles',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — stable, predictable answers', 'optimizr'),
+                        'GPT-4.1 Mini'
+                    ),
                     'input' => 0.40, 'output' => 1.60,
                     'vision' => ['method' => 'patch', 'multiplier' => 1.62],
                 ],
@@ -58,7 +66,11 @@ function haptic_ai_providers()
                     'vision' => ['method' => 'patch', 'multiplier' => 2.46],
                 ],
                 'gpt-4.1' => [
-                    'label' => 'GPT-4.1 — qualité maximale',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — maximum quality', 'optimizr'),
+                        'GPT-4.1'
+                    ),
                     'input' => 2.00, 'output' => 8.00,
                     'vision' => ['method' => 'tile', 'base' => 85, 'tile' => 170],
                 ],
@@ -68,7 +80,11 @@ function haptic_ai_providers()
                     'vision' => ['method' => 'tile', 'base' => 85, 'tile' => 170],
                 ],
                 'gpt-4o-mini' => [
-                    'label' => 'GPT-4o Mini — économique en texte, cher en images',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — affordable for text, expensive for images', 'optimizr'),
+                        'GPT-4o Mini'
+                    ),
                     'input' => 0.15, 'output' => 0.60,
                     'vision' => ['method' => 'tile', 'base' => 2833, 'tile' => 5667],
                 ],
@@ -79,7 +95,11 @@ function haptic_ai_providers()
                     'options' => ['reasoning_effort' => 'none'],
                 ],
                 'gpt-5.6-sol' => [
-                    'label' => 'GPT-5.6 Sol — le plus capable',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — the most capable', 'optimizr'),
+                        'GPT-5.6 Sol'
+                    ),
                     'input' => 4.00, 'output' => 20.00,
                     'vision' => ['method' => 'patch', 'multiplier' => 1.2, 'max_patches' => 0],
                     'options' => ['reasoning_effort' => 'none'],
@@ -96,18 +116,30 @@ function haptic_ai_providers()
             'pricing_url'  => 'https://platform.claude.com/docs/en/about-claude/pricing',
             'models'       => [
                 'claude-haiku-4-5' => [
-                    'label' => 'Claude Haiku 4.5 — rapide et économique',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — fast and affordable', 'optimizr'),
+                        'Claude Haiku 4.5'
+                    ),
                     'input' => 1.00, 'output' => 5.00,
                     'vision' => ['method' => 'claude', 'max_edge' => 1568, 'max_tokens' => 1568],
                 ],
                 'claude-sonnet-5-5' => [
-                    'label' => 'Claude Sonnet 5.5 — meilleure rédaction',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — better writing', 'optimizr'),
+                        'Claude Sonnet 5.5'
+                    ),
                     'input' => 2.00, 'output' => 10.00,
                     'vision' => ['method' => 'claude', 'max_edge' => 2576, 'max_tokens' => 4784],
                     'options' => ['effort' => 'low', 'thinking' => 'between_tools', 'fallbacks' => true],
                 ],
                 'claude-opus-5-5' => [
-                    'label' => 'Claude Opus 5.5 — le plus capable',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — the most capable', 'optimizr'),
+                        'Claude Opus 5.5'
+                    ),
                     'input' => 4.00, 'output' => 20.00,
                     'vision' => ['method' => 'claude', 'max_edge' => 2576, 'max_tokens' => 4784],
                     // Réflexion toujours active sur ce modèle : l'effort « low » la limite
@@ -126,19 +158,31 @@ function haptic_ai_providers()
             'pricing_url'  => 'https://ai.google.dev/gemini-api/docs/pricing',
             'models'       => [
                 'gemini-3.5-flash-lite' => [
-                    'label' => 'Gemini 3.5 Flash-Lite — recommandé par Google, économique',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — recommended by Google, affordable', 'optimizr'),
+                        'Gemini 3.5 Flash-Lite'
+                    ),
                     'input' => 0.30, 'output' => 2.50,
                     'vision' => ['method' => 'fixed', 'tokens' => 1120],
                     'hidden_output' => 50,
                 ],
                 'gemini-3.1-flash-lite' => [
-                    'label' => 'Gemini 3.1 Flash-Lite — arrêt prévu le 7 mai 2027',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — scheduled for retirement on May 7, 2027', 'optimizr'),
+                        'Gemini 3.1 Flash-Lite'
+                    ),
                     'input' => 0.25, 'output' => 1.50,
                     'vision' => ['method' => 'fixed', 'tokens' => 1120],
                     'hidden_output' => 50,
                 ],
                 'gemini-3.8-flash' => [
-                    'label' => 'Gemini 3.8 Flash — le plus capable (tarif doublé au 1er janvier 2027)',
+                    'label' => sprintf(
+                        /* translators: %s: AI model name */
+                        __('%s — the most capable (price doubles on January 1, 2027)', 'optimizr'),
+                        'Gemini 3.8 Flash'
+                    ),
                     'input' => 0.75, 'output' => 3.75,
                     'price_changes' => ['2027-01-01' => ['input' => 1.50, 'output' => 7.50]],
                     'vision' => ['method' => 'fixed', 'tokens' => 1120],
@@ -461,21 +505,23 @@ function haptic_ai_estimate_current($task, array $ids)
 function haptic_ai_format_cost($amount)
 {
     if ($amount === null) {
-        return 'tarif inconnu';
+        return __('unknown price', 'optimizr');
     }
     if ($amount > 0 && $amount < 0.01) {
-        return '< 0,01 $';
+        return __('< $0.01', 'optimizr');
     }
-    return number_format_i18n($amount, $amount < 10 ? 2 : 0) . ' $';
+    /* translators: %s: amount in US dollars */
+    return sprintf(__('$%s', 'optimizr'), number_format_i18n($amount, $amount < 10 ? 2 : 0));
 }
 
 /** Coût unitaire lisible, avec plus de décimales : « 0,0004 $ ». */
 function haptic_ai_format_unit($amount)
 {
     if ($amount === null) {
-        return 'tarif inconnu';
+        return __('unknown price', 'optimizr');
     }
-    return number_format_i18n($amount, $amount < 0.01 ? 4 : 3) . ' $';
+    /* translators: %s: amount in US dollars */
+    return sprintf(__('$%s', 'optimizr'), number_format_i18n($amount, $amount < 0.01 ? 4 : 3));
 }
 
 /* ---------- Consommation réelle ---------- */

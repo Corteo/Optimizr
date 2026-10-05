@@ -39,7 +39,7 @@ function haptic_seo_variable($code, $post_id)
             break;
         case '{categorie}':
             $categories = get_the_category($post_id);
-            $value = (!empty($categories)) ? implode(', ', wp_list_pluck($categories, 'name')) : 'Sans catégorie';
+            $value = (!empty($categories)) ? implode(', ', wp_list_pluck($categories, 'name')) : __('Uncategorized', 'optimizr');
             break;
         case '{resume}':
             $value = html_entity_decode(get_the_excerpt($post_id), ENT_QUOTES | ENT_HTML5, 'UTF-8');

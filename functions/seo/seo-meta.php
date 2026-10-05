@@ -11,7 +11,7 @@ function haptic_add_seo_metabox()
     foreach ((array) $post_types as $post_type) {
         add_meta_box(
             'haptic_seo_meta',
-            'SEO & partage',
+            __('SEO & sharing', 'optimizr'),
             'haptic_seo_meta_callback',
             $post_type,
             'normal',
@@ -30,7 +30,8 @@ function haptic_enqueue_seo_scripts($hook)
     $dir = plugin_dir_path(dirname(__FILE__, 2)) . 'gutenberg/';
     $url = plugin_dir_url(dirname(__FILE__, 2)) . 'gutenberg/';
 
-    wp_enqueue_script('haptic-seo-preview', $url . 'seo-preview.js', [], filemtime($dir . 'seo-preview.js'), true);
+    wp_enqueue_script('haptic-seo-preview', $url . 'seo-preview.js', ['wp-i18n'], filemtime($dir . 'seo-preview.js'), true);
+    wp_set_script_translations('haptic-seo-preview', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
     wp_enqueue_style('haptic-seo-preview-style', $url . 'seo-preview.css', [], filemtime($dir . 'seo-preview.css'));
 }
 add_action('admin_enqueue_scripts', 'haptic_enqueue_seo_scripts');
@@ -51,30 +52,37 @@ function haptic_seo_meta_callback($post)
     <p>
         <label>
             <input type="checkbox" name="haptic_noindex" value="1" <?php checked($noindex, 1); ?>>
-            Ne pas indexer ce contenu dans les moteurs de recherche
+            <?php esc_html_e('Do not index this content in search engines', 'optimizr'); ?>
         </label>
     </p>
 
-    <p class="haptic-seo-hint">Laissez un champ vide pour utiliser le motif défini dans <a href="<?php echo esc_url(admin_url('admin.php?page=haptic-options&tab=seo')); ?>">Optimizr › SEO</a> (affiché en gris).</p>
+    <p class="haptic-seo-hint"><?php
+        /* translators: %s: URL of the Optimizr SEO settings tab */
+        echo wp_kses(sprintf(__('Leave a field empty to use the pattern set in <a href="%s">Optimizr › SEO</a> (shown in grey).', 'optimizr'), esc_url(admin_url('admin.php?page=haptic-options&tab=seo'))), ['a' => ['href' => []]]);
+    ?></p>
 
     <p>
-        <label for="haptic_og_title"><strong>Titre SEO</strong> <span class="haptic-seo-hint">(onglet du navigateur, Google, partages)</span></label><br>
+        <label for="haptic_og_title"><strong><?php esc_html_e('SEO title', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(browser tab, Google, shares)', 'optimizr'); ?></span></label><br>
         <input type="text" id="haptic_og_title" name="haptic_og_title" value="<?php echo esc_attr($custom_title); ?>" placeholder="<?php echo esc_attr($seo['pattern_title']); ?>" class="widefat">
         <span class="haptic-char-count" id="haptic_title_count">0/60</span>
-        <small class="haptic-seo-hint">Idéalement entre 50 et 60 caractères.</small>
+        <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 50 and 60 characters.', 'optimizr'); ?></small>
     </p>
 
     <p>
-        <label for="haptic_og_desc"><strong>Description SEO</strong> <span class="haptic-seo-hint">(Google, partages)</span></label><br>
+        <label for="haptic_og_desc"><strong><?php esc_html_e('SEO description', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(Google, shares)', 'optimizr'); ?></span></label><br>
         <textarea id="haptic_og_desc" name="haptic_og_desc" class="widefat" rows="3" placeholder="<?php echo esc_attr($seo['pattern_description']); ?>"><?php echo esc_textarea($custom_desc); ?></textarea>
         <span class="haptic-char-count" id="haptic_desc_count">0/160</span>
-        <small class="haptic-seo-hint">Idéalement entre 120 et 160 caractères.</small>
+        <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
     </p>
 
     <?php if (haptic_is_module_active('ai') && function_exists('haptic_ai_user_can') && haptic_ai_user_can()) : ?>
         <p>
-            <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_ai_nonce')); ?>">
-                Générer la description avec l'IA
+            <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_ai_nonce')); ?>"
+                data-label="<?php esc_attr_e('Generate the description with AI', 'optimizr'); ?>"
+                data-label-loading="<?php esc_attr_e('Generating...', 'optimizr'); ?>"
+                data-error="<?php /* translators: %s: error message */ esc_attr_e('Error: %s', 'optimizr'); ?>"
+                data-network-error="<?php esc_attr_e('The request failed. Check your connection.', 'optimizr'); ?>">
+                <?php esc_html_e('Generate the description with AI', 'optimizr'); ?>
             </button>
         </p>
         <?php
@@ -86,7 +94,7 @@ function haptic_seo_meta_callback($post)
 
                 button.addEventListener('click', function() {
                     button.disabled = true;
-                    button.innerText = 'Génération...';
+                    button.innerText = button.dataset.labelLoading;
 
                     fetch(ajaxurl, {
                             method: 'POST',
@@ -110,16 +118,16 @@ function haptic_seo_meta_callback($post)
                                 textarea.value = data.data.description;
                                 textarea.dispatchEvent(new Event('input'));
                             } else {
-                                alert('Erreur : ' + data.data);
+                                alert(button.dataset.error.replace('%s', function () { return data.data; }));
                             }
                         })
                         // Réseau coupé, délai dépassé ou réponse invalide : le bouton redevient utilisable
                         .catch(() => {
-                            alert('La requête a échoué. Vérifiez votre connexion.');
+                            alert(button.dataset.networkError);
                         })
                         .finally(() => {
                             button.disabled = false;
-                            button.innerText = 'Générer la description avec l\'IA';
+                            button.innerText = button.dataset.label;
                         });
                 });
             });
@@ -128,12 +136,12 @@ function haptic_seo_meta_callback($post)
     <?php endif; ?>
 
     <p>
-        <label for="haptic_og_image"><strong>Image de partage</strong> <span class="haptic-seo-hint">(URL)</span></label><br>
-        <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($seo['default_image'] ?: 'Image à la une du contenu'); ?>" class="widefat">
-        <small class="haptic-seo-hint">Par défaut : l'image à la une. Format idéal : 1200 × 630 px.</small>
+        <label for="haptic_og_image"><strong><?php esc_html_e('Share image', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(URL)', 'optimizr'); ?></span></label><br>
+        <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($seo['default_image'] ?: __('Content featured image', 'optimizr')); ?>" class="widefat">
+        <small class="haptic-seo-hint"><?php esc_html_e('Default: the featured image. Ideal size: 1200 × 630 px.', 'optimizr'); ?></small>
     </p>
 
-    <h3>Aperçu dans Google</h3>
+    <h3><?php esc_html_e('Google preview', 'optimizr'); ?></h3>
     <div id="haptic_seo_preview" class="haptic-seo-preview-box">
         <p class="seo-title"><?php echo esc_html($seo['title']); ?></p>
         <p class="seo-url"><?php echo esc_url(get_permalink($post->ID)); ?></p>
