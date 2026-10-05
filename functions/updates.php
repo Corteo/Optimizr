@@ -51,7 +51,7 @@ add_action('admin_init', function () {
 add_action('haptic_header_actions', function () {
     ?>
     <span id="haptic-update-status" class="optimizr-header__status" role="status"></span>
-    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="haptic-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HAPTIC_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
+    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="haptic-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HAPTIC_OPTIMIZR_FILE)); ?>">
         <?php echo wp_kses(haptic_icon('refresh', 16), haptic_kses_ui()); ?>Vérifier les mises à jour
     </button>
     <?php
@@ -107,7 +107,7 @@ function haptic_initialize_updater()
     $updater = PucFactory::buildUpdateChecker(
         // Sans « .git » : la librairie en déduit l'URL d'API /repos/Corteo/Optimizr
         'https://github.com/Corteo/Optimizr/',
-        plugin_dir_path(__DIR__) . 'hpt_options.php',
+        HAPTIC_OPTIMIZR_FILE,
         'optimizr'
     );
 

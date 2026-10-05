@@ -10,7 +10,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 slug="${1:-optimizr}"
-version="$(sed -n 's/^ \* Version: *//p' "$root/hpt_options.php")"
+version="$(sed -n 's/^ \* Version: *//p' "$root/optimizr.php")"
 out="$root/dist/$slug"
 
 rm -rf "$out" "$root/dist/$slug-$version.zip"

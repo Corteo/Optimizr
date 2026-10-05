@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 function haptic_uninstall_plugin_basename()
 {
-    return plugin_basename(HAPTIC_OPTIMIZR_PATH . 'hpt_options.php');
+    return plugin_basename(HAPTIC_OPTIMIZR_FILE);
 }
 
 /**

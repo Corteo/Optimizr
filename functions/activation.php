@@ -340,6 +340,6 @@ function haptic_options_maybe_upgrade()
 add_action('init', 'haptic_options_maybe_upgrade', 99);
 
 // Chemin sans « .. » : plugin_basename() ne le résout pas, et le hook ne correspondrait à aucune extension.
-// dirname() plutôt que HAPTIC_OPTIMIZR_PATH : uninstall.php charge ce fichier sans le fichier principal du plugin.
-register_activation_hook(dirname(__DIR__) . '/hpt_options.php', 'haptic_options_activate');
-register_deactivation_hook(dirname(__DIR__) . '/hpt_options.php', 'haptic_options_deactivate');
+// dirname() plutôt que HAPTIC_OPTIMIZR_FILE : uninstall.php charge ce fichier sans le fichier principal du plugin.
+register_activation_hook(dirname(__DIR__) . '/optimizr.php', 'haptic_options_activate');
+register_deactivation_hook(dirname(__DIR__) . '/optimizr.php', 'haptic_options_deactivate');

@@ -46,7 +46,7 @@ add_action('admin_init', function () {
 });
 
 // Lien dans la liste des extensions
-add_filter('plugin_action_links_' . plugin_basename(HAPTIC_OPTIMIZR_PATH . 'hpt_options.php'), function ($links) {
+add_filter('plugin_action_links_' . plugin_basename(HAPTIC_OPTIMIZR_FILE), function ($links) {
     if (current_user_can('manage_options')) {
         array_unshift($links, '<a href="' . esc_url(haptic_onboarding_url()) . '">Assistant de configuration</a>');
     }

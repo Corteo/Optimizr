@@ -138,7 +138,7 @@ Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant
 ### Organisation du code
 
 ```
-hpt_options.php          Fichier principal : constantes, chargement des modules
+optimizr.php             Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
 functions/tabs.php       Affichage des sections en cartes
@@ -171,9 +171,9 @@ Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.M
 
 Pour publier une version :
 
-1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `hpt_options.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
+1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `hpt_options.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
+3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `optimizr.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
    - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en beta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
    - **Pré-version** : fusionnez seulement dans `beta`.
 
