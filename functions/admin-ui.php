@@ -13,39 +13,21 @@ function haptic_modules()
     return apply_filters('haptic_modules', [
         'cookies' => [
             'label' => __('Cookies & GDPR', 'optimizr'),
-            'desc'  => __('Tarteaucitron banner, Google Consent Mode v2 and audience measurement services.', 'optimizr'),
+            'desc'  => __('Tarteaucitron banner, Google Consent Mode v2, Google Analytics and Google Tag Manager.', 'optimizr'),
             'icon'  => 'shield',
             'tab'   => 'cookies',
         ],
         'seo' => [
             'label' => __('SEO', 'optimizr'),
-            'desc'  => __('Meta and OpenGraph tags, XML sitemap, robots.txt file.', 'optimizr'),
+            'desc'  => __('Title, description and OpenGraph tags, with a SEO box in the editor.', 'optimizr'),
             'icon'  => 'search',
             'tab'   => 'seo',
         ],
-        'ai' => [
-            'label' => __('AI assistant', 'optimizr'),
-            'desc'  => __('Meta descriptions and ALT text generated with OpenAI, Claude or Gemini, based on your site context.', 'optimizr'),
-            'icon'  => 'sparkles',
-            'tab'   => 'ai',
-        ],
         'redirects' => [
-            'label' => __('Redirects & links', 'optimizr'),
-            'desc'  => __('301 redirects, 404 log, broken links and automatic redirects for moved content.', 'optimizr'),
+            'label' => __('Redirects', 'optimizr'),
+            'desc'  => __('Not-found pages log and up to 5 redirects.', 'optimizr'),
             'icon'  => 'redirect',
             'tab'   => 'redirects',
-        ],
-        'local' => [
-            'label' => __('Local SEO', 'optimizr'),
-            'desc'  => __('Business profile for Google: address, opening hours, reviews, directions and contact detail shortcodes.', 'optimizr'),
-            'icon'  => 'pin',
-            'tab'   => 'local',
-        ],
-        'pages' => [
-            'label' => __('Special pages', 'optimizr'),
-            'desc'  => __('404 page written in the editor with content suggestions, and maintenance mode (503) with a reopening date.', 'optimizr'),
-            'icon'  => 'file',
-            'tab'   => 'pages',
         ],
         'cpts' => [
             'label' => __('Content types', 'optimizr'),
@@ -67,7 +49,7 @@ function haptic_modules()
         ],
         'security' => [
             'label' => __('Security', 'optimizr'),
-            'desc'  => __('Custom login URL, login attempt limits, hidden version, XML-RPC and security headers.', 'optimizr'),
+            'desc'  => __('Custom login URL, login attempt limits, neutral error messages and login alerts.', 'optimizr'),
             'icon'  => 'lock',
             'tab'   => 'security',
         ],
@@ -90,25 +72,32 @@ function haptic_is_module_active($slug)
 
 /**
  * Onglets de la page d'options, filtrés selon les modules actifs.
+ * 'modules' : modules dont l'un au moins doit être actif ; 'intro' : texte sous le titre ;
+ * 'render' : fonction d'affichage propre (sinon les sections du Settings API).
  */
 function haptic_admin_tabs()
 {
     $tabs = [
         'dashboard' => ['label' => __('Dashboard', 'optimizr'), 'modules' => []],
-        'cookies'   => ['label' => __('Cookies & GDPR', 'optimizr'), 'modules' => ['cookies']],
-        'seo'       => ['label' => __('SEO', 'optimizr'), 'modules' => ['seo']],
+        'cookies'   => ['label' => __('Cookies & GDPR', 'optimizr'), 'modules' => ['cookies'],
+            'intro' => __('Visitor consent, with third-party services loaded only once allowed.', 'optimizr')],
+        'seo'       => ['label' => __('SEO', 'optimizr'), 'modules' => ['seo'],
+            'intro' => __('Default titles and descriptions, used for any content that has none.', 'optimizr')],
         'redirects' => ['label' => _x('Redirects', 'admin tab', 'optimizr'), 'modules' => ['redirects'], 'render' => 'haptic_render_redirects_tab'],
-        'local'     => ['label' => __('Local SEO', 'optimizr'), 'modules' => ['local']],
-        'pages'     => ['label' => __('Special pages', 'optimizr'), 'modules' => ['pages']],
-        'ai'        => ['label' => __('AI assistant', 'optimizr'), 'modules' => ['ai']],
-        'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['cpts', 'thumbnails']],
-        'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security']],
-        'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails']],
+        'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['cpts', 'thumbnails'],
+            'intro' => __('Custom post types and cover images.', 'optimizr')],
+        'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security'],
+            'intro' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr')],
+        'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails'],
+            'intro' => __('Notifications sent by WordPress after automatic updates.', 'optimizr')],
         // Onglet sans réglages : ses propres formulaires, pas de barre d'enregistrement
         'tools'     => ['label' => _x('Tools', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_tools_tab'],
     ];
 
-    $tabs = array_filter($tabs, function ($tab) {
+    // Onglets ajoutés par une extension (Optimizr Pro) : masqués eux aussi quand leur module est désactivé
+    $tabs = apply_filters('haptic_admin_tabs', $tabs);
+
+    return array_filter($tabs, function ($tab) {
         if (empty($tab['modules'])) {
             return true;
         }
@@ -119,8 +108,25 @@ function haptic_admin_tabs()
         }
         return false;
     });
+}
 
-    return apply_filters('haptic_admin_tabs', $tabs);
+/**
+ * Insère des éléments dans un tableau associatif après une clé donnée (à la fin si elle est absente).
+ * Utilisé par les extensions pour placer leurs modules, onglets ou étapes.
+ */
+function haptic_array_insert_after(array $array, $key, array $items)
+{
+    $position = array_search($key, array_keys($array), true);
+    if ($position === false) {
+        return $array + $items;
+    }
+    return array_slice($array, 0, $position + 1, true) + $items + array_slice($array, $position + 1, null, true);
+}
+
+/** Optimizr Pro est-il actif ? */
+function haptic_is_pro()
+{
+    return defined('HAPTIC_OPTIMIZR_PRO_VERSION');
 }
 
 function haptic_current_tab()
@@ -268,8 +274,13 @@ add_action('admin_init', function () {
 function haptic_sanitize_modules($input)
 {
     $input = is_array($input) ? $input : [];
+    // Modules d'une extension désactivée (Optimizr Pro) : leur état est conservé pour sa réactivation
+    $saved = get_option('haptic_modules');
+    $clean = is_array($saved) ? array_map(function ($value) {
+        return empty($value) ? 0 : 1;
+    }, $saved) : [];
     // Marqueur toujours envoyé : distingue « tout désactivé » de « jamais enregistré »
-    $clean = ['_saved' => 1];
+    $clean['_saved'] = 1;
 
     foreach (array_keys(haptic_modules()) as $slug) {
         $clean[$slug] = empty($input[$slug]) ? 0 : 1;
@@ -363,23 +374,12 @@ function haptic_options_settings_page()
  */
 function haptic_render_settings_tab($slug, $tab)
 {
-    $intros = [
-        'cookies'  => __('Visitor consent, with third-party services loaded only once allowed.', 'optimizr'),
-        'seo'      => __('Default titles and descriptions, sitemap and instructions for search engine crawlers.', 'optimizr'),
-        'local'    => __('Business information used by Google (local search, Maps) and displayable on your site.', 'optimizr'),
-        'pages'    => __('Content of the not-found page and temporary site closure, using your theme layout.', 'optimizr'),
-        'ai'       => __('Content generation with OpenAI, Claude or Gemini: meta descriptions and image ALT text.', 'optimizr'),
-        'content'  => __('Custom post types and cover images.', 'optimizr'),
-        'security' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr'),
-        'advanced' => __('Notifications sent by WordPress after automatic updates.', 'optimizr'),
-    ];
-
     $has_aside = has_action("haptic_admin_aside_{$slug}");
     ?>
     <div class="optimizr-page-head">
         <h2 class="optimizr-page-head__title"><?php echo esc_html($tab['label']); ?></h2>
-        <?php if (!empty($intros[$slug])) : ?>
-            <p class="optimizr-page-head__intro"><?php echo esc_html($intros[$slug]); ?></p>
+        <?php if (!empty($tab['intro'])) : ?>
+            <p class="optimizr-page-head__intro"><?php echo esc_html($tab['intro']); ?></p>
         <?php endif; ?>
     </div>
     <div class="optimizr-layout<?php echo $has_aside ? ' optimizr-layout--aside' : ''; ?>">
@@ -413,23 +413,6 @@ function haptic_site_health_checks()
         ];
     }
 
-    if (haptic_is_module_active('seo')) {
-        // Multisite : pas de fichier à la racine, chaque site sert le sien (cf. haptic_sitemap_is_published())
-        $sitemap = (function_exists('haptic_sitemap_is_published') ? haptic_sitemap_is_published() : file_exists(ABSPATH . 'sitemap.xml')) && !get_option('haptic_sitemap_error');
-        $checks[] = [
-            'status' => $sitemap ? 'ok' : 'warn',
-            'label' => $sitemap ? __('XML sitemap generated', 'optimizr') : (get_option('haptic_sitemap_error') ? __('Could not write the XML sitemap', 'optimizr') : __('XML sitemap missing', 'optimizr')),
-            'link' => $sitemap ? home_url('/sitemap.xml') : haptic_admin_tab_url('seo'),
-            'link_label' => $sitemap ? _x('View', 'site health check link', 'optimizr') : _x('Generate', 'site health check link', 'optimizr'),
-        ];
-        $checks[] = [
-            'status' => 'ok',
-            'label' => get_option('haptic_enable_robots') ? __('Custom robots.txt', 'optimizr') : __('robots.txt managed by WordPress', 'optimizr'),
-            'link' => home_url('/robots.txt'),
-            'link_label' => _x('View', 'site health check link', 'optimizr'),
-        ];
-    }
-
     if (haptic_is_module_active('cookies')) {
         $tac = get_option('haptic_option_enable_tarteaucitron');
         $checks[] = [
@@ -437,16 +420,6 @@ function haptic_site_health_checks()
             'label' => $tac ? __('Cookie banner active', 'optimizr') : __('Cookie banner disabled', 'optimizr'),
             'link' => $tac ? '' : haptic_admin_tab_url('cookies'),
             'link_label' => _x('Enable', 'site health check link', 'optimizr'),
-        ];
-    }
-
-    if (haptic_is_module_active('ai') && function_exists('haptic_ai_api_key') && haptic_ai_api_key() === '') {
-        $checks[] = [
-            'status' => 'warn',
-            /* translators: %s: AI provider name (OpenAI, Claude, Gemini) */
-            'label' => sprintf(__('%s API key missing', 'optimizr'), haptic_ai_provider_config()['label']),
-            'link' => haptic_admin_tab_url('ai'),
-            'link_label' => _x('Add', 'site health check link', 'optimizr'),
         ];
     }
 
@@ -464,15 +437,11 @@ function haptic_module_status($slug)
         return ['status' => 'off', 'label' => _x('Disabled', 'module status', 'optimizr')];
     }
 
-    if ($slug === 'ai' && function_exists('haptic_ai_api_key') && haptic_ai_api_key() === '') {
-        return ['status' => 'warn', 'label' => __('API key missing', 'optimizr')];
-    }
-
     if ($slug === 'cookies' && !get_option('haptic_option_enable_tarteaucitron')) {
         return ['status' => 'warn', 'label' => __('Banner disabled', 'optimizr')];
     }
 
-    return ['status' => 'ok', 'label' => _x('Active', 'module status', 'optimizr')];
+    return apply_filters('haptic_module_status', ['status' => 'ok', 'label' => _x('Active', 'module status', 'optimizr')], $slug);
 }
 
 function haptic_render_dashboard()
@@ -564,7 +533,44 @@ function haptic_render_dashboard()
                     <?php endif; ?>
                 </div>
             </section>
+
+            <?php if (haptic_is_pro()) : ?>
+                <?php do_action('haptic_dashboard_aside'); ?>
+            <?php else : ?>
+                <section class="optimizr-card">
+                    <div class="optimizr-card__header">
+                        <div>
+                            <h2 class="optimizr-card__title"><?php esc_html_e('Optimizr Pro', 'optimizr'); ?></h2>
+                            <p class="optimizr-card__desc"><?php esc_html_e('A separate add-on that extends Optimizr. Your settings stay as they are.', 'optimizr'); ?></p>
+                        </div>
+                    </div>
+                    <div class="optimizr-card__body">
+                        <ul class="optimizr-checks">
+                            <?php foreach (haptic_pro_features() as $feature) : ?>
+                                <li class="optimizr-checks__item">
+                                    <span class="optimizr-checks__icon optimizr-checks__icon--off"><?php echo wp_kses(haptic_icon('sparkles', 14), haptic_kses_ui()); ?></span>
+                                    <span class="optimizr-checks__label"><?php echo esc_html($feature); ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <p><a class="optimizr-link" href="<?php echo esc_url(HAPTIC_OPTIMIZR_PRO_INFO_URL); ?>" target="_blank" rel="noopener"><?php esc_html_e('Learn more about Optimizr Pro →', 'optimizr'); ?></a></p>
+                    </div>
+                </section>
+            <?php endif; ?>
         </aside>
     </div>
     <?php
+}
+
+/** Présentation d'Optimizr Pro, affichée sur le tableau de bord tant que l'extension n'est pas installée. */
+function haptic_pro_features()
+{
+    return [
+        __('Cookies: every service, banner colors', 'optimizr'),
+        __('SEO: XML sitemap, robots.txt, IndexNow, structured data', 'optimizr'),
+        __('Unlimited redirects, wildcards, CSV import, broken links', 'optimizr'),
+        __('Local SEO, 404 page and maintenance mode', 'optimizr'),
+        __('AI assistant for meta descriptions and ALT text', 'optimizr'),
+        __('Full security: discretion, unused features, headers', 'optimizr'),
+    ];
 }

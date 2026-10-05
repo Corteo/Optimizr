@@ -86,16 +86,20 @@ haptic_migrate_legacy_prefix();
 function haptic_options_activate()
 {
     haptic_redirects_install();
-    // Le fichier de clé IndexNow, supprimé à la désactivation, est republié
-    if (function_exists('haptic_indexnow_setup') && get_option('haptic_seo_indexnow')) {
-        haptic_indexnow_setup(true);
-    }
+    // Extensions (Optimizr Pro) : fichiers à republier (sitemap, clé IndexNow)
+    do_action('haptic_activate');
     // Première activation : l'assistant de configuration s'ouvre (WordPress confirme déjà l'activation)
     haptic_onboarding_schedule_redirect();
 }
 
+/**
+ * Fichiers générés par Optimizr ou Optimizr Pro (sitemap, robots.txt, clé IndexNow, règle .htaccess) :
+ * supprimés à la désactivation, même si Optimizr Pro a été retiré avant.
+ */
 function haptic_options_deactivate()
 {
+    do_action('haptic_deactivate');
+
     haptic_sitemap_delete_files();
     haptic_robots_txt_delete_file();
 
@@ -332,6 +336,13 @@ function haptic_options_maybe_upgrade()
         if (is_dir($log_dir)) {
             haptic_filesystem()->rmdir($log_dir, true);
         }
+    }
+
+    if (version_compare($installed, '4.0.0', '<') && !haptic_is_pro()) {
+        // Sitemap, IndexNow, SEO local, pages spéciales et Assistant IA passent dans Optimizr Pro (4.0) :
+        // sans lui, le sitemap ne serait plus régénéré, il est retiré plutôt que laissé périmé.
+        // Optimizr Pro le republie à son activation ; les réglages restent en base.
+        haptic_sitemap_delete_files();
     }
 
     update_option('haptic_optimizr_version', HAPTIC_OPTIMIZR_VERSION);

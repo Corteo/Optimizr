@@ -15,8 +15,7 @@ function haptic_sec_register_settings()
     $group = haptic_settings_group('security');
     $page = haptic_settings_page('security');
 
-    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert', 'hide_version', 'block_enumeration', 'block_author_pages',
-        'disable_xmlrpc', 'disable_app_passwords', 'disable_file_edit', 'uploads_php', 'headers', 'hsts'];
+    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert'];
     foreach ($toggles as $toggle) {
         register_setting($group, 'haptic_sec_' . $toggle, ['sanitize_callback' => 'absint']);
     }
@@ -55,38 +54,6 @@ function haptic_sec_register_settings()
     ]);
     haptic_sec_add_toggle('generic_errors', __('Neutral error messages', 'optimizr'), __('Shows "Incorrect username or password" without saying which one: a bot can no longer guess existing usernames.', 'optimizr'), 'haptic_sec_login_section');
     haptic_sec_add_toggle('login_alert', __('Login alert', 'optimizr'), __('Emails the administrator concerned when they log in from an unknown IP address.', 'optimizr'), 'haptic_sec_login_section');
-
-    /* Discrétion */
-    add_settings_section('haptic_sec_privacy_section', __('Discretion', 'optimizr'), function () {
-        echo '<p>' . esc_html__('Reduces the information the site gives to bots looking for known vulnerabilities.', 'optimizr') . '</p>';
-    }, $page);
-    haptic_sec_add_toggle('hide_version', __('Hide the WordPress version', 'optimizr'), __('Removes the "generator" tag, the version from RSS feeds and files (?ver=), and PHP\'s X-Powered-By header.', 'optimizr'), 'haptic_sec_privacy_section');
-    haptic_sec_add_toggle('block_enumeration', __('Block user enumeration', 'optimizr'), __('Prevents discovering account usernames through ?author=1, the REST API and oEmbed embeds.', 'optimizr'), 'haptic_sec_privacy_section');
-    haptic_sec_add_toggle('block_author_pages', __('Hide author pages', 'optimizr'), __('/author/username/ pages show a not-found page to visitors (with the previous option).', 'optimizr'), 'haptic_sec_privacy_section');
-
-    /* Surface d'attaque */
-    add_settings_section('haptic_sec_surface_section', __('Unused features', 'optimizr'), function () {
-        echo '<p>' . esc_html__('Disables entry points that most brochure sites do not need.', 'optimizr') . '</p>';
-    }, $page);
-    haptic_sec_add_toggle('disable_xmlrpc', __('Disable XML-RPC', 'optimizr'), class_exists('Jetpack')
-        ? __('Warning: Jetpack is active and needs XML-RPC.', 'optimizr')
-        : __('Legacy interface, a frequent target of password attacks. Only needed for Jetpack and a few mobile apps.', 'optimizr'), 'haptic_sec_surface_section');
-    haptic_sec_add_toggle('disable_app_passwords', __('Disable application passwords', 'optimizr'), __('These passwords allow logging in to the API without the usual two-step verification. Useless without a connected external application.', 'optimizr'), 'haptic_sec_surface_section');
-    add_settings_field('haptic_sec_disable_file_edit', __('Disable the file editor', 'optimizr'), 'haptic_sec_file_edit_callback', $page, 'haptic_sec_surface_section', [
-        'description' => __('Removes the theme and plugin code editor: a hacked account can no longer inject code there.', 'optimizr'),
-    ]);
-    add_settings_field('haptic_sec_uploads_php', __('Block PHP in media', 'optimizr'), 'haptic_sec_uploads_callback', $page, 'haptic_sec_surface_section', [
-        'description' => __('Prevents a PHP script dropped into the media folder through a vulnerability from running.', 'optimizr'),
-    ]);
-
-    /* En-têtes */
-    add_settings_section('haptic_sec_headers_section', __('Security headers', 'optimizr'), function () {
-        echo '<p>' . esc_html__('Instructions sent to browsers to limit hijacking of the site.', 'optimizr') . '</p>';
-    }, $page);
-    haptic_sec_add_toggle('headers', __('Recommended headers', 'optimizr'), __('X-Content-Type-Options, X-Frame-Options (the site can no longer be displayed in a frame on another site), Referrer-Policy and Permissions-Policy.', 'optimizr'), 'haptic_sec_headers_section');
-    add_settings_field('haptic_sec_hsts', __('Force HTTPS (HSTS)', 'optimizr'), 'haptic_sec_hsts_callback', $page, 'haptic_sec_headers_section', [
-        'description' => __('Browsers will refuse any insecure connection to the site for one year.', 'optimizr'),
-    ]);
 }
 
 function haptic_sec_add_toggle($name, $label, $description, $section)
@@ -161,64 +128,15 @@ function haptic_sec_proxies_callback()
     <?php
 }
 
-function haptic_sec_file_edit_callback()
-{
-    if (defined('DISALLOW_FILE_EDIT') && !haptic_sec_option('disable_file_edit')) {
-        echo '<p class="optimizr-muted">' . wp_kses_post(sprintf(
-            DISALLOW_FILE_EDIT
-                /* translators: %s: DISALLOW_FILE_EDIT constant name */
-                ? __('Already disabled by the %s constant in wp-config.php.', 'optimizr')
-                /* translators: %s: DISALLOW_FILE_EDIT constant name */
-                : __('Already set by the %s constant in wp-config.php.', 'optimizr'),
-            '<code>DISALLOW_FILE_EDIT</code>'
-        )) . '</p>';
-        return;
-    }
-    echo wp_kses(haptic_switch_input('haptic_sec_disable_file_edit', haptic_sec_option('disable_file_edit'), __('Disable the file editor', 'optimizr')), haptic_kses_ui());
-}
-
-function haptic_sec_uploads_callback()
-{
-    global $is_apache, $is_nginx;
-    echo wp_kses(haptic_switch_input('haptic_sec_uploads_php', haptic_sec_option('uploads_php'), __('Block PHP in media', 'optimizr')), haptic_kses_ui());
-
-    if (haptic_sec_option('uploads_php')) {
-        echo '<p class="optimizr-field__help">' . wp_kses_post(sprintf(
-            haptic_sec_uploads_rule_present()
-                /* translators: %s: path of the .htaccess file */
-                ? __('Rule present in %s.', 'optimizr')
-                /* translators: %s: path of the .htaccess file */
-                : __('Unable to write %s: check the folder permissions.', 'optimizr'),
-            '<code>wp-content/uploads/.htaccess</code>'
-        )) . '</p>';
-    }
-    if (!empty($is_nginx) || empty($is_apache)) {
-        /* translators: %s: uploads folder path */
-        echo '<p class="optimizr-field__help">' . wp_kses_post(sprintf(__('This server is not Apache: the .htaccess rule has no effect. Ask your host to block PHP execution in %s.', 'optimizr'), '<code>wp-content/uploads</code>')) . '</p>';
-    }
-}
-
-function haptic_sec_hsts_callback()
-{
-    if (!is_ssl() && strpos(home_url(), 'https://') !== 0) {
-        echo '<p class="optimizr-muted">' . esc_html__('Only available for a site served over HTTPS.', 'optimizr') . '</p>';
-        return;
-    }
-    echo wp_kses(haptic_switch_input('haptic_sec_hsts', haptic_sec_option('hsts'), __('Force HTTPS', 'optimizr')), haptic_kses_ui());
-    echo '<p class="optimizr-field__help">' . esc_html__('Only enable this if the site and all its subdomains work over HTTPS (together with "Recommended headers").', 'optimizr') . '</p>';
-}
-
 // Panneau latéral : bilan et journal
 add_action('haptic_admin_aside_security', function () {
-    $protections = [
+    // Optimizr Pro ajoute ses protections (discrétion, fonctions inutilisées, en-têtes)
+    $protections = apply_filters('haptic_sec_protections', [
         __('Custom login address', 'optimizr') => haptic_sec_login_slug() !== '',
         __('Login attempts limited', 'optimizr') => (bool) haptic_sec_option('limit_login'),
-        __('WordPress version hidden', 'optimizr') => (bool) haptic_sec_option('hide_version'),
-        __('User enumeration blocked', 'optimizr') => (bool) haptic_sec_option('block_enumeration'),
-        __('XML-RPC disabled', 'optimizr') => (bool) haptic_sec_option('disable_xmlrpc'),
-        __('File editor disabled', 'optimizr') => defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT,
-        __('Security headers', 'optimizr') => (bool) haptic_sec_option('headers'),
-    ];
+        __('Neutral error messages', 'optimizr') => (bool) haptic_sec_option('generic_errors'),
+        __('Login alert', 'optimizr') => (bool) haptic_sec_option('login_alert'),
+    ]);
     // Types d'évènement enregistrés dans le journal (clés en base, inchangées) et leur libellé affiché
     $event_labels = [
         'Verrouillage'        => __('Lockout', 'optimizr'),
@@ -236,7 +154,7 @@ add_action('haptic_admin_aside_security', function () {
                 </div>
             </div>
             <ul class="optimizr-checks">
-                <?php foreach (haptic_sec_environment_checks() as $check) : ?>
+                <?php foreach (apply_filters('haptic_sec_environment_checks', []) as $check) : ?>
                     <li class="optimizr-checks__item">
                         <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo wp_kses(haptic_icon($check['status'] === 'ok' ? 'check' : 'alert', 14), haptic_kses_ui()); ?></span>
                         <span class="optimizr-checks__label"><?php echo esc_html($check['label']); ?></span>

@@ -5,7 +5,8 @@ if (!defined('ABSPATH')) {
 }
 
 /*
- * Onglet Redirections : formulaires (admin-post), listes et analyse des liens cassés.
+ * Onglet Redirections : formulaires (admin-post) et listes.
+ * Optimizr Pro y ajoute ses cartes (liens cassés, import CSV) et ses réglages par les actions haptic_redirects_*.
  */
 
 function haptic_redirects_tab_url(array $args = [])
@@ -78,98 +79,10 @@ add_action('admin_post_haptic_404_delete', function () {
 add_action('admin_post_haptic_redirects_settings', function () {
     haptic_redirects_check_cap();
     check_admin_referer('haptic_redirects_settings');
-    update_option('haptic_redir_auto', empty($_POST['haptic_redir_auto']) ? 0 : 1);
     update_option('haptic_redir_log404', empty($_POST['haptic_redir_log404']) ? 0 : 1);
+    // Réglages ajoutés par une extension (redirection automatique d'Optimizr Pro)
+    do_action('haptic_redirects_settings_save');
     haptic_redirects_notice('ok', __('Settings saved.', 'optimizr'));
-    wp_safe_redirect(haptic_redirects_tab_url());
-    exit;
-});
-
-/** Valeur qu'un tableur lirait comme une formule (« = + - @ », tabulation, retour chariot), éventuellement déjà précédée d'apostrophes. */
-const HAPTIC_REDIRECTS_CSV_FORMULA = "/^'*[=+\\-@\\t\\r]/";
-
-/** Cellule exportée : une apostrophe devant une formule potentielle (titre de contenu dans une note…) la garde en texte. */
-function haptic_redirects_csv_cell($value)
-{
-    $value = (string) $value;
-    return preg_match(HAPTIC_REDIRECTS_CSV_FORMULA, $value) ? "'" . $value : $value;
-}
-
-add_action('admin_post_haptic_redirects_export', function () {
-    haptic_redirects_check_cap();
-    check_admin_referer('haptic_redirects_export');
-    global $wpdb;
-    $rows = $wpdb->get_results($wpdb->prepare('SELECT source, target, code, note, hits FROM %i ORDER BY source', haptic_redirects_table()), ARRAY_A);
-
-    nocache_headers();
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="redirections-' . sanitize_file_name((string) wp_parse_url(home_url(), PHP_URL_HOST)) . '-' . current_time('Y-m-d') . '.csv"');
-    $csv = new SplTempFileObject();
-    $csv->fputcsv(['source', 'destination', 'type', 'note', 'visites'], ';', '"', '\\');
-    foreach ($rows as $row) {
-        $csv->fputcsv(array_map('haptic_redirects_csv_cell', array_values($row)), ';', '"', '\\');
-    }
-    $csv->rewind();
-    // Indicateur UTF-8 : accents corrects à l'ouverture dans Excel
-    $content = "\xEF\xBB\xBF";
-    while (!$csv->eof()) {
-        $content .= $csv->fgets();
-    }
-    echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fichier CSV téléchargé (pas de HTML), cellules neutralisées par haptic_redirects_csv_cell().
-    exit;
-});
-
-add_action('admin_post_haptic_redirects_import', function () {
-    haptic_redirects_check_cap();
-    check_admin_referer('haptic_redirects_import');
-    $file = $_FILES['haptic_redirects_file'] ?? null;
-
-    if (!$file || $file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name']) || $file['size'] > 2 * MB_IN_BYTES) {
-        haptic_redirects_notice('warn', __('No CSV file received (2 MB maximum).', 'optimizr'));
-        wp_safe_redirect(haptic_redirects_tab_url());
-        exit;
-    }
-
-    $csv = new SplFileObject($file['tmp_name'], 'r');
-    $first = (string) $csv->fgets();
-    $delimiter = substr_count($first, ';') >= substr_count($first, ',') ? ';' : ',';
-    $csv->rewind();
-
-    $added = 0;
-    $errors = [];
-    $line = 0;
-    while (!$csv->eof()) {
-        $row = $csv->fgetcsv($delimiter, '"', '\\');
-        if (!is_array($row)) {
-            break;
-        }
-        $line++;
-        $row = array_map(function ($cell) {
-            $cell = trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $cell));
-            // Apostrophe ajoutée à l'export devant une formule potentielle (haptic_redirects_csv_cell()) : retirée
-            return preg_match(HAPTIC_REDIRECTS_CSV_FORMULA, $cell) && $cell[0] === "'" ? substr($cell, 1) : $cell;
-        }, $row);
-        // En-tête et lignes vides ignorés
-        if (empty($row[0]) || in_array(strtolower($row[0]), ['source', 'from', 'ancienne adresse'], true)) {
-            continue;
-        }
-        $result = haptic_redirects_save($row[0], $row[1] ?? '', (int) ($row[2] ?? 301) ?: 301, $row[3] ?? __('CSV import', 'optimizr'));
-        if (is_wp_error($result)) {
-            /* translators: 1: CSV line number, 2: error message */
-            $errors[] = sprintf(__('line %1$d: %2$s', 'optimizr'), $line, $result->get_error_message());
-        } else {
-            $added++;
-        }
-    }
-    $csv = null;
-
-    /* translators: %s: number of imported redirects */
-    $message = sprintf(_n('%s redirect imported.', '%s redirects imported.', $added, 'optimizr'), number_format_i18n($added));
-    if ($errors) {
-        /* translators: 1: number of skipped lines, 2: list of errors */
-        $message .= ' ' . sprintf(_n('%1$s line skipped — %2$s', '%1$s lines skipped — %2$s', count($errors), 'optimizr'), number_format_i18n(count($errors)), implode(_x('; ', 'separator between CSV import errors', 'optimizr'), array_slice($errors, 0, 5)) . (count($errors) > 5 ? '…' : ''));
-    }
-    haptic_redirects_notice($errors ? 'warn' : 'ok', $message);
     wp_safe_redirect(haptic_redirects_tab_url());
     exit;
 });
@@ -184,8 +97,8 @@ function haptic_render_redirects_tab()
     $notice = get_transient('haptic_redirects_notice_' . get_current_user_id());
     delete_transient('haptic_redirects_notice_' . get_current_user_id());
 
-    // Cache des jokers resynchronisé à chaque affichage : table modifiée hors de l'extension (restauration, phpMyAdmin)
-    haptic_redirects_refresh_cache();
+    // Extensions : resynchronisation à chaque affichage (cache des jokers d'Optimizr Pro)
+    do_action('haptic_redirects_before_render');
 
     // Modification d'une règle, ou création préremplie depuis le journal des 404 / les liens cassés
     $edit = !empty($_GET['edit']) ? $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE id = %d', $table, (int) $_GET['edit'])) : null;
@@ -196,6 +109,7 @@ function haptic_render_redirects_tab()
     $paged = max(1, absint($_GET['paged'] ?? 1));
     $per_page = 50;
     $offset = ($paged - 1) * $per_page;
+    $total_all = haptic_redirects_count();
     if ($search !== '') {
         $like = '%' . $wpdb->esc_like($search) . '%';
         $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE source LIKE %s OR target LIKE %s', $table, $like, $like));
@@ -207,11 +121,12 @@ function haptic_render_redirects_tab()
 
     $not_found = $wpdb->get_results($wpdb->prepare('SELECT * FROM %i ORDER BY hits DESC, last_seen DESC LIMIT 50', haptic_404_table()));
     $not_found_total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', haptic_404_table()));
-    $report = get_option('haptic_links_report');
+    $limit = haptic_redirects_limit();
+    $limit_reached = !$edit && $limit > 0 && $total_all >= $limit;
     ?>
     <div class="optimizr-page-head">
-        <h2 class="optimizr-page-head__title"><?php esc_html_e('Redirects & links', 'optimizr'); ?></h2>
-        <p class="optimizr-page-head__intro"><?php esc_html_e('Redirect old addresses, monitor not-found pages and spot broken links.', 'optimizr'); ?></p>
+        <h2 class="optimizr-page-head__title"><?php echo esc_html(haptic_admin_tabs()['redirects']['label']); ?></h2>
+        <p class="optimizr-page-head__intro"><?php echo esc_html(apply_filters('haptic_redirects_intro', __('Redirect old addresses and monitor not-found pages.', 'optimizr'))); ?></p>
     </div>
 
     <?php if ($notice) : ?>
@@ -228,10 +143,16 @@ function haptic_render_redirects_tab()
                 <div class="optimizr-card__header">
                     <div>
                         <h2 class="optimizr-card__title"><?php echo $edit ? esc_html__('Edit redirect', 'optimizr') : esc_html__('Add a redirect', 'optimizr'); ?></h2>
-                        <p class="optimizr-card__desc"><?php echo wp_kses_post(__('Relative (<code>/old-page</code>) or full address. End the source with <code>*</code> to redirect a whole folder: <code>/blog/*</code> → <code>/news/*</code>.', 'optimizr')); ?></p>
+                        <p class="optimizr-card__desc"><?php echo wp_kses_post(apply_filters('haptic_redirects_form_help', __('Relative (<code>/old-page</code>) or full address.', 'optimizr'))); ?></p>
                     </div>
                 </div>
                 <div class="optimizr-card__body">
+                    <?php if ($limit_reached) : ?>
+                        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><?php
+                            /* translators: %s: maximum number of redirects */
+                            echo esc_html(sprintf(_n('The free version is limited to %s redirect. Optimizr Pro removes this limit.', 'The free version is limited to %s redirects. Optimizr Pro removes this limit.', $limit, 'optimizr'), number_format_i18n($limit)));
+                        ?></span></div>
+                    <?php endif; ?>
                     <div class="optimizr-redirect-form">
                         <label>
                             <span class="optimizr-field__label"><?php esc_html_e('Old address', 'optimizr'); ?></span>
@@ -256,7 +177,7 @@ function haptic_render_redirects_tab()
                         <input type="text" name="note" value="<?php echo esc_attr($edit ? $edit->note : ''); ?>" maxlength="255">
                     </label>
                     <div class="optimizr-inline">
-                        <button type="submit" class="optimizr-btn optimizr-btn--primary"><?php echo $edit ? esc_html__('Save', 'optimizr') : esc_html__('Add redirect', 'optimizr'); ?></button>
+                        <button type="submit" class="optimizr-btn optimizr-btn--primary" <?php disabled($limit_reached); ?>><?php echo $edit ? esc_html__('Save', 'optimizr') : esc_html__('Add redirect', 'optimizr'); ?></button>
                         <?php if ($edit || $prefill) : ?>
                             <a class="optimizr-btn optimizr-btn--ghost" href="<?php echo esc_url(haptic_redirects_tab_url()); ?>"><?php esc_html_e('Cancel', 'optimizr'); ?></a>
                         <?php endif; ?>
@@ -267,7 +188,7 @@ function haptic_render_redirects_tab()
             <section class="optimizr-card">
                 <div class="optimizr-card__header">
                     <div>
-                        <h2 class="optimizr-card__title"><?php esc_html_e('Redirects', 'optimizr'); ?> <span class="optimizr-badge"><?php echo (int) $total; ?></span></h2>
+                        <h2 class="optimizr-card__title"><?php esc_html_e('Redirects', 'optimizr'); ?> <span class="optimizr-badge"><?php echo $limit > 0 ? esc_html(sprintf('%d / %d', $total_all, $limit)) : (int) $total; ?></span></h2>
                     </div>
                     <form method="get" class="optimizr-search">
                         <input type="hidden" name="page" value="haptic-options">
@@ -342,51 +263,7 @@ function haptic_render_redirects_tab()
                 <?php endif; ?>
             </section>
 
-            <section class="optimizr-card" data-links-scan data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_links_scan')); ?>" data-redirect-url="<?php echo esc_url(haptic_redirects_tab_url()); ?>">
-                <div class="optimizr-card__header">
-                    <div>
-                        <h2 class="optimizr-card__title"><?php esc_html_e('Broken links', 'optimizr'); ?></h2>
-                        <p class="optimizr-card__desc"><?php esc_html_e('Checks every link and image in published content. Keep the page open during the scan.', 'optimizr'); ?></p>
-                    </div>
-                    <button type="button" class="optimizr-btn optimizr-btn--secondary" data-links-start><?php echo wp_kses(haptic_icon('search', 16), haptic_kses_ui()); ?><?php esc_html_e('Scan links', 'optimizr'); ?></button>
-                </div>
-                <div class="optimizr-card__body">
-                    <div class="optimizr-bulk__progress" data-links-progress hidden>
-                        <div class="optimizr-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="<?php esc_attr_e('Link scan', 'optimizr'); ?>"><span></span></div>
-                        <span class="optimizr-muted" data-links-status role="status"></span>
-                    </div>
-                    <p class="optimizr-muted" data-links-summary>
-                        <?php if ($report && empty($report['running'])) : ?>
-                            <?php
-                            echo esc_html(sprintf(
-                                /* translators: 1: date of the last scan, 2: number of links checked (e.g. "12 links checked"), 3: number of issues (e.g. "2 issues") */
-                                __('Last scan on %1$s: %2$s, %3$s.', 'optimizr'),
-                                /* translators: date format for the last link scan, see https://www.php.net/manual/datetime.format.php */
-                                mysql2date(__('F j, Y \a\t H:i', 'optimizr'), $report['date']),
-                                /* translators: %s: number of links checked */
-                                sprintf(_n('%s link checked', '%s links checked', (int) $report['checked'], 'optimizr'), number_format_i18n((int) $report['checked'])),
-                                /* translators: %s: number of issues found */
-                                sprintf(_n('%s issue', '%s issues', count($report['issues']), 'optimizr'), number_format_i18n(count($report['issues'])))
-                            ));
-                            ?>
-                        <?php elseif ($report && !empty($report['running'])) : ?>
-                            <?php esc_html_e('The last scan was interrupted: run it again.', 'optimizr'); ?>
-                        <?php else : ?>
-                            <?php esc_html_e('No scan yet.', 'optimizr'); ?>
-                        <?php endif; ?>
-                    </p>
-                    <div class="optimizr-table-wrap optimizr-table-wrap--flush" data-links-results <?php echo empty($report['issues']) ? 'hidden' : ''; ?>>
-                        <table class="optimizr-table optimizr-table--left">
-                            <thead><tr><th scope="col"><?php esc_html_e('Link', 'optimizr'); ?></th><th scope="col"><?php esc_html_e('Issue', 'optimizr'); ?></th><th scope="col"><?php esc_html_e('Found in', 'optimizr'); ?></th><th scope="col"><span class="screen-reader-text"><?php esc_html_e('Actions', 'optimizr'); ?></span></th></tr></thead>
-                            <tbody data-links-rows>
-                                <?php foreach ((array) ($report['issues'] ?? []) as $issue) : ?>
-                                    <?php haptic_links_render_row($issue); ?>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+            <?php do_action('haptic_redirects_tab_main'); ?>
         </div>
 
         <aside class="optimizr-layout__aside">
@@ -395,10 +272,7 @@ function haptic_render_redirects_tab()
                 <?php wp_nonce_field('haptic_redirects_settings'); ?>
                 <div class="optimizr-card__header"><h2 class="optimizr-card__title"><?php esc_html_e('Settings', 'optimizr'); ?></h2></div>
                 <div class="optimizr-card__body">
-                    <div class="optimizr-check-row">
-                        <?php echo wp_kses(haptic_switch_input('haptic_redir_auto', get_option('haptic_redir_auto', 1), __('Automatic redirect', 'optimizr')), haptic_kses_ui()); ?>
-                        <span><strong><?php esc_html_e('Automatic redirect', 'optimizr'); ?></strong><br><span class="optimizr-muted"><?php esc_html_e('When the address of published content changes, the old one redirects to the new one (301).', 'optimizr'); ?></span></span>
-                    </div>
+                    <?php do_action('haptic_redirects_settings_fields'); ?>
                     <div class="optimizr-check-row">
                         <?php echo wp_kses(haptic_switch_input('haptic_redir_log404', get_option('haptic_redir_log404', 1), __('Not-found pages log', 'optimizr')), haptic_kses_ui()); ?>
                         <span><strong><?php esc_html_e('Not-found pages log', 'optimizr'); ?></strong><br><span class="optimizr-muted"><?php esc_html_e('No IP address: only the requested address and the referring page are kept.', 'optimizr'); ?></span></span>
@@ -407,51 +281,8 @@ function haptic_render_redirects_tab()
                 </div>
             </form>
 
-            <section class="optimizr-card">
-                <div class="optimizr-card__header">
-                    <div>
-                        <h2 class="optimizr-card__title"><?php esc_html_e('CSV import / export', 'optimizr'); ?></h2>
-                        <p class="optimizr-card__desc"><?php esc_html_e('Columns: old address; destination; type (301 by default); note. Handy for a site redesign.', 'optimizr'); ?></p>
-                    </div>
-                </div>
-                <div class="optimizr-card__body">
-                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" enctype="multipart/form-data" class="optimizr-inline">
-                        <input type="hidden" name="action" value="haptic_redirects_import">
-                        <?php wp_nonce_field('haptic_redirects_import'); ?>
-                        <label class="optimizr-file"><span class="screen-reader-text"><?php esc_html_e('CSV file', 'optimizr'); ?></span><input type="file" name="haptic_redirects_file" accept=".csv,text/csv" required></label>
-                        <button type="submit" class="optimizr-btn optimizr-btn--secondary"><?php esc_html_e('Import', 'optimizr'); ?></button>
-                    </form>
-                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                        <input type="hidden" name="action" value="haptic_redirects_export">
-                        <?php wp_nonce_field('haptic_redirects_export'); ?>
-                        <button type="submit" class="optimizr-btn optimizr-btn--ghost" <?php disabled(!$total); ?>><?php esc_html_e('Export redirects', 'optimizr'); ?></button>
-                    </form>
-                </div>
-            </section>
+            <?php do_action('haptic_redirects_tab_aside', $total); ?>
         </aside>
     </div>
-    <?php
-}
-
-/** Ligne du tableau des liens cassés (aussi utilisée pour le gabarit JavaScript). */
-function haptic_links_render_row(array $issue)
-{
-    $states = ['broken' => 'warn', 'error' => 'warn', 'blocked' => 'off'];
-    ?>
-    <tr>
-        <td><a href="<?php echo esc_url($issue['url']); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(wp_html_excerpt($issue['url'], 70, '…')); ?></a></td>
-        <td><span class="optimizr-status optimizr-status--<?php echo esc_attr($states[$issue['state']] ?? 'warn'); ?>"><?php echo esc_html($issue['label']); ?></span></td>
-        <td>
-            <?php foreach (array_slice($issue['sources'], 0, 3) as $post_id) : ?>
-                <a class="optimizr-link" href="<?php echo esc_url(get_edit_post_link($post_id)); ?>"><?php echo esc_html(get_the_title($post_id) ?: '#' . $post_id); ?></a><br>
-            <?php endforeach; ?>
-            <?php if (count($issue['sources']) > 3) : ?><span class="optimizr-muted"><?php /* translators: %s: number of other content items containing the link */ echo esc_html(sprintf(_n('+ %s other', '+ %s others', count($issue['sources']) - 3, 'optimizr'), number_format_i18n(count($issue['sources']) - 3))); ?></span><?php endif; ?>
-        </td>
-        <td class="optimizr-table__actions">
-            <?php if (!empty($issue['internal']) && in_array($issue['state'], ['broken'], true)) : ?>
-                <a class="optimizr-link" href="<?php echo esc_url(haptic_redirects_tab_url(['source' => rawurlencode(haptic_redirects_normalize($issue['url']))])); ?>#haptic-redirect-form"><?php echo esc_html_x('Redirect', 'action: create a redirect', 'optimizr'); ?></a>
-            <?php endif; ?>
-        </td>
-    </tr>
     <?php
 }

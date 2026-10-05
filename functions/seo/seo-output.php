@@ -257,3 +257,14 @@ function haptic_generate_meta_tags()
     }
 }
 add_action('wp_head', 'haptic_generate_meta_tags');
+
+// Contenu marqué « ne pas indexer » dans la metabox : ni indexé ni ses liens suivis (filtre de WordPress,
+// une seule balise meta robots par page)
+add_filter('wp_robots', function ($robots) {
+    if (is_singular() && get_post_meta(get_queried_object_id(), '_haptic_noindex', true)) {
+        $robots['noindex'] = true;
+        $robots['nofollow'] = true;
+        unset($robots['follow'], $robots['max-image-preview']);
+    }
+    return $robots;
+});

@@ -6,6 +6,22 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [4.0.0] - 2026-10-05
+
+### Modifié (incompatible)
+- Optimizr devient la version gratuite. Les fonctionnalités avancées passent dans l'extension séparée **Optimizr Pro** (dépôt `Corteo/Optimizr-pro`), qui nécessite Optimizr 4.0.0 et reprend les réglages existants sans migration. Sur un site mis à jour sans Optimizr Pro, ces fonctionnalités s'arrêtent mais leurs réglages restent en base : installer Optimizr Pro les rétablit tels quels.
+- Cookies & RGPD : services limités à Google Analytics 4 et Google Tag Manager ; les autres services et les couleurs du bandeau passent dans Optimizr Pro (couleurs par défaut sans Pro).
+- SEO : balises titre, description et OpenGraph et metabox de l'éditeur. Sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow et données structurées passent dans Optimizr Pro ; à la mise à jour sans Pro, le fichier sitemap.xml devenu obsolète est supprimé.
+- Redirections : journal des pages introuvables et 5 redirections au plus. Les redirections déjà enregistrées au-delà continuent de fonctionner, mais aucune ne peut être ajoutée. Jokers, import/export CSV, redirection automatique des contenus déplacés et liens cassés passent dans Optimizr Pro.
+- Sécurité : adresse de connexion, limitation des tentatives, messages neutres et alerte de connexion. Discrétion, fonctions inutilisées, en-têtes de sécurité et bilan passent dans Optimizr Pro.
+
+### Retiré
+- Modules SEO local, Pages spéciales (page 404, mode maintenance) et Assistant IA, désormais dans Optimizr Pro. Un site en maintenance rouvre à la mise à jour tant qu'Optimizr Pro n'est pas installé.
+
+### Ajouté
+- Points d'extension pour Optimizr Pro et toute autre extension : action `haptic_loaded`, filtres et actions des modules, onglets, cookies, metabox SEO, redirections, sécurité et assistant de configuration (liste dans le README).
+- Tableau de bord : carte de présentation d'Optimizr Pro quand il n'est pas installé.
+
 ## [3.0.0] - 2026-10-05
 
 ### Modifié (incompatible)

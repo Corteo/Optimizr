@@ -5,8 +5,9 @@ if (!defined('ABSPATH')) {
 }
 
 /*
- * Module Redirections & liens : redirections, journal des pages introuvables (404),
- * redirection automatique des contenus dont l'adresse change.
+ * Module Redirections : redirections et journal des pages introuvables (404).
+ * Optimizr Pro ajoute les jokers, la redirection automatique des contenus déplacés, l'import CSV,
+ * l'analyse des liens cassés et lève la limite de redirections.
  *
  * Données dans deux tables dédiées (créées par haptic_redirects_install()) :
  * - {prefix}optimizr_redirects : source, destination, type, visites ;
@@ -88,64 +89,46 @@ function haptic_redirects_target_is_internal($target)
 /* ---------- Règles ---------- */
 
 /**
- * Règles à joker « /chemin/* », la plus longue source en premier.
- * Gardées en cache (transient sans expiration, chargé avec les options) : pas de parcours de la table à chaque page.
- *
- * @return array[] id, source, target, code
+ * Nombre maximal de redirections (0 : illimité). Version gratuite : 5 ; Optimizr Pro lève la limite.
+ * Les redirections déjà enregistrées au-delà continuent de s'appliquer.
  */
-function haptic_redirects_wildcards()
+function haptic_redirects_limit()
 {
-    $rules = get_transient('haptic_redirects_wildcards');
-    return is_array($rules) ? $rules : haptic_redirects_refresh_cache();
+    return max(0, (int) apply_filters('haptic_redirects_limit', 5));
 }
 
-/** Recalcule le cache des jokers : à appeler après chaque écriture dans la table des redirections. */
-function haptic_redirects_refresh_cache()
+function haptic_redirects_count()
 {
     global $wpdb;
-    $rules = (array) $wpdb->get_results($wpdb->prepare('SELECT id, source, target, code FROM %i WHERE source LIKE %s ORDER BY CHAR_LENGTH(source) DESC', haptic_redirects_table(), '%*'), ARRAY_A);
-    // Table inaccessible : rien en cache, nouvel essai à la prochaine page
-    if (!$wpdb->last_error) {
-        set_transient('haptic_redirects_wildcards', $rules);
-    }
-    return $rules;
+    return (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', haptic_redirects_table()));
+}
+
+/** Limite atteinte : plus de nouvelle redirection possible (une règle existante reste modifiable). */
+function haptic_redirects_limit_reached()
+{
+    $limit = haptic_redirects_limit();
+    return $limit > 0 && haptic_redirects_count() >= $limit;
 }
 
 /**
- * Règle applicable à une adresse : correspondance exacte (avec ou sans requête), puis jokers « /chemin/* ».
+ * Règle applicable à une adresse : correspondance exacte (avec ou sans requête),
+ * puis règles d'une extension (jokers d'Optimizr Pro, filtre haptic_redirects_match).
  *
- * @return object|null Règle, avec la destination déjà résolue pour un joker
+ * @return object|null Règle, avec la destination déjà résolue
  */
 function haptic_redirects_match($request)
 {
     global $wpdb;
-    $table = haptic_redirects_table();
     $path = strtok($request, '?');
 
     $rule = $wpdb->get_row($wpdb->prepare(
         'SELECT * FROM %i WHERE source IN (%s, %s) ORDER BY CHAR_LENGTH(source) DESC LIMIT 1',
-        $table,
+        haptic_redirects_table(),
         $request,
         $path
     ));
-    if ($rule) {
-        return $rule;
-    }
 
-    // Jokers : la plus longue source qui correspond l'emporte
-    foreach (haptic_redirects_wildcards() as $rule) {
-        $rule = (object) $rule;
-        $prefix = rtrim(substr($rule->source, 0, -1), '/');
-        if ($prefix === '' || stripos($path, $prefix . '/') === 0 || strcasecmp($path, $prefix) === 0) {
-            $rest = ltrim(substr($path, strlen($prefix)), '/');
-            $rule->target = strpos($rule->target, '*') !== false
-                ? str_replace('*', $rest, $rule->target)
-                : $rule->target;
-            return $rule;
-        }
-    }
-
-    return null;
+    return $rule ?: apply_filters('haptic_redirects_match', null, $request, $path);
 }
 
 /**
@@ -177,13 +160,13 @@ function haptic_redirects_save($source, $target, $code = 301, $note = '', $id = 
     if ($code !== 410 && strpos($source, '*') === false && haptic_redirects_normalize(haptic_redirects_target_url($target)) === $source) {
         return new WP_Error('haptic_redirect_loop', __('The destination leads back to the source: the redirect would loop.', 'optimizr'));
     }
-    // Joker : une destination interne couverte par la source (« /blog/* » → « /blog/nouveau/* ») serait redirigée à son tour
-    if ($code !== 410 && substr($source, -1) === '*' && haptic_redirects_target_is_internal($target)) {
-        $prefix = rtrim(substr($source, 0, -1), '/');
-        $target_path = strtok(haptic_redirects_normalize(str_replace('*', '', haptic_redirects_target_url($target))), '?');
-        if ($prefix === '' || stripos($target_path . '/', $prefix . '/') === 0) {
-            return new WP_Error('haptic_redirect_loop', __('The destination is one of the addresses redirected by this wildcard: the redirect would loop.', 'optimizr'));
-        }
+    // Contrôles d'une extension (jokers d'Optimizr Pro) ; sans elle, « * » n'est pas un joker
+    $error = apply_filters('haptic_redirects_validate', null, $source, $target, $code);
+    if ($error === null && strpos($source, '*') !== false) {
+        $error = new WP_Error('haptic_redirect_wildcard', __('Wildcards (*) require Optimizr Pro.', 'optimizr'));
+    }
+    if (is_wp_error($error)) {
+        return $error;
     }
 
     $data = ['source' => $source, 'target' => $target, 'code' => $code, 'note' => mb_substr(sanitize_text_field((string) $note), 0, 255)];
@@ -200,28 +183,43 @@ function haptic_redirects_save($source, $target, $code = 301, $note = '', $id = 
 
     if ($id) {
         $wpdb->update($table, $data, ['id' => (int) $id]);
-        // Jokers recalculés pour un joker, ou si la source a changé (l'ancienne a pu en être un) : rien par règle exacte réimportée
-        if (strpos($source, '*') !== false || $existing !== (int) $id) {
-            haptic_redirects_refresh_cache();
-        }
+        haptic_redirects_flush_cache();
+        // 3e argument : la source d'une règle existante a changé (l'ancienne a pu être un joker)
+        do_action('haptic_redirects_saved', (int) $id, $source, $existing !== (int) $id);
         return (int) $id;
+    }
+
+    if (haptic_redirects_limit_reached()) {
+        return new WP_Error('haptic_redirect_limit', sprintf(
+            /* translators: %s: maximum number of redirects */
+            _n('The free version is limited to %s redirect. Optimizr Pro removes this limit.', 'The free version is limited to %s redirects. Optimizr Pro removes this limit.', haptic_redirects_limit(), 'optimizr'),
+            number_format_i18n(haptic_redirects_limit())
+        ));
     }
 
     $data['created'] = current_time('mysql');
     $wpdb->insert($table, $data);
     $id = (int) $wpdb->insert_id;
-    // Nouvelle règle exacte : jokers inchangés (import CSV sans requête superflue)
-    if (strpos($source, '*') !== false) {
-        haptic_redirects_refresh_cache();
-    }
+    haptic_redirects_flush_cache();
+    do_action('haptic_redirects_saved', $id, $source, false);
     return $id;
+}
+
+/**
+ * Vide le cache des jokers (gardé par Optimizr Pro, recalculé à la demande) : une redirection modifiée
+ * pendant qu'Optimizr Pro était désactivé ne doit pas rester dans ce cache.
+ */
+function haptic_redirects_flush_cache()
+{
+    delete_transient('haptic_redirects_wildcards');
 }
 
 function haptic_redirects_delete($id)
 {
     global $wpdb;
     $deleted = (bool) $wpdb->delete(haptic_redirects_table(), ['id' => (int) $id]);
-    haptic_redirects_refresh_cache();
+    haptic_redirects_flush_cache();
+    do_action('haptic_redirects_deleted', (int) $id);
     return $deleted;
 }
 
@@ -309,98 +307,3 @@ add_action('template_redirect', function () {
         }
     }
 }, 99);
-
-/* ---------- Redirection automatique des contenus déplacés ---------- */
-
-/**
- * Contenus publiés placés sous un contenu hiérarchique (pages enfants, petits-enfants…) et leur adresse actuelle.
- *
- * @return array identifiant => adresse
- */
-function haptic_redirects_descendant_links(WP_Post $post)
-{
-    $links = [];
-    $seen = [$post->ID => true];
-    $parents = [$post->ID];
-    while ($parents) {
-        $children = get_posts([
-            'post_type'              => $post->post_type,
-            'post_status'            => 'any',
-            'post_parent__in'        => $parents,
-            'numberposts'            => -1,
-            'update_post_meta_cache' => false,
-            'update_post_term_cache' => false,
-        ]);
-        $parents = [];
-        foreach ($children as $child) {
-            // Hiérarchie en boucle (données corrompues) : chaque contenu une seule fois
-            if (isset($seen[$child->ID])) {
-                continue;
-            }
-            $seen[$child->ID] = true;
-            // Un brouillon peut avoir des enfants publiés : on descend quand même
-            $parents[] = $child->ID;
-            if ($child->post_status === 'publish') {
-                $links[$child->ID] = get_permalink($child);
-            }
-        }
-    }
-    return $links;
-}
-
-/** Redirige l'ancienne adresse d'un contenu vers la nouvelle (301), sans boucle ni chaîne. */
-function haptic_redirects_auto($old_link, $new_link, $post_id)
-{
-    $old = haptic_redirects_normalize($old_link);
-    $new = haptic_redirects_normalize($new_link);
-    if ($old === $new || $old === '/' || strpos($old, '?') !== false) {
-        return;
-    }
-
-    global $wpdb;
-    $table = haptic_redirects_table();
-    // Une ancienne règle qui partait de la nouvelle adresse créerait une boucle
-    $wpdb->delete($table, ['source' => $new]);
-    // Les règles qui pointaient vers l'ancienne adresse vont directement à la nouvelle (pas de chaîne)
-    $repointed = $wpdb->update($table, ['target' => $new], ['target' => $old]);
-
-    /* translators: %s: content title */
-    haptic_redirects_save($old, $new, 301, sprintf(__('Automatic: address of "%s" changed', 'optimizr'), get_the_title($post_id)));
-    // Un joker a pu changer de destination ci-dessus
-    if ($repointed) {
-        haptic_redirects_refresh_cache();
-    }
-}
-
-// Adresse avant l'enregistrement…
-add_action('pre_post_update', function ($post_id, $data = []) {
-    if (get_post_status($post_id) !== 'publish') {
-        return;
-    }
-    $GLOBALS['haptic_redirects_old_links'][$post_id] = get_permalink($post_id);
-
-    // … et celle des pages enfants, qui contient l'identifiant (slug) du parent : elle change avec lui
-    $post = get_post($post_id);
-    $moved = (isset($data['post_name']) && $data['post_name'] !== $post->post_name)
-        || (isset($data['post_parent']) && (int) $data['post_parent'] !== (int) $post->post_parent);
-    $GLOBALS['haptic_redirects_old_children'][$post_id] = $moved && get_option('haptic_redir_auto', 1) && is_post_type_hierarchical($post->post_type)
-        ? haptic_redirects_descendant_links($post)
-        : [];
-}, 10, 2);
-
-// … comparée à l'adresse après l'enregistrement
-add_action('post_updated', function ($post_id, $after) {
-    if (!get_option('haptic_redir_auto', 1) || empty($GLOBALS['haptic_redirects_old_links'][$post_id])) {
-        return;
-    }
-    if ($after->post_status !== 'publish' || wp_is_post_revision($post_id) || !is_post_type_viewable($after->post_type)) {
-        return;
-    }
-
-    haptic_redirects_auto($GLOBALS['haptic_redirects_old_links'][$post_id], get_permalink($post_id), $post_id);
-
-    // Pages enfants : nouvelle adresse calculée avec celle du parent, déjà enregistrée
-    foreach ($GLOBALS['haptic_redirects_old_children'][$post_id] ?? [] as $child_id => $old_link) {
-        haptic_redirects_auto($old_link, get_permalink($child_id), $child_id);
-    }
-}, 10, 2);
