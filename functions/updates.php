@@ -4,8 +4,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Le bouton de vérification est dans l'en-tête de la page d'options (functions/admin-ui.php),
-// son script dans js/optimizr-admin.js.
+/*
+ * Mises à jour depuis GitHub (canaux Stable, Beta, Développement), pour la version distribuée par GitHub.
+ * Ce fichier, js/optimizr-updates.js et assets/plugin-update-checker/ sont retirés de la version
+ * WordPress.org (bin/build-wporg.sh), où WordPress gère lui-même les mises à jour.
+ */
 
 require_once plugin_dir_path(__DIR__) . '/assets/plugin-update-checker/5.6/plugin-update-checker.php';
 
@@ -36,6 +39,51 @@ function hpt_sanitize_update_channel($value)
     }
     return isset(hpt_update_channels()[$value]) ? $value : 'stable';
 }
+
+add_action('admin_init', function () {
+    register_setting(hpt_settings_group('dashboard'), 'hpt_update_channel', [
+        'type'              => 'string',
+        'sanitize_callback' => 'hpt_sanitize_update_channel',
+    ]);
+});
+
+// En-tête de la page d'options : bouton « Vérifier les mises à jour » (script : js/optimizr-updates.js)
+add_action('hpt_header_actions', function () {
+    ?>
+    <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
+    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
+        <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
+    </button>
+    <?php
+});
+
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== HPT_OPTIMIZR_ADMIN_HOOK) {
+        return;
+    }
+    $js = HPT_OPTIMIZR_PATH . 'js/optimizr-updates.js';
+    wp_enqueue_script('optimizr-updates', HPT_OPTIMIZR_URL . 'js/optimizr-updates.js', [], filemtime($js), true);
+});
+
+// Carte « Mises à jour » du tableau de bord : canal suivi
+add_action('hpt_dashboard_updates', function () {
+    ?>
+    <dl class="optimizr-dl">
+        <dt>Canal</dt>
+        <dd><?php echo esc_html(hpt_update_channels()[hpt_update_channel()]); ?></dd>
+    </dl>
+    <?php if (current_user_can('update_plugins') && (!is_multisite() || is_main_site())) : ?>
+        <label class="optimizr-field__label" for="hpt_update_channel">Canal suivi</label>
+        <select name="hpt_update_channel" id="hpt_update_channel">
+            <?php foreach (hpt_update_channels() as $channel => $label) : ?>
+                <option value="<?php echo esc_attr($channel); ?>" <?php selected(hpt_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <p class="optimizr-card__hint">Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
+    <?php endif; ?>
+    <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page.</p>
+    <?php
+});
 
 // Changement de canal : on oublie la dernière vérification, la suivante lit la nouvelle branche
 add_action('update_option_hpt_update_channel', 'hpt_update_channel_reset');

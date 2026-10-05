@@ -6,6 +6,16 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.5.0] - 2026-10-05
+
+### Ajouté
+- Préparation de la publication sur le répertoire WordPress.org : `readme.txt` au format WordPress.org (en anglais, services externes déclarés : OpenAI, Anthropic, Google Gemini, IndexNow, services du bandeau cookies, vérification des liens) et script `bin/build-wporg.sh` qui construit une version sans le système de mise à jour GitHub, interdit sur le répertoire.
+
+### Modifié
+- En-tête du plugin : auteur « Haptic », licence « GPLv2 or later », versions minimales de WordPress (6.1) et de PHP (7.4) déclarées, Plugin URI retirée (elle doublait l'Author URI).
+- Le bouton « Vérifier les mises à jour » et le choix du canal sont fournis par `functions/updates.php` (script dans `js/optimizr-updates.js`). Rien ne change sur les sites installés depuis GitHub ; dans la version WordPress.org, la carte « Mises à jour » renvoie vers les mises à jour de WordPress.
+- Mode développeur : les fenêtres de `vd()` n'utilisent plus Bootstrap, qui était chargé depuis un CDN externe.
+
 ## [2.4.1] - 2026-10-04
 
 ### Sécurité

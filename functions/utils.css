@@ -1,36 +1,41 @@
+/* Fenêtres de vd() (mode développeur) : éléments <details> natifs, sans librairie externe */
+.hpt-debug-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    left: 40px;
+    top: 40px;
+    z-index: 99999;
+    max-width: calc(100vw - 80px);
+}
+
 .hpt-debug-btn {
+    display: inline-block;
     background-color: #007bff;
     color: #ffffff;
-    border: none;
     padding: 8px 12px;
     font-size: 14px;
     cursor: pointer;
     border-radius: 4px;
-    margin: 5px 0;
-    
 }
 
 .hpt-debug-btn:hover {
     background-color: #0056b3;
 }
 
+.hpt-debug[open] .hpt-debug-btn {
+    border-radius: 4px 4px 0 0;
+}
+
 .hpt-debug-content {
+    margin: 0;
+    max-height: 70vh;
     background-color: #222;
     color: #fff;
     padding: 15px;
     font-size: 13px;
     white-space: pre-wrap;
-    overflow-x: auto;
-    border-radius: 5px;
-}
-
-.btn-vd-group{
-    display: flex;
-flex-direction: column;
-    flex-wrap: wrap;
-    gap: 10px;
-    position: absolute;
-    left: 40px;
-    top: 40px;
-    z-index: 9999;
+    overflow: auto;
+    border-radius: 0 5px 5px 5px;
 }

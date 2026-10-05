@@ -1,0 +1,27 @@
+# Fichiers exclus de la version WordPress.org (bin/build-wporg.sh)
+.git
+.gitattributes
+.gitignore
+.distignore
+.github
+.claude
+.vscode
+.idea
+.DS_Store
+node_modules
+bin
+dist
+misc
+logs
+README.md
+CHANGELOG.md
+functions/seo/sitemap.log
+
+# Mises à jour depuis GitHub : interdites sur WordPress.org, qui distribue lui-même les versions
+functions/updates.php
+js/optimizr-updates.js
+assets/plugin-update-checker
+
+# Fichiers de développement de Tarteaucitron
+assets/tarteaucitron/package.json
+assets/tarteaucitron/SECURITY.md

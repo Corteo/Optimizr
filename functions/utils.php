@@ -10,55 +10,12 @@ $hpt_console_queue = [];
 
 function hpt_enqueue_debug_assets()
 {
-    // Uniquement utile pour les modales de vd(), réservées aux admins en mode développeur
+    // Uniquement utile pour les fenêtres de vd(), réservées aux admins en mode développeur
     if (!get_option('hpt_dev_mode') || !current_user_can('manage_options')) {
         return;
     }
 
-    // Ajouter le CSS personnalisé en priorité
-    wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css');
-
-    // Injecter un script pour vérifier la présence de Bootstrap côté client (compatibilité v3/v4/v5)
-    // wp_footer ne se déclenche pas dans l'administration
-    add_action(is_admin() ? 'admin_footer' : 'wp_footer', function () {
-        global $hpt_debug_entries;
-
-        // Bootstrap seulement si vd() a quelque chose à afficher : ses styles s'appliquent à toute la page
-        if (empty($hpt_debug_entries)) {
-            return;
-        }
-?>
-        <script type="text/javascript">
-            (function() {
-                var isBootstrapLoaded = false;
-
-                // Vérifie si Bootstrap 5 (objet global) est présent
-                if (typeof bootstrap !== 'undefined') {
-                    isBootstrapLoaded = true;
-                }
-
-                // Vérifie si Bootstrap 3 ou 4 est présent via jQuery.fn.modal (souvent utilisé dans v3 et v4)
-                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.modal === 'function') {
-                    isBootstrapLoaded = true;
-                }
-
-                if (!isBootstrapLoaded) {
-                    // Charger Bootstrap CSS
-                    var link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css';
-                    document.head.appendChild(link);
-
-                    // Charger Bootstrap JS
-                    var script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
-                    script.defer = true;
-                    document.body.appendChild(script);
-                }
-            })();
-        </script>
-    <?php
-    }, 100); // S'assurer que ce script est injecté après tous les autres
+    wp_enqueue_style('hpt-debug-css', plugin_dir_url(__FILE__) . 'utils.css', [], HPT_OPTIMIZR_VERSION);
 }
 add_action('admin_enqueue_scripts', 'hpt_enqueue_debug_assets');
 add_action('wp_enqueue_scripts', 'hpt_enqueue_debug_assets');
@@ -123,28 +80,12 @@ function hpt_render_debug_popups()
         return;
     }
     ?>
-    <div class="btn-vd-group">
+    <div class="hpt-debug-group">
         <?php foreach ($hpt_debug_entries as $debug) : ?>
-            <button type="button" class="hpt-debug-btn" data-bs-toggle="modal" data-bs-target="#<?php echo esc_attr($debug['id']); ?>">
-                <?php echo esc_html($debug['label']); ?>
-            </button>
-
-            <div class="modal fade" id="<?php echo esc_attr($debug['id']); ?>" tabindex="-1" aria-labelledby="<?php echo esc_attr($debug['id']); ?>Label" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="<?php echo esc_attr($debug['id']); ?>Label"><?php echo esc_html($debug['label']); ?></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                        </div>
-                        <div class="modal-body">
-                            <pre class="hpt-debug-content"><?php echo $debug['content']; ?></pre>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <details class="hpt-debug" id="<?php echo esc_attr($debug['id']); ?>">
+                <summary class="hpt-debug-btn"><?php echo esc_html($debug['label']); ?></summary>
+                <pre class="hpt-debug-content"><?php echo $debug['content']; ?></pre>
+            </details>
         <?php endforeach; ?>
     </div>
     <?php
