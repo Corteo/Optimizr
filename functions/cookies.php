@@ -10,44 +10,21 @@ if (!defined('ABSPATH')) {
  */
 function haptic_cookie_services()
 {
-    return [
+    // Optimizr Pro ajoute les autres services (Clarity, Matomo, Hotjar, publicité, contenus intégrés, anti-spam)
+    return apply_filters('haptic_cookie_services', [
         'audience' => [
             'label' => __('Audience measurement', 'optimizr'),
             'services' => [
                 'google_analytics' => ['name' => 'Google Analytics 4', 'mono' => 'GA', 'note' => 'Consent Mode v2', 'fields' => ['ID' => 'G-XXXXXXXXXX']],
                 'google_tags'      => ['name' => 'Google Tag Manager', 'mono' => 'GTM', 'fields' => ['ID' => 'GTM-XXXXXXX']],
-                'clarity'          => ['name' => 'Microsoft Clarity', 'mono' => 'MC', 'note' => 'Bing Consent Mode', 'fields' => ['ID' => __('Project ID', 'optimizr')]],
-                'matomo'           => ['name' => 'Matomo Tag Manager', 'mono' => 'M', 'fields' => ['ID' => __('Container URL', 'optimizr')]],
-                'hotjar'           => ['name' => 'Hotjar', 'mono' => 'HJ', 'fields' => ['Site ID' => __('Site ID', 'optimizr'), 'Version' => __('Version', 'optimizr')]],
             ],
         ],
-        'ads' => [
-            'label' => __('Advertising', 'optimizr'),
-            'services' => [
-                'google_ads'     => ['name' => 'Google Ads', 'mono' => 'Ads', 'note' => 'Consent Mode v2', 'fields' => ['ID' => 'AW-XXXXXXXXX']],
-                'facebook_pixel' => ['name' => __('Meta Pixel (Facebook)', 'optimizr'), 'mono' => 'FB', 'fields' => ['Pixel ID' => __('Pixel ID', 'optimizr')]],
-            ],
-        ],
-        'embeds' => [
-            'label' => __('Embedded content', 'optimizr'),
-            'services' => [
-                'google_fonts' => ['name' => 'Google Fonts', 'mono' => 'Aa', 'fields' => ['Families' => __('Families, comma-separated', 'optimizr')]],
-                // Zoom, coordonnées et taille se règlent sur chaque carte (bloc googlemaps-canvas), pas ici
-                'google_maps'  => ['name' => 'Google Maps', 'mono' => 'GM', 'note' => __('With API key', 'optimizr'), 'fields' => ['API Key' => __('API key', 'optimizr')]],
-            ],
-        ],
-        'antispam' => [
-            'label' => __('Anti-spam', 'optimizr'),
-            'services' => [
-                'google_recaptcha' => ['name' => 'Google reCAPTCHA', 'mono' => 'rC', 'fields' => ['API Key' => __('Site key', 'optimizr')]],
-                'hcaptcha'         => ['name' => 'hCaptcha', 'mono' => 'hC', 'fields' => ['Site Key' => __('Site key', 'optimizr')]],
-            ],
-        ],
-    ];
+    ]);
 }
 
 /**
  * Couleurs du bandeau : option => [libellé, valeur par défaut].
+ * Valeurs par défaut contrastées ; Optimizr Pro permet de les modifier (filtre haptic_tac_color).
  */
 function haptic_tac_colors()
 {
@@ -63,7 +40,7 @@ function haptic_tac_colors()
 function haptic_tac_color($option)
 {
     $colors = haptic_tac_colors();
-    $value = sanitize_hex_color((string) get_option($option));
+    $value = sanitize_hex_color((string) apply_filters('haptic_tac_color', $colors[$option][1], $option));
     return $value ?: $colors[$option][1];
 }
 
@@ -96,9 +73,6 @@ function haptic_options_register_cookie_settings()
             return in_array($value, ['top', 'middle', 'bottom'], true) ? $value : 'middle';
         },
     ]);
-    foreach (array_keys(haptic_tac_colors()) as $option) {
-        register_setting($group, $option, ['sanitize_callback' => 'sanitize_hex_color']);
-    }
     foreach (haptic_cookie_services() as $category) {
         foreach (array_keys($category['services']) as $service_key) {
             register_setting($group, "haptic_option_service_{$service_key}", [
@@ -120,9 +94,6 @@ function haptic_options_register_cookie_settings()
         ['toggle' => 'haptic_option_enable_tarteaucitron', 'toggle_label' => __('Show the consent banner', 'optimizr')]
     );
     add_settings_field('haptic-tac-position', __('Position', 'optimizr'), 'haptic_options_tarteaucitron_banner_style_callback', $page, 'haptic-cookies-banner');
-    add_settings_field('haptic-tac-colors', __('Colors', 'optimizr'), 'haptic_options_tarteaucitron_colors_callback', $page, 'haptic-cookies-banner', [
-        'description' => __('The ratio shown measures how readable white text is on each button (4.5:1 minimum).', 'optimizr'),
-    ]);
 
     add_settings_section(
         'haptic-cookies-services',
@@ -152,23 +123,6 @@ function haptic_options_tarteaucitron_banner_style_callback()
             esc_attr($value),
             checked($selected, $value, false),
             esc_html($label)
-        );
-    }
-    echo '</div>';
-}
-
-function haptic_options_tarteaucitron_colors_callback()
-{
-    echo '<div class="optimizr-colors">';
-    foreach (haptic_tac_colors() as $option => $color) {
-        $value = haptic_tac_color($option);
-        $is_button = strpos($option, '_btn_') !== false;
-        printf(
-            '<label class="optimizr-color"><input type="color" name="%1$s" value="%2$s" data-tac-color="%1$s"><span class="optimizr-color__label">%3$s</span>%4$s<code class="optimizr-color__hex" data-tac-hex>%2$s</code></label>',
-            esc_attr($option),
-            esc_attr($value),
-            esc_html($color[0]),
-            $is_button ? '<span class="optimizr-contrast" data-tac-contrast></span>' : ''
         );
     }
     echo '</div>';
@@ -258,7 +212,7 @@ add_action('haptic_admin_aside_cookies', function () {
     </section>
     <div class="optimizr-callout">
         <?php echo wp_kses(haptic_icon('info', 18), haptic_kses_ui()); ?>
-        <span><?php esc_html_e('Google Consent Mode v2 and Bing Consent Mode are sent automatically to GA4, Google Ads and Clarity.', 'optimizr'); ?></span>
+        <span><?php echo esc_html(apply_filters('haptic_cookies_consent_note', __('Google Consent Mode v2 is sent automatically to Google Analytics 4 and Google Tag Manager.', 'optimizr'))); ?></span>
     </div>
     <?php
 });
@@ -331,68 +285,17 @@ function haptic_tarteaucitron_inline_script()
                         $jobs[] = 'gtag';
                     }
                     break;
-                case 'google_ads':
-                    if (!empty($option['ID'])) {
-                        $user['googleadsId'] = $option['ID'];
-                        $jobs[] = 'googleads';
-                    }
-                    break;
                 case 'google_tags':
                     if (!empty($option['ID'])) {
                         $user['googletagmanagerId'] = $option['ID'];
                         $jobs[] = 'googletagmanager';
                     }
                     break;
-                case 'hotjar':
-                    if (!empty($option['Site ID']) && !empty($option['Version'])) {
-                        $user['hotjarId'] = (int) $option['Site ID'];
-                        $user['HotjarSv'] = (int) $option['Version'];
-                        $jobs[] = 'hotjar';
-                    }
-                    break;
-                case 'matomo':
-                    if (!empty($option['ID'])) {
-                        $user['matomotmUrl'] = $option['ID'];
-                        $jobs[] = 'matomotm';
-                    }
-                    break;
-                case 'clarity':
-                    if (!empty($option['ID'])) {
-                        $user['clarity'] = $option['ID'];
-                        $jobs[] = 'clarity';
-                    }
-                    break;
-                case 'facebook_pixel':
-                    if (!empty($option['Pixel ID'])) {
-                        $user['facebookpixelId'] = $option['Pixel ID'];
-                        $jobs[] = 'facebookpixel';
-                    }
-                    break;
-                case 'google_fonts':
-                    if (!empty($option['Families'])) {
-                        $user['googleFonts'] = array_values(array_filter(array_map('trim', explode(',', $option['Families']))));
-                        $jobs[] = 'googlefonts';
-                    }
-                    break;
-                case 'google_maps':
-                    if (!empty($option['API Key'])) {
-                        $user['googlemapsKey'] = $option['API Key'];
-                        $jobs[] = 'googlemaps';
-                        $jobs[] = 'googlemapssearch';
-                    }
-                    break;
-                case 'google_recaptcha':
-                    if (!empty($option['API Key'])) {
-                        $user['recaptchaapi'] = $option['API Key'];
-                        $jobs[] = 'recaptcha';
-                    }
-                    break;
-                case 'hcaptcha':
-                    if (!empty($option['Site Key'])) {
-                        $user['hcaptchaSiteKey'] = $option['Site Key'];
-                        $jobs[] = 'hcaptcha';
-                    }
-                    break;
+                default:
+                    // Service ajouté par une extension : variables Tarteaucitron et services à charger
+                    $service = apply_filters('haptic_tarteaucitron_service', ['user' => [], 'jobs' => []], $service_key, $option);
+                    $user = array_merge($user, (array) ($service['user'] ?? []));
+                    $jobs = array_merge($jobs, (array) ($service['jobs'] ?? []));
             }
         }
     }

@@ -7,8 +7,7 @@ if (!defined('ABSPATH')) {
 // Ajouter une meta box SEO dans l'éditeur de page/post
 function haptic_add_seo_metabox()
 {
-    $post_types = get_option('haptic_sitemap_post_types', ['post', 'page']);
-    foreach ((array) $post_types as $post_type) {
+    foreach (haptic_seo_post_types() as $post_type) {
         add_meta_box(
             'haptic_seo_meta',
             __('SEO & sharing', 'optimizr'),
@@ -75,65 +74,10 @@ function haptic_seo_meta_callback($post)
         <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
     </p>
 
-    <?php if (haptic_is_module_active('ai') && function_exists('haptic_ai_user_can') && haptic_ai_user_can()) : ?>
-        <p>
-            <button type="button" class="button" id="generate-seo-desc" data-post-id="<?php echo esc_attr($post->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_ai_nonce')); ?>"
-                data-label="<?php esc_attr_e('Generate the description with AI', 'optimizr'); ?>"
-                data-label-loading="<?php esc_attr_e('Generating...', 'optimizr'); ?>"
-                data-error="<?php /* translators: %s: error message */ esc_attr_e('Error: %s', 'optimizr'); ?>"
-                data-network-error="<?php esc_attr_e('The request failed. Check your connection.', 'optimizr'); ?>">
-                <?php esc_html_e('Generate the description with AI', 'optimizr'); ?>
-            </button>
-        </p>
-        <?php
-        wp_print_inline_script_tag(<<<'JS'
-            document.addEventListener('DOMContentLoaded', function() {
-                const button = document.getElementById('generate-seo-desc');
-                const textarea = document.getElementById('haptic_og_desc');
-                if (!button || !textarea) return;
-
-                button.addEventListener('click', function() {
-                    button.disabled = true;
-                    button.innerText = button.dataset.labelLoading;
-
-                    fetch(ajaxurl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: new URLSearchParams({
-                                action: 'haptic_generate_ai_seo_description',
-                                post_id: this.dataset.postId,
-                                nonce: this.dataset.nonce
-                            })
-                        })
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error(res.status);
-                            }
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                textarea.value = data.data.description;
-                                textarea.dispatchEvent(new Event('input'));
-                            } else {
-                                alert(button.dataset.error.replace('%s', function () { return data.data; }));
-                            }
-                        })
-                        // Réseau coupé, délai dépassé ou réponse invalide : le bouton redevient utilisable
-                        .catch(() => {
-                            alert(button.dataset.networkError);
-                        })
-                        .finally(() => {
-                            button.disabled = false;
-                            button.innerText = button.dataset.label;
-                        });
-                });
-            });
-        JS);
-        ?>
-    <?php endif; ?>
+    <?php
+    // Optimizr Pro : génération de la description par l'Assistant IA
+    do_action('haptic_seo_metabox_after_description', $post);
+    ?>
 
     <p>
         <label for="haptic_og_image"><strong><?php esc_html_e('Share image', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(URL)', 'optimizr'); ?></span></label><br>
@@ -200,7 +144,7 @@ add_action('save_post', 'haptic_save_seo_metadata');
 
 function haptic_register_seo_meta()
 {
-    foreach ((array) get_option('haptic_sitemap_post_types', ['post', 'page']) as $post_type) {
+    foreach (haptic_seo_post_types() as $post_type) {
         foreach (['_haptic_og_title', '_haptic_og_desc', '_haptic_og_image'] as $meta_key) {
             register_post_meta($post_type, $meta_key, [
                 'show_in_rest' => true,
@@ -213,7 +157,8 @@ function haptic_register_seo_meta()
         }
     }
 }
-add_action('init', 'haptic_register_seo_meta');
+// Tard : tous les types de contenu sont déclarés
+add_action('init', 'haptic_register_seo_meta', 99);
 
 /**
  * Migration 2.0.0-beta.3 : l'ancienne metabox pré-remplissait ses champs avec le titre, l'extrait

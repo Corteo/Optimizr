@@ -189,10 +189,8 @@ function haptic_import_settings(array $data, $adapt_urls = true)
         delete_option('haptic_import_unsanitized');
     }
 
-    // Le sitemap suit les nouveaux réglages
-    if (!wp_next_scheduled('haptic_sitemap_regenerate')) {
-        wp_schedule_single_event(time() + MINUTE_IN_SECONDS, 'haptic_sitemap_regenerate');
-    }
+    // Extensions : fichiers à refaire avec les nouveaux réglages (sitemap d'Optimizr Pro)
+    do_action('haptic_settings_imported', $result);
 
     return $result;
 }
@@ -221,11 +219,12 @@ function haptic_import_sanitize_pending()
         update_option($name, $value);
     }
 
-    // Tous les modules actifs : ce qui reste n'aura jamais de fonction de nettoyage (réglage enregistré hors Settings API)
+    // Tous les modules actifs, Optimizr Pro compris : ce qui reste n'aura jamais de fonction de nettoyage
+    // (réglage enregistré hors Settings API). Sans Optimizr Pro, ses réglages importés attendent son installation.
     $inactive = array_filter(array_keys(haptic_modules()), function ($slug) {
         return !haptic_is_module_active($slug);
     });
-    if (!$inactive) {
+    if (!$inactive && haptic_is_pro()) {
         $left = [];
     }
 

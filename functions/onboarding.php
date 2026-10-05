@@ -66,10 +66,11 @@ add_action('admin_menu', function () {
 /**
  * Étapes de l'assistant. 'module' : étape affichée seulement si ce module est choisi.
  * 'pillar' : thème mis en avant dans le panneau visuel (security, performance, optimization ou all).
+ * 'render' : fonction qui affiche l'étape (par défaut haptic_onboarding_step_{étape}) ; Optimizr Pro ajoute les siennes.
  */
 function haptic_onboarding_steps()
 {
-    return [
+    return apply_filters('haptic_onboarding_steps', [
         'welcome'  => ['label' => __('Welcome', 'optimizr'), 'module' => '', 'pillar' => 'all',
             'kicker' => __('Security · Performance · Optimization', 'optimizr'), 'tagline' => __('One plugin for a safe, fast and well-ranked site.', 'optimizr')],
         'modules'  => ['label' => __('Modules', 'optimizr'), 'module' => '', 'pillar' => 'all',
@@ -77,18 +78,12 @@ function haptic_onboarding_steps()
         'security' => ['label' => __('Security', 'optimizr'), 'module' => 'security', 'pillar' => 'security',
             'kicker' => __('Security', 'optimizr'), 'tagline' => __('Bots try passwords around the clock: shut the door on them.', 'optimizr')],
         'seo'      => ['label' => _x('SEO', 'onboarding step', 'optimizr'), 'module' => 'seo', 'pillar' => 'performance',
-            'kicker' => __('Performance', 'optimizr'), 'tagline' => __('Clean tags and an up-to-date sitemap: Google indexes faster and better.', 'optimizr')],
-        'local'    => ['label' => __('Business', 'optimizr'), 'module' => 'local', 'pillar' => 'performance',
-            'kicker' => __('Local SEO', 'optimizr'), 'tagline' => __('Address, phone and business type picked up by Google Maps and local search.', 'optimizr')],
-        'pages'    => ['label' => __('404 page', 'optimizr'), 'module' => 'pages', 'pillar' => 'optimization',
-            'kicker' => __('Experience', 'optimizr'), 'tagline' => __('A missing URL suggests related content instead of a dead end.', 'optimizr')],
+            'kicker' => __('Performance', 'optimizr'), 'tagline' => __('Clean title and description tags: Google shows your pages the way you want.', 'optimizr')],
         'cookies'  => ['label' => __('Cookies & GDPR', 'optimizr'), 'module' => 'cookies', 'pillar' => 'security',
             'kicker' => __('Privacy', 'optimizr'), 'tagline' => __('No tracker before the visitor agrees, Google Consent Mode v2 included.', 'optimizr')],
-        'ai'       => ['label' => __('AI assistant', 'optimizr'), 'module' => 'ai', 'pillar' => 'optimization',
-            'kicker' => __('Optimization', 'optimizr'), 'tagline' => __('Meta descriptions and ALT tags written in seconds.', 'optimizr')],
         'summary'  => ['label' => __('Summary', 'optimizr'), 'module' => '', 'pillar' => 'all',
             'kicker' => __('Last step', 'optimizr'), 'tagline' => __('Review, then apply. Everything can still be changed in Optimizr.', 'optimizr')],
-    ];
+    ]);
 }
 
 /** Regroupement des modules par thème dans l'étape « Modules ». */
@@ -107,38 +102,22 @@ function haptic_onboarding_module_groups()
  */
 function haptic_onboarding_security_toggles()
 {
-    return [
+    // Optimizr Pro ajoute ses protections (version masquée, XML-RPC, en-têtes…), enregistrées par la même boucle
+    return apply_filters('haptic_onboarding_security_toggles', [
         'limit_login'       => [__('Limit login attempts', 'optimizr'), __('An IP address is blocked for 15 minutes after 5 wrong passwords.', 'optimizr'), true],
         'generic_errors'    => [__('Neutral error messages', 'optimizr'), __('The login page no longer says whether the username or the password is wrong.', 'optimizr'), true],
-        'hide_version'      => [__('Hide the WordPress version', 'optimizr'), __('Bots can no longer target known flaws of your version.', 'optimizr'), true],
-        'block_enumeration' => [__('Block user enumeration', 'optimizr'), __('Prevents discovering usernames through ?author=1 and the REST API.', 'optimizr'), true],
-        'disable_xmlrpc'    => [__('Disable XML-RPC', 'optimizr'), class_exists('Jetpack')
-            ? __('Warning: Jetpack is active and needs XML-RPC.', 'optimizr')
-            : __('Legacy interface, a frequent target of password attacks.', 'optimizr'), !class_exists('Jetpack')],
-        'disable_file_edit' => [__('Disable the file editor', 'optimizr'), __('A hacked account can no longer inject code into themes and plugins.', 'optimizr'), true],
-        'headers'           => [__('Security headers', 'optimizr'), __('X-Content-Type-Options, X-Frame-Options, Referrer-Policy and Permissions-Policy.', 'optimizr'), true],
         'login_alert'       => [__('Login alert', 'optimizr'), __('An email alerts an administrator who logs in from an unknown IP address.', 'optimizr'), false],
-    ];
+    ]);
 }
 
 /** Réglages proposés par l'étape Référencement : option => [titre, description, valeur par défaut]. */
 function haptic_onboarding_seo_toggles()
 {
-    return [
+    // Optimizr Pro ajoute les données structurées et les options d'indexation
+    return apply_filters('haptic_onboarding_seo_toggles', [
         'haptic_enable_seo'              => [__('Automatic meta tags', 'optimizr'), __('Title and description generated for any content that has none.', 'optimizr'), 1],
         'haptic_enable_opengraph'        => [__('Share previews (OpenGraph)', 'optimizr'), __('Title, description and image when shared on social networks.', 'optimizr'), 1],
-        'haptic_seo_schema'              => [__('schema.org structured data', 'optimizr'), __('Site, organization, breadcrumbs and articles described for rich results.', 'optimizr'), 1],
-        'haptic_seo_noindex_search'      => [__('Do not index internal search', 'optimizr'), __('The site\'s search results pages stay out of Google.', 'optimizr'), 1],
-        'haptic_seo_attachment_redirect' => [__('Redirect attachment pages', 'optimizr'), __('The pages created for each image point to their content.', 'optimizr'), 1],
-    ];
-}
-
-function haptic_onboarding_ai_providers()
-{
-    if (!function_exists('haptic_ai_providers')) {
-        require_once HAPTIC_OPTIMIZR_PATH . 'functions/ai-pricing.php';
-    }
-    return haptic_ai_providers();
+    ]);
 }
 
 /** Charge le fichier d'un module pas encore actif dans cette requête (fonctions de nettoyage, listes). */
@@ -161,39 +140,14 @@ function haptic_onboarding_seo_variables()
     ];
 }
 
-/** Code de vérification Google ou Bing : accepte la balise meta entière ou le seul code. */
-function haptic_onboarding_verification_code($value)
-{
-    $value = trim((string) $value);
-    if (preg_match('/content\s*=\s*["\']([^"\']+)["\']/i', $value, $match)) {
-        $value = $match[1];
-    }
-    return preg_replace('/[^A-Za-z0-9_\-]/', '', $value);
-}
-
 /** Services de mesure proposés à l'étape Cookies : champ du formulaire => [service, clé, libellé, exemple]. */
 function haptic_onboarding_cookie_fields()
 {
-    return [
+    // Optimizr Pro ajoute Microsoft Clarity et le Pixel Meta
+    return apply_filters('haptic_onboarding_cookie_fields', [
         'haptic_ob_service_google_analytics' => ['google_analytics', 'ID', 'Google Analytics 4', 'G-XXXXXXXXXX'],
         'haptic_ob_service_google_tags'      => ['google_tags', 'ID', 'Google Tag Manager', 'GTM-XXXXXXX'],
-        'haptic_ob_service_clarity'          => ['clarity', 'ID', 'Microsoft Clarity', __('Project ID', 'optimizr')],
-        'haptic_ob_service_facebook_pixel'   => ['facebook_pixel', 'Pixel ID', __('Meta Pixel (Facebook)', 'optimizr'), __('Pixel ID', 'optimizr')],
-    ];
-}
-
-/** Champs de l'étape Établissement : clé de haptic_local => [libellé, type, exemple, autocomplete]. */
-function haptic_onboarding_local_fields()
-{
-    return [
-        'name'        => [__('Business name', 'optimizr'), 'text', get_bloginfo('name'), 'organization'],
-        'street'      => [__('Address', 'optimizr'), 'text', _x('123 Main Street', 'placeholder example', 'optimizr'), 'street-address'],
-        'postal_code' => [__('Postal code', 'optimizr'), 'text', _x('10001', 'placeholder example', 'optimizr'), 'postal-code'],
-        'city'        => [__('City', 'optimizr'), 'text', _x('New York', 'placeholder example', 'optimizr'), 'address-level2'],
-        'country'     => [__('Country (two-letter code)', 'optimizr'), 'text', 'FR', 'country'],
-        'phone'       => [__('Phone', 'optimizr'), 'tel', _x('+1 212 555 0100', 'placeholder example', 'optimizr'), 'tel'],
-        'email'       => [__('Contact email', 'optimizr'), 'email', _x('contact@example.com', 'placeholder example', 'optimizr'), 'email'],
-    ];
+    ]);
 }
 
 /* ---------- Enregistrement ---------- */
@@ -259,9 +213,6 @@ function haptic_onboarding_save()
         foreach (array_keys(haptic_onboarding_seo_toggles()) as $option) {
             update_option($option, $flag($option));
         }
-        $public = array_keys(get_post_types(['public' => true]));
-        $types = isset($post['haptic_sitemap_post_types']) ? array_map('sanitize_key', (array) $post['haptic_sitemap_post_types']) : [];
-        update_option('haptic_sitemap_post_types', array_values(array_intersect($types, $public)));
         if (isset($post['blog_public'])) {
             update_option('blog_public', $flag('blog_public'));
         }
@@ -272,33 +223,6 @@ function haptic_onboarding_save()
                 update_option($option, $value);
             }
         }
-        foreach (['haptic_seo_verify_google', 'haptic_seo_verify_bing'] as $option) {
-            if (isset($post[$option])) {
-                update_option($option, haptic_onboarding_verification_code($post[$option]));
-            }
-        }
-    }
-
-    if (!empty($modules['local']) && isset($post['haptic_ob_local']) && is_array($post['haptic_ob_local'])) {
-        haptic_onboarding_require('haptic_local_types', 'local-seo.php');
-        $local = (array) get_option('haptic_local', []);
-        $input = $post['haptic_ob_local'];
-        foreach (array_keys(haptic_onboarding_local_fields()) as $key) {
-            if (isset($input[$key])) {
-                $local[$key] = $key === 'email' ? sanitize_email($input[$key]) : sanitize_text_field(trim((string) $input[$key]));
-            }
-        }
-        $local['country'] = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string) ($local['country'] ?? '')), 0, 2)) ?: 'FR';
-        $local['type'] = isset($input['type']) && array_key_exists($input['type'], haptic_local_types()) ? $input['type'] : ($local['type'] ?? 'LocalBusiness');
-        update_option('haptic_local', $local);
-    }
-
-    if (!empty($modules['pages'])) {
-        if (isset($post['haptic_404_page'])) {
-            $page = absint($post['haptic_404_page']);
-            update_option('haptic_404_page', $page && get_post_type($page) === 'page' ? $page : 0);
-        }
-        update_option('haptic_404_suggestions', $flag('haptic_404_suggestions'));
     }
 
     if (!empty($modules['cookies'])) {
@@ -322,27 +246,8 @@ function haptic_onboarding_save()
         }
     }
 
-    if (!empty($modules['ai'])) {
-        $providers = haptic_onboarding_ai_providers();
-        $provider = isset($post['haptic_ai_provider']) ? (string) $post['haptic_ai_provider'] : '';
-        if (isset($providers[$provider])) {
-            update_option('haptic_ai_provider', $provider);
-            $key = isset($post['haptic_ob_ai_key']) ? sanitize_text_field(trim((string) $post['haptic_ob_ai_key'])) : '';
-            // Champ vide : on garde la clé déjà enregistrée
-            if ($key !== '') {
-                update_option($providers[$provider]['key_option'], $key);
-            }
-            $model_option = $providers[$provider]['model_option'];
-            $model = isset($post[$model_option]) ? (string) $post[$model_option] : '';
-            if (isset($providers[$provider]['models'][$model])) {
-                update_option($model_option, $model);
-            }
-        }
-        if (isset($post['haptic_ai_context'])) {
-            update_option('haptic_ai_context', sanitize_textarea_field((string) $post['haptic_ai_context']));
-        }
-        update_option('haptic_ai_alt_on_upload', $flag('haptic_ai_alt_on_upload'));
-    }
+    // Étapes d'une extension (Optimizr Pro) : leurs réglages, et les messages à afficher sur l'écran final
+    $notices = (array) apply_filters('haptic_onboarding_save', $notices, $post, $modules);
 
     update_option('haptic_onboarding_done', time());
     if ($notices) {
@@ -455,6 +360,7 @@ function haptic_onboarding_render()
         </main>
     </div>
     <?php wp_print_scripts('optimizr-onboarding'); ?>
+    <?php do_action('haptic_onboarding_print_scripts'); ?>
 </body>
 </html>
     <?php
@@ -484,7 +390,11 @@ function haptic_onboarding_render_form($steps)
 
         <?php foreach (array_keys($steps) as $i => $slug) : ?>
             <section class="ob-step<?php echo $i === 0 ? ' is-active' : ''; ?>" data-step="<?php echo esc_attr($slug); ?>" data-module="<?php echo esc_attr($steps[$slug]['module']); ?>" aria-labelledby="ob-title-<?php echo esc_attr($slug); ?>">
-                <?php call_user_func('haptic_onboarding_step_' . $slug, $modules); ?>
+                <?php
+                call_user_func($steps[$slug]['render'] ?? 'haptic_onboarding_step_' . $slug, $modules);
+                // Champs ou remarques ajoutés par une extension à la fin de l'étape
+                do_action('haptic_onboarding_step_after', $slug, $modules);
+                ?>
             </section>
         <?php endforeach; ?>
 
@@ -528,12 +438,12 @@ function haptic_onboarding_step_welcome($modules)
         <div class="ob-pillar-card ob-pillar-card--performance">
             <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_onboarding_icon('gauge', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title"><?php esc_html_e('Performance', 'optimizr'); ?></h2>
-            <p class="ob-pillar-card__text"><?php esc_html_e('Tags, sitemap and indexing for a site Google understands quickly.', 'optimizr'); ?></p>
+            <p class="ob-pillar-card__text"><?php esc_html_e('Meta tags, redirects and indexing for a site Google understands quickly.', 'optimizr'); ?></p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--optimization">
             <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_icon('sparkles', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title"><?php esc_html_e('Optimization', 'optimizr'); ?></h2>
-            <p class="ob-pillar-card__text"><?php esc_html_e('AI-generated text and ALT tags, modules enabled as you need them.', 'optimizr'); ?></p>
+            <p class="ob-pillar-card__text"><?php esc_html_e('Content types, featured images and modules enabled as you need them.', 'optimizr'); ?></p>
         </div>
     </div>
     <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('About 3 minutes. You can exit the wizard at any time and reopen it from the Optimizr › Wizard menu.', 'optimizr'); ?></p>
@@ -634,14 +544,12 @@ function haptic_onboarding_step_security($modules)
             haptic_onboarding_switch('haptic_sec_' . $key, get_option('haptic_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? __('Recommended', 'optimizr') : '');
         } ?>
     </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('lock', 16), haptic_kses_ui()); ?><?php esc_html_e('Blocking PHP in uploads and HSTS are set in the Security tab, once the site has been checked.', 'optimizr'); ?></p>
     <?php
 }
 
 function haptic_onboarding_step_seo($modules)
 {
     haptic_onboarding_step_head('seo', _x('SEO', 'onboarding step', 'optimizr'), __('Get visible and indexed quickly', 'optimizr'), __('The site name and the patterns below are used as title and description in Google for any content that has none.', 'optimizr'));
-    $selected = (array) get_option('haptic_sitemap_post_types', ['post', 'page']);
     ?>
     <div class="ob-fields">
         <label class="ob-field">
@@ -668,14 +576,7 @@ function haptic_onboarding_step_seo($modules)
                 <?php endforeach; ?>
             </div>
         </div>
-        <label class="ob-field">
-            <span class="ob-field__label">Google Search Console <span class="ob-field__opt"><?php esc_html_e('optional', 'optimizr'); ?></span></span>
-            <input type="text" name="haptic_seo_verify_google" value="<?php echo esc_attr(get_option('haptic_seo_verify_google', '')); ?>" placeholder="<?php esc_attr_e('Code or meta tag', 'optimizr'); ?>" spellcheck="false" autocomplete="off" data-summary-value="<?php esc_attr_e('Google verification', 'optimizr'); ?>">
-        </label>
-        <label class="ob-field">
-            <span class="ob-field__label">Bing Webmaster Tools <span class="ob-field__opt"><?php esc_html_e('optional', 'optimizr'); ?></span></span>
-            <input type="text" name="haptic_seo_verify_bing" value="<?php echo esc_attr(get_option('haptic_seo_verify_bing', '')); ?>" placeholder="<?php esc_attr_e('Code or meta tag', 'optimizr'); ?>" spellcheck="false" autocomplete="off" data-summary-value="<?php esc_attr_e('Bing verification', 'optimizr'); ?>">
-        </label>
+        <?php do_action('haptic_onboarding_seo_fields'); ?>
     </div>
 
     <h2 class="ob-subtitle"><?php esc_html_e('Indexing', 'optimizr'); ?></h2>
@@ -689,83 +590,6 @@ function haptic_onboarding_step_seo($modules)
         }
         ?>
     </div>
-    <fieldset class="ob-fieldset">
-        <legend class="ob-fieldset__title"><?php esc_html_e('XML sitemap content', 'optimizr'); ?></legend>
-        <div class="ob-chips">
-            <?php foreach (get_post_types(['public' => true], 'objects') as $type) :
-                if ($type->name === 'attachment') {
-                    continue;
-                }
-                ?>
-                <label class="ob-chip">
-                    <input type="checkbox" name="haptic_sitemap_post_types[]" value="<?php echo esc_attr($type->name); ?>" data-summary="<?php
-                        /* translators: %s: post type name */
-                        echo esc_attr(sprintf(__('Sitemap: %s', 'optimizr'), $type->labels->name));
-                    ?>" <?php checked(in_array($type->name, $selected, true)); ?>>
-                    <span><?php echo esc_html($type->labels->name); ?></span>
-                </label>
-            <?php endforeach; ?>
-        </div>
-    </fieldset>
-    <?php
-}
-
-function haptic_onboarding_step_local($modules)
-{
-    haptic_onboarding_step_head('local', __('Local SEO', 'optimizr'), __('Introduce your business', 'optimizr'), __('This information is published for Google (Maps, local search) and can be reused on the site with the [optimizr_adresse] or [optimizr_telephone] shortcodes. It must match your Google Business Profile listing.', 'optimizr'));
-    haptic_onboarding_require('haptic_local_types', 'local-seo.php');
-    $local = (array) get_option('haptic_local', []);
-    $type = $local['type'] ?? 'LocalBusiness';
-    ?>
-    <div class="ob-fields">
-        <label class="ob-field ob-field--wide">
-            <span class="ob-field__label"><?php esc_html_e('Business type', 'optimizr'); ?></span>
-            <select name="haptic_ob_local[type]" data-summary-value="<?php esc_attr_e('Business type', 'optimizr'); ?>">
-                <?php foreach (haptic_local_types() as $schema => $label) : ?>
-                    <option value="<?php echo esc_attr($schema); ?>" <?php selected($type, $schema); ?>><?php echo esc_html($label); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </label>
-        <?php foreach (haptic_onboarding_local_fields() as $key => $field) :
-            $value = $local[$key] ?? ($key === 'country' ? 'FR' : '');
-            ?>
-            <label class="ob-field<?php echo $key === 'street' ? ' ob-field--wide' : ''; ?>">
-                <span class="ob-field__label"><?php echo esc_html($field[0]); ?></span>
-                <input type="<?php echo esc_attr($field[1]); ?>" name="haptic_ob_local[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>" placeholder="<?php echo esc_attr($field[2]); ?>" autocomplete="<?php echo esc_attr($field[3]); ?>"<?php echo $key === 'country' ? ' maxlength="2" pattern="[A-Za-z]{2}"' : ''; ?> data-summary-value="<?php echo esc_attr($field[0]); ?>">
-            </label>
-        <?php endforeach; ?>
-    </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('pin', 16), haptic_kses_ui()); ?><?php esc_html_e('Opening hours, GPS coordinates, Google place ID and online profiles: Local SEO tab.', 'optimizr'); ?></p>
-    <?php
-}
-
-function haptic_onboarding_step_pages($modules)
-{
-    haptic_onboarding_step_head('pages', __('Special pages', 'optimizr'), __('Polish the not found page', 'optimizr'), __('Choose a page written in the editor: it is displayed with the theme layout, keeps the 404 status code and is not indexed.', 'optimizr'));
-    ?>
-    <div class="ob-fields">
-        <label class="ob-field ob-field--wide">
-            <span class="ob-field__label"><?php esc_html_e('404 page content', 'optimizr'); ?></span>
-            <?php
-            $dropdown = wp_dropdown_pages([
-                'name'              => 'haptic_404_page',
-                'id'                => 'ob-404-page',
-                'selected'          => (int) get_option('haptic_404_page'),
-                'show_option_none'  => esc_html__('Theme 404 page', 'optimizr'),
-                'option_none_value' => 0,
-                'post_status'       => ['publish', 'private', 'draft'],
-                'echo'              => 0,
-            ]);
-            echo $dropdown
-                ? wp_kses(str_replace('<select ', '<select data-summary-value="' . esc_attr__('404 page', 'optimizr') . '" ', $dropdown), haptic_kses_ui())
-                : '<span class="ob-field__help">' . esc_html__('No pages on the site: create one ("Page not found") then choose it in the Special pages tab.', 'optimizr') . '</span><input type="hidden" name="haptic_404_page" value="0">';
-            ?>
-        </label>
-    </div>
-    <div class="ob-options">
-        <?php haptic_onboarding_switch('haptic_404_suggestions', get_option('haptic_404_suggestions', 1), __('Suggest related content', 'optimizr'), __('Links to pages whose URL looks like the requested one, plus a search field.', 'optimizr'), __('Recommended', 'optimizr')); ?>
-    </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Maintenance mode is set in the Special pages tab, whenever you need it.', 'optimizr'); ?></p>
     <?php
 }
 
@@ -804,60 +628,6 @@ function haptic_onboarding_step_cookies($modules)
             <?php endforeach; ?>
         </div>
     </fieldset>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Banner colors and other services (Matomo, Hotjar, Google Ads, reCAPTCHA…): Cookies & GDPR tab.', 'optimizr'); ?></p>
-    <?php
-}
-
-function haptic_onboarding_step_ai($modules)
-{
-    haptic_onboarding_step_head('ai', __('AI assistant', 'optimizr'), __('Let AI write for you', 'optimizr'), __('Meta descriptions and ALT tags generated from the content and your business description. Each generation is billed by the chosen provider.', 'optimizr'));
-    $providers = haptic_onboarding_ai_providers();
-    $current = get_option('haptic_ai_provider', HAPTIC_AI_DEFAULT_PROVIDER);
-    $current = isset($providers[$current]) ? $current : HAPTIC_AI_DEFAULT_PROVIDER;
-    ?>
-    <fieldset class="ob-fieldset ob-fieldset--first">
-        <legend class="ob-fieldset__title"><?php esc_html_e('Provider', 'optimizr'); ?></legend>
-        <div class="ob-providers">
-            <?php foreach ($providers as $slug => $provider) :
-                $has_key = trim((string) get_option($provider['key_option'], '')) !== '';
-                ?>
-                <label class="ob-provider">
-                    <input type="radio" name="haptic_ai_provider" value="<?php echo esc_attr($slug); ?>" data-has-key="<?php echo $has_key ? '1' : '0'; ?>" data-key-url="<?php echo esc_url($provider['key_url'] ?? ''); ?>" data-summary="<?php
-                        /* translators: %s: AI provider name */
-                        echo esc_attr(sprintf(__('Provider: %s', 'optimizr'), $provider['label']));
-                    ?>" <?php checked($current, $slug); ?>>
-                    <span class="ob-provider__name"><?php echo esc_html($provider['label']); ?></span>
-                    <span class="ob-provider__state"><?php echo $has_key ? esc_html__('Key saved', 'optimizr') : esc_html__('Key needed', 'optimizr'); ?></span>
-                </label>
-            <?php endforeach; ?>
-        </div>
-    </fieldset>
-    <div class="ob-fields">
-        <label class="ob-field ob-field--wide">
-            <span class="ob-field__label"><?php esc_html_e('API key', 'optimizr'); ?> <a class="ob-field__link" href="#" target="_blank" rel="noopener noreferrer" data-ob-key-link><?php esc_html_e('Get a key', 'optimizr'); ?></a></span>
-            <input type="password" name="haptic_ob_ai_key" value="" autocomplete="off" spellcheck="false" data-ob-key placeholder="<?php esc_attr_e('Paste your account key', 'optimizr'); ?>" data-placeholder-saved="<?php esc_attr_e('Key already saved: leave empty to keep it', 'optimizr'); ?>" data-placeholder-empty="<?php esc_attr_e('Paste your account key', 'optimizr'); ?>">
-        </label>
-        <?php foreach ($providers as $slug => $provider) :
-            $model = get_option($provider['model_option'], $provider['default'] ?? '');
-            ?>
-            <label class="ob-field ob-field--wide" data-ob-provider-row="<?php echo esc_attr($slug); ?>"<?php echo $slug === $current ? '' : ' hidden'; ?>>
-                <span class="ob-field__label"><?php esc_html_e('Model', 'optimizr'); ?></span>
-                <select name="<?php echo esc_attr($provider['model_option']); ?>" data-summary-value="<?php esc_attr_e('Model', 'optimizr'); ?>">
-                    <?php foreach ($provider['models'] as $id => $info) : ?>
-                        <option value="<?php echo esc_attr($id); ?>" <?php selected($model, $id); ?>><?php echo esc_html($info['label']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </label>
-        <?php endforeach; ?>
-        <label class="ob-field ob-field--wide">
-            <span class="ob-field__label"><?php esc_html_e('Your business description', 'optimizr'); ?></span>
-            <textarea name="haptic_ai_context" rows="3" placeholder="<?php esc_attr_e('E.g. pottery school in Lyon, classes for adults and children, weekend workshops.', 'optimizr'); ?>" data-summary-value="<?php echo esc_attr_x('Business description', 'onboarding summary', 'optimizr'); ?>"><?php echo esc_textarea(get_option('haptic_ai_context', '')); ?></textarea>
-            <span class="ob-field__help"><?php esc_html_e('Sent with every request: the AI writes with the right vocabulary and tone.', 'optimizr'); ?></span>
-        </label>
-    </div>
-    <div class="ob-options">
-        <?php haptic_onboarding_switch('haptic_ai_alt_on_upload', get_option('haptic_ai_alt_on_upload', 1), __('Automatic ALT on upload', 'optimizr'), __('Every image added to the media library gets a description (one billed request per image).', 'optimizr')); ?>
-    </div>
     <?php
 }
 
@@ -1115,67 +885,13 @@ function haptic_onboarding_illustration($name)
                 <g class="ob-a-float ob-delay-1">
                     <rect x="330" y="54" width="132" height="40" rx="12" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".2"/>
                     <circle cx="352" cy="74" r="10" fill="#7ef0c4" fill-opacity=".2"/><path d="M347 74l4 4 7-7" fill="none" stroke="#7ef0c4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <text x="370" y="78" class="ob-svg-text">sitemap.xml</text>
+                    <text x="370" y="78" class="ob-svg-text">og:title</text>
                 </g>
                 <g class="ob-a-float ob-delay-3">
                     <rect x="22" y="250" width="124" height="40" rx="12" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".2"/>
                     <g transform="translate(34 260)" fill="none" stroke="#ffd27a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 3 12h7l-1 6 8-10h-7z"/></g>
                     <text x="58" y="274" class="ob-svg-text"><?php esc_html_e('Indexing', 'optimizr'); ?></text>
                 </g>
-            <?php
-            echo '</svg>';
-            break;
-
-        case 'local':
-            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
-            ?>
-                <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
-                <g class="ob-a-float">
-                    <rect x="100" y="70" width="280" height="210" rx="20" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".22"/>
-                    <path d="M100 150h280M100 220h280M180 70v210M300 70v210" stroke="#fff" stroke-opacity=".08" stroke-width="8"/>
-                    <path d="M120 250c40-10 60-60 110-70s70 40 120 20" fill="none" stroke="url(#ob-g-cyan)" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10" class="ob-a-flow"/>
-                    <circle cx="120" cy="250" r="7" fill="#8af0ff"/>
-                </g>
-                <ellipse cx="240" cy="196" rx="26" ry="8" fill="#000" opacity=".25"/>
-                <circle cx="240" cy="190" r="30" fill="none" stroke="#7ef0c4" stroke-width="1.5" class="ob-a-ping"/>
-                <g transform="translate(240 190)"><g class="ob-a-pop">
-                    <path d="M0 0c-26-34-40-52-40-72a40 40 0 0 1 80 0c0 20-14 38-40 72z" fill="url(#ob-g-green)" filter="url(#ob-f-glow)"/>
-                    <circle cy="-72" r="15" fill="#fff"/>
-                </g></g>
-                <g class="ob-a-float ob-delay-2">
-                    <rect x="300" y="226" width="150" height="56" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
-                    <text x="316" y="248" class="ob-svg-text"><?php esc_html_e('Open · 9 AM–7 PM', 'optimizr'); ?></text>
-                    <g fill="#ffd27a"><?php for ($i = 0; $i < 5; $i++) : ?><path transform="translate(<?php echo esc_attr(316 + $i * 14); ?> 258) scale(.5)" d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21l1.4-7L2 9.3l7-.8z"/><?php endfor; ?></g>
-                </g>
-                <g class="ob-a-float ob-delay-1">
-                    <rect x="30" y="92" width="134" height="40" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
-                    <g transform="translate(42 102)" fill="none" stroke="#8af0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 14.5v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.8 16.8 0 0 1-5.2-5.2A17 17 0 0 1 .9 3.6 1.7 1.7 0 0 1 2.6 1.8h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.6.6 2.4a1.7 1.7 0 0 1-.4 1.8L6 8.6a14 14 0 0 0 5.2 5.2l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.4.6a1.7 1.7 0 0 1 1.5 1.7z"/></g>
-                    <text x="68" y="117" class="ob-svg-text"><?php esc_html_e('Call', 'optimizr'); ?></text>
-                </g>
-            <?php
-            echo '</svg>';
-            break;
-
-        case 'pages':
-            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
-            ?>
-                <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-violet)" class="ob-a-breathe"/>
-                <g class="ob-a-float">
-                    <rect x="120" y="64" width="240" height="232" rx="18" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".22"/>
-                    <path d="M120 92h240" stroke="#fff" stroke-opacity=".14"/>
-                    <circle cx="138" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/><circle cx="150" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/><circle cx="162" cy="78" r="3.5" fill="#fff" fill-opacity=".35"/>
-                    <text x="240" y="158" text-anchor="middle" class="ob-svg-score" style="font-size:52px">404</text>
-                    <rect x="170" y="176" width="140" height="7" rx="3.5" fill="#fff" fill-opacity=".3"/>
-                    <?php foreach ([0, 1, 2] as $i) : ?>
-                        <g transform="translate(150 <?php echo esc_attr(198 + $i * 28); ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo esc_attr(0.4 + 0.15 * $i); ?>s">
-                            <rect width="180" height="20" rx="10" fill="#fff" fill-opacity=".1" stroke="#d2c4ff" stroke-opacity=".5"/>
-                            <path d="M12 10h<?php echo esc_attr([90, 120, 70][$i]); ?>" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M162 6l4 4-4 4" fill="none" stroke="#d2c4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </g></g>
-                    <?php endforeach; ?>
-                </g>
-                <?php echo wp_kses(haptic_onboarding_badge(372, 106, haptic_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'), haptic_kses_ui()); ?>
-                <?php echo wp_kses(haptic_onboarding_badge(108, 250, haptic_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), haptic_kses_ui()); ?>
             <?php
             echo '</svg>';
             break;
@@ -1206,42 +922,6 @@ function haptic_onboarding_illustration($name)
                     <circle cx="22" cy="-18" r="10" fill="#0b1437"/><circle cx="28" cy="-4" r="7" fill="#0b1437"/>
                     <circle cx="-10" cy="-8" r="4" fill="#8a5a22"/><circle cx="6" cy="10" r="4.5" fill="#8a5a22"/><circle cx="-12" cy="14" r="3" fill="#8a5a22"/><circle cx="4" cy="-16" r="3" fill="#8a5a22"/>
                 </g></g>
-            <?php
-            echo '</svg>';
-            break;
-
-        case 'ai':
-            $nodes = [[110, 92], [96, 220], [160, 300], [370, 86], [392, 196], [330, 292]];
-            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
-            ?>
-                <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-violet)" class="ob-a-breathe"/>
-                <?php foreach ($nodes as $i => $n) : ?>
-                    <path d="M240 180 L<?php echo esc_attr($n[0]); ?> <?php echo esc_attr($n[1]); ?>" stroke="#fff" stroke-opacity=".14" stroke-width="1.5"/>
-                    <path d="M240 180 L<?php echo esc_attr($n[0]); ?> <?php echo esc_attr($n[1]); ?>" stroke="#8af0ff" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 160" class="ob-a-pulse" style="animation-delay:<?php echo esc_attr(0.3 * $i); ?>s"/>
-                    <circle cx="<?php echo esc_attr($n[0]); ?>" cy="<?php echo esc_attr($n[1]); ?>" r="9" fill="#101a45" stroke="url(#ob-g-cyan)" stroke-width="2"/>
-                    <circle cx="<?php echo esc_attr($n[0]); ?>" cy="<?php echo esc_attr($n[1]); ?>" r="3.5" fill="#8af0ff" class="ob-a-twinkle" style="animation-delay:<?php echo esc_attr(0.3 * $i); ?>s"/>
-                <?php endforeach; ?>
-                <g class="ob-a-float">
-                    <?php foreach ([-24, -8, 8, 24] as $o) : ?>
-                        <path d="M<?php echo esc_attr(240 + $o); ?> 126v-12M<?php echo esc_attr(240 + $o); ?> 234v12M186 <?php echo esc_attr(180 + $o); ?>h-12M294 <?php echo esc_attr(180 + $o); ?>h12" stroke="#d2c4ff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>
-                    <?php endforeach; ?>
-                    <rect x="186" y="126" width="108" height="108" rx="24" fill="url(#ob-g-violet)" filter="url(#ob-f-glow)"/>
-                    <rect x="198" y="138" width="84" height="84" rx="16" fill="none" stroke="#fff" stroke-opacity=".4"/>
-                    <g transform="translate(212 152) scale(2.333)"><g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="ob-a-twinkle-soft">
-                        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4"/><path d="M17 19h4"/>
-                    </g></g>
-                </g>
-                <g class="ob-a-float ob-delay-2">
-                    <rect x="14" y="132" width="140" height="56" rx="12" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".2"/>
-                    <text x="28" y="152" class="ob-svg-text ob-svg-text--muted"><?php esc_html_e('Meta description', 'optimizr'); ?></text>
-                    <rect x="28" y="162" width="108" height="6" rx="3" fill="#fff" fill-opacity=".55" class="ob-a-type"/>
-                    <rect x="28" y="173" width="72" height="6" rx="3" fill="#fff" fill-opacity=".35" class="ob-a-type ob-delay-1"/>
-                </g>
-                <g class="ob-a-float ob-delay-3">
-                    <rect x="334" y="128" width="132" height="44" rx="12" fill="url(#ob-g-glass)" stroke="#fff" stroke-opacity=".2"/>
-                    <g transform="translate(346 138)" fill="none" stroke="#d2c4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></g>
-                    <text x="378" y="155" class="ob-svg-text"><?php esc_html_e('ALT generated', 'optimizr'); ?></text>
-                </g>
             <?php
             echo '</svg>';
             break;
@@ -1293,5 +973,9 @@ function haptic_onboarding_illustration($name)
             <?php
             echo '</svg>';
             break;
+
+        default:
+            // Étape d'une extension (Optimizr Pro) : son illustration
+            do_action('haptic_onboarding_illustration', $name);
     }
 }

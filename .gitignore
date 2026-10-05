@@ -21,3 +21,6 @@ misc
 
 # Version WordPress.org construite par bin/build-wporg.sh
 dist/
+
+# Cache Python
+__pycache__/

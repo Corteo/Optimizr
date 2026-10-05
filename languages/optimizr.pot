@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 3.0.0\n"
+"Project-Id-Version: Haptic Optimizr 4.0.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,50 +13,10 @@ msgid "Cookies & GDPR"
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Tarteaucitron banner, Google Consent Mode v2 and audience measurement services."
-msgstr ""
-
-#: functions/admin-ui.php
 msgid "SEO"
 msgstr ""
 
-#: functions/admin-ui.php
-msgid "Meta and OpenGraph tags, XML sitemap, robots.txt file."
-msgstr ""
-
-#: functions/admin-ui.php functions/onboarding.php
-msgid "AI assistant"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Meta descriptions and ALT text generated with OpenAI, Claude or Gemini, based on your site context."
-msgstr ""
-
-#: functions/admin-ui.php functions/redirects-admin.php
-msgid "Redirects & links"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "301 redirects, 404 log, broken links and automatic redirects for moved content."
-msgstr ""
-
-#: functions/admin-ui.php functions/onboarding.php
-msgid "Local SEO"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Business profile for Google: address, opening hours, reviews, directions and contact detail shortcodes."
-msgstr ""
-
-#: functions/admin-ui.php functions/onboarding.php
-msgid "Special pages"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "404 page written in the editor with content suggestions, and maintenance mode (503) with a reopening date."
-msgstr ""
-
-#: functions/admin-ui.php
+#: functions/admin-ui.php functions/thumbnails.php
 msgid "Content types"
 msgstr ""
 
@@ -64,7 +24,7 @@ msgstr ""
 msgid "Ready-to-use Events CPT and custom post types created from the admin."
 msgstr ""
 
-#: functions/admin-ui.php
+#: functions/admin-ui.php functions/thumbnails.php
 msgid "Featured images"
 msgstr ""
 
@@ -72,7 +32,7 @@ msgstr ""
 msgid "Choose which content types accept a cover image."
 msgstr ""
 
-#: functions/admin-ui.php
+#: functions/admin-ui.php functions/mails.php
 msgid "Emails"
 msgstr ""
 
@@ -82,10 +42,6 @@ msgstr ""
 
 #: functions/admin-ui.php functions/onboarding.php
 msgid "Security"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Custom login URL, login attempt limits, hidden version, XML-RPC and security headers."
 msgstr ""
 
 #: functions/admin-ui.php
@@ -141,22 +97,6 @@ msgid "Visitor consent, with third-party services loaded only once allowed."
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Default titles and descriptions, sitemap and instructions for search engine crawlers."
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Business information used by Google (local search, Maps) and displayable on your site."
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Content of the not-found page and temporary site closure, using your theme layout."
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Content generation with OpenAI, Claude or Gemini: meta descriptions and image ALT text."
-msgstr ""
-
-#: functions/admin-ui.php
 msgid "Custom post types and cover images."
 msgstr ""
 
@@ -178,36 +118,6 @@ msgid "Adjust"
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "XML sitemap generated"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Could not write the XML sitemap"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "XML sitemap missing"
-msgstr ""
-
-#: functions/admin-ui.php
-msgctxt "site health check link"
-msgid "View"
-msgstr ""
-
-#: functions/admin-ui.php
-msgctxt "site health check link"
-msgid "Generate"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Custom robots.txt"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "robots.txt managed by WordPress"
-msgstr ""
-
-#: functions/admin-ui.php
 msgid "Cookie banner active"
 msgstr ""
 
@@ -220,23 +130,9 @@ msgctxt "site health check link"
 msgid "Enable"
 msgstr ""
 
-#. %s: AI provider name (OpenAI, Claude, Gemini)
-#: functions/admin-ui.php
-msgid "%s API key missing"
-msgstr ""
-
-#: functions/admin-ui.php
-msgctxt "site health check link"
-msgid "Add"
-msgstr ""
-
 #: functions/admin-ui.php
 msgctxt "module status"
 msgid "Disabled"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "API key missing"
 msgstr ""
 
 #: functions/admin-ui.php
@@ -351,12 +247,12 @@ msgstr ""
 msgid "Low %s:1"
 msgstr ""
 
-#: js/optimizr-admin.js functions/cookies.php
+#: functions/cookies.php js/optimizr-admin.js
 msgctxt "service status"
 msgid "Active"
 msgstr ""
 
-#: js/optimizr-admin.js functions/cookies.php
+#: functions/cookies.php js/optimizr-admin.js
 msgctxt "service status"
 msgid "Inactive"
 msgstr ""
@@ -366,146 +262,9 @@ msgstr ""
 msgid "%1$s / %2$s characters"
 msgstr ""
 
-#: js/optimizr-admin.js
-msgctxt "bulk log status"
-msgid "Generated"
-msgstr ""
-
-#: js/optimizr-admin.js
-msgctxt "bulk log status"
-msgid "Skipped"
-msgstr ""
-
-#. %s: amount in US dollars
-#: js/optimizr-admin.js functions/ai-pricing.php
-msgid "$%s"
-msgstr ""
-
-#. 1: items processed so far, 2: total number of items
-#: js/optimizr-admin.js
-msgid "%1$s / %2$s processed"
-msgstr ""
-
-#. %s: number of items generated
-#: js/optimizr-admin.js
-msgid "%s generated"
-msgid_plural "%s generated"
-msgstr[0] ""
-msgstr[1] ""
-
-#. %s: number of items skipped
-#: js/optimizr-admin.js
-msgid "%s skipped"
-msgid_plural "%s skipped"
-msgstr[0] ""
-msgstr[1] ""
-
-#. %s: cost in US dollars
-#: js/optimizr-admin.js
-msgid "actual cost %s"
-msgstr ""
-
-#. 1: status message, 2: cost in US dollars
-#: js/optimizr-admin.js
-msgid "%1$s Actual cost: %2$s."
-msgstr ""
-
-#. %s: number of items generated
-#: js/optimizr-admin.js
-msgid "Processing stopped · %s generated."
-msgid_plural "Processing stopped · %s generated."
-msgstr[0] ""
-msgstr[1] ""
-
-#. %s: error message
-#: js/optimizr-admin.js
-msgid "Stopped: %s"
-msgstr ""
-
-#: js/optimizr-admin.js
-msgid "unknown error."
-msgstr ""
-
-#. 1: number of items generated, 2: number of items skipped
-#: js/optimizr-admin.js
-msgid "Done · %1$s generated, %2$s skipped."
-msgstr ""
-
-#. %s: number of items generated
-#: js/optimizr-admin.js
-msgid "Done · %s generated."
-msgid_plural "Done · %s generated."
-msgstr[0] ""
-msgstr[1] ""
-
-#: js/optimizr-admin.js
-msgid "Stopped: the request failed (connection lost?)."
-msgstr ""
-
-#: js/optimizr-admin.js
-msgid "Stopping after the current item…"
-msgstr ""
-
-#: js/optimizr-admin.js
-msgid "Unexpected server response."
-msgstr ""
-
-#. 1: links checked so far, 2: total number of links
-#: js/optimizr-admin.js
-msgid "%1$s / %2$s link checked…"
-msgid_plural "%1$s / %2$s links checked…"
-msgstr[0] ""
-msgstr[1] ""
-
-#. 1: number of links checked, 2: number of issues found
-#: js/optimizr-admin.js
-msgid "Scan complete: %1$s link(s) checked, %2$s issue(s)."
-msgstr ""
-
-#. %s: error message
-#: js/optimizr-admin.js
-msgid "Scan interrupted: %s"
-msgstr ""
-
-#: js/optimizr-admin.js
-msgid "Looking for links in your content…"
-msgstr ""
-
-#: js/optimizr-admin.js
-msgid "No links found in published content."
-msgstr ""
-
-#. %s: error message
-#: js/optimizr-admin.js
-msgid "Scan failed: %s"
-msgstr ""
-
 #. 1: setting label, 2: entered value
-#: js/optimizr-onboarding.js functions/ai-providers.php
+#: js/optimizr-onboarding.js
 msgid "%1$s: %2$s"
-msgstr ""
-
-#: functions/onboarding.php
-msgctxt "placeholder example"
-msgid "+1 212 555 0100"
-msgstr ""
-
-#: functions/onboarding.php
-msgctxt "placeholder example"
-msgid "10001"
-msgstr ""
-
-#: functions/onboarding.php
-msgctxt "placeholder example"
-msgid "123 Main Street"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "404 page"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "404 page content"
 msgstr ""
 
 #. %s: site name
@@ -514,27 +273,7 @@ msgid "A few questions to turn on the essentials on %s. Settings are applied at 
 msgstr ""
 
 #: functions/onboarding.php
-msgid "A hacked account can no longer inject code into themes and plugins."
-msgstr ""
-
-#: functions/onboarding.php
 msgid "A login URL unique to the site stops most bots. Recommended protections are preselected and do not affect visitors."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "A missing URL suggests related content instead of a dead end."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "AI-generated text and ALT tags, modules enabled as you need them."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "ALT generated"
-msgstr ""
-
-#: functions/onboarding.php functions/cookies.php functions/ai.php
-msgid "API key"
 msgstr ""
 
 #: functions/onboarding.php
@@ -550,16 +289,12 @@ msgstr ""
 msgid "Add yours if it is static (office, fiber) so you never lock yourself out."
 msgstr ""
 
-#: functions/onboarding.php functions/local-seo.php functions/redirects-admin.php
+#: functions/redirects-admin.php
 msgid "Address"
 msgstr ""
 
 #: js/optimizr-onboarding.js
 msgid "Address added"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Address, phone and business type picked up by Google Maps and local search."
 msgstr ""
 
 #: functions/onboarding.php
@@ -586,10 +321,6 @@ msgstr ""
 msgid "At least 4 characters: letters, numbers and hyphens."
 msgstr ""
 
-#: functions/onboarding.php functions/ai.php
-msgid "Automatic ALT on upload"
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Automatic meta tags"
 msgstr ""
@@ -598,29 +329,13 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: functions/onboarding.php
-msgid "Banner colors and other services (Matomo, Hotjar, Google Ads, reCAPTCHA…): Cookies & GDPR tab."
-msgstr ""
-
-#: functions/onboarding.php functions/cookies.php
+#: functions/cookies.php functions/onboarding.php
 msgid "Banner position"
 msgstr ""
 
 #. %s: banner position (top, center, bottom), lowercased
 #: functions/onboarding.php
 msgid "Banner: %s"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Bing verification"
-msgstr ""
-
-#: functions/onboarding.php functions/security-admin.php
-msgid "Block user enumeration"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Blocking PHP in uploads and HSTS are set in the Security tab, once the site has been checked."
 msgstr ""
 
 #. %s: administrator email address
@@ -633,36 +348,11 @@ msgid "Bot blocked"
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Bots can no longer target known flaws of your version."
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Bots try passwords around the clock: shut the door on them."
 msgstr ""
 
 #: functions/onboarding.php
 msgid "Bottom"
-msgstr ""
-
-#: functions/onboarding.php functions/local-seo.php
-msgid "Business"
-msgstr ""
-
-#: functions/onboarding.php
-msgctxt "onboarding summary"
-msgid "Business description"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Business name"
-msgstr ""
-
-#: functions/onboarding.php functions/local-seo.php
-msgid "Business type"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Call"
 msgstr ""
 
 #: functions/onboarding.php functions/seo/seo.php
@@ -678,27 +368,7 @@ msgid "Check the choices above before applying the settings."
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Choose a page written in the editor: it is displayed with the theme layout, keeps the 404 status code and is not indexed."
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Choose your modules"
-msgstr ""
-
-#: functions/onboarding.php functions/local-seo.php
-msgid "City"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Clean tags and an up-to-date sitemap: Google indexes faster and better."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Code or meta tag"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Contact email"
 msgstr ""
 
 #: js/optimizr-onboarding.js
@@ -706,43 +376,19 @@ msgid "Continue"
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Country (two-letter code)"
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Default description"
 msgstr ""
 
-#: functions/onboarding.php functions/local-seo.php functions/seo/seo.php
+#: functions/onboarding.php functions/seo/seo.php
 msgid "Description"
 msgstr ""
 
-#: functions/onboarding.php functions/security-admin.php
-msgid "Disable XML-RPC"
-msgstr ""
-
-#: functions/onboarding.php functions/security-admin.php
-msgid "Disable the file editor"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Do not index internal search"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "E.g. pottery school in Lyon, classes for adults and children, weekend workshops."
-msgstr ""
-
-#: js/optimizr-onboarding.js functions/redirects-admin.php
+#: functions/redirects-admin.php js/optimizr-onboarding.js
 msgid "Edit"
 msgstr ""
 
 #: functions/onboarding.php
 msgid "Enter the site's analytics tools: the Tarteaucitron banner only loads them once the visitor agrees."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Every image added to the media library gets a description (one billed request per image)."
 msgstr ""
 
 #: functions/onboarding.php
@@ -757,15 +403,7 @@ msgstr ""
 msgid "Exit the wizard"
 msgstr ""
 
-#: functions/onboarding.php
-msgid "Experience"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Get a key"
-msgstr ""
-
-#: js/optimizr-onboarding.js
+#: functions/onboarding.php js/optimizr-onboarding.js
 msgid "Get started"
 msgstr ""
 
@@ -775,10 +413,6 @@ msgstr ""
 
 #: functions/onboarding.php
 msgid "Going further"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Google verification"
 msgstr ""
 
 #: functions/onboarding.php
@@ -798,10 +432,6 @@ msgstr ""
 msgid "Here we go"
 msgstr ""
 
-#: functions/onboarding.php functions/security-admin.php
-msgid "Hide the WordPress version"
-msgstr ""
-
 #: functions/onboarding.php
 msgid "IP addresses never locked out"
 msgstr ""
@@ -810,7 +440,7 @@ msgstr ""
 msgid "IPs never locked out"
 msgstr ""
 
-#: functions/onboarding.php functions/seo/seo-extras.php
+#: functions/onboarding.php
 msgid "Indexing"
 msgstr ""
 
@@ -818,36 +448,12 @@ msgstr ""
 msgid "Insert a variable into the last edited pattern:"
 msgstr ""
 
-#: functions/onboarding.php functions/ai-bulk.php functions/links.php
+#: functions/onboarding.php
 msgid "Insufficient permissions."
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Introduce your business"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Key already saved: leave empty to keep it"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Key needed"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Key saved"
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Last step"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Legacy interface, a frequent target of password attacks."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Let AI write for you"
 msgstr ""
 
 #: functions/onboarding.php
@@ -856,10 +462,6 @@ msgstr ""
 
 #: functions/onboarding.php functions/security-admin.php
 msgid "Limit login attempts"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Links to pages whose URL looks like the requested one, plus a search field."
 msgstr ""
 
 #: functions/onboarding.php
@@ -888,30 +490,6 @@ msgid "Login alert"
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Maintenance mode is set in the Special pages tab, whenever you need it."
-msgstr ""
-
-#: functions/onboarding.php functions/cookies.php
-msgid "Meta Pixel (Facebook)"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Meta description"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Meta descriptions and ALT tags generated from the content and your business description. Each generation is billed by the chosen provider."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Meta descriptions and ALT tags written in seconds."
-msgstr ""
-
-#: functions/onboarding.php functions/ai.php
-msgid "Model"
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Modules"
 msgstr ""
 
@@ -921,15 +499,6 @@ msgstr ""
 
 #: js/optimizr-onboarding.js
 msgid "New API key"
-msgstr ""
-
-#: functions/onboarding.php
-msgctxt "placeholder example"
-msgid "New York"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "No pages on the site: create one (\"Page not found\") then choose it in the Special pages tab."
 msgstr ""
 
 #: functions/onboarding.php
@@ -953,14 +522,6 @@ msgid "Open the dashboard"
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Open · 9 AM–7 PM"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Opening hours, GPS coordinates, Google place ID and online profiles: Local SEO tab."
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Optimization"
 msgstr ""
 
@@ -980,10 +541,6 @@ msgstr ""
 msgid "Page title in Google"
 msgstr ""
 
-#: functions/onboarding.php functions/ai.php
-msgid "Paste your account key"
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Performance"
 msgstr ""
@@ -992,32 +549,8 @@ msgstr ""
 msgid "Performance & visibility"
 msgstr ""
 
-#: functions/onboarding.php functions/local-seo.php
-msgid "Phone"
-msgstr ""
-
-#: functions/onboarding.php functions/cookies.php
-msgid "Pixel ID"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Polish the not found page"
-msgstr ""
-
-#: functions/onboarding.php functions/local-seo.php
-msgid "Postal code"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Prevents discovering usernames through ?author=1 and the REST API."
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Privacy"
-msgstr ""
-
-#: functions/onboarding.php functions/cookies.php
-msgid "Project ID"
 msgstr ""
 
 #: functions/onboarding.php
@@ -1028,21 +561,8 @@ msgstr ""
 msgid "Protections"
 msgstr ""
 
-#: functions/onboarding.php functions/ai.php
-msgid "Provider"
-msgstr ""
-
-#. %s: AI provider name
-#: functions/onboarding.php
-msgid "Provider: %s"
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Recommended"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Redirect attachment pages"
 msgstr ""
 
 #: functions/onboarding.php
@@ -1074,16 +594,8 @@ msgstr ""
 msgid "Security & compliance"
 msgstr ""
 
-#: functions/onboarding.php functions/security-admin.php
-msgid "Security headers"
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Security · Performance · Optimization"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Sent with every request: the AI writes with the right vocabulary and tone."
 msgstr ""
 
 #: functions/onboarding.php
@@ -1102,21 +614,12 @@ msgstr ""
 msgid "Share previews (OpenGraph)"
 msgstr ""
 
-#: functions/onboarding.php functions/cookies.php
+#: functions/cookies.php functions/onboarding.php
 msgid "Show the consent banner"
 msgstr ""
 
 #: functions/onboarding.php functions/seo/seo.php
 msgid "Site name"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Site, organization, breadcrumbs and articles described for rich results."
-msgstr ""
-
-#. %s: post type name
-#: functions/onboarding.php
-msgid "Sitemap: %s"
 msgstr ""
 
 #. 1: current step number, 2: total number of steps
@@ -1129,19 +632,11 @@ msgid "Suggest a URL"
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Suggest related content"
-msgstr ""
-
-#: functions/onboarding.php
 msgid "Summary"
 msgstr ""
 
 #: functions/onboarding.php functions/seo/seo.php
 msgid "Tagline"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Tags, sitemap and indexing for a site Google understands quickly."
 msgstr ""
 
 #: functions/onboarding.php
@@ -1153,27 +648,11 @@ msgid "The login page no longer says whether the username or the password is wro
 msgstr ""
 
 #: functions/onboarding.php
-msgid "The pages created for each image point to their content."
-msgstr ""
-
-#: functions/onboarding.php
 msgid "The site currently asks search engines not to index it (Settings › Reading). Leave off on a site still in preparation."
 msgstr ""
 
 #: functions/onboarding.php
 msgid "The site name and the patterns below are used as title and description in Google for any content that has none."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "The site's search results pages stay out of Google."
-msgstr ""
-
-#: functions/onboarding.php functions/pages.php
-msgid "Theme 404 page"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "This information is published for Google (Maps, local search) and can be reused on the site with the [optimizr_adresse] or [optimizr_telephone] shortcodes. It must match your Google Business Profile listing."
 msgstr ""
 
 #: functions/onboarding.php functions/seo/seo.php
@@ -1200,28 +679,12 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: functions/onboarding.php functions/security-admin.php
-msgid "Warning: Jetpack is active and needs XML-RPC."
-msgstr ""
-
 #: functions/onboarding.php
 msgid "Welcome"
 msgstr ""
 
 #: functions/onboarding.php
 msgid "Wizard"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "X-Content-Type-Options, X-Frame-Options, Referrer-Policy and Permissions-Policy."
-msgstr ""
-
-#: functions/onboarding.php
-msgid "XML sitemap content"
-msgstr ""
-
-#: functions/onboarding.php
-msgid "Your business description"
 msgstr ""
 
 #: functions/onboarding.php
@@ -1242,11 +705,6 @@ msgid "area,access,manage,workshop,office,backstage"
 msgstr ""
 
 #: functions/onboarding.php
-msgctxt "placeholder example"
-msgid "contact@example.com"
-msgstr ""
-
-#: functions/onboarding.php
 msgid "e.g. admin-area"
 msgstr ""
 
@@ -1262,10 +720,6 @@ msgstr ""
 msgid "optional"
 msgstr ""
 
-#: functions/onboarding.php
-msgid "schema.org structured data"
-msgstr ""
-
 #. %s: administrator email address
 #: functions/onboarding.php
 msgid "wp-login.php and /wp-admin/ will show a not found page to logged-out visitors. The new URL is emailed to %s. Leave empty to keep wp-login.php."
@@ -1273,42 +727,6 @@ msgstr ""
 
 #: functions/cookies.php
 msgid "Audience measurement"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Container URL"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Site ID"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Version"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Advertising"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Embedded content"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Families, comma-separated"
-msgstr ""
-
-#: functions/cookies.php
-msgid "With API key"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Anti-spam"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Site key"
 msgstr ""
 
 #: functions/cookies.php
@@ -1342,14 +760,6 @@ msgstr ""
 
 #: functions/cookies.php
 msgid "Position"
-msgstr ""
-
-#: functions/cookies.php
-msgid "Colors"
-msgstr ""
-
-#: functions/cookies.php
-msgid "The ratio shown measures how readable white text is on each button (4.5:1 minimum)."
 msgstr ""
 
 #: functions/cookies.php
@@ -1413,10 +823,6 @@ msgstr ""
 
 #: functions/cookies.php
 msgid "Approximate preview: the final look also depends on the theme."
-msgstr ""
-
-#: functions/cookies.php
-msgid "Google Consent Mode v2 and Bing Consent Mode are sent automatically to GA4, Google Ads and Clarity."
 msgstr ""
 
 #: functions/cookies.php
@@ -1581,482 +987,8 @@ msgstr ""
 msgid "+ Add a type"
 msgstr ""
 
-#: functions/pages.php
-msgid "Page not found (404)"
-msgstr ""
-
-#: functions/pages.php
-msgid "Shown when a URL does not exist. It keeps the 404 status code: Google does not index it or mistake it for a real page."
-msgstr ""
-
-#: functions/pages.php functions/seo/seo.php
-msgid "Content"
-msgstr ""
-
-#: functions/pages.php
-msgid "The chosen page is displayed with the theme layout. It is removed from the sitemap and not indexed."
-msgstr ""
-
-#: functions/pages.php
-msgid "Suggestions"
-msgstr ""
-
-#. %s: shortcode
-#: functions/pages.php
-msgid "Suggests content close to the requested URL and a search field, below the page text. To place them elsewhere: shortcode %s."
-msgstr ""
-
-#: functions/pages.php
-msgid "Maintenance mode"
-msgstr ""
-
-#: functions/pages.php
-msgid "During a redesign or before launch: visitors see a holding page, while logged-in users who can edit content see the site normally."
-msgstr ""
-
-#: functions/pages.php
-msgid "Enable"
-msgstr ""
-
-#: functions/pages.php
-msgid "The site is currently closed to visitors."
-msgstr ""
-
-#: functions/pages.php
-msgid "503 “service unavailable” status code: Google waits without removing the pages from its results. After a few days, it may start doing so."
-msgstr ""
-
-#: functions/pages.php
-msgid "Default message"
-msgstr ""
-
-#: functions/pages.php
-msgid "Displayed on its own, without the theme menu or footer. The page title and text are used."
-msgstr ""
-
-#: functions/pages.php
-msgid "Reopening"
-msgstr ""
-
-#: functions/pages.php
-msgid "Optional. The site reopens automatically on this date, which is announced to visitors and search engines."
-msgstr ""
-
-#: functions/pages.php
-msgid "Edit page"
-msgstr ""
-
-#: functions/pages.php
-msgid "<strong>the page is not published</strong>: it is still used."
-msgstr ""
-
-#: functions/pages.php
-msgid "404 Page"
-msgstr ""
-
-#: functions/pages.php
-msgid "Maintenance Page"
-msgstr ""
-
-#: functions/pages.php
-msgid "Maybe you were looking for:"
-msgstr ""
-
-#: functions/pages.php
-msgid "Site under maintenance."
-msgstr ""
-
-#: functions/pages.php
-msgid "Site under maintenance"
-msgstr ""
-
-#: functions/pages.php
-msgid "The site is being updated. Please come back a little later."
-msgstr ""
-
-#. %s: reopening date and time
-#: functions/pages.php
-msgid "Scheduled to reopen on %s."
-msgstr ""
-
-#. reopening date and time format, see https://www.php.net/manual/datetime.format.php
-#: functions/pages.php
-msgctxt "maintenance reopening date format"
-msgid "F j, Y \\a\\\t g:i a"
-msgstr ""
-
-#: functions/pages.php
-msgid "Maintenance on"
-msgstr ""
-
-#: functions/pages.php
-msgid "The site is closed to visitors"
-msgstr ""
-
-#: functions/pages.php
-msgid "Check"
-msgstr ""
-
-#: functions/pages.php
-msgid "Open a URL that does not exist to see the 404 page as visitors see it."
-msgstr ""
-
-#: functions/pages.php
-msgid "View the 404 page"
-msgstr ""
-
-#: functions/pages.php
-msgid "The chosen 404 page has been deleted: the theme page is used."
-msgstr ""
-
-#: functions/pages.php
-msgid "For the theme"
-msgstr ""
-
-#. 1: maintenance.php file name, 2: 404.php file name, 3: PHP code snippet
-#: functions/pages.php
-msgid "A %1$s file in the theme replaces the standalone maintenance page. Suggestions are also available in %2$s with %3$s"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Monday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Tuesday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Wednesday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Thursday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Friday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Saturday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Sunday"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Local shop or business (generic)"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Store"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Restaurant"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Café"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Bar"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Bakery, pastry shop"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Accommodation"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Beauty, wellness"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Health"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Business services"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Legal"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Real estate agency"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Construction, trades"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Automotive"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Sports"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Education, training"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Leisure, culture"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "This information must match your Google Business Profile listing."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Name"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Logo (URL)"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Default: the site icon."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Business photo (URL)"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Storefront or interior, at least 1200 px wide."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Price range"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "€, €€, €€€ or a range (“€15-30”)."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Region"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Country (code)"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Two-letter code: FR, BE, CH…"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "International format recommended: +33 1 23 45 67 89."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Email"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Online profiles"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "One URL per line: Google listing, Facebook, Instagram, LinkedIn, Yellow Pages… This lets Google link the site to these profiles."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Contact details"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "GPS coordinates"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "On Google Maps, right-click the business: the latitude and longitude are shown."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Opening hours"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Two time ranges per day at most (e.g. 9:00–12:30 and 14:00–19:00). Leave “Closed” checked for a day off."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Place ID"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Used to create the “Leave a review” and “Directions” links."
-msgstr ""
-
-#: functions/local-seo.php functions/seo/seo-extras.php
-msgid "Structured data"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Pages that carry the structured data"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Home page"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "All pages"
-msgstr ""
-
-#: functions/local-seo.php
-msgctxt "structured data"
-msgid "Disabled"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "The home page is enough in most cases."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Latitude"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Longitude"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Latitude (48.8566)"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Longitude (2.3522)"
-msgstr ""
-
-#. %s: URL of Google's Place ID finder
-#: functions/local-seo.php
-msgid "Find it with Google's <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Place ID finder</a>."
-msgstr ""
-
-#. 1: Google review URL, 2: Google Maps directions URL
-#: functions/local-seo.php
-msgid "Generated links: <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">leave a review</a> · <a href=\"%2$s\" target=\"_blank\" rel=\"noopener\">directions</a>"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Closed"
-msgstr ""
-
-#. 1: day of the week, 2: time range number
-#: functions/local-seo.php
-msgid "%1$s, opening %2$d"
-msgstr ""
-
-#. 1: day of the week, 2: time range number
-#: functions/local-seo.php
-msgid "%1$s, closing %2$d"
-msgstr ""
-
-#: functions/local-seo.php
-msgctxt "between two time ranges"
-msgid "and"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Leave a review on Google"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Directions"
-msgstr ""
-
-#: functions/local-seo.php functions/seo/seo.php functions/redirects-admin.php functions/tools.php
+#: functions/redirects-admin.php functions/tools.php functions/uninstall-admin.php
 msgid "Access denied"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Contact details imported from the theme. Check them, then save."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Theme contact details"
-msgstr ""
-
-#. %s: number of values found
-#: functions/local-seo.php
-msgid "%s value found in the theme Customizer. Fields already filled in here are kept."
-msgid_plural "%s values found in the theme Customizer. Fields already filled in here are kept."
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/local-seo.php
-msgid "Import from the theme"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Data for Google"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Test with Google"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Shortcodes"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Place them in a page or widget: they always show up-to-date information."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Added to all pages."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Added to no page (disabled)."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Added to the home page."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Enter at least the address and the city."
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Full address"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Clickable phone number"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Email protected from bots"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Opening hours table"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "“Leave a review” link"
-msgstr ""
-
-#: functions/local-seo.php
-msgid "Google Maps directions link"
 msgstr ""
 
 #: functions/seo/seo.php
@@ -2088,135 +1020,7 @@ msgid "OpenGraph tags"
 msgstr ""
 
 #: functions/seo/seo.php
-msgid "Sitemap"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "sitemap.xml, regenerated one minute after each content change and once a day. Content marked “do not index”, password-protected content and WooCommerce private pages are excluded."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Included content"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Replaces the file generated by WordPress."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Customize robots.txt"
-msgstr ""
-
-#: functions/seo/seo.php
 msgid "Generate OpenGraph tags"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "A robots.txt file exists at the site root: it is served instead of this setting."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "It is shared by all sites in the network."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Written by Optimizr, it is deleted when the plugin is deactivated."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "It was not written by Optimizr, or has been modified since."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Delete the robots.txt file from the site root?"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Delete the file"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Customization disabled"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Unreachable"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Reachable (HTTP 200)"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Write the robots.txt file"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Example directives"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "The last generation failed."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "The sitemap.xml file is missing."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Regenerate it below."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "sitemap.xml exists but does not respond over HTTP"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Open"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "sitemap.xml is reachable"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Regenerate now"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Generation history"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "write failed"
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "The sitemap has been regenerated."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "The robots.txt file was generated successfully."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "The robots.txt file has been deleted: robots.txt is generated by WordPress again."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Save the robots.txt content first."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Unable to write the robots.txt file. Check the write permissions of the site root folder."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Unable to delete the robots.txt file. Check the write permissions of the site root folder."
-msgstr ""
-
-#: functions/seo/seo.php
-msgid "Sitemap generation failed."
 msgstr ""
 
 #: functions/seo/seo.php
@@ -2239,7 +1043,7 @@ msgstr ""
 msgid "Type your text freely and “{” to pick a variable. Ideally between 120 and 160 characters."
 msgstr ""
 
-#: functions/seo/seo.php
+#: functions/seo/seo-meta.php functions/seo/seo.php
 msgid "Google preview"
 msgstr ""
 
@@ -2249,68 +1053,6 @@ msgstr ""
 
 #: functions/seo/seo.php
 msgid "No featured image"
-msgstr ""
-
-#. %d: HTTP status code
-#: functions/seo/seo.php
-msgid "HTTP response %d"
-msgstr ""
-
-#. %s: robots.txt directive
-#: functions/seo/seo.php
-msgid "%s applies to all robots"
-msgstr ""
-
-#. %s: robots.txt directive
-#: functions/seo/seo.php
-msgid "%s blocks access to the admin"
-msgstr ""
-
-#. %s: robots.txt directive
-#: functions/seo/seo.php
-msgid "%s allows a subfolder"
-msgstr ""
-
-#. %s: robots.txt directive
-#: functions/seo/seo.php
-msgid "%s points to the sitemap"
-msgstr ""
-
-#. %d: number of URLs in the sitemap
-#: functions/seo/seo.php
-msgid "%d URL"
-msgid_plural "%d URLs"
-msgstr[0] ""
-msgstr[1] ""
-
-#. date format for the last sitemap generation, see https://www.php.net/manual/datetime.format.php
-#: functions/seo/seo.php
-msgid "F j, Y \\a\\\t g:i a"
-msgstr ""
-
-#. 1: number of URLs, 2: date of the last generation
-#: functions/seo/seo.php
-msgid "%1$s · last generated: %2$s"
-msgstr ""
-
-#. date format for the sitemap generation history, see https://www.php.net/manual/datetime.format.php
-#: functions/seo/seo.php
-msgid "M j, Y, g:i a"
-msgstr ""
-
-#. %s: shortcode
-#: functions/seo/seo.php
-msgid "Sitemap for visitors: place the %s shortcode in a page."
-msgstr ""
-
-#: functions/seo/seo.php
-msgctxt "sitemap generation trigger"
-msgid "settings"
-msgstr ""
-
-#: functions/seo/seo.php functions/seo/seo-sitemap.php
-msgctxt "sitemap generation trigger"
-msgid "manual"
 msgstr ""
 
 #. %s: title of the latest published content
@@ -2350,15 +1092,7 @@ msgstr ""
 msgid "Ideally between 120 and 160 characters."
 msgstr ""
 
-#: functions/seo/seo-meta.php
-msgid "Generate the description with AI"
-msgstr ""
-
-#: functions/seo/seo-meta.php
-msgid "Generating..."
-msgstr ""
-
-#: functions/seo/seo-meta.php js/optimizr-updates.js
+#: js/optimizr-updates.js
 msgid "The request failed. Check your connection."
 msgstr ""
 
@@ -2379,7 +1113,7 @@ msgid "Default: the featured image. Ideal size: 1200 × 630 px."
 msgstr ""
 
 #. %s: error message
-#: functions/seo/seo-meta.php assets/js/media-ia.js functions/updates.php
+#: functions/updates.php
 msgid "Error: %s"
 msgstr ""
 
@@ -2397,507 +1131,12 @@ msgstr ""
 msgid "SEO preview"
 msgstr ""
 
-#. %s: path of the site root folder
-#: functions/seo/seo-sitemap.php
-msgid "Unable to write to %s. Check the write permissions of the site root folder."
-msgstr ""
-
-#: functions/seo/seo-sitemap.php
-msgctxt "sitemap generation trigger"
-msgid "automatic"
-msgstr ""
-
-#: functions/seo/seo-sitemap.php
-msgctxt "sitemap generation trigger"
-msgid "daily"
-msgstr ""
-
-#: functions/seo/seo-sitemap.php
-msgctxt "sitemap generation trigger"
-msgid "on demand"
-msgstr ""
-
-#: functions/seo/seo-sitemap.php
-msgid "Latest updates"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Keeps Google from indexing low-value pages that dilute the site’s SEO."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Internal search results"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "The site’s search results pages are not indexed (Google’s recommendation)."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Date archives"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Lists of posts by day, month or year are not indexed."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Tag archives"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Lists of posts by tag are not indexed: useful when there are many tags with few posts each."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Attachment pages"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "WordPress creates a page for each uploaded image. It redirects to the content where the image is used, or to the file."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Search engines"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Proves to Google and Bing that you own the site, and notifies them of new content."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "“HTML tag” method: paste the tag or just its code."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "“Meta tag” method: paste the tag or just its code."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Notifies Bing, Yandex, Seznam and Naver of each publication or update within seconds. Google does not use IndexNow."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Information Google can read (JSON-LD): it enables rich results."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgctxt "settings field label"
-msgid "Enable"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Site and organization on the home page, breadcrumb on every piece of content, Article for posts, Event for the Events post type."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Key:"
-msgstr ""
-
-#. 1: date and time of the last notification, 2: notified URL
-#: functions/seo/seo-extras.php
-msgid " · last notification: %1$s (%2$s)"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgctxt "IndexNow last notification date format"
-msgid "F j, Y \\a\\\t g:i a"
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Local site: no notifications are sent until the site is online."
-msgstr ""
-
-#: functions/seo/seo-extras.php
-msgid "Test the home page with Google"
-msgstr ""
-
 #: functions/seo/seo-output.php
 msgid "Uncategorized"
 msgstr ""
 
-#: functions/ai.php
-msgid "AI provider"
-msgstr ""
-
-#: functions/ai.php
-msgid "All the models offered can describe images."
-msgstr ""
-
-#: functions/ai.php
-msgid "Generate the ALT text when images are uploaded"
-msgstr ""
-
-#: functions/ai.php
-msgid "Generates the ALT text of every image uploaded to the media library, in the background a few seconds after the upload (one billed request per image)."
-msgstr ""
-
-#: functions/ai.php
-msgid "Site context"
-msgstr ""
-
-#: functions/ai.php
-msgid "Added to every request so that the generated texts match your business."
-msgstr ""
-
-#: functions/ai.php
-msgid "Business description"
-msgstr ""
-
-#: functions/ai.php
-msgid "Used for meta descriptions (SEO metabox) and ALT text (media library). Each provider keeps its own key and model."
-msgstr ""
-
-#: functions/ai.php
-msgid "Save to use this provider: cost estimates will update."
-msgstr ""
-
-#. 1: retired AI model name, 2: replacement AI model name
-#: functions/ai.php
-msgid "%1$s — retired, replaced by %2$s"
-msgstr ""
-
-#. %s: replacement AI model name
-#: functions/ai.php
-msgid "This model is no longer offered by the provider: %s is used instead. Choose a model from the list and save."
-msgstr ""
-
-#: functions/ai.php
-msgid "Key saved: leave empty to keep it"
-msgstr ""
-
-#. %s: last 4 characters of the saved API key
-#: functions/ai.php
-msgid "Key saved, ending in “%s”."
-msgstr ""
-
-#: functions/ai.php
-msgid "Key saved."
-msgstr ""
-
-#: functions/ai.php
-msgid "Delete the saved key"
-msgstr ""
-
-#. %s: link to the provider's API keys page
-#: functions/ai.php
-msgid "Create it at %s. It is never displayed in clear text."
-msgstr ""
-
-#: functions/ai.php
-msgid "Describe here the overall context of your site (e.g. ceramics school, photo studio, travel agency, etc.)"
-msgstr ""
-
-#. 1: date the prices were recorded, 2: links to the providers' price lists
-#: functions/ai.php
-msgid "Prices recorded on %1$s from the official price lists (%2$s), in US dollars excluding tax."
-msgstr ""
-
-#. %s: cost in US dollars
-#: functions/ai.php
-msgid "Actual usage this month: %s"
-msgstr ""
-
-#. 1: number of requests, 2: number of tokens sent, 3: number of tokens received
-#: functions/ai.php
-msgid "%1$d request, %2$s tokens sent, %3$s received"
-msgid_plural "%1$d requests, %2$s tokens sent, %3$s received"
-msgstr[0] ""
-msgstr[1] ""
-
-#. 1: month and year, 2: cost in US dollars, 3: number of requests
-#: functions/ai.php
-msgid "%1$s: %2$s · %3$d request"
-msgid_plural "%1$s: %2$s · %3$d requests"
-msgstr[0] ""
-msgstr[1] ""
-
-#. %s: link to the provider's usage dashboard
-#: functions/ai.php
-msgid "Measured from the API responses for the requests sent by this site, all providers combined. The invoice is authoritative: %s."
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai.php
-msgid "%s dashboard"
-msgstr ""
-
-#: functions/ai.php
-msgid "Price (1M tokens)"
-msgstr ""
-
-#: functions/ai.php
-msgid "1 ALT text"
-msgstr ""
-
-#: functions/ai.php
-msgid "1 description"
-msgstr ""
-
-#. %d: number of images without ALT text
-#: functions/ai.php
-msgid "%d missing ALT text"
-msgid_plural "%d missing ALT texts"
-msgstr[0] ""
-msgstr[1] ""
-
-#. %d: number of content items without a meta description
-#: functions/ai.php
-msgid "%d missing description"
-msgid_plural "%d missing descriptions"
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/ai.php
-msgctxt "AI model currently in use"
-msgid "current"
-msgstr ""
-
-#. 1: input price in US dollars, 2: output price in US dollars
-#: functions/ai.php
-msgid "$%1$s / $%2$s"
-msgstr ""
-
-#. 1: date of the price change, 2: new input price in US dollars, 3: new output price in US dollars
-#: functions/ai.php
-msgid "%1$s: $%2$s / $%3$s"
-msgstr ""
-
-#: functions/ai.php
-msgid "Price: input / output. Conservative estimate: a text is counted as 1 token per 3.5 characters, each image according to its actual dimensions and the model’s counting method, and the reasoning of models that use it is estimated for a short task. The provider and the model can be changed in “AI provider”."
-msgstr ""
-
-#: functions/ai.php
-msgid "The content contains no text."
-msgstr ""
-
-#. Instruction sent to the AI model, not shown to users. %s: page title
-#: functions/ai.php
-msgid "Write an SEO-optimized meta description of 160 characters maximum (spaces included) for the page “%s”, based on the following text. Reply with the description only."
-msgstr ""
-
-#. Instruction sent to the AI model, not shown to users. %s: site context entered in the settings
-#: functions/ai.php
-msgid "Site context: %s"
-msgstr ""
-
-#. Instruction sent to the AI model (system prompt), not shown to users.
-#: functions/ai.php
-msgid "You are an assistant specialized in SEO copywriting."
-msgstr ""
-
-#: functions/ai.php
-msgid "This file is not an image."
-msgstr ""
-
-#. Instruction sent to the AI model (system prompt), not shown to users.
-#: functions/ai.php
-msgid "You are an assistant specialized in accessibility, SEO and image description."
-msgstr ""
-
-#. Instruction sent to the AI model, not shown to users.
-#: functions/ai.php
-msgid "Describe this image concisely (125 characters maximum) for an accessible, SEO-optimized ALT text. Reply with the content of the ALT text only."
-msgstr ""
-
-#: functions/ai.php functions/updates.php
+#: functions/updates.php
 msgid "Insufficient permissions"
-msgstr ""
-
-#: functions/ai.php
-msgid "Missing file ID"
-msgstr ""
-
-#: functions/ai.php
-msgid "This is not a valid image"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — recent and affordable"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — stable, predictable answers"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — maximum quality"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — affordable for text, expensive for images"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — the most capable"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — fast and affordable"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — better writing"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — recommended by Google, affordable"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — scheduled for retirement on May 7, 2027"
-msgstr ""
-
-#. %s: AI model name
-#: functions/ai-pricing.php
-msgid "%s — the most capable (price doubles on January 1, 2027)"
-msgstr ""
-
-#: functions/ai-pricing.php
-msgid "unknown price"
-msgstr ""
-
-#: functions/ai-pricing.php
-msgid "< $0.01"
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai-providers.php
-msgid "Missing %s API key (AI Assistant tab)."
-msgstr ""
-
-#: functions/ai-providers.php
-msgid "The model returned no text."
-msgstr ""
-
-#. 1: AI provider name, 2: connection error message
-#: functions/ai-providers.php
-msgid "Could not connect to %1$s: %2$s"
-msgstr ""
-
-#. %d: HTTP status code
-#: functions/ai-providers.php
-msgctxt "API error message"
-msgid "HTTP response %d"
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai-providers.php
-msgid "%s: unreadable response."
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai-providers.php
-msgid "%s: response blocked by the content filter."
-msgstr ""
-
-#. %s: AI model or provider name
-#: functions/ai-providers.php
-msgid "%s refused to process this item."
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai-providers.php
-msgid "%s: no version of the image is light enough to be sent (4 MB maximum)."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Image ALT text"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "image(s) without ALT text"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "All images have ALT text."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Content meta descriptions"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "content item(s) without a custom description"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "All content has a custom description."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Unknown task."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Bulk processing"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Fills in everything that is missing on the site in one go. Items already filled in are never changed."
-msgstr ""
-
-#. %s: AI provider name
-#: functions/ai-bulk.php
-msgid "First enter and save the %s API key above."
-msgstr ""
-
-#. 1: total estimated cost, 2: estimated cost per item, 3: AI model name
-#: functions/ai-bulk.php
-msgid "Estimated cost: %1$s for everything (≈ %2$s per item) with %3$s."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Generate"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Stop"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Each item is one request billed by the chosen AI provider. Keep this page open during processing; you can stop it at any time, and what has already been generated stays saved. Generated texts can be edited afterwards in the media library or in the SEO metabox of each content item."
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Cost details"
-msgstr ""
-
-#: functions/ai-bulk.php
-msgid "Cost details and model comparison"
-msgstr ""
-
-#: functions/media.php
-msgid "Generate ALT text"
-msgstr ""
-
-#: assets/js/media-ia.js
-msgid "Generate with AI"
-msgstr ""
-
-#: functions/media.php
-msgid "Automatically generates optimized ALT text with AI from the visual content of the image."
-msgstr ""
-
-#: assets/js/media-ia.js
-msgid "Generating…"
-msgstr ""
-
-#: assets/js/media-ia.js
-msgid "ALT text generated successfully."
-msgstr ""
-
-#: assets/js/media-ia.js
-msgid "The request failed."
 msgstr ""
 
 #: functions/redirects.php
@@ -2933,16 +1172,7 @@ msgid "The destination leads back to the source: the redirect would loop."
 msgstr ""
 
 #: functions/redirects.php
-msgid "The destination is one of the addresses redirected by this wildcard: the redirect would loop."
-msgstr ""
-
-#: functions/redirects.php
 msgid "Another redirect already exists for this address."
-msgstr ""
-
-#. %s: content title
-#: functions/redirects.php
-msgid "Automatic: address of \"%s\" changed"
 msgstr ""
 
 #: functions/redirects-admin.php
@@ -2966,51 +1196,11 @@ msgid "Settings saved."
 msgstr ""
 
 #: functions/redirects-admin.php
-msgid "No CSV file received (2 MB maximum)."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "CSV import"
-msgstr ""
-
-#. 1: CSV line number, 2: error message
-#: functions/redirects-admin.php
-msgid "line %1$d: %2$s"
-msgstr ""
-
-#. %s: number of imported redirects
-#: functions/redirects-admin.php
-msgid "%s redirect imported."
-msgid_plural "%s redirects imported."
-msgstr[0] ""
-msgstr[1] ""
-
-#. 1: number of skipped lines, 2: list of errors
-#: functions/redirects-admin.php
-msgid "%1$s line skipped — %2$s"
-msgid_plural "%1$s lines skipped — %2$s"
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/redirects-admin.php
-msgctxt "separator between CSV import errors"
-msgid "; "
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Redirect old addresses, monitor not-found pages and spot broken links."
-msgstr ""
-
-#: functions/redirects-admin.php
 msgid "Edit redirect"
 msgstr ""
 
 #: functions/redirects-admin.php
 msgid "Add a redirect"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Relative (<code>/old-page</code>) or full address. End the source with <code>*</code> to redirect a whole folder: <code>/blog/*</code> → <code>/news/*</code>."
 msgstr ""
 
 #: functions/redirects-admin.php
@@ -3051,7 +1241,7 @@ msgstr ""
 msgid "Add redirect"
 msgstr ""
 
-#: functions/redirects-admin.php
+#: functions/admin-ui.php functions/redirects-admin.php
 msgid "Redirects"
 msgstr ""
 
@@ -3122,7 +1312,7 @@ msgid "Referrer"
 msgstr ""
 
 #. date format (last visit of a not-found page / security log entry), see https://www.php.net/manual/datetime.format.php
-#: functions/redirects-admin.php,functions/security-admin.php
+#: functions/redirects-admin.php functions/security-admin.php
 msgid "M j, H:i"
 msgstr ""
 
@@ -3135,76 +1325,13 @@ msgstr ""
 msgid "Ignore"
 msgstr ""
 
-#: functions/redirects-admin.php
-msgid "Broken links"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Checks every link and image in published content. Keep the page open during the scan."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Scan links"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Link scan"
-msgstr ""
-
-#. 1: date of the last scan, 2: number of links checked (e.g. "12 links checked"), 3: number of issues (e.g. "2 issues")
-#: functions/redirects-admin.php
-msgid "Last scan on %1$s: %2$s, %3$s."
-msgstr ""
-
 #. date format (last link scan / login alert email), see https://www.php.net/manual/datetime.format.php
-#: functions/redirects-admin.php,functions/security.php
+#: functions/security.php
 msgid "F j, Y \\a\\\t H:i"
-msgstr ""
-
-#. %s: number of links checked
-#: functions/redirects-admin.php
-msgid "%s link checked"
-msgid_plural "%s links checked"
-msgstr[0] ""
-msgstr[1] ""
-
-#. %s: number of issues found
-#: functions/redirects-admin.php
-msgid "%s issue"
-msgid_plural "%s issues"
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/redirects-admin.php
-msgid "The last scan was interrupted: run it again."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "No scan yet."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Link"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Issue"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Found in"
 msgstr ""
 
 #: functions/redirects-admin.php functions/uninstall.php
 msgid "Settings"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Automatic redirect"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "When the address of published content changes, the old one redirects to the new one (301)."
 msgstr ""
 
 #: functions/redirects-admin.php
@@ -3213,71 +1340,6 @@ msgstr ""
 
 #: functions/redirects-admin.php
 msgid "No IP address: only the requested address and the referring page are kept."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "CSV import / export"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Columns: old address; destination; type (301 by default); note. Handy for a site redesign."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "CSV file"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Import"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Export redirects"
-msgstr ""
-
-#. %s: number of other content items containing the link
-#: functions/redirects-admin.php
-msgid "+ %s other"
-msgid_plural "+ %s others"
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/links.php
-msgid "Unreachable (domain not found or address not allowed)"
-msgstr ""
-
-#. %s: HTTP error message
-#: functions/links.php
-msgid "Unreachable (%s)"
-msgstr ""
-
-#. %d: HTTP status code
-#: functions/links.php
-msgid "%d — access denied to the checker, check manually"
-msgstr ""
-
-#. %d: HTTP status code (404)
-#: functions/links.php
-msgid "%d — Page not found"
-msgstr ""
-
-#. %d: HTTP status code (410)
-#: functions/links.php
-msgid "%d — Permanently deleted"
-msgstr ""
-
-#. %d: HTTP status code (5xx)
-#: functions/links.php
-msgid "%d — Server error"
-msgstr ""
-
-#. %d: HTTP status code
-#: functions/links.php
-msgid "%d — Error"
-msgstr ""
-
-#: functions/links.php
-msgid "Unknown step."
 msgstr ""
 
 #: functions/security.php
@@ -3364,48 +1426,6 @@ msgstr ""
 msgid "Account %s"
 msgstr ""
 
-#: functions/security.php
-msgid "Access denied."
-msgstr ""
-
-#: functions/security.php
-msgid "XML-RPC is disabled on this site."
-msgstr ""
-
-#: functions/security.php
-msgid "Site served over HTTPS"
-msgstr ""
-
-#: functions/security.php
-msgid "Site served without HTTPS: credentials sent in clear text"
-msgstr ""
-
-#: functions/security.php
-msgid "An administrator is named \"admin\", the first username bots try"
-msgstr ""
-
-#: functions/security.php
-msgid "No administrator named \"admin\""
-msgstr ""
-
-#: functions/security.php
-msgid "PHP errors are shown to visitors (WP_DEBUG_DISPLAY)"
-msgstr ""
-
-#: functions/security.php
-msgid "PHP errors hidden from visitors"
-msgstr ""
-
-#. %s: PHP version
-#: functions/security.php
-msgid "PHP %s is no longer maintained: ask your host for a recent version"
-msgstr ""
-
-#. %s: PHP version
-#: functions/security.php
-msgid "PHP %s is maintained"
-msgstr ""
-
 #: functions/security-admin.php
 msgid "Login"
 msgstr ""
@@ -3440,82 +1460,6 @@ msgstr ""
 
 #: functions/security-admin.php
 msgid "Emails the administrator concerned when they log in from an unknown IP address."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Discretion"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Reduces the information the site gives to bots looking for known vulnerabilities."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Removes the \"generator\" tag, the version from RSS feeds and files (?ver=), and PHP's X-Powered-By header."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Prevents discovering account usernames through ?author=1, the REST API and oEmbed embeds."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Hide author pages"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "/author/username/ pages show a not-found page to visitors (with the previous option)."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Unused features"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Disables entry points that most brochure sites do not need."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Legacy interface, a frequent target of password attacks. Only needed for Jetpack and a few mobile apps."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Disable application passwords"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "These passwords allow logging in to the API without the usual two-step verification. Useless without a connected external application."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Removes the theme and plugin code editor: a hacked account can no longer inject code there."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Block PHP in media"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Prevents a PHP script dropped into the media folder through a vulnerability from running."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Instructions sent to browsers to limit hijacking of the site."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Recommended headers"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "X-Content-Type-Options, X-Frame-Options (the site can no longer be displayed in a frame on another site), Referrer-Policy and Permissions-Policy."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Force HTTPS (HSTS)"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Browsers will refuse any insecure connection to the site for one year."
 msgstr ""
 
 #: functions/security-admin.php
@@ -3593,65 +1537,12 @@ msgstr ""
 msgid "Your request seems to go through a proxy (address seen by the server: %s). If it is yours, declare it here."
 msgstr ""
 
-#. %s: DISALLOW_FILE_EDIT constant name
-#: functions/security-admin.php
-msgid "Already disabled by the %s constant in wp-config.php."
-msgstr ""
-
-#. %s: DISALLOW_FILE_EDIT constant name
-#: functions/security-admin.php
-msgid "Already set by the %s constant in wp-config.php."
-msgstr ""
-
-#. %s: path of the .htaccess file
-#: functions/security-admin.php
-msgid "Rule present in %s."
-msgstr ""
-
-#. %s: path of the .htaccess file
-#: functions/security-admin.php
-msgid "Unable to write %s: check the folder permissions."
-msgstr ""
-
-#. %s: uploads folder path
-#: functions/security-admin.php
-msgid "This server is not Apache: the .htaccess rule has no effect. Ask your host to block PHP execution in %s."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Only available for a site served over HTTPS."
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Force HTTPS"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "Only enable this if the site and all its subdomains work over HTTPS (together with \"Recommended headers\")."
-msgstr ""
-
 #: functions/security-admin.php
 msgid "Custom login address"
 msgstr ""
 
 #: functions/security-admin.php
 msgid "Login attempts limited"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "WordPress version hidden"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "User enumeration blocked"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "XML-RPC disabled"
-msgstr ""
-
-#: functions/security-admin.php
-msgid "File editor disabled"
 msgstr ""
 
 #: functions/security-admin.php
@@ -3949,7 +1840,98 @@ msgctxt "sitemap generation trigger"
 msgid "plugin update"
 msgstr ""
 
+#: functions/admin-ui.php
+msgid "Tarteaucitron banner, Google Consent Mode v2, Google Analytics and Google Tag Manager."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Title, description and OpenGraph tags, with a SEO box in the editor."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Not-found pages log and up to 5 redirects."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Custom login URL, login attempt limits, neutral error messages and login alerts."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Default titles and descriptions, used for any content that has none."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Optimizr Pro"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "A separate add-on that extends Optimizr. Your settings stay as they are."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Learn more about Optimizr Pro →"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Cookies: every service, banner colors"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "SEO: XML sitemap, robots.txt, IndexNow, structured data"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Unlimited redirects, wildcards, CSV import, broken links"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Local SEO, 404 page and maintenance mode"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "AI assistant for meta descriptions and ALT text"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Full security: discretion, unused features, headers"
+msgstr ""
+
+#: functions/cookies.php
+msgid "Google Consent Mode v2 is sent automatically to Google Analytics 4 and Google Tag Manager."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Clean title and description tags: Google shows your pages the way you want."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Meta tags, redirects and indexing for a site Google understands quickly."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Content types, featured images and modules enabled as you need them."
+msgstr ""
+
+#: functions/redirects-admin.php
+msgid "Redirect old addresses and monitor not-found pages."
+msgstr ""
+
+#: functions/redirects-admin.php
+msgid "Relative (<code>/old-page</code>) or full address."
+msgstr ""
+
+#. translators: %s: maximum number of redirects
+#: functions/redirects-admin.php functions/redirects.php
+msgid "The free version is limited to %s redirect. Optimizr Pro removes this limit."
+msgid_plural "The free version is limited to %s redirects. Optimizr Pro removes this limit."
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/redirects.php
+msgid "Wildcards (*) require Optimizr Pro."
+msgstr ""
+
 #. Description of the plugin
 #: optimizr.php
-msgid "Cookie consent (Tarteaucitron), SEO, AI assistant, custom post types and maintenance tools in a single settings page, enabled module by module."
+msgid "Cookie consent (Tarteaucitron), SEO meta tags, redirects, login protection, custom post types and maintenance tools in a single settings page, enabled module by module."
 msgstr ""

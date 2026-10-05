@@ -142,38 +142,6 @@
         });
     }
 
-    /* ---------- Assistant IA : lien et indication de clé selon le fournisseur ---------- */
-
-    var keyInput = form.querySelector('[data-ob-key]');
-    var keyLink = form.querySelector('[data-ob-key-link]');
-
-    function syncProvider() {
-        var radio = form.querySelector('input[name="haptic_ai_provider"]:checked');
-        if (!radio || !keyInput) return;
-        keyInput.placeholder = radio.dataset.hasKey === '1' ? keyInput.dataset.placeholderSaved : keyInput.dataset.placeholderEmpty;
-        if (keyLink) {
-            keyLink.href = radio.dataset.keyUrl || '#';
-            keyLink.hidden = !radio.dataset.keyUrl;
-        }
-    }
-
-    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            keyInput.value = '';
-            syncProvider();
-        });
-    });
-    syncProvider();
-
-    // Modèle proposé selon le fournisseur choisi
-    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            form.querySelectorAll('[data-ob-provider-row]').forEach(function (row) {
-                row.hidden = row.dataset.obProviderRow !== radio.value;
-            });
-        });
-    });
-
     /* ---------- Sécurité : adresse de connexion et liste blanche ---------- */
 
     var slugInput = form.querySelector('#ob-login-slug');
