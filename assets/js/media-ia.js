@@ -1,14 +1,14 @@
 jQuery(document).ready(function ($) {
     // Le bouton est rendu côté PHP via le filtre attachment_fields_to_edit (functions/media.php)
-    $(document).on('click', '.hpt-ai-alt', function () {
+    $(document).on('click', '.haptic-ai-alt', function () {
         const attachmentId = $(this).data('post-id');
         const $button = $(this);
         $button.prop('disabled', true).text('Génération en cours...');
 
-        $.post(hptMediaIA.ajaxUrl, {
-            action: 'haptic_GPT_generate_image_meta',
+        $.post(hapticMediaIA.ajaxUrl, {
+            action: 'haptic_generate_image_meta',
             post_id: attachmentId,
-            nonce: hptMediaIA.nonce,
+            nonce: hapticMediaIA.nonce,
         }, function (response) {
             $button.prop('disabled', false).text('Générer avec l\'IA');
 

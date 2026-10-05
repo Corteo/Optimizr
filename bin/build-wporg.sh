@@ -41,9 +41,9 @@ grep -rl 'build:github-only' "$out" --include='*.php' | while IFS= read -r file;
 done
 
 # Garde-fous : readme.txt complété, rien ne doit rester du système de mise à jour GitHub
-if grep -rqE 'plugin-update-checker|PucFactory|token\.php|hpt_get_github_token' "$out"; then
+if grep -rqE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out"; then
     echo "Erreur : du code de mise à jour GitHub subsiste dans $out" >&2
-    grep -rnE 'plugin-update-checker|PucFactory|token\.php|hpt_get_github_token' "$out" >&2
+    grep -rnE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out" >&2
     exit 1
 fi
 if grep -q 'REPLACE_WITH_WPORG_USERNAME' "$out/readme.txt"; then

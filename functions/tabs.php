@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
  * - 'toggle'       => nom d'une option booléenne, affichée en interrupteur dans l'en-tête de la carte
  * - 'toggle_label' => libellé accessible de cet interrupteur
  */
-function hpt_do_settings_sections($page)
+function haptic_do_settings_sections($page)
 {
     global $wp_settings_sections, $wp_settings_fields;
 
@@ -42,13 +42,13 @@ function hpt_do_settings_sections($page)
 
         if (!empty($section['toggle'])) {
             $label = !empty($section['toggle_label']) ? $section['toggle_label'] : $section['title'];
-            echo wp_kses(hpt_switch_input($section['toggle'], get_option($section['toggle']), $label), hpt_kses_ui());
+            echo wp_kses(haptic_switch_input($section['toggle'], get_option($section['toggle']), $label), haptic_kses_ui());
         }
         echo '</div>';
 
         if ($has_fields) {
             echo '<div class="optimizr-card__body">';
-            hpt_do_settings_fields($page, $section['id']);
+            haptic_do_settings_fields($page, $section['id']);
             echo '</div>';
         }
 
@@ -63,7 +63,7 @@ function hpt_do_settings_sections($page)
  * - 'description' => aide affichée sous le libellé
  * - 'layout'      => 'stacked' pour placer le contrôle sous le libellé (champs larges)
  */
-function hpt_do_settings_fields($page, $section)
+function haptic_do_settings_fields($page, $section)
 {
     global $wp_settings_fields;
 

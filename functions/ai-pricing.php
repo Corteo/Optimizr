@@ -13,28 +13,28 @@ if (!defined('ABSPATH')) {
  */
 
 /** Date de relevé des tarifs ci-dessous. */
-const HPT_AI_PRICING_DATE = '2026-10-01';
+const HAPTIC_AI_PRICING_DATE = '2026-10-01';
 
-const HPT_AI_DEFAULT_PROVIDER = 'openai';
+const HAPTIC_AI_DEFAULT_PROVIDER = 'openai';
 
 /**
  * Fournisseurs et modèles proposés.
  *
- * Tarifs : dollars US pour 1 million de tokens (entrée, sortie), grilles officielles relevées à HPT_AI_PRICING_DATE.
+ * Tarifs : dollars US pour 1 million de tokens (entrée, sortie), grilles officielles relevées à HAPTIC_AI_PRICING_DATE.
  * 'price_changes' : nouveaux tarifs déjà annoncés, appliqués automatiquement à leur date.
- * 'vision' : méthode de décompte des tokens d'une image (voir hpt_ai_image_tokens()).
+ * 'vision' : méthode de décompte des tokens d'une image (voir haptic_ai_image_tokens()).
  * 'hidden_output' : tokens de réflexion facturés en sortie, estimés pour une tâche courte.
  * 'options' : réglages propres au modèle, appliqués par les adaptateurs (functions/ai-providers.php).
  *
- * Modifiable par le filtre hpt_ai_providers quand les fournisseurs changent leurs prix ou leurs modèles.
+ * Modifiable par le filtre haptic_ai_providers quand les fournisseurs changent leurs prix ou leurs modèles.
  */
-function hpt_ai_providers()
+function haptic_ai_providers()
 {
-    return apply_filters('hpt_ai_providers', [
+    return apply_filters('haptic_ai_providers', [
         'openai' => [
             'label'        => 'OpenAI',
-            'key_option'   => 'hpt_openai_api_key',
-            'model_option' => 'hpt_openai_model',
+            'key_option'   => 'haptic_openai_api_key',
+            'model_option' => 'haptic_openai_model',
             'default'      => 'gpt-4.1-mini',
             'key_url'      => 'https://platform.openai.com/api-keys',
             'usage_url'    => 'https://platform.openai.com/usage',
@@ -88,8 +88,8 @@ function hpt_ai_providers()
         ],
         'anthropic' => [
             'label'        => 'Anthropic (Claude)',
-            'key_option'   => 'hpt_anthropic_api_key',
-            'model_option' => 'hpt_anthropic_model',
+            'key_option'   => 'haptic_anthropic_api_key',
+            'model_option' => 'haptic_anthropic_model',
             'default'      => 'claude-haiku-4-5',
             'key_url'      => 'https://platform.claude.com/settings/keys',
             'usage_url'    => 'https://platform.claude.com/usage',
@@ -118,8 +118,8 @@ function hpt_ai_providers()
         ],
         'gemini' => [
             'label'        => 'Google (Gemini)',
-            'key_option'   => 'hpt_gemini_api_key',
-            'model_option' => 'hpt_gemini_model',
+            'key_option'   => 'haptic_gemini_api_key',
+            'model_option' => 'haptic_gemini_model',
             'default'      => 'gemini-3.5-flash-lite',
             'key_url'      => 'https://aistudio.google.com/apikey',
             'usage_url'    => 'https://aistudio.google.com/usage',
@@ -150,33 +150,33 @@ function hpt_ai_providers()
     ]);
 }
 
-function hpt_ai_provider()
+function haptic_ai_provider()
 {
-    $provider = (string) get_option('hpt_ai_provider', HPT_AI_DEFAULT_PROVIDER);
-    return isset(hpt_ai_providers()[$provider]) ? $provider : HPT_AI_DEFAULT_PROVIDER;
+    $provider = (string) get_option('haptic_ai_provider', HAPTIC_AI_DEFAULT_PROVIDER);
+    return isset(haptic_ai_providers()[$provider]) ? $provider : HAPTIC_AI_DEFAULT_PROVIDER;
 }
 
-function hpt_ai_provider_config($provider = null)
+function haptic_ai_provider_config($provider = null)
 {
-    return hpt_ai_providers()[$provider ?: hpt_ai_provider()];
+    return haptic_ai_providers()[$provider ?: haptic_ai_provider()];
 }
 
 /** Clé API du fournisseur actif (ou de celui indiqué). */
-function hpt_ai_api_key($provider = null)
+function haptic_ai_api_key($provider = null)
 {
-    return trim((string) get_option(hpt_ai_provider_config($provider)['key_option'], ''));
+    return trim((string) get_option(haptic_ai_provider_config($provider)['key_option'], ''));
 }
 
 /** Modèles du fournisseur actif (ou de celui indiqué). */
-function hpt_ai_models($provider = null)
+function haptic_ai_models($provider = null)
 {
-    return hpt_ai_provider_config($provider)['models'];
+    return haptic_ai_provider_config($provider)['models'];
 }
 
 /** Modèle choisi pour un fournisseur ; un ancien modèle enregistré est conservé tel quel. */
-function hpt_ai_current_model($provider = null)
+function haptic_ai_current_model($provider = null)
 {
-    $config = hpt_ai_provider_config($provider);
+    $config = haptic_ai_provider_config($provider);
     return (string) get_option($config['model_option'], $config['default']);
 }
 
@@ -184,22 +184,22 @@ function hpt_ai_current_model($provider = null)
  * Modèle réellement utilisé pour les requêtes : le modèle choisi s'il est encore proposé,
  * sinon le modèle par défaut du fournisseur (un modèle retiré provoquerait une erreur de l'API).
  */
-function hpt_ai_request_model($provider = null)
+function haptic_ai_request_model($provider = null)
 {
-    $model = hpt_ai_current_model($provider);
-    return isset(hpt_ai_models($provider)[$model]) ? $model : hpt_ai_provider_config($provider)['default'];
+    $model = haptic_ai_current_model($provider);
+    return isset(haptic_ai_models($provider)[$model]) ? $model : haptic_ai_provider_config($provider)['default'];
 }
 
 /** Modèle utilisé pour décrire les images (tous les modèles proposés lisent les images). */
-function hpt_ai_vision_model($provider = null)
+function haptic_ai_vision_model($provider = null)
 {
-    return hpt_ai_request_model($provider);
+    return haptic_ai_request_model($provider);
 }
 
 /** Réglages d'un modèle, ou null s'il n'est pas dans la liste. */
-function hpt_ai_model_config($model, $provider = null)
+function haptic_ai_model_config($model, $provider = null)
 {
-    return hpt_ai_models($provider)[$model] ?? null;
+    return haptic_ai_models($provider)[$model] ?? null;
 }
 
 /**
@@ -207,7 +207,7 @@ function hpt_ai_model_config($model, $provider = null)
  *
  * @return array ['input' => float, 'output' => float]
  */
-function hpt_ai_model_price(array $config)
+function haptic_ai_model_price(array $config)
 {
     $price = ['input' => $config['input'], 'output' => $config['output']];
     $today = current_time('Y-m-d');
@@ -224,13 +224,13 @@ function hpt_ai_model_price(array $config)
 /**
  * Coût en dollars d'un nombre de tokens, ou null si le tarif du modèle est inconnu.
  */
-function hpt_ai_cost($model, $input_tokens, $output_tokens, $provider = null)
+function haptic_ai_cost($model, $input_tokens, $output_tokens, $provider = null)
 {
-    $config = hpt_ai_model_config($model, $provider);
+    $config = haptic_ai_model_config($model, $provider);
     if (!$config) {
         return null;
     }
-    $price = hpt_ai_model_price($config);
+    $price = haptic_ai_model_price($config);
     return ($input_tokens * $price['input'] + $output_tokens * $price['output']) / 1000000;
 }
 
@@ -242,9 +242,9 @@ function hpt_ai_cost($model, $input_tokens, $output_tokens, $provider = null)
  * - gemini25 (Google) : 258 tokens par tuile de 768 px (258 au total sous 384 px) ;
  * - fixed    (Google Gemini 3.x) : forfait par image (résolution par défaut).
  */
-function hpt_ai_image_tokens($model, $width, $height, $provider = null)
+function haptic_ai_image_tokens($model, $width, $height, $provider = null)
 {
-    $config = hpt_ai_model_config($model, $provider);
+    $config = haptic_ai_model_config($model, $provider);
     if (!$config || $width <= 0 || $height <= 0) {
         return 0;
     }
@@ -316,15 +316,15 @@ function hpt_ai_image_tokens($model, $width, $height, $provider = null)
 }
 
 /** Tokens approximatifs d'un texte français (1 token ≈ 3,5 caractères, estimation prudente). */
-function hpt_ai_text_tokens($text)
+function haptic_ai_text_tokens($text)
 {
     return (int) ceil(mb_strlen((string) $text) / 3.5);
 }
 
 /** Tokens de sortie estimés : texte attendu + réflexion éventuelle du modèle. */
-function hpt_ai_estimated_output($model, $visible, $provider = null)
+function haptic_ai_estimated_output($model, $visible, $provider = null)
 {
-    $config = hpt_ai_model_config($model, $provider);
+    $config = haptic_ai_model_config($model, $provider);
     return $visible + (int) ($config['hidden_output'] ?? 0);
 }
 
@@ -333,14 +333,14 @@ function hpt_ai_estimated_output($model, $visible, $provider = null)
  *
  * @return array ['input' => int, 'output' => int]
  */
-function hpt_ai_estimate_description_tokens($post_id, $model = null, $provider = null)
+function haptic_ai_estimate_description_tokens($post_id, $model = null, $provider = null)
 {
     $content = trim(preg_replace('/\s+/u', ' ', wp_strip_all_tags(strip_shortcodes(get_post_field('post_content', $post_id)))));
-    $prompt = 120 + hpt_ai_text_tokens(get_the_title($post_id)) + hpt_ai_text_tokens(get_option('hpt_ai_context', ''));
+    $prompt = 120 + haptic_ai_text_tokens(get_the_title($post_id)) + haptic_ai_text_tokens(get_option('haptic_ai_context', ''));
 
     return [
-        'input'  => $prompt + hpt_ai_text_tokens(mb_substr($content, 0, 6000)),
-        'output' => hpt_ai_estimated_output($model ?: hpt_ai_request_model($provider), 60, $provider),
+        'input'  => $prompt + haptic_ai_text_tokens(mb_substr($content, 0, 6000)),
+        'output' => haptic_ai_estimated_output($model ?: haptic_ai_request_model($provider), 60, $provider),
     ];
 }
 
@@ -349,15 +349,15 @@ function hpt_ai_estimate_description_tokens($post_id, $model = null, $provider =
  *
  * @return array ['input' => int, 'output' => int]
  */
-function hpt_ai_estimate_alt_tokens($attachment_id, $model = null, $provider = null)
+function haptic_ai_estimate_alt_tokens($attachment_id, $model = null, $provider = null)
 {
-    $model = $model ?: hpt_ai_vision_model($provider);
-    $source = hpt_ai_alt_image_source($attachment_id);
-    $prompt = 200 + hpt_ai_text_tokens(get_option('hpt_ai_context', ''));
+    $model = $model ?: haptic_ai_vision_model($provider);
+    $source = haptic_ai_alt_image_source($attachment_id);
+    $prompt = 200 + haptic_ai_text_tokens(get_option('haptic_ai_context', ''));
 
     return [
-        'input'  => $prompt + hpt_ai_image_tokens($model, $source['width'], $source['height'], $provider),
-        'output' => hpt_ai_estimated_output($model, 40, $provider),
+        'input'  => $prompt + haptic_ai_image_tokens($model, $source['width'], $source['height'], $provider),
+        'output' => haptic_ai_estimated_output($model, 40, $provider),
     ];
 }
 
@@ -370,12 +370,12 @@ function hpt_ai_estimate_alt_tokens($attachment_id, $model = null, $provider = n
  * @param array    $targets Liste de [fournisseur, modèle] ; par défaut le modèle utilisé par la tâche
  * @return array ['count' => int, 'per_model' => ['fournisseur:modèle' => ['total' => float|null, 'unit' => float|null]]]
  */
-function hpt_ai_estimate($task, array $ids, array $targets = [])
+function haptic_ai_estimate($task, array $ids, array $targets = [])
 {
     $count = count($ids);
     if (!$targets) {
-        $provider = hpt_ai_provider();
-        $targets = [[$provider, $task === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model()]];
+        $provider = haptic_ai_provider();
+        $targets = [[$provider, $task === 'alt' ? haptic_ai_vision_model() : haptic_ai_request_model()]];
     }
 
     // Échantillon réparti sur toute la liste
@@ -386,9 +386,9 @@ function hpt_ai_estimate($task, array $ids, array $targets = [])
         $total = 0.0;
         foreach ($sample as $id) {
             $tokens = $task === 'alt'
-                ? hpt_ai_estimate_alt_tokens($id, $model, $provider)
-                : hpt_ai_estimate_description_tokens($id, $model, $provider);
-            $cost = hpt_ai_cost($model, $tokens['input'], $tokens['output'], $provider);
+                ? haptic_ai_estimate_alt_tokens($id, $model, $provider)
+                : haptic_ai_estimate_description_tokens($id, $model, $provider);
+            $cost = haptic_ai_cost($model, $tokens['input'], $tokens['output'], $provider);
             if ($cost === null) {
                 $total = null;
                 break;
@@ -415,17 +415,17 @@ function hpt_ai_estimate($task, array $ids, array $targets = [])
  * @param int[]  $ids
  * @return array 'fournisseur:modèle' => float|null
  */
-function hpt_ai_estimate_units($task, array $ids)
+function haptic_ai_estimate_units($task, array $ids)
 {
     $targets = [];
-    foreach (hpt_ai_providers() as $slug => $provider) {
+    foreach (haptic_ai_providers() as $slug => $provider) {
         foreach (array_keys($provider['models']) as $model) {
             $targets[] = [$slug, $model];
         }
     }
 
-    $transient = 'hpt_ai_estimate_' . $task;
-    $hash = md5(wp_json_encode([$ids, hpt_ai_providers(), get_option('hpt_ai_context', ''), current_time('Y-m-d'), HPT_OPTIMIZR_VERSION]));
+    $transient = 'haptic_ai_estimate_' . $task;
+    $hash = md5(wp_json_encode([$ids, haptic_ai_providers(), get_option('haptic_ai_context', ''), current_time('Y-m-d'), HAPTIC_OPTIMIZR_VERSION]));
     $cache = get_transient($transient);
     if (is_array($cache) && ($cache['hash'] ?? '') === $hash) {
         return (array) $cache['units'];
@@ -433,21 +433,21 @@ function hpt_ai_estimate_units($task, array $ids)
 
     $units = array_map(function ($estimate) {
         return $estimate['unit'];
-    }, hpt_ai_estimate($task, $ids, $targets)['per_model']);
+    }, haptic_ai_estimate($task, $ids, $targets)['per_model']);
     set_transient($transient, ['hash' => $hash, 'units' => $units], 12 * HOUR_IN_SECONDS);
 
     return $units;
 }
 
 /** Estimation pour le modèle actuellement utilisé par une tâche. */
-function hpt_ai_estimate_current($task, array $ids)
+function haptic_ai_estimate_current($task, array $ids)
 {
-    $key = hpt_ai_provider() . ':' . ($task === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model());
-    $units = hpt_ai_estimate_units($task, $ids);
+    $key = haptic_ai_provider() . ':' . ($task === 'alt' ? haptic_ai_vision_model() : haptic_ai_request_model());
+    $units = haptic_ai_estimate_units($task, $ids);
 
-    // Modèle absent du comparatif (filtre hpt_ai_providers) : calcul direct
+    // Modèle absent du comparatif (filtre haptic_ai_providers) : calcul direct
     if (!array_key_exists($key, $units)) {
-        $estimate = hpt_ai_estimate($task, $ids);
+        $estimate = haptic_ai_estimate($task, $ids);
         return reset($estimate['per_model']);
     }
 
@@ -458,7 +458,7 @@ function hpt_ai_estimate_current($task, array $ids)
 }
 
 /** Montant en dollars lisible : « 0,42 $ », « < 0,01 $ ». */
-function hpt_ai_format_cost($amount)
+function haptic_ai_format_cost($amount)
 {
     if ($amount === null) {
         return 'tarif inconnu';
@@ -470,7 +470,7 @@ function hpt_ai_format_cost($amount)
 }
 
 /** Coût unitaire lisible, avec plus de décimales : « 0,0004 $ ». */
-function hpt_ai_format_unit($amount)
+function haptic_ai_format_unit($amount)
 {
     if ($amount === null) {
         return 'tarif inconnu';
@@ -485,12 +485,12 @@ function hpt_ai_format_unit($amount)
  *
  * @return float|null Coût de la requête en dollars
  */
-function hpt_ai_record_usage($provider, $model, $input, $output)
+function haptic_ai_record_usage($provider, $model, $input, $output)
 {
-    $cost = hpt_ai_cost($model, (int) $input, (int) $output, $provider);
+    $cost = haptic_ai_cost($model, (int) $input, (int) $output, $provider);
 
     $month = current_time('Y-m');
-    $all = (array) get_option('hpt_ai_usage', []);
+    $all = (array) get_option('haptic_ai_usage', []);
     $entry = $all[$month] ?? ['requests' => 0, 'input' => 0, 'output' => 0, 'cost' => 0.0];
 
     $entry['requests']++;
@@ -500,21 +500,21 @@ function hpt_ai_record_usage($provider, $model, $input, $output)
 
     $all[$month] = $entry;
     krsort($all);
-    update_option('hpt_ai_usage', array_slice($all, 0, 12, true), false);
+    update_option('haptic_ai_usage', array_slice($all, 0, 12, true), false);
 
-    $GLOBALS['hpt_ai_last_cost'] = $cost;
+    $GLOBALS['haptic_ai_last_cost'] = $cost;
 
     return $cost;
 }
 
 /** Coût de la dernière requête de cette exécution PHP. */
-function hpt_ai_last_cost()
+function haptic_ai_last_cost()
 {
-    return $GLOBALS['hpt_ai_last_cost'] ?? null;
+    return $GLOBALS['haptic_ai_last_cost'] ?? null;
 }
 
-function hpt_ai_usage_this_month()
+function haptic_ai_usage_this_month()
 {
-    $all = (array) get_option('hpt_ai_usage', []);
+    $all = (array) get_option('haptic_ai_usage', []);
     return $all[current_time('Y-m')] ?? ['requests' => 0, 'input' => 0, 'output' => 0, 'cost' => 0.0];
 }

@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, redirects, ai
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5.1
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,7 +109,9 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 
 == Changelog ==
 
-= 2.5.1 =
+= 3.0.0 =
+* All functions, options, hooks and constants now use the `haptic_` prefix. Existing settings, SEO data and scheduled tasks are migrated automatically on update; custom code using the old `hpt_` hooks must be updated.
+* Developer tools removed (debug mode, debug log, `vd()` function).
 * Security hardening: all output escaped, inline scripts and styles printed with the WordPress APIs, prepared SQL queries, request data sanitized.
 * File operations use the WordPress Filesystem API.
 * Requires WordPress 6.2 or later.
@@ -117,3 +119,8 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 = 2.5.0 =
 * Version ready for the WordPress.org plugin directory: updates are handled by WordPress.
 * The developer debug tool no longer loads Bootstrap from a CDN.
+
+== Upgrade Notice ==
+
+= 3.0.0 =
+Settings are migrated automatically to the new `haptic_` prefix. Custom code using `hpt_` hooks or functions must be renamed.

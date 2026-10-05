@@ -9,11 +9,11 @@ if (!defined('ABSPATH')) {
  * en requêtes HTTP directes (wp_remote_post), sans SDK.
  *
  * Toutes les fonctions renvoient ['text' => string, 'input' => int, 'output' => int] ou un WP_Error :
- * - hpt_ai_no_key     : clé absente ;
- * - hpt_ai_http       : erreur de l'API, avec ['status' => code HTTP] (0 si connexion impossible) ;
- * - hpt_ai_refusal    : le modèle a refusé de répondre (filtre de sécurité) ;
- * - hpt_ai_empty      : réponse sans texte ;
- * - hpt_ai_image_size : image trop lourde pour être envoyée.
+ * - haptic_ai_no_key     : clé absente ;
+ * - haptic_ai_http       : erreur de l'API, avec ['status' => code HTTP] (0 si connexion impossible) ;
+ * - haptic_ai_refusal    : le modèle a refusé de répondre (filtre de sécurité) ;
+ * - haptic_ai_empty      : réponse sans texte ;
+ * - haptic_ai_image_size : image trop lourde pour être envoyée.
  */
 
 /**
@@ -23,17 +23,17 @@ if (!defined('ABSPATH')) {
  * @param array  $parts  Contenu : ['type' => 'text', 'text' => …] et ['type' => 'image', 'path' => …] ou ['type' => 'image', 'url' => …]
  * @return string|WP_Error Texte généré
  */
-function hpt_ai_chat($system, array $parts, $max_tokens, $temperature = 0.7, $model = null)
+function haptic_ai_chat($system, array $parts, $max_tokens, $temperature = 0.7, $model = null)
 {
-    $provider = hpt_ai_provider();
-    $model = $model ?: hpt_ai_request_model();
+    $provider = haptic_ai_provider();
+    $model = $model ?: haptic_ai_request_model();
 
-    if (hpt_ai_api_key() === '') {
-        return new WP_Error('hpt_ai_no_key', sprintf('Clé API %s manquante (onglet Assistant IA).', hpt_ai_provider_config()['label']));
+    if (haptic_ai_api_key() === '') {
+        return new WP_Error('haptic_ai_no_key', sprintf('Clé API %s manquante (onglet Assistant IA).', haptic_ai_provider_config()['label']));
     }
 
-    $options = (array) (hpt_ai_model_config($model)['options'] ?? []);
-    $adapter = 'hpt_ai_request_' . $provider;
+    $options = (array) (haptic_ai_model_config($model)['options'] ?? []);
+    $adapter = 'haptic_ai_request_' . $provider;
     $result = $adapter($model, $system, $parts, (int) $max_tokens, (float) $temperature, $options);
 
     if (is_wp_error($result)) {
@@ -41,18 +41,18 @@ function hpt_ai_chat($system, array $parts, $max_tokens, $temperature = 0.7, $mo
     }
 
     // Consommation réelle, facturée même si la réponse est inutilisable
-    hpt_ai_record_usage($provider, $model, $result['input'], $result['output']);
+    haptic_ai_record_usage($provider, $model, $result['input'], $result['output']);
 
     $text = trim($result['text'], "\"'«» \t\n\r\0\x0B");
     if ($text === '') {
-        return new WP_Error('hpt_ai_empty', 'Le modèle n\'a renvoyé aucun texte.');
+        return new WP_Error('haptic_ai_empty', 'Le modèle n\'a renvoyé aucun texte.');
     }
 
     return $text;
 }
 
 /** Contenu binaire d'une image, encodé en base64, avec son type MIME. */
-function hpt_ai_image_payload(array $part)
+function haptic_ai_image_payload(array $part)
 {
     if (empty($part['path']) || !is_readable($part['path'])) {
         return null;
@@ -64,7 +64,7 @@ function hpt_ai_image_payload(array $part)
 }
 
 /** Envoi HTTP commun : JSON en entrée et en sortie, erreurs de connexion et d'API uniformisées. */
-function hpt_ai_post_json($url, array $headers, array $body, $label)
+function haptic_ai_post_json($url, array $headers, array $body, $label)
 {
     $response = wp_remote_post($url, [
         'timeout' => 60,
@@ -73,7 +73,7 @@ function hpt_ai_post_json($url, array $headers, array $body, $label)
     ]);
 
     if (is_wp_error($response)) {
-        return new WP_Error('hpt_ai_http', sprintf('Connexion à %s impossible : %s', $label, $response->get_error_message()), ['status' => 0]);
+        return new WP_Error('haptic_ai_http', sprintf('Connexion à %s impossible : %s', $label, $response->get_error_message()), ['status' => 0]);
     }
 
     $code = (int) wp_remote_retrieve_response_code($response);
@@ -81,15 +81,15 @@ function hpt_ai_post_json($url, array $headers, array $body, $label)
 
     if ($code !== 200) {
         $message = $data['error']['message'] ?? 'réponse HTTP ' . $code;
-        return new WP_Error('hpt_ai_http', $label . ' : ' . $message, ['status' => $code]);
+        return new WP_Error('haptic_ai_http', $label . ' : ' . $message, ['status' => $code]);
     }
 
-    return is_array($data) ? $data : new WP_Error('hpt_ai_http', $label . ' : réponse illisible.', ['status' => $code]);
+    return is_array($data) ? $data : new WP_Error('haptic_ai_http', $label . ' : réponse illisible.', ['status' => $code]);
 }
 
 /* ---------- OpenAI : Chat Completions ---------- */
 
-function hpt_ai_request_openai($model, $system, array $parts, $max_tokens, $temperature, array $options)
+function haptic_ai_request_openai($model, $system, array $parts, $max_tokens, $temperature, array $options)
 {
     $content = [];
     foreach ($parts as $part) {
@@ -97,7 +97,7 @@ function hpt_ai_request_openai($model, $system, array $parts, $max_tokens, $temp
             $content[] = ['type' => 'text', 'text' => $part['text']];
             continue;
         }
-        $image = hpt_ai_image_payload($part);
+        $image = haptic_ai_image_payload($part);
         $url = $image ? 'data:' . $image['mime'] . ';base64,' . $image['data'] : ($part['url'] ?? '');
         $content[] = ['type' => 'image_url', 'image_url' => ['url' => $url]];
     }
@@ -119,8 +119,8 @@ function hpt_ai_request_openai($model, $system, array $parts, $max_tokens, $temp
         $body['max_completion_tokens'] = $max_tokens;
     }
 
-    $data = hpt_ai_post_json('https://api.openai.com/v1/chat/completions', [
-        'Authorization' => 'Bearer ' . hpt_ai_api_key('openai'),
+    $data = haptic_ai_post_json('https://api.openai.com/v1/chat/completions', [
+        'Authorization' => 'Bearer ' . haptic_ai_api_key('openai'),
     ], $body, 'OpenAI');
 
     if (is_wp_error($data)) {
@@ -128,7 +128,7 @@ function hpt_ai_request_openai($model, $system, array $parts, $max_tokens, $temp
     }
 
     if (($data['choices'][0]['finish_reason'] ?? '') === 'content_filter') {
-        return new WP_Error('hpt_ai_refusal', 'OpenAI : réponse bloquée par le filtre de contenu.');
+        return new WP_Error('haptic_ai_refusal', 'OpenAI : réponse bloquée par le filtre de contenu.');
     }
 
     return [
@@ -140,7 +140,7 @@ function hpt_ai_request_openai($model, $system, array $parts, $max_tokens, $temp
 
 /* ---------- Anthropic : Messages API ---------- */
 
-function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $temperature, array $options)
+function haptic_ai_request_anthropic($model, $system, array $parts, $max_tokens, $temperature, array $options)
 {
     // Images avant le texte, comme le recommande la documentation d'Anthropic
     usort($parts, function ($a, $b) {
@@ -153,7 +153,7 @@ function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $t
             $content[] = ['type' => 'text', 'text' => $part['text']];
             continue;
         }
-        $image = hpt_ai_image_payload($part);
+        $image = haptic_ai_image_payload($part);
         $content[] = $image
             ? ['type' => 'image', 'source' => ['type' => 'base64', 'media_type' => $image['mime'], 'data' => $image['data']]]
             : ['type' => 'image', 'source' => ['type' => 'url', 'url' => $part['url'] ?? '']];
@@ -167,7 +167,7 @@ function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $t
         'messages'   => [['role' => 'user', 'content' => $content]],
     ];
     $headers = [
-        'x-api-key'         => hpt_ai_api_key('anthropic'),
+        'x-api-key'         => haptic_ai_api_key('anthropic'),
         'anthropic-version' => '2023-06-01',
     ];
 
@@ -187,7 +187,7 @@ function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $t
         $headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
     }
 
-    $data = hpt_ai_post_json('https://api.anthropic.com/v1/messages', $headers, $body, 'Anthropic');
+    $data = haptic_ai_post_json('https://api.anthropic.com/v1/messages', $headers, $body, 'Anthropic');
 
     if (is_wp_error($data)) {
         return $data;
@@ -199,8 +199,8 @@ function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $t
     ];
 
     if (($data['stop_reason'] ?? '') === 'refusal') {
-        hpt_ai_record_usage('anthropic', $model, $usage['input'], $usage['output']);
-        return new WP_Error('hpt_ai_refusal', 'Claude a refusé de traiter cet élément.');
+        haptic_ai_record_usage('anthropic', $model, $usage['input'], $usage['output']);
+        return new WP_Error('haptic_ai_refusal', 'Claude a refusé de traiter cet élément.');
     }
 
     $text = '';
@@ -215,7 +215,7 @@ function hpt_ai_request_anthropic($model, $system, array $parts, $max_tokens, $t
 
 /* ---------- Google : Gemini generateContent ---------- */
 
-function hpt_ai_request_gemini($model, $system, array $parts, $max_tokens, $temperature, array $options)
+function haptic_ai_request_gemini($model, $system, array $parts, $max_tokens, $temperature, array $options)
 {
     $content = [];
     foreach ($parts as $part) {
@@ -223,16 +223,16 @@ function hpt_ai_request_gemini($model, $system, array $parts, $max_tokens, $temp
             $content[] = ['text' => $part['text']];
             continue;
         }
-        $image = hpt_ai_image_payload($part);
+        $image = haptic_ai_image_payload($part);
         if (!$image) {
-            return new WP_Error('hpt_ai_image_size', 'Gemini : aucune version de l\'image assez légère pour être envoyée (4 Mo maximum).');
+            return new WP_Error('haptic_ai_image_size', 'Gemini : aucune version de l\'image assez légère pour être envoyée (4 Mo maximum).');
         }
         $content[] = ['inlineData' => ['mimeType' => $image['mime'], 'data' => $image['data']]];
     }
 
-    $data = hpt_ai_post_json(
+    $data = haptic_ai_post_json(
         'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent',
-        ['x-goog-api-key' => hpt_ai_api_key('gemini')],
+        ['x-goog-api-key' => haptic_ai_api_key('gemini')],
         [
             'systemInstruction' => ['parts' => [['text' => $system]]],
             'contents'          => [['role' => 'user', 'parts' => $content]],
@@ -248,7 +248,7 @@ function hpt_ai_request_gemini($model, $system, array $parts, $max_tokens, $temp
     if (is_wp_error($data)) {
         // Clé invalide : Google répond 400 au lieu de 401
         if ((int) ($data->get_error_data()['status'] ?? 0) === 400 && stripos($data->get_error_message(), 'API key') !== false) {
-            return new WP_Error('hpt_ai_http', $data->get_error_message(), ['status' => 401]);
+            return new WP_Error('haptic_ai_http', $data->get_error_message(), ['status' => 401]);
         }
         return $data;
     }
@@ -260,8 +260,8 @@ function hpt_ai_request_gemini($model, $system, array $parts, $max_tokens, $temp
 
     $finish = $data['candidates'][0]['finishReason'] ?? '';
     if (!empty($data['promptFeedback']['blockReason']) || in_array($finish, ['SAFETY', 'PROHIBITED_CONTENT', 'BLOCKLIST', 'SPII', 'RECITATION'], true)) {
-        hpt_ai_record_usage('gemini', $model, $usage['input'], $usage['output']);
-        return new WP_Error('hpt_ai_refusal', 'Gemini a refusé de traiter cet élément.');
+        haptic_ai_record_usage('gemini', $model, $usage['input'], $usage['output']);
+        return new WP_Error('haptic_ai_refusal', 'Gemini a refusé de traiter cet élément.');
     }
 
     $text = '';

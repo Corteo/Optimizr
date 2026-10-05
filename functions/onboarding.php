@@ -13,51 +13,51 @@ if (!defined('ABSPATH')) {
  * Mise en forme : css/optimizr-onboarding.css, navigation : js/optimizr-onboarding.js.
  */
 
-define('HPT_ONBOARDING_SLUG', 'hpt-onboarding');
+define('HAPTIC_ONBOARDING_SLUG', 'haptic-onboarding');
 
-function hpt_onboarding_url($args = [])
+function haptic_onboarding_url($args = [])
 {
-    return add_query_arg($args, admin_url('admin.php?page=' . HPT_ONBOARDING_SLUG));
+    return add_query_arg($args, admin_url('admin.php?page=' . HAPTIC_ONBOARDING_SLUG));
 }
 
 /* ---------- Ouverture : à l'activation, puis à la demande ---------- */
 
-/** Appelé par hpt_options_activate() : l'assistant s'ouvre tant qu'il n'a été ni terminé ni écarté. */
-function hpt_onboarding_schedule_redirect()
+/** Appelé par haptic_options_activate() : l'assistant s'ouvre tant qu'il n'a été ni terminé ni écarté. */
+function haptic_onboarding_schedule_redirect()
 {
-    if (!get_option('hpt_onboarding_done')) {
-        set_transient('hpt_onboarding_redirect', 1, MINUTE_IN_SECONDS);
+    if (!get_option('haptic_onboarding_done')) {
+        set_transient('haptic_onboarding_redirect', 1, MINUTE_IN_SECONDS);
     }
 }
 
 add_action('admin_init', function () {
-    if (!get_transient('hpt_onboarding_redirect')) {
+    if (!get_transient('haptic_onboarding_redirect')) {
         return;
     }
-    delete_transient('hpt_onboarding_redirect');
+    delete_transient('haptic_onboarding_redirect');
 
     // Pas pendant une activation groupée, une requête AJAX ou depuis l'administration du réseau
     if (wp_doing_ajax() || is_network_admin() || isset($_GET['activate-multi']) || !current_user_can('manage_options')) {
         return;
     }
 
-    wp_safe_redirect(hpt_onboarding_url());
+    wp_safe_redirect(haptic_onboarding_url());
     exit;
 });
 
 // Lien dans la liste des extensions
-add_filter('plugin_action_links_' . plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php'), function ($links) {
+add_filter('plugin_action_links_' . plugin_basename(HAPTIC_OPTIMIZR_PATH . 'hpt_options.php'), function ($links) {
     if (current_user_can('manage_options')) {
-        array_unshift($links, '<a href="' . esc_url(hpt_onboarding_url()) . '">Assistant de configuration</a>');
+        array_unshift($links, '<a href="' . esc_url(haptic_onboarding_url()) . '">Assistant de configuration</a>');
     }
     return $links;
 });
 
 // Page du menu Optimizr, affichée sans l'interface de l'administration
 add_action('admin_menu', function () {
-    $hook = add_submenu_page('hpt-options', 'Assistant de configuration - Optimizr', 'Assistant', 'manage_options', HPT_ONBOARDING_SLUG, '__return_null');
+    $hook = add_submenu_page('haptic-options', 'Assistant de configuration - Optimizr', 'Assistant', 'manage_options', HAPTIC_ONBOARDING_SLUG, '__return_null');
     if ($hook) {
-        add_action('load-' . $hook, 'hpt_onboarding_render');
+        add_action('load-' . $hook, 'haptic_onboarding_render');
     }
 }, 20);
 
@@ -67,7 +67,7 @@ add_action('admin_menu', function () {
  * Étapes de l'assistant. 'module' : étape affichée seulement si ce module est choisi.
  * 'pillar' : thème mis en avant dans le panneau visuel (security, performance, optimization ou all).
  */
-function hpt_onboarding_steps()
+function haptic_onboarding_steps()
 {
     return [
         'welcome'  => ['label' => 'Bienvenue', 'module' => '', 'pillar' => 'all',
@@ -92,20 +92,20 @@ function hpt_onboarding_steps()
 }
 
 /** Regroupement des modules par thème dans l'étape « Modules ». */
-function hpt_onboarding_module_groups()
+function haptic_onboarding_module_groups()
 {
     return [
         'security'     => ['label' => 'Sécurité & conformité', 'modules' => ['security', 'cookies']],
         'performance'  => ['label' => 'Performance & visibilité', 'modules' => ['seo', 'redirects', 'local', 'pages']],
-        'optimization' => ['label' => 'Optimisation & contenus', 'modules' => ['ai', 'cpts', 'thumbnails', 'emails', 'devtools']],
+        'optimization' => ['label' => 'Optimisation & contenus', 'modules' => ['ai', 'cpts', 'thumbnails', 'emails']],
     ];
 }
 
 /**
- * Protections proposées par l'étape Sécurité (options hpt_sec_*).
+ * Protections proposées par l'étape Sécurité (options haptic_sec_*).
  * 'recommended' : cochée par défaut tant que l'option n'a jamais été enregistrée.
  */
-function hpt_onboarding_security_toggles()
+function haptic_onboarding_security_toggles()
 {
     return [
         'limit_login'       => ['Limiter les tentatives de connexion', 'Une adresse IP est bloquée 15 minutes après 5 mots de passe erronés.', true],
@@ -122,37 +122,37 @@ function hpt_onboarding_security_toggles()
 }
 
 /** Réglages proposés par l'étape Référencement : option => [titre, description, valeur par défaut]. */
-function hpt_onboarding_seo_toggles()
+function haptic_onboarding_seo_toggles()
 {
     return [
-        'hpt_enable_seo'              => ['Balises meta automatiques', 'Titre et description générés pour chaque contenu qui n\'en a pas.', 1],
-        'hpt_enable_opengraph'        => ['Aperçus de partage (OpenGraph)', 'Titre, description et image lors d\'un partage sur les réseaux sociaux.', 1],
-        'hpt_seo_schema'              => ['Données structurées schema.org', 'Site, organisation, fil d\'Ariane et articles décrits pour les résultats enrichis.', 1],
-        'hpt_seo_noindex_search'      => ['Ne pas indexer la recherche interne', 'Les pages de résultats de recherche du site restent hors de Google.', 1],
-        'hpt_seo_attachment_redirect' => ['Rediriger les pages des médias', 'Les pages créées pour chaque image renvoient vers leur contenu.', 1],
+        'haptic_enable_seo'              => ['Balises meta automatiques', 'Titre et description générés pour chaque contenu qui n\'en a pas.', 1],
+        'haptic_enable_opengraph'        => ['Aperçus de partage (OpenGraph)', 'Titre, description et image lors d\'un partage sur les réseaux sociaux.', 1],
+        'haptic_seo_schema'              => ['Données structurées schema.org', 'Site, organisation, fil d\'Ariane et articles décrits pour les résultats enrichis.', 1],
+        'haptic_seo_noindex_search'      => ['Ne pas indexer la recherche interne', 'Les pages de résultats de recherche du site restent hors de Google.', 1],
+        'haptic_seo_attachment_redirect' => ['Rediriger les pages des médias', 'Les pages créées pour chaque image renvoient vers leur contenu.', 1],
     ];
 }
 
-function hpt_onboarding_ai_providers()
+function haptic_onboarding_ai_providers()
 {
-    if (!function_exists('hpt_ai_providers')) {
-        require_once HPT_OPTIMIZR_PATH . 'functions/ai-pricing.php';
+    if (!function_exists('haptic_ai_providers')) {
+        require_once HAPTIC_OPTIMIZR_PATH . 'functions/ai-pricing.php';
     }
-    return hpt_ai_providers();
+    return haptic_ai_providers();
 }
 
 /** Charge le fichier d'un module pas encore actif dans cette requête (fonctions de nettoyage, listes). */
-function hpt_onboarding_require($function, $file)
+function haptic_onboarding_require($function, $file)
 {
     if (!function_exists($function)) {
-        require_once HPT_OPTIMIZR_PATH . 'functions/' . $file;
+        require_once HAPTIC_OPTIMIZR_PATH . 'functions/' . $file;
     }
 }
 
 /** Variables proposées pour les motifs de titre et de description. */
-function hpt_onboarding_seo_variables()
+function haptic_onboarding_seo_variables()
 {
-    return function_exists('hpt_seo_pattern_variables') ? hpt_seo_pattern_variables() : [
+    return function_exists('haptic_seo_pattern_variables') ? haptic_seo_pattern_variables() : [
         '{titre_page}' => 'Titre de la page',
         '{nom_site}'   => 'Nom du site',
         '{slogan}'     => 'Slogan',
@@ -162,7 +162,7 @@ function hpt_onboarding_seo_variables()
 }
 
 /** Code de vérification Google ou Bing : accepte la balise meta entière ou le seul code. */
-function hpt_onboarding_verification_code($value)
+function haptic_onboarding_verification_code($value)
 {
     $value = trim((string) $value);
     if (preg_match('/content\s*=\s*["\']([^"\']+)["\']/i', $value, $match)) {
@@ -172,18 +172,18 @@ function hpt_onboarding_verification_code($value)
 }
 
 /** Services de mesure proposés à l'étape Cookies : champ du formulaire => [service, clé, libellé, exemple]. */
-function hpt_onboarding_cookie_fields()
+function haptic_onboarding_cookie_fields()
 {
     return [
-        'hpt_ob_service_google_analytics' => ['google_analytics', 'ID', 'Google Analytics 4', 'G-XXXXXXXXXX'],
-        'hpt_ob_service_google_tags'      => ['google_tags', 'ID', 'Google Tag Manager', 'GTM-XXXXXXX'],
-        'hpt_ob_service_clarity'          => ['clarity', 'ID', 'Microsoft Clarity', 'ID du projet'],
-        'hpt_ob_service_facebook_pixel'   => ['facebook_pixel', 'Pixel ID', 'Pixel Meta (Facebook)', 'ID du pixel'],
+        'haptic_ob_service_google_analytics' => ['google_analytics', 'ID', 'Google Analytics 4', 'G-XXXXXXXXXX'],
+        'haptic_ob_service_google_tags'      => ['google_tags', 'ID', 'Google Tag Manager', 'GTM-XXXXXXX'],
+        'haptic_ob_service_clarity'          => ['clarity', 'ID', 'Microsoft Clarity', 'ID du projet'],
+        'haptic_ob_service_facebook_pixel'   => ['facebook_pixel', 'Pixel ID', 'Pixel Meta (Facebook)', 'ID du pixel'],
     ];
 }
 
-/** Champs de l'étape Établissement : clé de hpt_local => [libellé, type, exemple, autocomplete]. */
-function hpt_onboarding_local_fields()
+/** Champs de l'étape Établissement : clé de haptic_local => [libellé, type, exemple, autocomplete]. */
+function haptic_onboarding_local_fields()
 {
     return [
         'name'        => ['Nom de l\'établissement', 'text', get_bloginfo('name'), 'organization'],
@@ -198,19 +198,19 @@ function hpt_onboarding_local_fields()
 
 /* ---------- Enregistrement ---------- */
 
-add_action('admin_post_hpt_onboarding_save', 'hpt_onboarding_save');
+add_action('admin_post_haptic_onboarding_save', 'haptic_onboarding_save');
 
-function hpt_onboarding_save()
+function haptic_onboarding_save()
 {
     if (!current_user_can('manage_options')) {
         wp_die('Permissions insuffisantes.', 403);
     }
-    check_admin_referer('hpt_onboarding');
+    check_admin_referer('haptic_onboarding');
 
     $post = wp_unslash($_POST);
 
-    $modules = hpt_sanitize_modules(isset($post['hpt_modules']) ? $post['hpt_modules'] : []);
-    update_option('hpt_modules', $modules);
+    $modules = haptic_sanitize_modules(isset($post['haptic_modules']) ? $post['haptic_modules'] : []);
+    update_option('haptic_modules', $modules);
 
     $flag = function ($name) use ($post) {
         return empty($post[$name]) ? 0 : 1;
@@ -223,110 +223,110 @@ function hpt_onboarding_save()
     $notices = [];
 
     if (!empty($modules['security'])) {
-        foreach (array_keys(hpt_onboarding_security_toggles()) as $key) {
-            update_option('hpt_sec_' . $key, $flag('hpt_sec_' . $key));
+        foreach (array_keys(haptic_onboarding_security_toggles()) as $key) {
+            update_option('haptic_sec_' . $key, $flag('haptic_sec_' . $key));
         }
 
-        if (isset($post['hpt_sec_login_max'])) {
-            update_option('hpt_sec_login_max', min(20, max(2, absint($post['hpt_sec_login_max']) ?: 5)));
+        if (isset($post['haptic_sec_login_max'])) {
+            update_option('haptic_sec_login_max', min(20, max(2, absint($post['haptic_sec_login_max']) ?: 5)));
         }
-        if (isset($post['hpt_sec_login_lockout'])) {
-            update_option('hpt_sec_login_lockout', min(1440, max(1, absint($post['hpt_sec_login_lockout']) ?: 15)));
+        if (isset($post['haptic_sec_login_lockout'])) {
+            update_option('haptic_sec_login_lockout', min(1440, max(1, absint($post['haptic_sec_login_lockout']) ?: 15)));
         }
-        if (isset($post['hpt_sec_login_whitelist'])) {
-            $ips = array_filter(array_map('trim', preg_split('/\R/', (string) $post['hpt_sec_login_whitelist'])), function ($ip) {
+        if (isset($post['haptic_sec_login_whitelist'])) {
+            $ips = array_filter(array_map('trim', preg_split('/\R/', (string) $post['haptic_sec_login_whitelist'])), function ($ip) {
                 return filter_var($ip, FILTER_VALIDATE_IP);
             });
-            update_option('hpt_sec_login_whitelist', implode("\n", array_unique($ips)));
+            update_option('haptic_sec_login_whitelist', implode("\n", array_unique($ips)));
         }
 
         // Adresse de connexion : mêmes contrôles que l'onglet Sécurité, et l'email de la nouvelle adresse part à l'enregistrement
-        if (isset($post['hpt_sec_login_slug'])) {
-            hpt_onboarding_require('hpt_sec_sanitize_login_slug', 'security.php');
-            $wanted = sanitize_title((string) $post['hpt_sec_login_slug']);
-            $slug = hpt_sec_sanitize_login_slug($wanted);
+        if (isset($post['haptic_sec_login_slug'])) {
+            haptic_onboarding_require('haptic_sec_sanitize_login_slug', 'security.php');
+            $wanted = sanitize_title((string) $post['haptic_sec_login_slug']);
+            $slug = haptic_sec_sanitize_login_slug($wanted);
             if ($slug === $wanted) {
-                update_option('hpt_sec_login_slug', $slug);
+                update_option('haptic_sec_login_slug', $slug);
             } else {
-                $errors = get_settings_errors('hpt_sec_login_slug');
+                $errors = get_settings_errors('haptic_sec_login_slug');
                 $notices[] = 'Adresse de connexion non modifiée : ' . ($errors ? end($errors)['message'] : 'adresse invalide.');
             }
         }
     }
 
     if (!empty($modules['seo'])) {
-        foreach (array_keys(hpt_onboarding_seo_toggles()) as $option) {
+        foreach (array_keys(haptic_onboarding_seo_toggles()) as $option) {
             update_option($option, $flag($option));
         }
         $public = array_keys(get_post_types(['public' => true]));
-        $types = isset($post['hpt_sitemap_post_types']) ? array_map('sanitize_key', (array) $post['hpt_sitemap_post_types']) : [];
-        update_option('hpt_sitemap_post_types', array_values(array_intersect($types, $public)));
+        $types = isset($post['haptic_sitemap_post_types']) ? array_map('sanitize_key', (array) $post['haptic_sitemap_post_types']) : [];
+        update_option('haptic_sitemap_post_types', array_values(array_intersect($types, $public)));
         if (isset($post['blog_public'])) {
             update_option('blog_public', $flag('blog_public'));
         }
 
-        foreach (['blogname', 'blogdescription', 'hpt_seo_title_pattern', 'hpt_seo_desc_pattern'] as $option) {
+        foreach (['blogname', 'blogdescription', 'haptic_seo_title_pattern', 'haptic_seo_desc_pattern'] as $option) {
             $value = $text($option);
             if ($value !== null && ($value !== '' || $option === 'blogdescription')) {
                 update_option($option, $value);
             }
         }
-        foreach (['hpt_seo_verify_google', 'hpt_seo_verify_bing'] as $option) {
+        foreach (['haptic_seo_verify_google', 'haptic_seo_verify_bing'] as $option) {
             if (isset($post[$option])) {
-                update_option($option, hpt_onboarding_verification_code($post[$option]));
+                update_option($option, haptic_onboarding_verification_code($post[$option]));
             }
         }
     }
 
-    if (!empty($modules['local']) && isset($post['hpt_ob_local']) && is_array($post['hpt_ob_local'])) {
-        hpt_onboarding_require('hpt_local_types', 'local-seo.php');
-        $local = (array) get_option('hpt_local', []);
-        $input = $post['hpt_ob_local'];
-        foreach (array_keys(hpt_onboarding_local_fields()) as $key) {
+    if (!empty($modules['local']) && isset($post['haptic_ob_local']) && is_array($post['haptic_ob_local'])) {
+        haptic_onboarding_require('haptic_local_types', 'local-seo.php');
+        $local = (array) get_option('haptic_local', []);
+        $input = $post['haptic_ob_local'];
+        foreach (array_keys(haptic_onboarding_local_fields()) as $key) {
             if (isset($input[$key])) {
                 $local[$key] = $key === 'email' ? sanitize_email($input[$key]) : sanitize_text_field(trim((string) $input[$key]));
             }
         }
         $local['country'] = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string) ($local['country'] ?? '')), 0, 2)) ?: 'FR';
-        $local['type'] = isset($input['type']) && array_key_exists($input['type'], hpt_local_types()) ? $input['type'] : ($local['type'] ?? 'LocalBusiness');
-        update_option('hpt_local', $local);
+        $local['type'] = isset($input['type']) && array_key_exists($input['type'], haptic_local_types()) ? $input['type'] : ($local['type'] ?? 'LocalBusiness');
+        update_option('haptic_local', $local);
     }
 
     if (!empty($modules['pages'])) {
-        if (isset($post['hpt_404_page'])) {
-            $page = absint($post['hpt_404_page']);
-            update_option('hpt_404_page', $page && get_post_type($page) === 'page' ? $page : 0);
+        if (isset($post['haptic_404_page'])) {
+            $page = absint($post['haptic_404_page']);
+            update_option('haptic_404_page', $page && get_post_type($page) === 'page' ? $page : 0);
         }
-        update_option('hpt_404_suggestions', $flag('hpt_404_suggestions'));
+        update_option('haptic_404_suggestions', $flag('haptic_404_suggestions'));
     }
 
     if (!empty($modules['cookies'])) {
-        update_option('hpt_option_enable_tarteaucitron', $flag('hpt_option_enable_tarteaucitron'));
-        $style = isset($post['hpt_option_tarteaucitron_banner_style']) ? (string) $post['hpt_option_tarteaucitron_banner_style'] : 'middle';
-        update_option('hpt_option_tarteaucitron_banner_style', in_array($style, ['top', 'middle', 'bottom'], true) ? $style : 'middle');
+        update_option('haptic_option_enable_tarteaucitron', $flag('haptic_option_enable_tarteaucitron'));
+        $style = isset($post['haptic_option_tarteaucitron_banner_style']) ? (string) $post['haptic_option_tarteaucitron_banner_style'] : 'middle';
+        update_option('haptic_option_tarteaucitron_banner_style', in_array($style, ['top', 'middle', 'bottom'], true) ? $style : 'middle');
 
-        foreach (hpt_onboarding_cookie_fields() as $field => list($service, $key)) {
+        foreach (haptic_onboarding_cookie_fields() as $field => list($service, $key)) {
             $id = $text($field);
             if ($id === null) {
                 continue;
             }
-            $value = get_option('hpt_option_service_' . $service, null);
+            $value = get_option('haptic_option_service_' . $service, null);
             // Service jamais configuré et laissé vide : rien à enregistrer
             if ($id === '' && $value === null) {
                 continue;
             }
             $value = (array) $value;
             $value[$key] = $id;
-            update_option('hpt_option_service_' . $service, $value);
+            update_option('haptic_option_service_' . $service, $value);
         }
     }
 
     if (!empty($modules['ai'])) {
-        $providers = hpt_onboarding_ai_providers();
-        $provider = isset($post['hpt_ai_provider']) ? (string) $post['hpt_ai_provider'] : '';
+        $providers = haptic_onboarding_ai_providers();
+        $provider = isset($post['haptic_ai_provider']) ? (string) $post['haptic_ai_provider'] : '';
         if (isset($providers[$provider])) {
-            update_option('hpt_ai_provider', $provider);
-            $key = isset($post['hpt_ob_ai_key']) ? sanitize_text_field(trim((string) $post['hpt_ob_ai_key'])) : '';
+            update_option('haptic_ai_provider', $provider);
+            $key = isset($post['haptic_ob_ai_key']) ? sanitize_text_field(trim((string) $post['haptic_ob_ai_key'])) : '';
             // Champ vide : on garde la clé déjà enregistrée
             if ($key !== '') {
                 update_option($providers[$provider]['key_option'], $key);
@@ -337,40 +337,40 @@ function hpt_onboarding_save()
                 update_option($model_option, $model);
             }
         }
-        if (isset($post['hpt_ai_context'])) {
-            update_option('hpt_ai_context', sanitize_textarea_field((string) $post['hpt_ai_context']));
+        if (isset($post['haptic_ai_context'])) {
+            update_option('haptic_ai_context', sanitize_textarea_field((string) $post['haptic_ai_context']));
         }
-        update_option('hpt_ai_alt_on_upload', $flag('hpt_ai_alt_on_upload'));
+        update_option('haptic_ai_alt_on_upload', $flag('haptic_ai_alt_on_upload'));
     }
 
-    update_option('hpt_onboarding_done', time());
+    update_option('haptic_onboarding_done', time());
     if ($notices) {
-        set_transient('hpt_onboarding_notices_' . get_current_user_id(), $notices, 10 * MINUTE_IN_SECONDS);
+        set_transient('haptic_onboarding_notices_' . get_current_user_id(), $notices, 10 * MINUTE_IN_SECONDS);
     }
 
-    wp_safe_redirect(hpt_onboarding_url(['step' => 'done']));
+    wp_safe_redirect(haptic_onboarding_url(['step' => 'done']));
     exit;
 }
 
 // « Quitter l'assistant » : il ne s'ouvrira plus de lui-même
-add_action('admin_post_hpt_onboarding_skip', function () {
+add_action('admin_post_haptic_onboarding_skip', function () {
     if (!current_user_can('manage_options')) {
         wp_die('Permissions insuffisantes.', 403);
     }
-    check_admin_referer('hpt_onboarding_skip');
+    check_admin_referer('haptic_onboarding_skip');
 
-    if (!get_option('hpt_onboarding_done')) {
-        update_option('hpt_onboarding_done', time());
+    if (!get_option('haptic_onboarding_done')) {
+        update_option('haptic_onboarding_done', time());
     }
 
-    wp_safe_redirect(admin_url('admin.php?page=hpt-options'));
+    wp_safe_redirect(admin_url('admin.php?page=haptic-options'));
     exit;
 });
 
 /* ---------- Affichage ---------- */
 
 /** Interrupteur de l'assistant. Le champ caché envoie 0 quand la case est décochée. */
-function hpt_onboarding_switch($name, $checked, $title, $desc = '', $tag = '')
+function haptic_onboarding_switch($name, $checked, $title, $desc = '', $tag = '')
 {
     $id = 'ob-' . sanitize_html_class($name);
     ?>
@@ -385,19 +385,19 @@ function hpt_onboarding_switch($name, $checked, $title, $desc = '', $tag = '')
     <?php
 }
 
-function hpt_onboarding_render()
+function haptic_onboarding_render()
 {
     if (!current_user_can('manage_options')) {
         wp_die('Permissions insuffisantes.', 403);
     }
 
-    $css = HPT_OPTIMIZR_PATH . 'css/optimizr-onboarding.css';
-    $js  = HPT_OPTIMIZR_PATH . 'js/optimizr-onboarding.js';
-    wp_register_style('optimizr-onboarding', HPT_OPTIMIZR_URL . 'css/optimizr-onboarding.css', [], filemtime($css));
-    wp_register_script('optimizr-onboarding', HPT_OPTIMIZR_URL . 'js/optimizr-onboarding.js', [], filemtime($js), true);
+    $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-onboarding.css';
+    $js  = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-onboarding.js';
+    wp_register_style('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'css/optimizr-onboarding.css', [], filemtime($css));
+    wp_register_script('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'js/optimizr-onboarding.js', [], filemtime($js), true);
 
     $done = isset($_GET['step']) && $_GET['step'] === 'done';
-    $steps = hpt_onboarding_steps();
+    $steps = haptic_onboarding_steps();
 
     nocache_headers();
     header('Content-Type: text/html; charset=' . get_option('blog_charset'));
@@ -412,7 +412,7 @@ function hpt_onboarding_render()
     <?php wp_print_styles('optimizr-onboarding'); ?>
 </head>
 <body class="ob-body">
-    <?php hpt_onboarding_svg_defs(); ?>
+    <?php haptic_onboarding_svg_defs(); ?>
     <div class="ob<?php echo $done ? ' ob--done' : ''; ?>">
         <aside class="ob-visual" aria-hidden="true">
             <div class="ob-brand">
@@ -421,10 +421,10 @@ function hpt_onboarding_render()
             </div>
             <div class="ob-stage">
                 <?php if ($done) : ?>
-                    <div class="ob-illu is-active"><?php hpt_onboarding_illustration('done'); ?></div>
+                    <div class="ob-illu is-active"><?php haptic_onboarding_illustration('done'); ?></div>
                 <?php else : ?>
                     <?php foreach (array_keys($steps) as $i => $slug) : ?>
-                        <div class="ob-illu<?php echo $i === 0 ? ' is-active' : ''; ?>" data-illu="<?php echo esc_attr($slug); ?>"><?php hpt_onboarding_illustration($slug); ?></div>
+                        <div class="ob-illu<?php echo $i === 0 ? ' is-active' : ''; ?>" data-illu="<?php echo esc_attr($slug); ?>"><?php haptic_onboarding_illustration($slug); ?></div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -442,14 +442,14 @@ function hpt_onboarding_render()
                 <?php endif; ?>
             </div>
             <ul class="ob-pillars" data-pillar="all">
-                <li class="ob-pillars__item" data-pillar-item="security"><?php echo wp_kses(hpt_icon('shield', 16), hpt_kses_ui()); ?>Sécurité</li>
-                <li class="ob-pillars__item" data-pillar-item="performance"><?php echo wp_kses(hpt_onboarding_icon('gauge'), hpt_kses_ui()); ?>Performance</li>
-                <li class="ob-pillars__item" data-pillar-item="optimization"><?php echo wp_kses(hpt_icon('sparkles', 16), hpt_kses_ui()); ?>Optimisation</li>
+                <li class="ob-pillars__item" data-pillar-item="security"><?php echo wp_kses(haptic_icon('shield', 16), haptic_kses_ui()); ?>Sécurité</li>
+                <li class="ob-pillars__item" data-pillar-item="performance"><?php echo wp_kses(haptic_onboarding_icon('gauge'), haptic_kses_ui()); ?>Performance</li>
+                <li class="ob-pillars__item" data-pillar-item="optimization"><?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?>Optimisation</li>
             </ul>
         </aside>
 
         <main class="ob-panel">
-            <?php $done ? hpt_onboarding_render_done() : hpt_onboarding_render_form($steps); ?>
+            <?php $done ? haptic_onboarding_render_done() : haptic_onboarding_render_form($steps); ?>
         </main>
     </div>
     <?php wp_print_scripts('optimizr-onboarding'); ?>
@@ -459,10 +459,10 @@ function hpt_onboarding_render()
     exit;
 }
 
-function hpt_onboarding_render_form($steps)
+function haptic_onboarding_render_form($steps)
 {
-    $modules = hpt_modules();
-    $skip_url = wp_nonce_url(admin_url('admin-post.php?action=hpt_onboarding_skip'), 'hpt_onboarding_skip');
+    $modules = haptic_modules();
+    $skip_url = wp_nonce_url(admin_url('admin-post.php?action=haptic_onboarding_skip'), 'haptic_onboarding_skip');
     ?>
     <div class="ob-top">
         <div class="ob-progress" aria-hidden="true"><span class="ob-progress__bar" data-ob-progress></span></div>
@@ -477,12 +477,12 @@ function hpt_onboarding_render_form($steps)
     </ol>
 
     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="ob-form" data-ob-form novalidate>
-        <input type="hidden" name="action" value="hpt_onboarding_save">
-        <?php wp_nonce_field('hpt_onboarding'); ?>
+        <input type="hidden" name="action" value="haptic_onboarding_save">
+        <?php wp_nonce_field('haptic_onboarding'); ?>
 
         <?php foreach (array_keys($steps) as $i => $slug) : ?>
             <section class="ob-step<?php echo $i === 0 ? ' is-active' : ''; ?>" data-step="<?php echo esc_attr($slug); ?>" data-module="<?php echo esc_attr($steps[$slug]['module']); ?>" aria-labelledby="ob-title-<?php echo esc_attr($slug); ?>">
-                <?php call_user_func('hpt_onboarding_step_' . $slug, $modules); ?>
+                <?php call_user_func('haptic_onboarding_step_' . $slug, $modules); ?>
             </section>
         <?php endforeach; ?>
 
@@ -495,7 +495,7 @@ function hpt_onboarding_render_form($steps)
     <?php
 }
 
-function hpt_onboarding_step_head($slug, $eyebrow, $title, $intro)
+function haptic_onboarding_step_head($slug, $eyebrow, $title, $intro)
 {
     ?>
     <p class="ob-step__eyebrow"><?php echo esc_html($eyebrow); ?></p>
@@ -504,43 +504,43 @@ function hpt_onboarding_step_head($slug, $eyebrow, $title, $intro)
     <?php
 }
 
-function hpt_onboarding_step_welcome($modules)
+function haptic_onboarding_step_welcome($modules)
 {
     $user = wp_get_current_user();
     $name = $user->first_name ?: $user->display_name;
-    hpt_onboarding_step_head('welcome', $name ? 'Bonjour ' . $name : 'Bienvenue', 'Configurons Optimizr en quelques minutes', 'Quelques questions pour activer l\'essentiel sur ' . wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES) . '. Les réglages sont appliqués à la dernière étape, et restent modifiables ensuite.');
+    haptic_onboarding_step_head('welcome', $name ? 'Bonjour ' . $name : 'Bienvenue', 'Configurons Optimizr en quelques minutes', 'Quelques questions pour activer l\'essentiel sur ' . wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES) . '. Les réglages sont appliqués à la dernière étape, et restent modifiables ensuite.');
     ?>
     <div class="ob-pillar-cards">
         <div class="ob-pillar-card ob-pillar-card--security">
-            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_icon('shield', 22), hpt_kses_ui()); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_icon('shield', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Sécurité</h2>
             <p class="ob-pillar-card__text">Connexion protégée, surface d'attaque réduite et consentement RGPD.</p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--performance">
-            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_onboarding_icon('gauge', 22), hpt_kses_ui()); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_onboarding_icon('gauge', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Performance</h2>
             <p class="ob-pillar-card__text">Balises, sitemap et indexation pour un site que Google comprend vite.</p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--optimization">
-            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_icon('sparkles', 22), hpt_kses_ui()); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_icon('sparkles', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Optimisation</h2>
             <p class="ob-pillar-card__text">Textes et balises ALT générés par l'IA, modules activés à la carte.</p>
         </div>
     </div>
-    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Environ 3 minutes. Vous pouvez quitter l'assistant à tout moment et le rouvrir depuis le menu Optimizr › Assistant.</p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?>Environ 3 minutes. Vous pouvez quitter l'assistant à tout moment et le rouvrir depuis le menu Optimizr › Assistant.</p>
     <?php
 }
 
-function hpt_onboarding_step_modules($modules)
+function haptic_onboarding_step_modules($modules)
 {
-    hpt_onboarding_step_head('modules', 'Modules', 'Choisissez vos modules', 'Activez ce dont votre site a besoin. Les étapes suivantes s\'adaptent à votre choix.');
+    haptic_onboarding_step_head('modules', 'Modules', 'Choisissez vos modules', 'Activez ce dont votre site a besoin. Les étapes suivantes s\'adaptent à votre choix.');
 
     $grouped = [];
-    foreach (hpt_onboarding_module_groups() as $group) {
+    foreach (haptic_onboarding_module_groups() as $group) {
         $grouped = array_merge($grouped, $group['modules']);
     }
-    $groups = hpt_onboarding_module_groups();
-    // Modules ajoutés par le filtre hpt_modules : dans le dernier groupe
+    $groups = haptic_onboarding_module_groups();
+    // Modules ajoutés par le filtre haptic_modules : dans le dernier groupe
     $groups['optimization']['modules'] = array_merge($groups['optimization']['modules'], array_diff(array_keys($modules), $grouped));
 
     foreach ($groups as $key => $group) :
@@ -558,12 +558,12 @@ function hpt_onboarding_step_modules($modules)
                     $module = $modules[$slug];
                     ?>
                     <label class="ob-module" for="ob-module-<?php echo esc_attr($slug); ?>">
-                        <span class="ob-module__icon"><?php echo wp_kses(hpt_icon($module['icon'], 20), hpt_kses_ui()); ?></span>
+                        <span class="ob-module__icon"><?php echo wp_kses(haptic_icon($module['icon'], 20), haptic_kses_ui()); ?></span>
                         <span class="ob-module__text">
                             <span class="ob-module__title"><?php echo esc_html($module['label']); ?></span>
                             <span class="ob-module__desc"><?php echo esc_html($module['desc']); ?></span>
                         </span>
-                        <input type="checkbox" role="switch" class="ob-switch" id="ob-module-<?php echo esc_attr($slug); ?>" name="hpt_modules[<?php echo esc_attr($slug); ?>]" value="1" data-module-toggle="<?php echo esc_attr($slug); ?>" data-summary="<?php echo esc_attr($module['label']); ?>" <?php checked(hpt_is_module_active($slug)); ?>>
+                        <input type="checkbox" role="switch" class="ob-switch" id="ob-module-<?php echo esc_attr($slug); ?>" name="haptic_modules[<?php echo esc_attr($slug); ?>]" value="1" data-module-toggle="<?php echo esc_attr($slug); ?>" data-summary="<?php echo esc_attr($module['label']); ?>" <?php checked(haptic_is_module_active($slug)); ?>>
                     </label>
                 <?php endforeach; ?>
             </div>
@@ -572,14 +572,14 @@ function hpt_onboarding_step_modules($modules)
     endforeach;
 }
 
-function hpt_onboarding_step_security($modules)
+function haptic_onboarding_step_security($modules)
 {
-    hpt_onboarding_step_head('security', 'Sécurité', 'Verrouillez les accès', 'Une adresse de connexion propre au site arrête la plupart des robots. Les protections recommandées sont présélectionnées et n\'affectent pas les visiteurs.');
+    haptic_onboarding_step_head('security', 'Sécurité', 'Verrouillez les accès', 'Une adresse de connexion propre au site arrête la plupart des robots. Les protections recommandées sont présélectionnées et n\'affectent pas les visiteurs.');
 
     $locked = (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite();
     $prefix = get_option('permalink_structure') ? home_url('/') : home_url('/') . '?';
     // Même adresse que l'onglet Sécurité (proxys de confiance pris en compte quand le module est actif)
-    $ip = function_exists('hpt_sec_client_ip') ? hpt_sec_client_ip() : sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
+    $ip = function_exists('haptic_sec_client_ip') ? haptic_sec_client_ip() : sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
     $ip = $ip !== '0.0.0.0' && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
     ?>
     <div class="ob-fields">
@@ -591,42 +591,42 @@ function hpt_onboarding_step_security($modules)
                 </span>
                 <div class="ob-prefixed">
                     <span class="ob-prefixed__prefix" title="<?php echo esc_attr($prefix); ?>"><?php echo esc_html(preg_replace('#^https?://#', '', $prefix)); ?></span>
-                    <input type="text" id="ob-login-slug" name="hpt_sec_login_slug" value="<?php echo esc_attr(get_option('hpt_sec_login_slug', '')); ?>" placeholder="ex. espace-gestion" pattern="[A-Za-z0-9\-]{4,}" title="Au moins 4 caractères : lettres, chiffres et tirets." spellcheck="false" autocomplete="off" data-summary-value="Adresse de connexion" data-summary-prefix="/">
+                    <input type="text" id="ob-login-slug" name="haptic_sec_login_slug" value="<?php echo esc_attr(get_option('haptic_sec_login_slug', '')); ?>" placeholder="ex. espace-gestion" pattern="[A-Za-z0-9\-]{4,}" title="Au moins 4 caractères : lettres, chiffres et tirets." spellcheck="false" autocomplete="off" data-summary-value="Adresse de connexion" data-summary-prefix="/">
                 </div>
                 <span class="ob-field__help">wp-login.php et /wp-admin/ afficheront une page introuvable aux visiteurs non connectés. La nouvelle adresse est envoyée par email à <?php echo esc_html(get_option('admin_email')); ?>. Laissez vide pour garder wp-login.php.</span>
             </div>
         <?php endif; ?>
         <label class="ob-field">
             <span class="ob-field__label">Verrouiller après (échecs)</span>
-            <input type="number" name="hpt_sec_login_max" min="2" max="20" value="<?php echo esc_attr(get_option('hpt_sec_login_max', 5)); ?>">
+            <input type="number" name="haptic_sec_login_max" min="2" max="20" value="<?php echo esc_attr(get_option('haptic_sec_login_max', 5)); ?>">
         </label>
         <label class="ob-field">
             <span class="ob-field__label">Durée du verrouillage (minutes)</span>
-            <input type="number" name="hpt_sec_login_lockout" min="1" max="1440" value="<?php echo esc_attr(get_option('hpt_sec_login_lockout', 15)); ?>">
+            <input type="number" name="haptic_sec_login_lockout" min="1" max="1440" value="<?php echo esc_attr(get_option('haptic_sec_login_lockout', 15)); ?>">
         </label>
         <div class="ob-field ob-field--wide">
             <span class="ob-field__label">
                 <label for="ob-login-whitelist">Adresses IP jamais verrouillées <span class="ob-field__opt">une par ligne</span></label>
                 <?php if ($ip) : ?><button type="button" class="ob-field__link" data-ob-add-ip="<?php echo esc_attr($ip); ?>">Ajouter mon adresse (<?php echo esc_html($ip); ?>)</button><?php endif; ?>
             </span>
-            <textarea id="ob-login-whitelist" name="hpt_sec_login_whitelist" rows="2" spellcheck="false" data-summary-value="IP jamais verrouillées"><?php echo esc_textarea(get_option('hpt_sec_login_whitelist', '')); ?></textarea>
+            <textarea id="ob-login-whitelist" name="haptic_sec_login_whitelist" rows="2" spellcheck="false" data-summary-value="IP jamais verrouillées"><?php echo esc_textarea(get_option('haptic_sec_login_whitelist', '')); ?></textarea>
             <span class="ob-field__help">Ajoutez la vôtre si elle est fixe (bureau, fibre), pour ne jamais vous bloquer vous-même.</span>
         </div>
     </div>
     <h2 class="ob-subtitle">Protections</h2>
     <div class="ob-options">
-        <?php foreach (hpt_onboarding_security_toggles() as $key => $toggle) {
-            hpt_onboarding_switch('hpt_sec_' . $key, get_option('hpt_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? 'Recommandé' : '');
+        <?php foreach (haptic_onboarding_security_toggles() as $key => $toggle) {
+            haptic_onboarding_switch('haptic_sec_' . $key, get_option('haptic_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? 'Recommandé' : '');
         } ?>
     </div>
-    <p class="ob-note"><?php echo wp_kses(hpt_icon('lock', 16), hpt_kses_ui()); ?>Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('lock', 16), haptic_kses_ui()); ?>Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
     <?php
 }
 
-function hpt_onboarding_step_seo($modules)
+function haptic_onboarding_step_seo($modules)
 {
-    hpt_onboarding_step_head('seo', 'Référencement', 'Soyez visible et indexé rapidement', 'Le nom du site et les motifs ci-dessous servent de titre et de description dans Google pour chaque contenu qui n\'en a pas.');
-    $selected = (array) get_option('hpt_sitemap_post_types', ['post', 'page']);
+    haptic_onboarding_step_head('seo', 'Référencement', 'Soyez visible et indexé rapidement', 'Le nom du site et les motifs ci-dessous servent de titre et de description dans Google pour chaque contenu qui n\'en a pas.');
+    $selected = (array) get_option('haptic_sitemap_post_types', ['post', 'page']);
     ?>
     <div class="ob-fields">
         <label class="ob-field">
@@ -639,27 +639,27 @@ function hpt_onboarding_step_seo($modules)
         </label>
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Titre des pages dans Google</span>
-            <input type="text" name="hpt_seo_title_pattern" value="<?php echo esc_attr(get_option('hpt_seo_title_pattern', '{titre_page} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Titre">
+            <input type="text" name="haptic_seo_title_pattern" value="<?php echo esc_attr(get_option('haptic_seo_title_pattern', '{titre_page} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Titre">
         </label>
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Description par défaut</span>
-            <input type="text" name="hpt_seo_desc_pattern" value="<?php echo esc_attr(get_option('hpt_seo_desc_pattern', '{resume} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Description">
+            <input type="text" name="haptic_seo_desc_pattern" value="<?php echo esc_attr(get_option('haptic_seo_desc_pattern', '{resume} - {nom_site}')); ?>" data-ob-pattern data-summary-value="Description">
         </label>
         <div class="ob-field ob-field--wide">
             <span class="ob-field__help">Insérer une variable dans le dernier motif modifié :</span>
             <div class="ob-vars">
-                <?php foreach (hpt_onboarding_seo_variables() as $var => $label) : ?>
+                <?php foreach (haptic_onboarding_seo_variables() as $var => $label) : ?>
                     <button type="button" class="ob-var" data-ob-var="<?php echo esc_attr($var); ?>"><?php echo esc_html($label); ?></button>
                 <?php endforeach; ?>
             </div>
         </div>
         <label class="ob-field">
             <span class="ob-field__label">Google Search Console <span class="ob-field__opt">facultatif</span></span>
-            <input type="text" name="hpt_seo_verify_google" value="<?php echo esc_attr(get_option('hpt_seo_verify_google', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Google">
+            <input type="text" name="haptic_seo_verify_google" value="<?php echo esc_attr(get_option('haptic_seo_verify_google', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Google">
         </label>
         <label class="ob-field">
             <span class="ob-field__label">Bing Webmaster Tools <span class="ob-field__opt">facultatif</span></span>
-            <input type="text" name="hpt_seo_verify_bing" value="<?php echo esc_attr(get_option('hpt_seo_verify_bing', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Bing">
+            <input type="text" name="haptic_seo_verify_bing" value="<?php echo esc_attr(get_option('haptic_seo_verify_bing', '')); ?>" placeholder="Code ou balise meta" spellcheck="false" autocomplete="off" data-summary-value="Vérification Bing">
         </label>
     </div>
 
@@ -667,10 +667,10 @@ function hpt_onboarding_step_seo($modules)
     <div class="ob-options">
         <?php
         if (!get_option('blog_public')) {
-            hpt_onboarding_switch('blog_public', 0, 'Autoriser l\'indexation du site', 'Le site demande actuellement aux moteurs de ne pas l\'indexer (Réglages › Lecture). À laisser désactivé sur un site en préparation.', 'Attention');
+            haptic_onboarding_switch('blog_public', 0, 'Autoriser l\'indexation du site', 'Le site demande actuellement aux moteurs de ne pas l\'indexer (Réglages › Lecture). À laisser désactivé sur un site en préparation.', 'Attention');
         }
-        foreach (hpt_onboarding_seo_toggles() as $option => $toggle) {
-            hpt_onboarding_switch($option, get_option($option, $toggle[2]), $toggle[0], $toggle[1]);
+        foreach (haptic_onboarding_seo_toggles() as $option => $toggle) {
+            haptic_onboarding_switch($option, get_option($option, $toggle[2]), $toggle[0], $toggle[1]);
         }
         ?>
     </div>
@@ -683,7 +683,7 @@ function hpt_onboarding_step_seo($modules)
                 }
                 ?>
                 <label class="ob-chip">
-                    <input type="checkbox" name="hpt_sitemap_post_types[]" value="<?php echo esc_attr($type->name); ?>" data-summary="Sitemap : <?php echo esc_attr($type->labels->name); ?>" <?php checked(in_array($type->name, $selected, true)); ?>>
+                    <input type="checkbox" name="haptic_sitemap_post_types[]" value="<?php echo esc_attr($type->name); ?>" data-summary="Sitemap : <?php echo esc_attr($type->labels->name); ?>" <?php checked(in_array($type->name, $selected, true)); ?>>
                     <span><?php echo esc_html($type->labels->name); ?></span>
                 </label>
             <?php endforeach; ?>
@@ -692,77 +692,77 @@ function hpt_onboarding_step_seo($modules)
     <?php
 }
 
-function hpt_onboarding_step_local($modules)
+function haptic_onboarding_step_local($modules)
 {
-    hpt_onboarding_step_head('local', 'SEO local', 'Présentez votre établissement', 'Ces informations sont publiées pour Google (Maps, recherche locale) et réutilisables sur le site avec les shortcodes [optimizr_adresse] ou [optimizr_telephone]. Elles doivent correspondre à votre fiche Google Business Profile.');
-    hpt_onboarding_require('hpt_local_types', 'local-seo.php');
-    $local = (array) get_option('hpt_local', []);
+    haptic_onboarding_step_head('local', 'SEO local', 'Présentez votre établissement', 'Ces informations sont publiées pour Google (Maps, recherche locale) et réutilisables sur le site avec les shortcodes [optimizr_adresse] ou [optimizr_telephone]. Elles doivent correspondre à votre fiche Google Business Profile.');
+    haptic_onboarding_require('haptic_local_types', 'local-seo.php');
+    $local = (array) get_option('haptic_local', []);
     $type = $local['type'] ?? 'LocalBusiness';
     ?>
     <div class="ob-fields">
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Activité</span>
-            <select name="hpt_ob_local[type]" data-summary-value="Activité">
-                <?php foreach (hpt_local_types() as $schema => $label) : ?>
+            <select name="haptic_ob_local[type]" data-summary-value="Activité">
+                <?php foreach (haptic_local_types() as $schema => $label) : ?>
                     <option value="<?php echo esc_attr($schema); ?>" <?php selected($type, $schema); ?>><?php echo esc_html($label); ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
-        <?php foreach (hpt_onboarding_local_fields() as $key => $field) :
+        <?php foreach (haptic_onboarding_local_fields() as $key => $field) :
             $value = $local[$key] ?? ($key === 'country' ? 'FR' : '');
             ?>
             <label class="ob-field<?php echo $key === 'street' ? ' ob-field--wide' : ''; ?>">
                 <span class="ob-field__label"><?php echo esc_html($field[0]); ?></span>
-                <input type="<?php echo esc_attr($field[1]); ?>" name="hpt_ob_local[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>" placeholder="<?php echo esc_attr($field[2]); ?>" autocomplete="<?php echo esc_attr($field[3]); ?>"<?php echo $key === 'country' ? ' maxlength="2" pattern="[A-Za-z]{2}"' : ''; ?> data-summary-value="<?php echo esc_attr($field[0]); ?>">
+                <input type="<?php echo esc_attr($field[1]); ?>" name="haptic_ob_local[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>" placeholder="<?php echo esc_attr($field[2]); ?>" autocomplete="<?php echo esc_attr($field[3]); ?>"<?php echo $key === 'country' ? ' maxlength="2" pattern="[A-Za-z]{2}"' : ''; ?> data-summary-value="<?php echo esc_attr($field[0]); ?>">
             </label>
         <?php endforeach; ?>
     </div>
-    <p class="ob-note"><?php echo wp_kses(hpt_icon('pin', 16), hpt_kses_ui()); ?>Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local.</p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('pin', 16), haptic_kses_ui()); ?>Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local.</p>
     <?php
 }
 
-function hpt_onboarding_step_pages($modules)
+function haptic_onboarding_step_pages($modules)
 {
-    hpt_onboarding_step_head('pages', 'Pages spéciales', 'Soignez la page introuvable', 'Choisissez une page rédigée dans l\'éditeur : elle s\'affiche avec la mise en page du thème, garde le code 404 et n\'est pas indexée.');
+    haptic_onboarding_step_head('pages', 'Pages spéciales', 'Soignez la page introuvable', 'Choisissez une page rédigée dans l\'éditeur : elle s\'affiche avec la mise en page du thème, garde le code 404 et n\'est pas indexée.');
     ?>
     <div class="ob-fields">
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Contenu de la page 404</span>
             <?php
             $dropdown = wp_dropdown_pages([
-                'name'              => 'hpt_404_page',
+                'name'              => 'haptic_404_page',
                 'id'                => 'ob-404-page',
-                'selected'          => (int) get_option('hpt_404_page'),
+                'selected'          => (int) get_option('haptic_404_page'),
                 'show_option_none'  => 'Page 404 du thème',
                 'option_none_value' => 0,
                 'post_status'       => ['publish', 'private', 'draft'],
                 'echo'              => 0,
             ]);
             echo $dropdown
-                ? wp_kses(str_replace('<select ', '<select data-summary-value="Page 404" ', $dropdown), hpt_kses_ui())
-                : '<span class="ob-field__help">Aucune page sur le site : créez-en une (« Page introuvable ») puis choisissez-la dans l\'onglet Pages spéciales.</span><input type="hidden" name="hpt_404_page" value="0">';
+                ? wp_kses(str_replace('<select ', '<select data-summary-value="Page 404" ', $dropdown), haptic_kses_ui())
+                : '<span class="ob-field__help">Aucune page sur le site : créez-en une (« Page introuvable ») puis choisissez-la dans l\'onglet Pages spéciales.</span><input type="hidden" name="haptic_404_page" value="0">';
             ?>
         </label>
     </div>
     <div class="ob-options">
-        <?php hpt_onboarding_switch('hpt_404_suggestions', get_option('hpt_404_suggestions', 1), 'Suggérer des contenus proches', 'Liens vers les pages dont l\'adresse ressemble à celle demandée, et un champ de recherche.', 'Recommandé'); ?>
+        <?php haptic_onboarding_switch('haptic_404_suggestions', get_option('haptic_404_suggestions', 1), 'Suggérer des contenus proches', 'Liens vers les pages dont l\'adresse ressemble à celle demandée, et un champ de recherche.', 'Recommandé'); ?>
     </div>
-    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin.</p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?>Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin.</p>
     <?php
 }
 
-function hpt_onboarding_step_cookies($modules)
+function haptic_onboarding_step_cookies($modules)
 {
-    hpt_onboarding_step_head('cookies', 'Cookies & RGPD', 'Respectez la vie privée de vos visiteurs', 'Renseignez les outils de mesure du site : le bandeau Tarteaucitron ne les charge qu\'après accord du visiteur.');
-    $style = get_option('hpt_option_tarteaucitron_banner_style', 'middle');
+    haptic_onboarding_step_head('cookies', 'Cookies & RGPD', 'Respectez la vie privée de vos visiteurs', 'Renseignez les outils de mesure du site : le bandeau Tarteaucitron ne les charge qu\'après accord du visiteur.');
+    $style = get_option('haptic_option_tarteaucitron_banner_style', 'middle');
     ?>
     <div class="ob-options">
-        <?php hpt_onboarding_switch('hpt_option_enable_tarteaucitron', get_option('hpt_option_enable_tarteaucitron', 1), 'Afficher le bandeau de consentement', 'Obligatoire dès qu\'un service de mesure d\'audience ou de publicité est utilisé.', 'Recommandé'); ?>
+        <?php haptic_onboarding_switch('haptic_option_enable_tarteaucitron', get_option('haptic_option_enable_tarteaucitron', 1), 'Afficher le bandeau de consentement', 'Obligatoire dès qu\'un service de mesure d\'audience ou de publicité est utilisé.', 'Recommandé'); ?>
     </div>
 
     <div class="ob-fields">
-        <?php foreach (hpt_onboarding_cookie_fields() as $field => list($service, $key, $label, $example)) :
-            $saved = (array) get_option('hpt_option_service_' . $service, []);
+        <?php foreach (haptic_onboarding_cookie_fields() as $field => list($service, $key, $label, $example)) :
+            $saved = (array) get_option('haptic_option_service_' . $service, []);
             ?>
             <label class="ob-field">
                 <span class="ob-field__label"><?php echo esc_html($label); ?> <span class="ob-field__opt">facultatif</span></span>
@@ -776,23 +776,23 @@ function hpt_onboarding_step_cookies($modules)
         <div class="ob-positions">
             <?php foreach (['top' => 'En haut', 'middle' => 'Au centre', 'bottom' => 'En bas'] as $value => $label) : ?>
                 <label class="ob-position ob-position--<?php echo esc_attr($value); ?>">
-                    <input type="radio" name="hpt_option_tarteaucitron_banner_style" value="<?php echo esc_attr($value); ?>" data-summary="Bandeau : <?php echo esc_attr(strtolower($label)); ?>" <?php checked($style, $value); ?>>
+                    <input type="radio" name="haptic_option_tarteaucitron_banner_style" value="<?php echo esc_attr($value); ?>" data-summary="Bandeau : <?php echo esc_attr(strtolower($label)); ?>" <?php checked($style, $value); ?>>
                     <span class="ob-position__preview" aria-hidden="true"><span class="ob-position__banner"></span></span>
                     <span class="ob-position__label"><?php echo esc_html($label); ?></span>
                 </label>
             <?php endforeach; ?>
         </div>
     </fieldset>
-    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD.</p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?>Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD.</p>
     <?php
 }
 
-function hpt_onboarding_step_ai($modules)
+function haptic_onboarding_step_ai($modules)
 {
-    hpt_onboarding_step_head('ai', 'Assistant IA', 'Laissez l\'IA rédiger pour vous', 'Meta descriptions et balises ALT générées à partir du contenu et de la description de votre activité. Chaque génération est facturée par le fournisseur choisi.');
-    $providers = hpt_onboarding_ai_providers();
-    $current = get_option('hpt_ai_provider', HPT_AI_DEFAULT_PROVIDER);
-    $current = isset($providers[$current]) ? $current : HPT_AI_DEFAULT_PROVIDER;
+    haptic_onboarding_step_head('ai', 'Assistant IA', 'Laissez l\'IA rédiger pour vous', 'Meta descriptions et balises ALT générées à partir du contenu et de la description de votre activité. Chaque génération est facturée par le fournisseur choisi.');
+    $providers = haptic_onboarding_ai_providers();
+    $current = get_option('haptic_ai_provider', HAPTIC_AI_DEFAULT_PROVIDER);
+    $current = isset($providers[$current]) ? $current : HAPTIC_AI_DEFAULT_PROVIDER;
     ?>
     <fieldset class="ob-fieldset ob-fieldset--first">
         <legend class="ob-fieldset__title">Fournisseur</legend>
@@ -801,7 +801,7 @@ function hpt_onboarding_step_ai($modules)
                 $has_key = trim((string) get_option($provider['key_option'], '')) !== '';
                 ?>
                 <label class="ob-provider">
-                    <input type="radio" name="hpt_ai_provider" value="<?php echo esc_attr($slug); ?>" data-has-key="<?php echo $has_key ? '1' : '0'; ?>" data-key-url="<?php echo esc_url($provider['key_url'] ?? ''); ?>" data-summary="Fournisseur : <?php echo esc_attr($provider['label']); ?>" <?php checked($current, $slug); ?>>
+                    <input type="radio" name="haptic_ai_provider" value="<?php echo esc_attr($slug); ?>" data-has-key="<?php echo $has_key ? '1' : '0'; ?>" data-key-url="<?php echo esc_url($provider['key_url'] ?? ''); ?>" data-summary="Fournisseur : <?php echo esc_attr($provider['label']); ?>" <?php checked($current, $slug); ?>>
                     <span class="ob-provider__name"><?php echo esc_html($provider['label']); ?></span>
                     <span class="ob-provider__state"><?php echo $has_key ? 'Clé enregistrée' : 'Clé à ajouter'; ?></span>
                 </label>
@@ -811,7 +811,7 @@ function hpt_onboarding_step_ai($modules)
     <div class="ob-fields">
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Clé API <a class="ob-field__link" href="#" target="_blank" rel="noopener noreferrer" data-ob-key-link>Obtenir une clé</a></span>
-            <input type="password" name="hpt_ob_ai_key" value="" autocomplete="off" spellcheck="false" data-ob-key placeholder="Collez la clé de votre compte" data-placeholder-saved="Clé déjà enregistrée : laissez vide pour la conserver" data-placeholder-empty="Collez la clé de votre compte">
+            <input type="password" name="haptic_ob_ai_key" value="" autocomplete="off" spellcheck="false" data-ob-key placeholder="Collez la clé de votre compte" data-placeholder-saved="Clé déjà enregistrée : laissez vide pour la conserver" data-placeholder-empty="Collez la clé de votre compte">
         </label>
         <?php foreach ($providers as $slug => $provider) :
             $model = get_option($provider['model_option'], $provider['default'] ?? '');
@@ -827,40 +827,40 @@ function hpt_onboarding_step_ai($modules)
         <?php endforeach; ?>
         <label class="ob-field ob-field--wide">
             <span class="ob-field__label">Description de votre activité</span>
-            <textarea name="hpt_ai_context" rows="3" placeholder="Ex. : école de céramique à Lyon, cours pour adultes et enfants, stages le week-end." data-summary-value="Activité décrite"><?php echo esc_textarea(get_option('hpt_ai_context', '')); ?></textarea>
+            <textarea name="haptic_ai_context" rows="3" placeholder="Ex. : école de céramique à Lyon, cours pour adultes et enfants, stages le week-end." data-summary-value="Activité décrite"><?php echo esc_textarea(get_option('haptic_ai_context', '')); ?></textarea>
             <span class="ob-field__help">Jointe à chaque demande : l'IA rédige avec le bon vocabulaire et le bon ton.</span>
         </label>
     </div>
     <div class="ob-options">
-        <?php hpt_onboarding_switch('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'ALT automatique à l\'import', 'Chaque image ajoutée à la médiathèque reçoit une description (une requête facturée par image).'); ?>
+        <?php haptic_onboarding_switch('haptic_ai_alt_on_upload', get_option('haptic_ai_alt_on_upload', 1), 'ALT automatique à l\'import', 'Chaque image ajoutée à la médiathèque reçoit une description (une requête facturée par image).'); ?>
     </div>
     <?php
 }
 
-function hpt_onboarding_step_summary($modules)
+function haptic_onboarding_step_summary($modules)
 {
-    hpt_onboarding_step_head('summary', 'Récapitulatif', 'Tout est prêt à être appliqué', 'Voici ce qui sera enregistré. Revenez en arrière pour changer un choix.');
+    haptic_onboarding_step_head('summary', 'Récapitulatif', 'Tout est prêt à être appliqué', 'Voici ce qui sera enregistré. Revenez en arrière pour changer un choix.');
     ?>
     <div class="ob-summary" data-ob-summary></div>
     <noscript><p class="ob-note">Vérifiez les choix ci-dessus avant d'appliquer la configuration.</p></noscript>
     <?php
 }
 
-function hpt_onboarding_render_done()
+function haptic_onboarding_render_done()
 {
-    $tabs = hpt_admin_tabs();
+    $tabs = haptic_admin_tabs();
     $next = [];
-    foreach (hpt_modules() as $slug => $module) {
-        if (hpt_is_module_active($slug) && isset($tabs[$module['tab']]) && !isset($next[$module['tab']])) {
+    foreach (haptic_modules() as $slug => $module) {
+        if (haptic_is_module_active($slug) && isset($tabs[$module['tab']]) && !isset($next[$module['tab']])) {
             $next[$module['tab']] = $module;
         }
     }
 
-    $notices_key = 'hpt_onboarding_notices_' . get_current_user_id();
+    $notices_key = 'haptic_onboarding_notices_' . get_current_user_id();
     $notices = (array) get_transient($notices_key);
     delete_transient($notices_key);
 
-    $login_url = hpt_is_module_active('security') && function_exists('hpt_sec_login_slug') && hpt_sec_login_slug() ? hpt_sec_login_url() : '';
+    $login_url = haptic_is_module_active('security') && function_exists('haptic_sec_login_slug') && haptic_sec_login_slug() ? haptic_sec_login_url() : '';
     ?>
     <div class="ob-done">
         <p class="ob-step__eyebrow">Configuration terminée</p>
@@ -868,12 +868,12 @@ function hpt_onboarding_render_done()
         <p class="ob-step__intro">Les réglages sont enregistrés et actifs. Affinez chaque module depuis son onglet quand vous le souhaitez.</p>
 
         <?php foreach (array_filter($notices) as $notice) : ?>
-            <p class="ob-alert" role="alert"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><?php echo esc_html($notice); ?></p>
+            <p class="ob-alert" role="alert"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><?php echo esc_html($notice); ?></p>
         <?php endforeach; ?>
 
         <?php if ($login_url) : ?>
             <div class="ob-login-card">
-                <span class="ob-login-card__icon"><?php echo wp_kses(hpt_icon('lock', 20), hpt_kses_ui()); ?></span>
+                <span class="ob-login-card__icon"><?php echo wp_kses(haptic_icon('lock', 20), haptic_kses_ui()); ?></span>
                 <div>
                     <p class="ob-login-card__title">Votre adresse de connexion</p>
                     <a class="ob-login-card__url" href="<?php echo esc_url($login_url); ?>"><?php echo esc_html($login_url); ?></a>
@@ -887,10 +887,10 @@ function hpt_onboarding_render_done()
             <ul class="ob-next">
                 <?php foreach ($next as $tab => $module) : ?>
                     <li>
-                        <a class="ob-next__item" href="<?php echo esc_url(hpt_admin_tab_url($tab)); ?>">
-                            <span class="ob-module__icon"><?php echo wp_kses(hpt_icon($module['icon'], 18), hpt_kses_ui()); ?></span>
+                        <a class="ob-next__item" href="<?php echo esc_url(haptic_admin_tab_url($tab)); ?>">
+                            <span class="ob-module__icon"><?php echo wp_kses(haptic_icon($module['icon'], 18), haptic_kses_ui()); ?></span>
                             <span class="ob-next__label"><?php echo esc_html($tabs[$tab]['label']); ?></span>
-                            <?php echo wp_kses(hpt_icon('chevron-right', 16), hpt_kses_ui()); ?>
+                            <?php echo wp_kses(haptic_icon('chevron-right', 16), haptic_kses_ui()); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -898,8 +898,8 @@ function hpt_onboarding_render_done()
         <?php endif; ?>
 
         <div class="ob-nav ob-nav--done">
-            <a class="ob-btn ob-btn--ghost" href="<?php echo esc_url(hpt_onboarding_url()); ?>">Relancer l'assistant</a>
-            <a class="ob-btn ob-btn--primary" href="<?php echo esc_url(admin_url('admin.php?page=hpt-options')); ?>">Ouvrir le tableau de bord</a>
+            <a class="ob-btn ob-btn--ghost" href="<?php echo esc_url(haptic_onboarding_url()); ?>">Relancer l'assistant</a>
+            <a class="ob-btn ob-btn--primary" href="<?php echo esc_url(admin_url('admin.php?page=haptic-options')); ?>">Ouvrir le tableau de bord</a>
         </div>
     </div>
     <?php
@@ -907,8 +907,8 @@ function hpt_onboarding_render_done()
 
 /* ---------- Illustrations (SVG inline, sans ressource externe) ---------- */
 
-/** Icône « jauge » (absente de hpt_icon()). */
-function hpt_onboarding_icon($name, $size = 16)
+/** Icône « jauge » (absente de haptic_icon()). */
+function haptic_onboarding_icon($name, $size = 16)
 {
     $paths = [
         'gauge'   => '<path d="M12 14l4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
@@ -923,7 +923,7 @@ function hpt_onboarding_icon($name, $size = 16)
 }
 
 /** Dégradés et filtres partagés par toutes les illustrations. */
-function hpt_onboarding_svg_defs()
+function haptic_onboarding_svg_defs()
 {
     ?>
     <svg class="ob-defs" width="0" height="0" aria-hidden="true" focusable="false">
@@ -944,8 +944,8 @@ function hpt_onboarding_svg_defs()
     <?php
 }
 
-/** Pastille ronde avec une icône 24×24 (chemins de hpt_icon() ou hpt_onboarding_icon()). */
-function hpt_onboarding_badge($x, $y, $icon_svg, $gradient, $class = '')
+/** Pastille ronde avec une icône 24×24 (chemins de haptic_icon() ou haptic_onboarding_icon()). */
+function haptic_onboarding_badge($x, $y, $icon_svg, $gradient, $class = '')
 {
     // Couleur unie pour l'icône : un dégradé ne s'applique pas à un trait droit (boîte englobante sans largeur)
     $colors = ['ob-g-cyan' => '#8af0ff', 'ob-g-green' => '#7ef0c4', 'ob-g-violet' => '#d2c4ff', 'ob-g-accent' => '#a9baff'];
@@ -962,7 +962,7 @@ function hpt_onboarding_badge($x, $y, $icon_svg, $gradient, $class = '')
     );
 }
 
-function hpt_onboarding_illustration($name)
+function haptic_onboarding_illustration($name)
 {
 
     switch ($name) {
@@ -989,10 +989,10 @@ function hpt_onboarding_illustration($name)
                     </g>
                 </g>
                 <?php
-                echo wp_kses(hpt_onboarding_badge(108, 96, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui());
-                echo wp_kses(hpt_onboarding_badge(382, 120, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), hpt_kses_ui());
-                echo wp_kses(hpt_onboarding_badge(366, 282, hpt_onboarding_icon('sliders', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), hpt_kses_ui());
-                echo wp_kses(hpt_onboarding_badge(104, 268, hpt_icon('sparkles', 24), 'ob-g-accent', 'ob-a-float'), hpt_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(108, 96, haptic_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), haptic_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(382, 120, haptic_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), haptic_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(366, 282, haptic_onboarding_icon('sliders', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), haptic_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(104, 268, haptic_icon('sparkles', 24), 'ob-g-accent', 'ob-a-float'), haptic_kses_ui());
                 ?>
                 <circle cx="70" cy="180" r="2.5" fill="#8af0ff" class="ob-a-twinkle"/>
                 <circle cx="420" cy="208" r="2" fill="#d2c4ff" class="ob-a-twinkle ob-delay-2"/>
@@ -1013,12 +1013,12 @@ function hpt_onboarding_illustration($name)
                     $x = 126 + ($i % 3) * 82;
                     $y = 66 + intdiv($i, 3) * 82;
                     $on = in_array($i, $lit, true);
-                    $inner = preg_replace('#^<svg[^>]*>|</svg>$#', '', hpt_icon($icon, 24));
+                    $inner = preg_replace('#^<svg[^>]*>|</svg>$#', '', haptic_icon($icon, 24));
                     ?>
                     <g transform="translate(<?php echo esc_attr($x); ?> <?php echo esc_attr($y); ?>)">
                         <g class="ob-a-tile" style="animation-delay:<?php echo esc_attr(0.08 * $i); ?>s">
                             <rect width="64" height="64" rx="14" fill="<?php echo $on ? 'url(#ob-g-accent)' : 'url(#ob-g-glass)'; ?>" stroke="#fff" stroke-opacity="<?php echo $on ? '.35' : '.16'; ?>"<?php echo $on ? ' filter="url(#ob-f-glow)"' : ''; ?>/>
-                            <g transform="translate(18 18)" fill="none" stroke="#fff" stroke-opacity="<?php echo esc_attr($on ? '1' : '.55'); ?>" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?php echo wp_kses($inner, hpt_kses_ui()); ?></g>
+                            <g transform="translate(18 18)" fill="none" stroke="#fff" stroke-opacity="<?php echo esc_attr($on ? '1' : '.55'); ?>" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?php echo wp_kses($inner, haptic_kses_ui()); ?></g>
                             <circle cx="54" cy="10" r="4" fill="<?php echo $on ? '#7ef0c4' : '#fff'; ?>" fill-opacity="<?php echo $on ? '1' : '.18'; ?>"/>
                         </g>
                     </g>
@@ -1147,8 +1147,8 @@ function hpt_onboarding_illustration($name)
                         </g></g>
                     <?php endforeach; ?>
                 </g>
-                <?php echo wp_kses(hpt_onboarding_badge(372, 106, hpt_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'), hpt_kses_ui()); ?>
-                <?php echo wp_kses(hpt_onboarding_badge(108, 250, hpt_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui()); ?>
+                <?php echo wp_kses(haptic_onboarding_badge(372, 106, haptic_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'), haptic_kses_ui()); ?>
+                <?php echo wp_kses(haptic_onboarding_badge(108, 250, haptic_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), haptic_kses_ui()); ?>
             <?php
             echo '</svg>';
             break;
@@ -1173,7 +1173,7 @@ function hpt_onboarding_illustration($name)
                     <rect x="144" y="256" width="92" height="18" rx="9" fill="none" stroke="#fff" stroke-opacity=".35"/>
                     <rect x="244" y="256" width="92" height="18" rx="9" fill="url(#ob-g-accent)"/>
                 </g>
-                <?php echo wp_kses(hpt_onboarding_badge(366, 82, hpt_icon('shield', 24), 'ob-g-green', 'ob-a-pop ob-delay-1'), hpt_kses_ui()); ?>
+                <?php echo wp_kses(haptic_onboarding_badge(366, 82, haptic_icon('shield', 24), 'ob-g-green', 'ob-a-pop ob-delay-1'), haptic_kses_ui()); ?>
                 <g transform="translate(104 268)"><g class="ob-a-float ob-delay-2">
                     <circle r="30" fill="#f2b56b"/>
                     <circle cx="22" cy="-18" r="10" fill="#0b1437"/><circle cx="28" cy="-4" r="7" fill="#0b1437"/>
@@ -1240,9 +1240,9 @@ function hpt_onboarding_illustration($name)
                     <?php endforeach; ?>
                 </g>
                 <?php
-                echo wp_kses(hpt_onboarding_badge(110, 110, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui());
-                echo wp_kses(hpt_onboarding_badge(372, 140, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), hpt_kses_ui());
-                echo wp_kses(hpt_onboarding_badge(120, 262, hpt_icon('sparkles', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), hpt_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(110, 110, haptic_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), haptic_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(372, 140, haptic_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), haptic_kses_ui());
+                echo wp_kses(haptic_onboarding_badge(120, 262, haptic_icon('sparkles', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), haptic_kses_ui());
                 ?>
             <?php
             echo '</svg>';

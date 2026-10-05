@@ -15,7 +15,7 @@
 
     function save(choices) {
         var body = new URLSearchParams();
-        body.append('action', 'hpt_save_uninstall');
+        body.append('action', 'haptic_save_uninstall');
         body.append('_ajax_nonce', data.nonce);
         body.append('choices', JSON.stringify(choices));
         body.append('network', data.network ? '1' : '');

@@ -6,8 +6,8 @@
     'use strict';
 
     function initUpdateCheck() {
-        var button = document.getElementById('hpt-check-update-btn');
-        var status = document.getElementById('hpt-update-status');
+        var button = document.getElementById('haptic-check-update-btn');
+        var status = document.getElementById('haptic-update-status');
         if (!button || !status || typeof window.ajaxurl === 'undefined') return;
 
         function show(message, state) {
@@ -34,7 +34,7 @@
                 .then(function (res) { return res.json(); })
                 .then(function (res) {
                     if (res.success) {
-                        // Le rechargement exécute les migrations de la nouvelle version (hpt_options_maybe_upgrade)
+                        // Le rechargement exécute les migrations de la nouvelle version (haptic_options_maybe_upgrade)
                         show('Version ' + version + ' installée. Rechargement…', 'ok');
                         window.setTimeout(function () { window.location.reload(); }, 1500);
                         return;
@@ -59,7 +59,7 @@
             button.disabled = true;
             show('Vérification en cours…');
 
-            var body = new URLSearchParams({ action: 'hpt_ajax_check_update', nonce: button.dataset.nonce });
+            var body = new URLSearchParams({ action: 'haptic_ajax_check_update', nonce: button.dataset.nonce });
 
             fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
                 .then(function (res) { return res.json(); })

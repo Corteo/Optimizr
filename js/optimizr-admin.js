@@ -18,7 +18,7 @@
         return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
     }
 
-    // Même règle que hpt_readable_text_color() côté PHP
+    // Même règle que haptic_readable_text_color() côté PHP
     function readableText(hex) {
         return luminance(hex) > 0.179 ? '#1e1e1e' : '#ffffff';
     }
@@ -61,7 +61,7 @@
 
         form.addEventListener('input', refresh);
         form.addEventListener('change', refresh);
-        document.addEventListener('hpt:seo-pattern-change', refresh);
+        document.addEventListener('haptic:seo-pattern-change', refresh);
 
         form.addEventListener('submit', function () {
             submitting = true;
@@ -115,7 +115,7 @@
                 }
 
                 if (!preview) return;
-                if (input.dataset.tacColor === 'hpt_option_tarteaucitron_highlight_color') {
+                if (input.dataset.tacColor === 'haptic_option_tarteaucitron_highlight_color') {
                     banner.style.background = value;
                     banner.style.color = readableText(value);
                 }
@@ -178,12 +178,12 @@
         if (!root) return;
 
         var vars = JSON.parse(root.dataset.seoVars || '{}');
-        var titleInput = document.getElementById('hpt_seo_title_pattern');
-        var descInput = document.getElementById('hpt_seo_desc_pattern');
+        var titleInput = document.getElementById('haptic_seo_title_pattern');
+        var descInput = document.getElementById('haptic_seo_desc_pattern');
         var titleCount = root.querySelector('[data-seo-count-title]');
         var descCount = root.querySelector('[data-seo-count-desc]');
 
-        // Même résultat que hpt_generate_seo_content() : variables remplacées, séparateurs orphelins retirés
+        // Même résultat que haptic_generate_seo_content() : variables remplacées, séparateurs orphelins retirés
         function render(pattern) {
             var text = Object.keys(vars).reduce(function (acc, code) {
                 return acc.split(code).join(vars[code]);
@@ -206,7 +206,7 @@
             count(descCount, desc, 160);
         }
 
-        document.addEventListener('hpt:seo-pattern-change', update);
+        document.addEventListener('haptic:seo-pattern-change', update);
         update();
     }
 
@@ -302,7 +302,7 @@
                     return;
                 }
 
-                var body = new URLSearchParams({ action: 'hpt_ai_bulk_next', nonce: nonce, task: task.dataset.task });
+                var body = new URLSearchParams({ action: 'haptic_ai_bulk_next', nonce: nonce, task: task.dataset.task });
                 // Liste complète gardée par le serveur : les 500 derniers suffisent (sous max_input_vars de PHP), en secours si son cache est perdu
                 state.skipped.slice(-500).forEach(function (id) { body.append('skip[]', id); });
 
@@ -388,8 +388,8 @@
         var notice = document.querySelector('[data-ai-provider-notice]');
 
         select.addEventListener('change', function () {
-            document.querySelectorAll('.hpt-ai-provider-row').forEach(function (row) {
-                row.classList.toggle('optimizr-field--hidden', !row.classList.contains('hpt-ai-provider-' + select.value));
+            document.querySelectorAll('.haptic-ai-provider-row').forEach(function (row) {
+                row.classList.toggle('optimizr-field--hidden', !row.classList.contains('haptic-ai-provider-' + select.value));
             });
             if (notice) notice.hidden = select.value === initial;
         });
@@ -429,7 +429,7 @@
 
         function call(step) {
             var body = new FormData();
-            body.append('action', 'hpt_links_scan');
+            body.append('action', 'haptic_links_scan');
             body.append('nonce', root.getAttribute('data-nonce'));
             body.append('step', step);
             return fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })

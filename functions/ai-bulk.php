@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
  * Assistant IA : traitement en masse.
  *
- * Le navigateur demande les éléments un par un (action AJAX hpt_ai_bulk_next) : une requête = un élément,
+ * Le navigateur demande les éléments un par un (action AJAX haptic_ai_bulk_next) : une requête = un élément,
  * donc jamais de délai d'exécution dépassé, et un arrêt possible à tout moment sans rien perdre.
  * L'interface est dans l'onglet Assistant IA, son script dans js/optimizr-admin.js.
  */
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
  *
  * @return array[] slug => ['label', 'unit', 'empty']
  */
-function hpt_ai_bulk_tasks()
+function haptic_ai_bulk_tasks()
 {
     $tasks = [
         'alt' => [
@@ -28,7 +28,7 @@ function hpt_ai_bulk_tasks()
     ];
 
     // Les descriptions ne servent que si le module SEO les affiche
-    if (hpt_is_module_active('seo')) {
+    if (haptic_is_module_active('seo')) {
         $tasks['descriptions'] = [
             'label' => 'Meta descriptions des contenus',
             'unit'  => 'contenu(s) sans description personnalisée',
@@ -46,7 +46,7 @@ function hpt_ai_bulk_tasks()
  * @param string $order  Fin de requête (« ORDER BY p.ID DESC LIMIT 1 »), sans valeur variable
  * @param int[]  $skip   Éléments ignorés pendant ce traitement (erreur non bloquante)
  */
-function hpt_ai_bulk_query($task, $select, $order = '', array $skip = [])
+function haptic_ai_bulk_query($task, $select, $order = '', array $skip = [])
 {
     global $wpdb;
 
@@ -66,7 +66,7 @@ function hpt_ai_bulk_query($task, $select, $order = '', array $skip = [])
     }
 
     if ($task === 'descriptions') {
-        $types = array_values(array_filter(array_map('strval', (array) get_option('hpt_sitemap_post_types', ['post', 'page']))));
+        $types = array_values(array_filter(array_map('strval', (array) get_option('haptic_sitemap_post_types', ['post', 'page']))));
         if (!$types) {
             return null;
         }
@@ -82,7 +82,7 @@ function hpt_ai_bulk_query($task, $select, $order = '', array $skip = [])
         $types_sql = implode(',', array_fill(0, count($types), '%s'));
         return $wpdb->prepare(
             "SELECT {$select} FROM {$wpdb->posts} p
-            LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_hpt_og_desc'
+            LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_haptic_og_desc'
             WHERE p.post_type IN ({$types_sql})
               AND p.post_status = 'publish'
               AND p.post_content <> ''
@@ -94,57 +94,57 @@ function hpt_ai_bulk_query($task, $select, $order = '', array $skip = [])
     return null;
 }
 
-function hpt_ai_bulk_count($task, array $skip = [])
+function haptic_ai_bulk_count($task, array $skip = [])
 {
     global $wpdb;
-    $query = hpt_ai_bulk_query($task, 'COUNT(*)', '', $skip);
-    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
+    $query = haptic_ai_bulk_query($task, 'COUNT(*)', '', $skip);
+    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par haptic_ai_bulk_query().
 }
 
 /** Tous les éléments restant à traiter (pour l'estimation du coût). */
-function hpt_ai_bulk_ids($task)
+function haptic_ai_bulk_ids($task)
 {
     global $wpdb;
-    $query = hpt_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC');
-    return $query ? array_map('intval', $wpdb->get_col($query)) : []; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
+    $query = haptic_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC');
+    return $query ? array_map('intval', $wpdb->get_col($query)) : []; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par haptic_ai_bulk_query().
 }
 
-function hpt_ai_bulk_next_id($task, array $skip = [])
+function haptic_ai_bulk_next_id($task, array $skip = [])
 {
     global $wpdb;
-    $query = hpt_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC LIMIT 1', $skip);
-    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
+    $query = haptic_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC LIMIT 1', $skip);
+    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par haptic_ai_bulk_query().
 }
 
 /**
  * Traite l'élément suivant d'une tâche.
  */
-function hpt_ai_bulk_next()
+function haptic_ai_bulk_next()
 {
-    check_ajax_referer('hpt_ai_bulk', 'nonce');
+    check_ajax_referer('haptic_ai_bulk', 'nonce');
 
-    if (!current_user_can('manage_options') || !hpt_ai_user_can()) {
+    if (!current_user_can('manage_options') || !haptic_ai_user_can()) {
         wp_send_json_error(['status' => 'fatal', 'message' => 'Permissions insuffisantes.']);
     }
 
     $task = sanitize_key($_POST['task'] ?? '');
-    if (!isset(hpt_ai_bulk_tasks()[$task])) {
+    if (!isset(haptic_ai_bulk_tasks()[$task])) {
         wp_send_json_error(['status' => 'fatal', 'message' => 'Tâche inconnue.']);
     }
 
     // Éléments ignorés : gardés côté serveur, par utilisateur et par tâche. La liste envoyée par le navigateur
     // grossit à chaque élément ignoré et PHP la tronque (max_input_vars) : les éléments manquants seraient
     // retraités, et refacturés, en boucle. Le navigateur n'en envoie aucun en début de traitement : liste remise à zéro.
-    $skip_key = 'hpt_ai_bulk_skip_' . get_current_user_id() . '_' . $task;
+    $skip_key = 'haptic_ai_bulk_skip_' . get_current_user_id() . '_' . $task;
     $posted = array_filter(array_map('intval', (array) ($_POST['skip'] ?? [])));
     $skip = $posted ? array_values(array_unique(array_merge(array_map('intval', (array) get_transient($skip_key)), $posted))) : [];
-    $id = hpt_ai_bulk_next_id($task, $skip);
+    $id = haptic_ai_bulk_next_id($task, $skip);
 
     if (!$id) {
         wp_send_json_success(['status' => 'done', 'remaining' => 0]);
     }
 
-    $result = $task === 'alt' ? hpt_ai_generate_alt($id) : hpt_ai_generate_description($id);
+    $result = $task === 'alt' ? haptic_ai_generate_alt($id) : haptic_ai_generate_description($id);
     $item = [
         'id'    => $id,
         'title' => get_the_title($id) ?: '#' . $id,
@@ -154,8 +154,8 @@ function hpt_ai_bulk_next()
     if (is_wp_error($result)) {
         $status = (int) ($result->get_error_data()['status'] ?? -1);
         // Clé absente ou refusée, quota atteint, service injoignable ou surchargé : inutile de continuer
-        $fatal = $result->get_error_code() === 'hpt_ai_no_key'
-            || ($result->get_error_code() === 'hpt_ai_http' && in_array($status, [0, 401, 403, 404, 429, 503, 529], true));
+        $fatal = $result->get_error_code() === 'haptic_ai_no_key'
+            || ($result->get_error_code() === 'haptic_ai_http' && in_array($status, [0, 401, 403, 404, 429, 503, 529], true));
 
         if (!$fatal) {
             set_transient($skip_key, array_merge($skip, [$id]), WEEK_IN_SECONDS);
@@ -164,53 +164,53 @@ function hpt_ai_bulk_next()
         wp_send_json_success($item + [
             'status'    => $fatal ? 'fatal' : 'skipped',
             'message'   => $result->get_error_message(),
-            'remaining' => hpt_ai_bulk_count($task, array_merge($skip, [$id])),
+            'remaining' => haptic_ai_bulk_count($task, array_merge($skip, [$id])),
         ]);
     }
 
     if ($task === 'alt') {
         update_post_meta($id, '_wp_attachment_image_alt', sanitize_text_field($result));
     } else {
-        update_post_meta($id, '_hpt_og_desc', sanitize_textarea_field($result));
+        update_post_meta($id, '_haptic_og_desc', sanitize_textarea_field($result));
     }
 
     wp_send_json_success($item + [
         'status'    => 'ok',
         'text'      => $result,
-        'cost'      => hpt_ai_last_cost(),
-        'remaining' => hpt_ai_bulk_count($task, $skip),
+        'cost'      => haptic_ai_last_cost(),
+        'remaining' => haptic_ai_bulk_count($task, $skip),
     ]);
 }
-add_action('wp_ajax_hpt_ai_bulk_next', 'hpt_ai_bulk_next');
+add_action('wp_ajax_haptic_ai_bulk_next', 'haptic_ai_bulk_next');
 
 // Carte « Traitement en masse » de l'onglet Assistant IA
 add_action('admin_init', function () {
     add_settings_section(
-        'hpt_ai_bulk_section',
+        'haptic_ai_bulk_section',
         'Traitement en masse',
         function () {
             echo '<p>Complète en une fois ce qui manque sur le site. Les éléments déjà renseignés ne sont jamais modifiés.</p>';
         },
-        hpt_settings_page('ai')
+        haptic_settings_page('ai')
     );
-    add_settings_field('hpt_ai_bulk', '', 'hpt_ai_bulk_callback', hpt_settings_page('ai'), 'hpt_ai_bulk_section', ['layout' => 'stacked']);
+    add_settings_field('haptic_ai_bulk', '', 'haptic_ai_bulk_callback', haptic_settings_page('ai'), 'haptic_ai_bulk_section', ['layout' => 'stacked']);
 });
 
-function hpt_ai_bulk_callback()
+function haptic_ai_bulk_callback()
 {
-    $has_key = hpt_ai_api_key() !== '';
+    $has_key = haptic_ai_api_key() !== '';
 
     if (!$has_key) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', hpt_ai_provider_config()['label'])) . '</span></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(haptic_icon('alert', 18), haptic_kses_ui()) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', haptic_ai_provider_config()['label'])) . '</span></div>';
     }
 
-    echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('hpt_ai_bulk')) . '">';
+    echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('haptic_ai_bulk')) . '">';
 
-    foreach (hpt_ai_bulk_tasks() as $slug => $task) {
-        $ids = hpt_ai_bulk_ids($slug);
+    foreach (haptic_ai_bulk_tasks() as $slug => $task) {
+        $ids = haptic_ai_bulk_ids($slug);
         $count = count($ids);
-        $model = $slug === 'alt' ? hpt_ai_vision_model() : hpt_ai_request_model();
-        $estimate = $count ? hpt_ai_estimate_current($slug, $ids) : null;
+        $model = $slug === 'alt' ? haptic_ai_vision_model() : haptic_ai_request_model();
+        $estimate = $count ? haptic_ai_estimate_current($slug, $ids) : null;
         ?>
         <div class="optimizr-bulk__task" data-task="<?php echo esc_attr($slug); ?>" data-count="<?php echo esc_attr($count); ?>" data-unit="<?php echo esc_attr($task['unit']); ?>" data-empty="<?php echo esc_attr($task['empty']); ?>">
             <div class="optimizr-bulk__head">
@@ -222,17 +222,17 @@ function hpt_ai_bulk_callback()
                             <?php
                             echo esc_html(sprintf(
                                 'Coût estimé : %s pour l\'ensemble (≈ %s par élément) avec %s.',
-                                hpt_ai_format_cost($estimate['total']),
-                                hpt_ai_format_unit($estimate['unit']),
+                                haptic_ai_format_cost($estimate['total']),
+                                haptic_ai_format_unit($estimate['unit']),
                                 $model
                             ));
-                            echo wp_kses(hpt_ai_costs_toggle(), hpt_kses_ui());
+                            echo wp_kses(haptic_ai_costs_toggle(), haptic_kses_ui());
                             ?>
                         </span>
                     <?php endif; ?>
                 </div>
-                <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count || !hpt_ai_user_can()); ?>>
-                    <?php echo wp_kses(hpt_icon('sparkles', 16), hpt_kses_ui()); ?>Générer
+                <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count || !haptic_ai_user_can()); ?>>
+                    <?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?>Générer
                 </button>
                 <button type="button" class="optimizr-btn optimizr-btn--ghost" data-bulk-stop hidden>Arrêter</button>
             </div>
@@ -249,19 +249,19 @@ function hpt_ai_bulk_callback()
 
     // Détail des coûts, replié par défaut
     echo '<div class="optimizr-costs" id="optimizr-ai-costs" hidden>';
-    hpt_ai_costs_panel();
+    haptic_ai_costs_panel();
     echo '</div>';
 
     echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par le fournisseur d\'IA choisi. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
     // Tout est déjà traité : le détail des coûts reste accessible
-    if (!array_filter(array_map('hpt_ai_bulk_count', array_keys(hpt_ai_bulk_tasks())))) {
-        echo ' Détail des coûts ' . wp_kses(hpt_ai_costs_toggle(), hpt_kses_ui());
+    if (!array_filter(array_map('haptic_ai_bulk_count', array_keys(haptic_ai_bulk_tasks())))) {
+        echo ' Détail des coûts ' . wp_kses(haptic_ai_costs_toggle(), haptic_kses_ui());
     }
     echo '</p>';
 }
 
 /** Bouton (?) qui ouvre le détail des coûts (js/optimizr-admin.js). */
-function hpt_ai_costs_toggle()
+function haptic_ai_costs_toggle()
 {
     return '<button type="button" class="optimizr-help-toggle" aria-expanded="false" aria-controls="optimizr-ai-costs" aria-label="Détail des coûts et comparatif des modèles" data-costs-toggle>?</button>';
 }

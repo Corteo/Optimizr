@@ -14,13 +14,13 @@ require_once __DIR__ . '/functions/activation.php';
 require_once __DIR__ . '/functions/uninstall.php';
 
 if (is_multisite()) {
-    foreach (get_sites(['fields' => 'ids', 'number' => 0]) as $site_id) {
-        switch_to_blog($site_id);
-        hpt_uninstall_site();
+    foreach (get_sites(['fields' => 'ids', 'number' => 0]) as $haptic_site_id) {
+        switch_to_blog($haptic_site_id);
+        haptic_uninstall_site();
         restore_current_blog();
     }
 } else {
-    hpt_uninstall_site();
+    haptic_uninstall_site();
 }
 
 // Toujours : cache de l'outil de mise à jour (une seule option pour tout le réseau sur un multisite)

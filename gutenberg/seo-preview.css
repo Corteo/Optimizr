@@ -1,4 +1,4 @@
-.hpt-seo-preview-box {
+.haptic-seo-preview-box {
     background: #f8f9fa;
     border: 1px solid #dcdcdc;
     padding: 12px;
@@ -7,7 +7,7 @@
     font-family: Arial, sans-serif;
 }
 
-.hpt-seo-preview-box .seo-title {
+.haptic-seo-preview-box .seo-title {
     font-size: 18px;
     color: #1a0dab;
     font-weight: bold;
@@ -17,13 +17,13 @@
     text-overflow: ellipsis;
 }
 
-.hpt-seo-preview-box .seo-url {
+.haptic-seo-preview-box .seo-url {
     font-size: 14px;
     color: #006621;
     margin-bottom: 4px;
 }
 
-.hpt-seo-preview-box .seo-desc {
+.haptic-seo-preview-box .seo-desc {
     font-size: 14px;
     color: #4d5156;
     line-height: 1.4;
@@ -34,18 +34,18 @@
 
 }
 
-#hpt_og_desc{
+#haptic_og_desc{
     margin-bottom: -3px;
 }
 
-.hpt-seo-preview-box img {
+.haptic-seo-preview-box img {
     max-width: 100%;
     height: auto;
     margin-top: 8px;
 }
 
 /* Style des compteurs de caractères */
-.hpt-char-count {
+.haptic-char-count {
     display: inline-block;
     font-size: 12px;
     font-weight: bold;
@@ -53,7 +53,7 @@
 }
 
 /* Style des recommandations SEO */
-.hpt-seo-hint {
+.haptic-seo-hint {
     display: inline-block;
     font-size: 12px;
     color: #666;

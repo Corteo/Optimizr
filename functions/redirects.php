@@ -8,12 +8,12 @@ if (!defined('ABSPATH')) {
  * Module Redirections & liens : redirections, journal des pages introuvables (404),
  * redirection automatique des contenus dont l'adresse change.
  *
- * Données dans deux tables dédiées (créées par hpt_redirects_install()) :
+ * Données dans deux tables dédiées (créées par haptic_redirects_install()) :
  * - {prefix}optimizr_redirects : source, destination, type, visites ;
  * - {prefix}optimizr_404       : adresses introuvables, visites, provenance.
  */
 
-const HPT_REDIRECT_CODES = [
+const HAPTIC_REDIRECT_CODES = [
     301 => 'Permanente (301)',
     302 => 'Temporaire (302)',
     307 => 'Temporaire, méthode conservée (307)',
@@ -27,7 +27,7 @@ const HPT_REDIRECT_CODES = [
  * Accepte une URL complète du site, un chemin, ou un chemin avec « ?requête ».
  * Valeur déjà sans barres obliques inverses ajoutées par WordPress : wp_unslash() est à la charge de l'appelant ($_POST, $_SERVER…).
  */
-function hpt_redirects_normalize($url)
+function haptic_redirects_normalize($url)
 {
     $url = trim((string) $url);
     if ($url === '') {
@@ -57,13 +57,13 @@ function hpt_redirects_normalize($url)
 }
 
 /** Adresse demandée par le visiteur, normalisée. */
-function hpt_redirects_current_request()
+function haptic_redirects_current_request()
 {
-    return hpt_redirects_normalize(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '/')));
+    return haptic_redirects_normalize(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '/')));
 }
 
 /** URL complète de destination (chemin du site ou adresse externe). */
-function hpt_redirects_target_url($target)
+function haptic_redirects_target_url($target)
 {
     $target = trim((string) $target);
     if ($target === '' || preg_match('#^https?://#i', $target)) {
@@ -73,7 +73,7 @@ function hpt_redirects_target_url($target)
 }
 
 /** Destination sur ce site (chemin relatif, ou URL complète du même domaine). */
-function hpt_redirects_target_is_internal($target)
+function haptic_redirects_target_is_internal($target)
 {
     if (!preg_match('#^https?://#i', (string) $target)) {
         return true;
@@ -89,20 +89,20 @@ function hpt_redirects_target_is_internal($target)
  *
  * @return array[] id, source, target, code
  */
-function hpt_redirects_wildcards()
+function haptic_redirects_wildcards()
 {
-    $rules = get_transient('hpt_redirects_wildcards');
-    return is_array($rules) ? $rules : hpt_redirects_refresh_cache();
+    $rules = get_transient('haptic_redirects_wildcards');
+    return is_array($rules) ? $rules : haptic_redirects_refresh_cache();
 }
 
 /** Recalcule le cache des jokers : à appeler après chaque écriture dans la table des redirections. */
-function hpt_redirects_refresh_cache()
+function haptic_redirects_refresh_cache()
 {
     global $wpdb;
-    $rules = (array) $wpdb->get_results($wpdb->prepare('SELECT id, source, target, code FROM %i WHERE source LIKE %s ORDER BY CHAR_LENGTH(source) DESC', hpt_redirects_table(), '%*'), ARRAY_A);
+    $rules = (array) $wpdb->get_results($wpdb->prepare('SELECT id, source, target, code FROM %i WHERE source LIKE %s ORDER BY CHAR_LENGTH(source) DESC', haptic_redirects_table(), '%*'), ARRAY_A);
     // Table inaccessible : rien en cache, nouvel essai à la prochaine page
     if (!$wpdb->last_error) {
-        set_transient('hpt_redirects_wildcards', $rules);
+        set_transient('haptic_redirects_wildcards', $rules);
     }
     return $rules;
 }
@@ -112,10 +112,10 @@ function hpt_redirects_refresh_cache()
  *
  * @return object|null Règle, avec la destination déjà résolue pour un joker
  */
-function hpt_redirects_match($request)
+function haptic_redirects_match($request)
 {
     global $wpdb;
-    $table = hpt_redirects_table();
+    $table = haptic_redirects_table();
     $path = strtok($request, '?');
 
     $rule = $wpdb->get_row($wpdb->prepare(
@@ -129,7 +129,7 @@ function hpt_redirects_match($request)
     }
 
     // Jokers : la plus longue source qui correspond l'emporte
-    foreach (hpt_redirects_wildcards() as $rule) {
+    foreach (haptic_redirects_wildcards() as $rule) {
         $rule = (object) $rule;
         $prefix = rtrim(substr($rule->source, 0, -1), '/');
         if ($prefix === '' || stripos($path, $prefix . '/') === 0 || strcasecmp($path, $prefix) === 0) {
@@ -149,36 +149,36 @@ function hpt_redirects_match($request)
  *
  * @return int|WP_Error Identifiant de la règle
  */
-function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
+function haptic_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
 {
     global $wpdb;
-    $table = hpt_redirects_table();
+    $table = haptic_redirects_table();
 
-    $source = hpt_redirects_normalize($source);
-    $code = isset(HPT_REDIRECT_CODES[(int) $code]) ? (int) $code : 301;
+    $source = haptic_redirects_normalize($source);
+    $code = isset(HAPTIC_REDIRECT_CODES[(int) $code]) ? (int) $code : 301;
     $target = $code === 410 ? '' : trim(sanitize_text_field((string) $target));
 
     if ($source === '' || $source === '/') {
-        return new WP_Error('hpt_redirect_source', 'Indiquez l\'adresse à rediriger (la page d\'accueil ne peut pas l\'être).');
+        return new WP_Error('haptic_redirect_source', 'Indiquez l\'adresse à rediriger (la page d\'accueil ne peut pas l\'être).');
     }
     if ($code !== 410 && $target === '') {
-        return new WP_Error('hpt_redirect_target', 'Indiquez la destination de la redirection.');
+        return new WP_Error('haptic_redirect_target', 'Indiquez la destination de la redirection.');
     }
     if ($code !== 410 && !preg_match('#^https?://#i', $target)) {
-        $target = hpt_redirects_normalize($target);
+        $target = haptic_redirects_normalize($target);
     }
     if ($code !== 410 && strcasecmp($target, $source) === 0) {
-        return new WP_Error('hpt_redirect_loop', 'La destination est identique à la source : la redirection tournerait en boucle.');
+        return new WP_Error('haptic_redirect_loop', 'La destination est identique à la source : la redirection tournerait en boucle.');
     }
-    if ($code !== 410 && strpos($source, '*') === false && hpt_redirects_normalize(hpt_redirects_target_url($target)) === $source) {
-        return new WP_Error('hpt_redirect_loop', 'La destination renvoie vers la source : la redirection tournerait en boucle.');
+    if ($code !== 410 && strpos($source, '*') === false && haptic_redirects_normalize(haptic_redirects_target_url($target)) === $source) {
+        return new WP_Error('haptic_redirect_loop', 'La destination renvoie vers la source : la redirection tournerait en boucle.');
     }
     // Joker : une destination interne couverte par la source (« /blog/* » → « /blog/nouveau/* ») serait redirigée à son tour
-    if ($code !== 410 && substr($source, -1) === '*' && hpt_redirects_target_is_internal($target)) {
+    if ($code !== 410 && substr($source, -1) === '*' && haptic_redirects_target_is_internal($target)) {
         $prefix = rtrim(substr($source, 0, -1), '/');
-        $target_path = strtok(hpt_redirects_normalize(str_replace('*', '', hpt_redirects_target_url($target))), '?');
+        $target_path = strtok(haptic_redirects_normalize(str_replace('*', '', haptic_redirects_target_url($target))), '?');
         if ($prefix === '' || stripos($target_path . '/', $prefix . '/') === 0) {
-            return new WP_Error('hpt_redirect_loop', 'La destination fait partie des adresses redirigées par ce joker : la redirection tournerait en boucle.');
+            return new WP_Error('haptic_redirect_loop', 'La destination fait partie des adresses redirigées par ce joker : la redirection tournerait en boucle.');
         }
     }
 
@@ -190,7 +190,7 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
             // Même source : la règle existante est mise à jour
             $id = $existing;
         } else {
-            return new WP_Error('hpt_redirect_duplicate', 'Une autre redirection existe déjà pour cette adresse.');
+            return new WP_Error('haptic_redirect_duplicate', 'Une autre redirection existe déjà pour cette adresse.');
         }
     }
 
@@ -198,7 +198,7 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
         $wpdb->update($table, $data, ['id' => (int) $id]);
         // Jokers recalculés pour un joker, ou si la source a changé (l'ancienne a pu en être un) : rien par règle exacte réimportée
         if (strpos($source, '*') !== false || $existing !== (int) $id) {
-            hpt_redirects_refresh_cache();
+            haptic_redirects_refresh_cache();
         }
         return (int) $id;
     }
@@ -208,16 +208,16 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
     $id = (int) $wpdb->insert_id;
     // Nouvelle règle exacte : jokers inchangés (import CSV sans requête superflue)
     if (strpos($source, '*') !== false) {
-        hpt_redirects_refresh_cache();
+        haptic_redirects_refresh_cache();
     }
     return $id;
 }
 
-function hpt_redirects_delete($id)
+function haptic_redirects_delete($id)
 {
     global $wpdb;
-    $deleted = (bool) $wpdb->delete(hpt_redirects_table(), ['id' => (int) $id]);
-    hpt_redirects_refresh_cache();
+    $deleted = (bool) $wpdb->delete(haptic_redirects_table(), ['id' => (int) $id]);
+    haptic_redirects_refresh_cache();
     return $deleted;
 }
 
@@ -225,8 +225,8 @@ function hpt_redirects_delete($id)
 
 // Avant la redirection canonique de WordPress (priorité 10)
 add_action('template_redirect', function () {
-    $request = hpt_redirects_current_request();
-    $rule = hpt_redirects_match($request);
+    $request = haptic_redirects_current_request();
+    $rule = haptic_redirects_match($request);
     if (!$rule) {
         return;
     }
@@ -234,7 +234,7 @@ add_action('template_redirect', function () {
     global $wpdb;
     $wpdb->query($wpdb->prepare(
         'UPDATE %i SET hits = hits + 1, last_hit = %s WHERE id = %d',
-        hpt_redirects_table(),
+        haptic_redirects_table(),
         current_time('mysql'),
         $rule->id
     ));
@@ -246,11 +246,11 @@ add_action('template_redirect', function () {
         nocache_headers();
         // Page de 404 du thème servie telle quelle : ni redirection canonique, ni entrée au journal
         remove_action('template_redirect', 'redirect_canonical');
-        $GLOBALS['hpt_redirect_gone'] = true;
+        $GLOBALS['haptic_redirect_gone'] = true;
         return;
     }
 
-    $url = hpt_redirects_target_url($rule->target);
+    $url = haptic_redirects_target_url($rule->target);
 
     // Paramètres de la demande conservés si la destination n'en a pas (campagnes, suivi)
     $query = (string) wp_parse_url(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_QUERY);
@@ -265,12 +265,12 @@ add_action('template_redirect', function () {
 /* ---------- Journal des pages introuvables ---------- */
 
 add_action('template_redirect', function () {
-    if (!is_404() || !empty($GLOBALS['hpt_redirect_gone']) || !get_option('hpt_redir_log404', 1)) {
+    if (!is_404() || !empty($GLOBALS['haptic_redirect_gone']) || !get_option('haptic_redir_log404', 1)) {
         return;
     }
 
     // Chemin seul : la requête (« ?… ») peut contenir des données personnelles (adresse e-mail, jeton)
-    $path = strtok(hpt_redirects_current_request(), '?');
+    $path = strtok(haptic_redirects_current_request(), '?');
 
     // Bruit sans intérêt : icônes demandées automatiquement par les navigateurs, fichiers de débogage,
     // page d'accueil avec une requête (« /?author=… », « /?p=… ») : sans celle-ci, adresse impossible à rediriger
@@ -290,7 +290,7 @@ add_action('template_redirect', function () {
     $wpdb->query($wpdb->prepare(
         'INSERT INTO %i (path, referrer, hits, first_seen, last_seen) VALUES (%s, %s, 1, %s, %s)
          ON DUPLICATE KEY UPDATE hits = hits + 1, last_seen = VALUES(last_seen), referrer = IF(VALUES(referrer) = \'\', referrer, VALUES(referrer))',
-        hpt_404_table(),
+        haptic_404_table(),
         $path,
         $referrer,
         $now,
@@ -299,9 +299,9 @@ add_action('template_redirect', function () {
 
     // 2 000 adresses au plus : les plus anciennes sont oubliées
     if (wp_rand(1, 50) === 1) {
-        $count = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', hpt_404_table()));
+        $count = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', haptic_404_table()));
         if ($count > 2000) {
-            $wpdb->query($wpdb->prepare('DELETE FROM %i ORDER BY last_seen ASC LIMIT %d', hpt_404_table(), $count - 2000));
+            $wpdb->query($wpdb->prepare('DELETE FROM %i ORDER BY last_seen ASC LIMIT %d', haptic_404_table(), $count - 2000));
         }
     }
 }, 99);
@@ -313,7 +313,7 @@ add_action('template_redirect', function () {
  *
  * @return array identifiant => adresse
  */
-function hpt_redirects_descendant_links(WP_Post $post)
+function haptic_redirects_descendant_links(WP_Post $post)
 {
     $links = [];
     $seen = [$post->ID => true];
@@ -345,25 +345,25 @@ function hpt_redirects_descendant_links(WP_Post $post)
 }
 
 /** Redirige l'ancienne adresse d'un contenu vers la nouvelle (301), sans boucle ni chaîne. */
-function hpt_redirects_auto($old_link, $new_link, $post_id)
+function haptic_redirects_auto($old_link, $new_link, $post_id)
 {
-    $old = hpt_redirects_normalize($old_link);
-    $new = hpt_redirects_normalize($new_link);
+    $old = haptic_redirects_normalize($old_link);
+    $new = haptic_redirects_normalize($new_link);
     if ($old === $new || $old === '/' || strpos($old, '?') !== false) {
         return;
     }
 
     global $wpdb;
-    $table = hpt_redirects_table();
+    $table = haptic_redirects_table();
     // Une ancienne règle qui partait de la nouvelle adresse créerait une boucle
     $wpdb->delete($table, ['source' => $new]);
     // Les règles qui pointaient vers l'ancienne adresse vont directement à la nouvelle (pas de chaîne)
     $repointed = $wpdb->update($table, ['target' => $new], ['target' => $old]);
 
-    hpt_redirects_save($old, $new, 301, 'Automatique : adresse de « ' . get_the_title($post_id) . ' » modifiée');
+    haptic_redirects_save($old, $new, 301, 'Automatique : adresse de « ' . get_the_title($post_id) . ' » modifiée');
     // Un joker a pu changer de destination ci-dessus
     if ($repointed) {
-        hpt_redirects_refresh_cache();
+        haptic_redirects_refresh_cache();
     }
 }
 
@@ -372,30 +372,30 @@ add_action('pre_post_update', function ($post_id, $data = []) {
     if (get_post_status($post_id) !== 'publish') {
         return;
     }
-    $GLOBALS['hpt_redirects_old_links'][$post_id] = get_permalink($post_id);
+    $GLOBALS['haptic_redirects_old_links'][$post_id] = get_permalink($post_id);
 
     // … et celle des pages enfants, qui contient l'identifiant (slug) du parent : elle change avec lui
     $post = get_post($post_id);
     $moved = (isset($data['post_name']) && $data['post_name'] !== $post->post_name)
         || (isset($data['post_parent']) && (int) $data['post_parent'] !== (int) $post->post_parent);
-    $GLOBALS['hpt_redirects_old_children'][$post_id] = $moved && get_option('hpt_redir_auto', 1) && is_post_type_hierarchical($post->post_type)
-        ? hpt_redirects_descendant_links($post)
+    $GLOBALS['haptic_redirects_old_children'][$post_id] = $moved && get_option('haptic_redir_auto', 1) && is_post_type_hierarchical($post->post_type)
+        ? haptic_redirects_descendant_links($post)
         : [];
 }, 10, 2);
 
 // … comparée à l'adresse après l'enregistrement
 add_action('post_updated', function ($post_id, $after) {
-    if (!get_option('hpt_redir_auto', 1) || empty($GLOBALS['hpt_redirects_old_links'][$post_id])) {
+    if (!get_option('haptic_redir_auto', 1) || empty($GLOBALS['haptic_redirects_old_links'][$post_id])) {
         return;
     }
     if ($after->post_status !== 'publish' || wp_is_post_revision($post_id) || !is_post_type_viewable($after->post_type)) {
         return;
     }
 
-    hpt_redirects_auto($GLOBALS['hpt_redirects_old_links'][$post_id], get_permalink($post_id), $post_id);
+    haptic_redirects_auto($GLOBALS['haptic_redirects_old_links'][$post_id], get_permalink($post_id), $post_id);
 
     // Pages enfants : nouvelle adresse calculée avec celle du parent, déjà enregistrée
-    foreach ($GLOBALS['hpt_redirects_old_children'][$post_id] ?? [] as $child_id => $old_link) {
-        hpt_redirects_auto($old_link, get_permalink($child_id), $child_id);
+    foreach ($GLOBALS['haptic_redirects_old_children'][$post_id] ?? [] as $child_id => $old_link) {
+        haptic_redirects_auto($old_link, get_permalink($child_id), $child_id);
     }
 }, 10, 2);

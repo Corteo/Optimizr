@@ -143,7 +143,7 @@
     var keyLink = form.querySelector('[data-ob-key-link]');
 
     function syncProvider() {
-        var radio = form.querySelector('input[name="hpt_ai_provider"]:checked');
+        var radio = form.querySelector('input[name="haptic_ai_provider"]:checked');
         if (!radio || !keyInput) return;
         keyInput.placeholder = radio.dataset.hasKey === '1' ? keyInput.dataset.placeholderSaved : keyInput.dataset.placeholderEmpty;
         if (keyLink) {
@@ -152,7 +152,7 @@
         }
     }
 
-    form.querySelectorAll('input[name="hpt_ai_provider"]').forEach(function (radio) {
+    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
         radio.addEventListener('change', function () {
             keyInput.value = '';
             syncProvider();
@@ -161,7 +161,7 @@
     syncProvider();
 
     // Modèle proposé selon le fournisseur choisi
-    form.querySelectorAll('input[name="hpt_ai_provider"]').forEach(function (radio) {
+    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
         radio.addEventListener('change', function () {
             form.querySelectorAll('[data-ob-provider-row]').forEach(function (row) {
                 row.hidden = row.dataset.obProviderRow !== radio.value;
