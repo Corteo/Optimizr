@@ -55,7 +55,7 @@ function hpt_register_ai_settings()
     }
 
     add_settings_field('hpt_ai_alt_on_upload', 'ALT automatique à l\'import', function () {
-        echo hpt_switch_input('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'Générer la balise ALT à l\'import des images');
+        echo wp_kses(hpt_switch_input('hpt_ai_alt_on_upload', get_option('hpt_ai_alt_on_upload', 1), 'Générer la balise ALT à l\'import des images'), hpt_kses_ui());
     }, $page, 'hpt_ai_settings_section', [
         'description' => 'Génère la balise ALT de chaque image importée dans la médiathèque, en arrière-plan quelques secondes après l\'import (une requête facturée par image).',
     ]);
@@ -122,8 +122,11 @@ function hpt_ai_sanitize_api_key($value, $option)
         return $value;
     }
 
-    $delete = ($_POST['option_page'] ?? '') === hpt_settings_group('ai')
-        && in_array($option, (array) ($_POST['hpt_ai_key_delete'] ?? []), true);
+    // Rappel de sanitize_option() pendant l'enregistrement par options.php, qui a déjà vérifié le nonce du formulaire
+    // phpcs:disable WordPress.Security.NonceVerification.Missing
+    $delete = sanitize_text_field(wp_unslash($_POST['option_page'] ?? '')) === hpt_settings_group('ai')
+        && in_array($option, array_map('sanitize_key', (array) wp_unslash($_POST['hpt_ai_key_delete'] ?? [])), true);
+    // phpcs:enable WordPress.Security.NonceVerification.Missing
 
     return $delete ? '' : (string) get_option($option, '');
 }
@@ -176,7 +179,7 @@ function hpt_ai_costs_panel()
     printf(
         '<p class="optimizr-field__help">Tarifs relevés le %s sur les grilles officielles (%s), en dollars US hors taxes.</p>',
         esc_html(date_i18n('j F Y', strtotime(HPT_AI_PRICING_DATE))),
-        implode(', ', $links)
+        wp_kses_post(implode(', ', $links))
     );
 
     hpt_ai_costs_table();

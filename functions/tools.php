@@ -272,7 +272,7 @@ add_action('admin_post_hpt_import_settings', function () {
 function hpt_render_tools_tab()
 {
     $result = get_transient('hpt_import_result_' . get_current_user_id());
-    if ($result && ($_GET['hpt_message'] ?? '') === 'import') {
+    if ($result && sanitize_key(wp_unslash($_GET['hpt_message'] ?? '')) === 'import') {
         delete_transient('hpt_import_result_' . get_current_user_id());
     } else {
         $result = null;
@@ -287,9 +287,9 @@ function hpt_render_tools_tab()
 
     <?php if ($result) : ?>
         <?php if (!empty($result['error'])) : ?>
-            <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span><strong>Import impossible.</strong> <?php echo esc_html($result['error']); ?></span></div>
+            <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><span><strong>Import impossible.</strong> <?php echo esc_html($result['error']); ?></span></div>
         <?php else : ?>
-            <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span><strong><?php echo esc_html(sprintf('%d réglage(s) importé(s).', count($result['imported']))); ?></strong>
+            <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(hpt_icon('check', 18), hpt_kses_ui()); ?><span><strong><?php echo esc_html(sprintf('%d réglage(s) importé(s).', count($result['imported']))); ?></strong>
                 <?php if ($result['ignored']) : ?>
                     <?php echo esc_html(sprintf('%d ignoré(s) : %s.', count($result['ignored']), implode(', ', $result['ignored']))); ?>
                 <?php endif; ?>
@@ -297,8 +297,8 @@ function hpt_render_tools_tab()
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if (($_GET['hpt_message'] ?? '') === 'uninstall') : ?>
-        <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span><strong>Choix enregistrés.</strong> Ils seront appliqués si le plugin est supprimé.</span></div>
+    <?php if (sanitize_key(wp_unslash($_GET['hpt_message'] ?? '')) === 'uninstall') : ?>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(hpt_icon('check', 18), hpt_kses_ui()); ?><span><strong>Choix enregistrés.</strong> Ils seront appliqués si le plugin est supprimé.</span></div>
     <?php endif; ?>
 
     <div class="optimizr-tools">

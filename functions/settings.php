@@ -25,7 +25,7 @@ add_action('admin_init', function () {
         'hpt_debug_mode',
         'Mode debug',
         function () {
-            echo hpt_switch_input('hpt_debug_mode', get_option('hpt_debug_mode'), 'Mode debug');
+            echo wp_kses(hpt_switch_input('hpt_debug_mode', get_option('hpt_debug_mode'), 'Mode debug'), hpt_kses_ui());
         },
         hpt_settings_page('advanced'),
         'hpt_debug_section',
@@ -36,7 +36,7 @@ add_action('admin_init', function () {
         'hpt_dev_mode',
         'Mode développeur',
         function () {
-            echo hpt_switch_input('hpt_dev_mode', get_option('hpt_dev_mode'), 'Mode développeur');
+            echo wp_kses(hpt_switch_input('hpt_dev_mode', get_option('hpt_dev_mode'), 'Mode développeur'), hpt_kses_ui());
         },
         hpt_settings_page('advanced'),
         'hpt_debug_section',

@@ -58,7 +58,6 @@ if (!function_exists('vd')) {
         ob_start();
         var_dump($variable);
         $dumpContent = ob_get_clean();
-        $dumpContent = htmlspecialchars($dumpContent, ENT_QUOTES, 'UTF-8');
 
         // Générer un ID unique pour chaque debug box
         $uniqueId = 'hptDebugModal_' . uniqid();
@@ -84,7 +83,7 @@ function hpt_render_debug_popups()
         <?php foreach ($hpt_debug_entries as $debug) : ?>
             <details class="hpt-debug" id="<?php echo esc_attr($debug['id']); ?>">
                 <summary class="hpt-debug-btn"><?php echo esc_html($debug['label']); ?></summary>
-                <pre class="hpt-debug-content"><?php echo $debug['content']; ?></pre>
+                <pre class="hpt-debug-content"><?php echo esc_html($debug['content']); ?></pre>
             </details>
         <?php endforeach; ?>
     </div>
@@ -162,20 +161,12 @@ function haptic_GPT_display_php_errors_in_popup()
         return;
     }
 
-    // Convertir les erreurs en JSON pour les transmettre au script JS
-    $errors_json = wp_json_encode($hpt_collected_errors, JSON_HEX_TAG);
-    ?>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Récupérer les erreurs depuis la variable PHP
-    var errors = <?php echo $errors_json; ?>;
-    var message = errors.join("\n\n");
-
-    // Afficher une pop-up basique (alert)
-    alert("Erreurs PHP détectées :\n\n" + message);
-});
-    </script>
-<?php
+    // Pop-up basique (alert) listant les erreurs
+    wp_print_inline_script_tag(
+        "document.addEventListener('DOMContentLoaded', function () {\n"
+        . '    alert("Erreurs PHP détectées :\\n\\n" + ' . wp_json_encode($hpt_collected_errors, JSON_HEX_TAG) . ".join(\"\\n\\n\"));\n"
+        . '});'
+    );
 }
 
 /**
@@ -274,7 +265,7 @@ function _hpt_log_execute($message, $context = null)
     $background = wp_doing_cron() || (defined('WP_CLI') && WP_CLI);
     if (!$background && (!is_user_logged_in() || !current_user_can('manage_options'))) return;
 
-    $output = '[HPT LOG] ' . date('Y-m-d H:i:s') . ' - ' . $message;
+    $output = '[HPT LOG] ' . wp_date('Y-m-d H:i:s') . ' - ' . $message;
 
     if ($context !== null) {
         if (is_scalar($context)) {
@@ -333,7 +324,7 @@ function _hpt_console_execute($message, $context = null)
         $output .= ' | ' . ((is_array($context) || is_object($context)) ? wp_json_encode($context) : $context);
     }
 
-    echo "<script>console.log(" . wp_json_encode($output, JSON_HEX_TAG) . ");</script>";
+    wp_print_inline_script_tag('console.log(' . wp_json_encode($output, JSON_HEX_TAG) . ');');
 }
 
 // Dans le footer : un <script> émis pendant admin_init casserait les en-têtes HTTP

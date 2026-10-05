@@ -19,32 +19,32 @@ function hpt_redirects_notice($type, $message)
     set_transient('hpt_redirects_notice_' . get_current_user_id(), ['type' => $type, 'message' => $message], MINUTE_IN_SECONDS);
 }
 
-function hpt_redirects_check_request($action)
+function hpt_redirects_check_cap()
 {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé');
     }
-    check_admin_referer($action);
 }
 
 /* ---------- Actions ---------- */
 
 add_action('admin_post_hpt_redirect_save', function () {
-    hpt_redirects_check_request('hpt_redirect_save');
-    $result = hpt_redirects_save(wp_unslash($_POST['source'] ?? ''), wp_unslash($_POST['target'] ?? ''), (int) ($_POST['code'] ?? 301), wp_unslash($_POST['note'] ?? ''), (int) ($_POST['id'] ?? 0));
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_redirect_save');
+    $result = hpt_redirects_save(wp_strip_all_tags(wp_unslash($_POST['source'] ?? '')), wp_strip_all_tags(wp_unslash($_POST['target'] ?? '')), absint($_POST['code'] ?? 301), sanitize_text_field(wp_unslash($_POST['note'] ?? '')), absint($_POST['id'] ?? 0));
 
     if (is_wp_error($result)) {
         hpt_redirects_notice('warn', $result->get_error_message());
         wp_safe_redirect(hpt_redirects_tab_url([
-            'source' => rawurlencode(wp_unslash($_POST['source'] ?? '')),
-            'edit'   => (int) ($_POST['id'] ?? 0) ?: null,
+            'source' => rawurlencode(wp_strip_all_tags(wp_unslash($_POST['source'] ?? ''))),
+            'edit'   => absint($_POST['id'] ?? 0) ?: null,
         ]));
         exit;
     }
 
     // Une adresse qui redirige ne doit plus figurer parmi les pages introuvables
     global $wpdb;
-    $wpdb->delete(hpt_404_table(), ['path' => hpt_redirects_normalize(wp_unslash($_POST['source'] ?? ''))]);
+    $wpdb->delete(hpt_404_table(), ['path' => hpt_redirects_normalize(wp_strip_all_tags(wp_unslash($_POST['source'] ?? '')))]);
 
     hpt_redirects_notice('ok', 'Redirection enregistrée.');
     wp_safe_redirect(hpt_redirects_tab_url());
@@ -52,21 +52,23 @@ add_action('admin_post_hpt_redirect_save', function () {
 });
 
 add_action('admin_post_hpt_redirect_delete', function () {
-    hpt_redirects_check_request('hpt_redirect_delete');
-    hpt_redirects_delete((int) ($_GET['id'] ?? 0));
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_redirect_delete');
+    hpt_redirects_delete(absint($_GET['id'] ?? 0));
     hpt_redirects_notice('ok', 'Redirection supprimée.');
     wp_safe_redirect(hpt_redirects_tab_url());
     exit;
 });
 
 add_action('admin_post_hpt_404_delete', function () {
-    hpt_redirects_check_request('hpt_404_delete');
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_404_delete');
     global $wpdb;
     if (!empty($_GET['all'])) {
-        $wpdb->query('TRUNCATE TABLE ' . hpt_404_table());
+        $wpdb->query($wpdb->prepare('TRUNCATE TABLE %i', hpt_404_table()));
         hpt_redirects_notice('ok', 'Journal des pages introuvables vidé.');
     } else {
-        $wpdb->delete(hpt_404_table(), ['id' => (int) ($_GET['id'] ?? 0)]);
+        $wpdb->delete(hpt_404_table(), ['id' => absint($_GET['id'] ?? 0)]);
         hpt_redirects_notice('ok', 'Adresse retirée du journal.');
     }
     wp_safe_redirect(hpt_redirects_tab_url());
@@ -74,7 +76,8 @@ add_action('admin_post_hpt_404_delete', function () {
 });
 
 add_action('admin_post_hpt_redirects_settings', function () {
-    hpt_redirects_check_request('hpt_redirects_settings');
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_redirects_settings');
     update_option('hpt_redir_auto', empty($_POST['hpt_redir_auto']) ? 0 : 1);
     update_option('hpt_redir_log404', empty($_POST['hpt_redir_log404']) ? 0 : 1);
     hpt_redirects_notice('ok', 'Réglages enregistrés.');
@@ -93,26 +96,32 @@ function hpt_redirects_csv_cell($value)
 }
 
 add_action('admin_post_hpt_redirects_export', function () {
-    hpt_redirects_check_request('hpt_redirects_export');
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_redirects_export');
     global $wpdb;
-    $rows = $wpdb->get_results('SELECT source, target, code, note, hits FROM ' . hpt_redirects_table() . ' ORDER BY source', ARRAY_A);
+    $rows = $wpdb->get_results($wpdb->prepare('SELECT source, target, code, note, hits FROM %i ORDER BY source', hpt_redirects_table()), ARRAY_A);
 
     nocache_headers();
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="redirections-' . sanitize_file_name((string) wp_parse_url(home_url(), PHP_URL_HOST)) . '-' . current_time('Y-m-d') . '.csv"');
-    $out = fopen('php://output', 'w');
-    // Indicateur UTF-8 : accents corrects à l'ouverture dans Excel
-    fwrite($out, "\xEF\xBB\xBF");
-    fputcsv($out, ['source', 'destination', 'type', 'note', 'visites'], ';');
+    $csv = new SplTempFileObject();
+    $csv->fputcsv(['source', 'destination', 'type', 'note', 'visites'], ';', '"', '\\');
     foreach ($rows as $row) {
-        fputcsv($out, array_map('hpt_redirects_csv_cell', array_values($row)), ';');
+        $csv->fputcsv(array_map('hpt_redirects_csv_cell', array_values($row)), ';', '"', '\\');
     }
-    fclose($out);
+    $csv->rewind();
+    // Indicateur UTF-8 : accents corrects à l'ouverture dans Excel
+    $content = "\xEF\xBB\xBF";
+    while (!$csv->eof()) {
+        $content .= $csv->fgets();
+    }
+    echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fichier CSV téléchargé (pas de HTML), cellules neutralisées par hpt_redirects_csv_cell().
     exit;
 });
 
 add_action('admin_post_hpt_redirects_import', function () {
-    hpt_redirects_check_request('hpt_redirects_import');
+    hpt_redirects_check_cap();
+    check_admin_referer('hpt_redirects_import');
     $file = $_FILES['hpt_redirects_file'] ?? null;
 
     if (!$file || $file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name']) || $file['size'] > 2 * MB_IN_BYTES) {
@@ -121,15 +130,19 @@ add_action('admin_post_hpt_redirects_import', function () {
         exit;
     }
 
-    $handle = fopen($file['tmp_name'], 'r');
-    $first = (string) fgets($handle);
+    $csv = new SplFileObject($file['tmp_name'], 'r');
+    $first = (string) $csv->fgets();
     $delimiter = substr_count($first, ';') >= substr_count($first, ',') ? ';' : ',';
-    rewind($handle);
+    $csv->rewind();
 
     $added = 0;
     $errors = [];
     $line = 0;
-    while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+    while (!$csv->eof()) {
+        $row = $csv->fgetcsv($delimiter, '"', '\\');
+        if (!is_array($row)) {
+            break;
+        }
         $line++;
         $row = array_map(function ($cell) {
             $cell = trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $cell));
@@ -147,7 +160,7 @@ add_action('admin_post_hpt_redirects_import', function () {
             $added++;
         }
     }
-    fclose($handle);
+    $csv = null;
 
     $message = sprintf('%d redirection(s) importée(s).', $added);
     if ($errors) {
@@ -172,19 +185,25 @@ function hpt_render_redirects_tab()
     hpt_redirects_refresh_cache();
 
     // Modification d'une règle, ou création préremplie depuis le journal des 404 / les liens cassés
-    $edit = !empty($_GET['edit']) ? $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", (int) $_GET['edit'])) : null;
-    $prefill = $edit ? $edit->source : (isset($_GET['source']) ? hpt_redirects_normalize(rawurldecode(wp_unslash($_GET['source']))) : '');
+    $edit = !empty($_GET['edit']) ? $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE id = %d', $table, (int) $_GET['edit'])) : null;
+    $prefill = $edit ? $edit->source : (isset($_GET['source']) ? hpt_redirects_normalize(wp_strip_all_tags(rawurldecode(wp_unslash($_GET['source'])))) : '');
 
     // Liste paginée et recherche
     $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
-    $paged = max(1, (int) ($_GET['paged'] ?? 1));
+    $paged = max(1, absint($_GET['paged'] ?? 1));
     $per_page = 50;
-    $where = $search !== '' ? $wpdb->prepare('WHERE source LIKE %s OR target LIKE %s', '%' . $wpdb->esc_like($search) . '%', '%' . $wpdb->esc_like($search) . '%') : '';
-    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM $table $where");
-    $rules = $wpdb->get_results("SELECT * FROM $table $where ORDER BY created DESC LIMIT $per_page OFFSET " . (($paged - 1) * $per_page));
+    $offset = ($paged - 1) * $per_page;
+    if ($search !== '') {
+        $like = '%' . $wpdb->esc_like($search) . '%';
+        $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE source LIKE %s OR target LIKE %s', $table, $like, $like));
+        $rules = $wpdb->get_results($wpdb->prepare('SELECT * FROM %i WHERE source LIKE %s OR target LIKE %s ORDER BY created DESC LIMIT %d OFFSET %d', $table, $like, $like, $per_page, $offset));
+    } else {
+        $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', $table));
+        $rules = $wpdb->get_results($wpdb->prepare('SELECT * FROM %i ORDER BY created DESC LIMIT %d OFFSET %d', $table, $per_page, $offset));
+    }
 
-    $not_found = $wpdb->get_results('SELECT * FROM ' . hpt_404_table() . ' ORDER BY hits DESC, last_seen DESC LIMIT 50');
-    $not_found_total = (int) $wpdb->get_var('SELECT COUNT(*) FROM ' . hpt_404_table());
+    $not_found = $wpdb->get_results($wpdb->prepare('SELECT * FROM %i ORDER BY hits DESC, last_seen DESC LIMIT 50', hpt_404_table()));
+    $not_found_total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', hpt_404_table()));
     $report = get_option('hpt_links_report');
     ?>
     <div class="optimizr-page-head">
@@ -193,7 +212,7 @@ function hpt_render_redirects_tab()
     </div>
 
     <?php if ($notice) : ?>
-        <div class="optimizr-notice optimizr-notice--<?php echo esc_attr($notice['type']); ?>"><?php echo hpt_icon($notice['type'] === 'ok' ? 'check' : 'alert', 18); ?><span><?php echo esc_html($notice['message']); ?></span></div>
+        <div class="optimizr-notice optimizr-notice--<?php echo esc_attr($notice['type']); ?>"><?php echo wp_kses(hpt_icon($notice['type'] === 'ok' ? 'check' : 'alert', 18), hpt_kses_ui()); ?><span><?php echo esc_html($notice['message']); ?></span></div>
     <?php endif; ?>
 
     <div class="optimizr-layout optimizr-layout--aside">
@@ -277,7 +296,7 @@ function hpt_render_redirects_tab()
                     </div>
                     <?php if ($total > $per_page) : ?>
                         <div class="optimizr-pagination">
-                            <?php echo paginate_links(['base' => hpt_redirects_tab_url(['s' => $search ?: null]) . '%_%', 'format' => '&paged=%#%', 'current' => $paged, 'total' => (int) ceil($total / $per_page)]); ?>
+                            <?php echo wp_kses_post(paginate_links(['base' => hpt_redirects_tab_url(['s' => $search ?: null]) . '%_%', 'format' => '&paged=%#%', 'current' => $paged, 'total' => (int) ceil($total / $per_page)])); ?>
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -326,7 +345,7 @@ function hpt_render_redirects_tab()
                         <h2 class="optimizr-card__title">Liens cassés</h2>
                         <p class="optimizr-card__desc">Vérifie chaque lien et chaque image des contenus publiés. Gardez la page ouverte pendant l'analyse.</p>
                     </div>
-                    <button type="button" class="optimizr-btn optimizr-btn--secondary" data-links-start><?php echo hpt_icon('search', 16); ?>Analyser les liens</button>
+                    <button type="button" class="optimizr-btn optimizr-btn--secondary" data-links-start><?php echo wp_kses(hpt_icon('search', 16), hpt_kses_ui()); ?>Analyser les liens</button>
                 </div>
                 <div class="optimizr-card__body">
                     <div class="optimizr-bulk__progress" data-links-progress hidden>
@@ -363,11 +382,11 @@ function hpt_render_redirects_tab()
                 <div class="optimizr-card__header"><h2 class="optimizr-card__title">Réglages</h2></div>
                 <div class="optimizr-card__body">
                     <div class="optimizr-check-row">
-                        <?php echo hpt_switch_input('hpt_redir_auto', get_option('hpt_redir_auto', 1), 'Redirection automatique'); ?>
+                        <?php echo wp_kses(hpt_switch_input('hpt_redir_auto', get_option('hpt_redir_auto', 1), 'Redirection automatique'), hpt_kses_ui()); ?>
                         <span><strong>Redirection automatique</strong><br><span class="optimizr-muted">Quand l'adresse d'un contenu publié change, l'ancienne redirige vers la nouvelle (301).</span></span>
                     </div>
                     <div class="optimizr-check-row">
-                        <?php echo hpt_switch_input('hpt_redir_log404', get_option('hpt_redir_log404', 1), 'Journal des pages introuvables'); ?>
+                        <?php echo wp_kses(hpt_switch_input('hpt_redir_log404', get_option('hpt_redir_log404', 1), 'Journal des pages introuvables'), hpt_kses_ui()); ?>
                         <span><strong>Journal des pages introuvables</strong><br><span class="optimizr-muted">Sans adresse IP : seules l'adresse demandée et la page de provenance sont conservées.</span></span>
                     </div>
                     <div><button type="submit" class="optimizr-btn optimizr-btn--secondary">Enregistrer</button></div>

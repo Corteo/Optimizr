@@ -95,7 +95,7 @@ add_action('admin_init', 'hpt_options_register_seo_settings');
 // Callback pour l'option OpenGraph
 function hpt_enable_opengraph_callback()
 {
-    echo hpt_switch_input('hpt_enable_opengraph', get_option('hpt_enable_opengraph', 0), 'Générer les balises OpenGraph');
+    echo wp_kses(hpt_switch_input('hpt_enable_opengraph', get_option('hpt_enable_opengraph', 0), 'Générer les balises OpenGraph'), hpt_kses_ui());
 }
 
 /**
@@ -144,7 +144,7 @@ function hpt_custom_robots_txt_callback()
 
     // Fichier physique : le serveur l'envoie sans passer par WordPress, ce réglage est ignoré
     if ($file_exists) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>Un fichier robots.txt existe à la racine du site : il est servi à la place de ce réglage.</strong> ';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span><strong>Un fichier robots.txt existe à la racine du site : il est servi à la place de ce réglage.</strong> ';
         if (is_multisite()) {
             echo 'Il est commun à tous les sites du réseau.';
         } elseif (hpt_robots_txt_is_ours()) {
@@ -241,21 +241,21 @@ function hpt_generate_sitemap_button_callback()
     $details = '';
     if (!empty($history[0])) {
         $details = ' · ' . sprintf(_n('%d URL', '%d URL', $history[0]['count']), $history[0]['count'])
-            . ' · dernière génération : ' . esc_html(mysql2date('j F Y à H:i', $history[0]['time']));
+            . ' · dernière génération : ' . mysql2date('j F Y à H:i', $history[0]['time']);
     }
 
     if ($error) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>La dernière génération a échoué.</strong> ' . esc_html($error) . '</span></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span><strong>La dernière génération a échoué.</strong> ' . esc_html($error) . '</span></div>';
     } elseif (!$file_exists) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>Le fichier sitemap.xml est absent.</strong> Régénérez-le ci-dessous.</span></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span><strong>Le fichier sitemap.xml est absent.</strong> Régénérez-le ci-dessous.</span></div>';
     } elseif (!$http_ok) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span><strong>sitemap.xml existe mais ne répond pas en HTTP</strong>' . $details . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span><strong>sitemap.xml existe mais ne répond pas en HTTP</strong>' . esc_html($details) . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     } else {
-        echo '<div class="optimizr-notice optimizr-notice--ok">' . hpt_icon('check', 18) . '<span><strong>sitemap.xml est accessible</strong>' . $details . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
+        echo '<div class="optimizr-notice optimizr-notice--ok">' . wp_kses(hpt_icon('check', 18), hpt_kses_ui()) . '<span><strong>sitemap.xml est accessible</strong>' . esc_html($details) . '</span><a href="' . esc_url($file_url) . '" target="_blank" rel="noopener">Ouvrir</a></div>';
     }
 
     echo '<div class="optimizr-inline">';
-    echo '<a href="' . esc_url($url) . '" class="optimizr-btn optimizr-btn--secondary">' . hpt_icon('refresh', 16) . 'Régénérer maintenant</a>';
+    echo '<a href="' . esc_url($url) . '" class="optimizr-btn optimizr-btn--secondary">' . wp_kses(hpt_icon('refresh', 16), hpt_kses_ui()) . 'Régénérer maintenant</a>';
     echo '</div>';
 
     if ($history) {
@@ -294,7 +294,7 @@ add_action('admin_post_hpt_generate_sitemap_now', function () {
     check_admin_referer('hpt_generate_sitemap_now');
     $ok = haptic_GPT_write_sitemap_to_file('manuel');
     flush_rewrite_rules();
-    wp_redirect(add_query_arg('hpt_message', $ok ? 'sitemap_regenerated' : 'sitemap_failed', hpt_admin_tab_url('seo')));
+    wp_safe_redirect(add_query_arg('hpt_message', $ok ? 'sitemap_regenerated' : 'sitemap_failed', hpt_admin_tab_url('seo')));
     exit;
 });
 
@@ -426,7 +426,7 @@ add_action('hpt_admin_aside_seo', function () {
                         <?php if ($image) : ?>
                             <img src="<?php echo esc_url($image); ?>" alt="">
                         <?php else : ?>
-                            <?php echo hpt_icon('image', 18); ?><span>Pas d'image à la une</span>
+                            <?php echo wp_kses(hpt_icon('image', 18), hpt_kses_ui()); ?><span>Pas d'image à la une</span>
                         <?php endif; ?>
                     </div>
                     <div class="optimizr-share__text">
@@ -478,7 +478,7 @@ add_action('admin_post_hpt_generate_robots_txt', function () {
     }
 
     hpt_seo_http_check_reset('robots');
-    wp_redirect(add_query_arg('hpt_message', $message, hpt_admin_tab_url('seo')));
+    wp_safe_redirect(add_query_arg('hpt_message', $message, hpt_admin_tab_url('seo')));
     exit;
 });
 
@@ -489,12 +489,15 @@ add_action('admin_post_hpt_delete_robots_txt', function () {
     check_admin_referer('hpt_delete_robots_txt');
 
     $file = ABSPATH . 'robots.txt';
-    $ok = !file_exists($file) || @unlink($file);
+    if (file_exists($file)) {
+        wp_delete_file($file);
+    }
+    $ok = !file_exists($file);
     if ($ok) {
         delete_option('hpt_robots_txt_hash');
     }
 
     hpt_seo_http_check_reset('robots');
-    wp_redirect(add_query_arg('hpt_message', $ok ? 'robots_deleted' : 'robots_delete_failed', hpt_admin_tab_url('seo')));
+    wp_safe_redirect(add_query_arg('hpt_message', $ok ? 'robots_deleted' : 'robots_delete_failed', hpt_admin_tab_url('seo')));
     exit;
 });

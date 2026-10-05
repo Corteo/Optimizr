@@ -6,6 +6,19 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [2.5.1] - 2026-10-05
+
+### Sécurité
+- Toutes les sorties HTML sont échappées au moment de l'affichage (icônes et interrupteurs filtrés par `wp_kses()` avec la liste `hpt_kses_ui()`, contenu de la page de maintenance par `wp_kses_post()`…), comme l'exige la vérification Plugin Check de WordPress.org.
+- Requêtes SQL préparées avec `$wpdb->prepare()`, noms de table compris (`%i`), y compris le traitement en masse de l'IA et la liste paginée des redirections.
+- Données reçues (formulaires, adresse demandée, adresses IP des en-têtes) nettoyées et débarrassées des barres obliques ajoutées par WordPress avant usage. Les actions de l'onglet Redirections vérifient leur nonce directement.
+
+### Modifié
+- Bandeau cookies : la configuration de Tarteaucitron et les services sont ajoutés par `wp_add_inline_script()` juste après la librairie, et les couleurs par `wp_add_inline_style()`, au lieu de balises imprimées à la main dans le footer. Le comportement du bandeau ne change pas.
+- Autres scripts en ligne (metabox SEO, types de contenu, assistant, outils de debug) imprimés avec `wp_print_inline_script_tag()` ; style du rappel de maintenance de la barre d'administration ajouté par `wp_add_inline_style()`.
+- Fichiers (sitemap, robots.txt, clé IndexNow, journal) supprimés et déplacés par l'API Filesystem de WordPress (`wp_delete_file()`, `hpt_filesystem()`) ; export et import CSV des redirections sans accès fichier direct.
+- WordPress 6.2 minimum (marqueur `%i` de `$wpdb->prepare()`).
+
 ## [2.5.0] - 2026-10-05
 
 ### Ajouté

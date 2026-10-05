@@ -36,13 +36,13 @@ function hpt_do_settings_sections($page)
             echo '<h2 class="optimizr-card__title">' . esc_html($section['title']) . '</h2>';
         }
         if ($description !== '') {
-            echo '<div class="optimizr-card__desc">' . $description . '</div>';
+            echo '<div class="optimizr-card__desc">' . wp_kses_post($description) . '</div>';
         }
         echo '</div>';
 
         if (!empty($section['toggle'])) {
             $label = !empty($section['toggle_label']) ? $section['toggle_label'] : $section['title'];
-            echo hpt_switch_input($section['toggle'], get_option($section['toggle']), $label);
+            echo wp_kses(hpt_switch_input($section['toggle'], get_option($section['toggle']), $label), hpt_kses_ui());
         }
         echo '</div>';
 

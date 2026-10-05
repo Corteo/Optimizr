@@ -52,7 +52,7 @@ add_action('hpt_header_actions', function () {
     ?>
     <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
     <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
-        <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
+        <?php echo wp_kses(hpt_icon('refresh', 16), hpt_kses_ui()); ?>Vérifier les mises à jour
     </button>
     <?php
 });

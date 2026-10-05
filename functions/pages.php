@@ -32,7 +32,7 @@ add_action('admin_init', function () {
         hpt_pages_edit_link((int) get_option('hpt_404_page'));
     }, $page, 'hpt_404_section', ['label_for' => 'hpt_404_page']);
     add_settings_field('hpt_404_suggestions', 'Suggestions', function () {
-        echo hpt_switch_input('hpt_404_suggestions', get_option('hpt_404_suggestions', 1), 'Suggestions');
+        echo wp_kses(hpt_switch_input('hpt_404_suggestions', get_option('hpt_404_suggestions', 1), 'Suggestions'), hpt_kses_ui());
     }, $page, 'hpt_404_section', [
         'description' => 'Propose les contenus proches de l\'adresse demandée et un champ de recherche, sous le texte de la page. Pour les placer ailleurs : shortcode [optimizr_suggestions].',
     ]);
@@ -41,7 +41,7 @@ add_action('admin_init', function () {
         echo '<p>Pendant une refonte ou avant le lancement : les visiteurs voient une page d\'attente, les personnes connectées qui peuvent modifier le contenu voient le site normalement.</p>';
     }, $page);
     add_settings_field('hpt_maintenance', 'Activer', function () {
-        echo hpt_switch_input('hpt_maintenance', get_option('hpt_maintenance'), 'Mode maintenance');
+        echo wp_kses(hpt_switch_input('hpt_maintenance', get_option('hpt_maintenance'), 'Mode maintenance'), hpt_kses_ui());
         if (hpt_maintenance_active()) {
             echo '<p class="optimizr-field__help"><strong>Le site est actuellement fermé aux visiteurs.</strong></p>';
         }
@@ -71,10 +71,10 @@ function hpt_maintenance_sanitize_until($value)
 function hpt_pages_dropdown($option, $none)
 {
     wp_dropdown_pages([
-        'name'              => $option,
-        'id'                => $option,
+        'name'              => esc_attr($option),
+        'id'                => esc_attr($option),
         'selected'          => (int) get_option($option),
-        'show_option_none'  => $none,
+        'show_option_none'  => esc_html($none),
         'option_none_value' => 0,
         'post_status'       => ['publish', 'private', 'draft'],
     ]);
@@ -176,7 +176,7 @@ add_shortcode('optimizr_suggestions', function () {
  */
 function hpt_404_suggestions($limit = 5)
 {
-    $path = (string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    $path = (string) wp_parse_url(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_PATH);
     // Chemin relatif au site (installation dans un sous-dossier)
     $home = rtrim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
     if ($home !== '' && stripos($path, $home) === 0) {
@@ -334,9 +334,9 @@ function hpt_maintenance_render($until)
 </head>
 <body>
 <main>
-    <div class="brand"><?php echo $logo ?: esc_html($name); ?></div>
+    <div class="brand"><?php echo $logo ? wp_kses_post($logo) : esc_html($name); ?></div>
     <h1><?php echo esc_html($title); ?></h1>
-    <div class="content"><?php echo $content; ?></div>
+    <div class="content"><?php echo wp_kses_post($content); ?></div>
     <?php if ($until) : ?>
         <p class="until"><?php echo esc_html(sprintf('Réouverture prévue le %s.', wp_date('j F Y à H\hi', $until))); ?></p>
     <?php endif; ?>
@@ -361,11 +361,11 @@ add_action('admin_bar_menu', function ($bar) {
 
 $hpt_maintenance_flag_css = function () {
     if (hpt_maintenance_active() && is_admin_bar_showing()) {
-        echo '<style>#wpadminbar .hpt-maintenance-flag > .ab-item { background: #b32d2e; color: #fff; }</style>';
+        wp_add_inline_style('admin-bar', '#wpadminbar .hpt-maintenance-flag > .ab-item { background: #b32d2e; color: #fff; }');
     }
 };
-add_action('wp_head', $hpt_maintenance_flag_css);
-add_action('admin_head', $hpt_maintenance_flag_css);
+add_action('wp_enqueue_scripts', $hpt_maintenance_flag_css);
+add_action('admin_enqueue_scripts', $hpt_maintenance_flag_css);
 
 // Panneau latéral : rappel de l'état et des shortcodes
 add_action('hpt_admin_aside_pages', function () {

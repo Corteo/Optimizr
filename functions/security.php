@@ -30,7 +30,7 @@ function hpt_sec_option($name, $default = 0)
  */
 function hpt_sec_client_ip()
 {
-    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
     if (!filter_var($ip, FILTER_VALIDATE_IP)) {
         return '0.0.0.0';
     }
@@ -41,7 +41,7 @@ function hpt_sec_client_ip()
 
     // Cloudflare remplace toujours cet en-tête : fiable seulement si la requête vient directement de ses serveurs
     if (hpt_sec_option('proxy_cloudflare') && hpt_sec_ip_in_ranges($ip, hpt_sec_cloudflare_ranges())) {
-        $cf = trim((string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+        $cf = trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP'] ?? '')));
         if (filter_var($cf, FILTER_VALIDATE_IP)) {
             return $cf;
         }
@@ -49,7 +49,7 @@ function hpt_sec_client_ip()
 
     // « visiteur, proxy 1, proxy 2 » : chaque proxy ajoute à droite l'adresse qui l'a contacté, le début de la liste est falsifiable.
     // On remonte depuis la droite jusqu'à la première adresse qui n'est pas un proxy de confiance.
-    $forwarded = array_map('trim', explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')));
+    $forwarded = array_map('trim', explode(',', sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''))));
     foreach (array_reverse($forwarded) as $candidate) {
         if (!filter_var($candidate, FILTER_VALIDATE_IP)) {
             break;
@@ -188,7 +188,7 @@ function hpt_sec_login_url($scheme = null, $slug = null)
 /** Chemin demandé, relatif à l'installation (« » pour l'accueil). */
 function hpt_sec_request_path()
 {
-    $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $path = trim((string) wp_parse_url(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_PATH), '/');
     $home = trim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
     if ($home !== '' && strpos($path, $home) === 0) {
         $path = ltrim(substr($path, strlen($home)), '/');

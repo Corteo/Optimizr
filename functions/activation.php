@@ -4,6 +4,21 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * Accès direct aux fichiers par l'API Filesystem de WordPress (sitemap, robots.txt, clé IndexNow, journal).
+ * Défini ici car ce fichier est chargé partout, uninstall.php compris.
+ */
+function hpt_filesystem()
+{
+    static $fs = null;
+    if ($fs === null) {
+        require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+        require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+        $fs = new WP_Filesystem_Direct(null);
+    }
+    return $fs;
+}
+
 function hpt_options_activate()
 {
     hpt_redirects_install();
@@ -25,12 +40,12 @@ function hpt_options_deactivate()
     // Fichier de clé IndexNow à la racine du site
     $key = get_option('hpt_indexnow_key');
     if ($key && is_file(ABSPATH . $key . '.txt')) {
-        @unlink(ABSPATH . $key . '.txt');
+        wp_delete_file(ABSPATH . $key . '.txt');
     }
 
     // Règle « pas de PHP dans les médias » du module Sécurité
     $htaccess = trailingslashit(wp_upload_dir()['basedir']) . '.htaccess';
-    if (is_writable($htaccess)) {
+    if (wp_is_writable($htaccess)) {
         require_once ABSPATH . 'wp-admin/includes/misc.php';
         insert_with_markers($htaccess, 'Optimizr', []);
     }
@@ -119,7 +134,7 @@ function hpt_sitemap_delete_physical_files()
     $paths = array_merge([ABSPATH . 'sitemap.xml'], (array) glob(ABSPATH . 'sitemap-*.xml'));
     foreach ($paths as $path) {
         if (hpt_sitemap_is_ours($path)) {
-            @unlink($path);
+            wp_delete_file($path);
         }
     }
 }
@@ -170,8 +185,11 @@ function hpt_robots_txt_is_ours()
 function hpt_robots_txt_delete_file()
 {
     // Suppression impossible : l'empreinte est gardée pour un nouvel essai à la suppression du plugin
-    if (hpt_robots_txt_is_ours() && !@unlink(ABSPATH . 'robots.txt')) {
-        return;
+    if (hpt_robots_txt_is_ours()) {
+        wp_delete_file(ABSPATH . 'robots.txt');
+        if (file_exists(ABSPATH . 'robots.txt')) {
+            return;
+        }
     }
 
     delete_option('hpt_robots_txt_hash');
@@ -201,14 +219,14 @@ function hpt_options_maybe_upgrade()
 
     if (version_compare($installed, '2.0.0-beta.4', '<')) {
         // Ancien journal public du sitemap, remplacé par un historique en base
-        @unlink(HPT_OPTIMIZR_PATH . 'functions/seo/sitemap.log');
+        wp_delete_file(HPT_OPTIMIZR_PATH . 'functions/seo/sitemap.log');
 
         // Ancien plan du site HTML statique, remplacé par le shortcode [optimizr_plan_du_site]
         $html = ABSPATH . 'sitemap.html';
         if (is_file($html)) {
             $content = (string) file_get_contents($html, false, null, 0, 2000);
-            if (strpos($content, '<title>Plan du site</title>') !== false && strpos($content, 'cdn.jsdelivr.net/npm/bootstrap') !== false) {
-                @unlink($html);
+            if (strpos($content, '<title>Plan du site</title>') !== false && strpos($content, 'bootstrap.min.css') !== false) {
+                wp_delete_file($html);
             }
         }
 
@@ -225,12 +243,12 @@ function hpt_options_maybe_upgrade()
     if (version_compare($installed, '2.4.1', '<')) {
         // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
         global $wpdb;
-        $wpdb->query('DELETE FROM ' . hpt_404_table() . " WHERE path LIKE '%?%'");
+        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', hpt_404_table(), '%?%'));
 
         // Ancien journal de debug public (logs/ du plugin), désormais dans uploads/optimizr-logs (cf. hpt_log_dir()) :
         // une mise à jour manuelle (FTP, git) le laisse en place
-        @unlink(HPT_OPTIMIZR_PATH . 'logs/debug.log');
-        @rmdir(HPT_OPTIMIZR_PATH . 'logs');
+        wp_delete_file(HPT_OPTIMIZR_PATH . 'logs/debug.log');
+        hpt_filesystem()->rmdir(HPT_OPTIMIZR_PATH . 'logs');
     }
 
     if (version_compare($installed, '2.4.1', '<') && is_multisite()) {

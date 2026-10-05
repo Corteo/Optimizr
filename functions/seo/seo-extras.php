@@ -56,7 +56,7 @@ add_action('admin_init', function () {
 function hpt_seo_toggle($name, $label, $description, $section)
 {
     add_settings_field('hpt_seo_' . $name, $label, function () use ($name, $label) {
-        echo hpt_switch_input('hpt_seo_' . $name, get_option('hpt_seo_' . $name), $label);
+        echo wp_kses(hpt_switch_input('hpt_seo_' . $name, get_option('hpt_seo_' . $name), $label), hpt_kses_ui());
     }, hpt_settings_page('seo'), $section, ['description' => $description]);
 }
 
@@ -77,7 +77,7 @@ function hpt_seo_verification_callback($args)
 
 function hpt_seo_indexnow_callback()
 {
-    echo hpt_switch_input('hpt_seo_indexnow', get_option('hpt_seo_indexnow'), 'IndexNow');
+    echo wp_kses(hpt_switch_input('hpt_seo_indexnow', get_option('hpt_seo_indexnow'), 'IndexNow'), hpt_kses_ui());
     $key = get_option('hpt_indexnow_key');
     if (get_option('hpt_seo_indexnow') && $key) {
         $last = get_option('hpt_indexnow_last');
@@ -95,7 +95,7 @@ function hpt_seo_indexnow_callback()
 
 function hpt_seo_schema_callback()
 {
-    echo hpt_switch_input('hpt_seo_schema', get_option('hpt_seo_schema'), 'Données structurées');
+    echo wp_kses(hpt_switch_input('hpt_seo_schema', get_option('hpt_seo_schema'), 'Données structurées'), hpt_kses_ui());
     if (get_option('hpt_seo_schema')) {
         printf('<p class="optimizr-field__help"><a href="%s" target="_blank" rel="noopener">Tester la page d\'accueil avec Google</a></p>', esc_url('https://search.google.com/test/rich-results?url=' . rawurlencode(home_url('/'))));
     }
@@ -185,7 +185,7 @@ function hpt_indexnow_setup($enabled)
     if ($enabled) {
         @file_put_contents($file, $key);
     } elseif (is_file($file) && trim((string) file_get_contents($file)) === $key) {
-        @unlink($file);
+        wp_delete_file($file);
     }
 }
 add_action('update_option_hpt_seo_indexnow', function ($old, $new) {

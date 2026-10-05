@@ -176,7 +176,7 @@ function hpt_options_tarteaucitron_colors_callback()
 function hpt_options_services_callback()
 {
     echo '<div class="optimizr-services" data-optimizr-services>';
-    echo '<div class="optimizr-services__search">' . hpt_icon('search', 16) . '<input type="search" placeholder="Rechercher un service" aria-label="Rechercher un service" data-optimizr-services-search></div>';
+    echo '<div class="optimizr-services__search">' . wp_kses(hpt_icon('search', 16), hpt_kses_ui()) . '<input type="search" placeholder="Rechercher un service" aria-label="Rechercher un service" data-optimizr-services-search></div>';
 
     foreach (hpt_cookie_services() as $category) {
         echo '<div class="optimizr-services__group" data-optimizr-services-group>';
@@ -196,8 +196,7 @@ function hpt_options_services_callback()
             }
             echo '</div>';
 
-            $multi = count($service['fields']) > 1 ? ' optimizr-service__inputs--multi' : '';
-            echo '<div class="optimizr-service__inputs' . $multi . '">';
+            echo '<div class="optimizr-service__inputs' . (count($service['fields']) > 1 ? ' optimizr-service__inputs--multi' : '') . '">';
             foreach ($service['fields'] as $field_key => $placeholder) {
                 printf(
                     '<input type="text" name="hpt_option_service_%1$s[%2$s]" value="%3$s" placeholder="%4$s" aria-label="%5$s" spellcheck="false">',
@@ -257,246 +256,204 @@ add_action('hpt_admin_aside_cookies', function () {
         </div>
     </section>
     <div class="optimizr-callout">
-        <?php echo hpt_icon('info', 18); ?>
+        <?php echo wp_kses(hpt_icon('info', 18), hpt_kses_ui()); ?>
         <span>Google Consent Mode v2 et Bing Consent Mode sont transmis automatiquement à GA4, Google Ads et Clarity.</span>
     </div>
     <?php
 });
 
+// Tarteaucitron, sa configuration et les services déclarés, dans le footer du site
 add_action('before_hpt_options_enqueue_scripts', function () {
-    if (get_option('hpt_option_enable_tarteaucitron')) {
-        wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
-    }
-});
-
-// Initialisation de Tarteaucitron et déclaration des services, dans le footer du site
-function hpt_options_enqueue_tracking_scripts()
-{
-    // Sans la librairie (chargée seulement si l'option est active), tarteaucitron.init() plante
     if (!get_option('hpt_option_enable_tarteaucitron')) {
         return;
     }
 
-    // Initialize tarteaucitron
-    echo "<script type=\"text/javascript\">
-        tarteaucitron.init({
-            \"privacyUrl\": " . wp_json_encode(esc_url_raw(get_privacy_policy_url())) . ", /* Page choisie dans Réglages > Confidentialité */
-            \"bodyPosition\": \"bottom\", /* or top to bring it as first element for accessibility */
-            \"hashtag\": \"#tarteaucitron\", /* Open the panel with this hashtag */
-            \"cookieName\": \"tarteaucitron\", /* Cookie name */
-            \"orientation\": \"" . esc_js(get_option('hpt_option_tarteaucitron_banner_style', 'middle')) . "\", /* Banner position (top - bottom - middle) */
-            \"groupServices\": false, /* Group services by category */
-            \"serviceDefaultState\": \"wait\", /* Default state (true - wait - false) */
-            \"showAlertSmall\": false, /* Show the small banner on bottom right */
-            \"cookieslist\": false, /* Show the cookie list */
-            \"closePopup\": true, /* Show a close X on the banner */
-            \"showIcon\": true, /* Show cookie icon to manage cookies */
-            \"iconPosition\": \"BottomRight\", /* BottomRight, BottomLeft, TopRight and TopLeft */
-            \"adblocker\": false, /* Show a Warning if an adblocker is detected */
-            \"DenyAllCta\": true, /* Show the deny all button */
-            \"AcceptAllCta\": true, /* Show the accept all button when highPrivacy on */
-            \"highPrivacy\": true, /* HIGHLY RECOMMENDED Disable auto consent */
-            \"handleBrowserDNTRequest\": true, /* If Do Not Track == 1, disallow all */
-            \"removeCredit\": true, /* Remove credit link */
-            \"moreInfoLink\": true, /* Show more info link */
-            \"useExternalCss\": false, /* If false, the tarteaucitron.css file will be loaded */
-            \"useExternalJs\": false, /* If false, the tarteaucitron.js file will be loaded */
-            \"mandatory\": true, /* Show a message about mandatory cookies */
-            \"mandatoryCta\": true, /* Show the disabled accept button when mandatory on */
+    wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
+    // Imprimé juste après la librairie : tarteaucitron.init() en a besoin
+    wp_add_inline_script('tarteaucitron', hpt_tarteaucitron_inline_script());
 
-          //\"cookieDomain\": \".my-multisite-domaine.fr\", /* Optionnel: domaine principal pour partager le consentement avec des sous domaines */
-     
-           //\"customCloserId\": \"\", /* Optionnel a11y: ID personnalisé pour ouvrir le panel */
-          
-          \"googleConsentMode\": true, /* Activer le Google Consent Mode v2 pour Google ads & GA4 */
-          \"bingConsentMode\": true, /* Activer le Bing Consent Mode pour Clarity & Bing Ads */
-          \"softConsentMode\": false, /* Soft consent mode (le consentement est requis pour charger les tags) */
+    // Couleurs de la bannière et des boutons
+    wp_register_style('optimizr-tarteaucitron', false, [], HPT_OPTIMIZR_VERSION);
+    wp_enqueue_style('optimizr-tarteaucitron');
+    wp_add_inline_style('optimizr-tarteaucitron', hpt_tarteaucitron_inline_style());
+});
 
-          \"dataLayer\": false, /* Envoyer un événement dans dataLayer avec le statut des services */
-          \"serverSide\": false, /* Server side seulement, les tags ne sont pas chargé côté client */
-          
-          \"partnersList\": false /* Afficher le détail du nombre de partenaires sur la bandeau */
-          });
-    </script>";
+/** Configuration de Tarteaucitron, services déclarés et bouton de réouverture du panneau. */
+function hpt_tarteaucitron_inline_script()
+{
+    $config = [
+        'privacyUrl'              => esc_url_raw(get_privacy_policy_url()), // Page choisie dans Réglages > Confidentialité
+        'bodyPosition'            => 'bottom',
+        'hashtag'                 => '#tarteaucitron',
+        'cookieName'              => 'tarteaucitron',
+        'orientation'             => (string) get_option('hpt_option_tarteaucitron_banner_style', 'middle'), // top, middle, bottom
+        'groupServices'           => false,
+        'serviceDefaultState'     => 'wait',
+        'showAlertSmall'          => false,
+        'cookieslist'             => false,
+        'closePopup'              => true,
+        'showIcon'                => true, // Masquée par le CSS : remplacée par le bouton #hpt-cookie-button
+        'iconPosition'            => 'BottomRight',
+        'adblocker'               => false,
+        'DenyAllCta'              => true,
+        'AcceptAllCta'            => true,
+        'highPrivacy'             => true, // Pas de consentement implicite
+        'handleBrowserDNTRequest' => true, // Do Not Track = tout refuser
+        'removeCredit'            => true,
+        'moreInfoLink'            => true,
+        'useExternalCss'          => false,
+        'useExternalJs'           => false,
+        'mandatory'               => true,
+        'mandatoryCta'            => true,
+        'googleConsentMode'       => true, // Google Consent Mode v2 (Google Ads, GA4)
+        'bingConsentMode'         => true, // Bing Consent Mode (Clarity, Bing Ads)
+        'softConsentMode'         => false,
+        'dataLayer'               => false,
+        'serverSide'              => false,
+        'partnersList'            => false,
+    ];
 
-    // Ajout du style personnalisé pour la bannière et les boutons
-    echo "<style type=\"text/css\">
- 
-     #tarteaucitron #tarteaucitronServices .tarteaucitronTitle button,
-     #tarteaucitron #tarteaucitronInfo,
-#tarteaucitron #tarteaucitronServices .tarteaucitronMainLine,
-     #tarteaucitronRoot #tarteaucitronAlertBig{
-          background-color: " . esc_html(hpt_tac_color('hpt_option_tarteaucitron_highlight_color')) . " !important;
-       }
-        #tarteaucitronRoot,
-        #tarteaucitronRoot div#tarteaucitronSave {
-            background-color: " . esc_html(hpt_tac_color('hpt_option_tarteaucitron_banner_bg')) . ";
-        }
-        #tarteaucitronRoot .tarteaucitronAllow {
-            background-color: " . esc_html(hpt_tac_color('hpt_option_tarteaucitron_btn_accept')) . " !important;
-        }
-        #tarteaucitronRoot .tarteaucitronDeny {
-            background-color: " . esc_html(hpt_tac_color('hpt_option_tarteaucitron_btn_deny')) . " !important;
-        }
-        #tarteaucitronRoot .tarteaucitronPersonalize {
-            background-color: " . esc_html(hpt_tac_color('hpt_option_tarteaucitron_btn_customize')) . " !important;
-        }
+    $js = 'tarteaucitron.init(' . wp_json_encode($config, JSON_HEX_TAG) . ");\n";
 
-        #tarteaucitronRoot #tarteaucitronAlertBig,
-        #tarteaucitronAlertBig #tarteaucitronDisclaimerAlert {
-            color: " . esc_html(hpt_readable_text_color(hpt_tac_color('hpt_option_tarteaucitron_highlight_color'))) . " !important;
-        }
-
-        div#tarteaucitronInfo{
-            border:none;
-        }
-        #tarteaucitronRoot #tarteaucitronIcon {
-            display: none !important;
-        }
-    </style>";
-
-    // Bouton flottant pour rouvrir le panneau de préférences (remplace l'icône Tarteaucitron masquée ci-dessus)
-    echo '<button type="button" id="hpt-cookie-button" aria-label="Gérer les cookies" style="position:fixed;bottom:15px;right:15px;z-index:99999;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#fff;color:#1e1e1e;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;opacity:.6;transition:opacity .2s ease">'
-        . '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>'
-        . '</button>';
-    echo '<script type="text/javascript">
-        (function () {
-            var button = document.getElementById("hpt-cookie-button");
-            button.addEventListener("mouseenter", function () { button.style.opacity = "1"; });
-            button.addEventListener("mouseleave", function () { button.style.opacity = ".6"; });
-            button.addEventListener("click", function () {
-                if (typeof tarteaucitron !== "undefined") {
-                    tarteaucitron.userInterface.openPanel();
-                }
-            });
-        })();
-    </script>';
-
-    echo "<!-- TAC : Start -->";
-
-    $service_keys = [];
+    // Services réglés dans l'onglet Cookies : variables attendues par Tarteaucitron, puis le service
+    $user = [];
+    $jobs = [];
     foreach (hpt_cookie_services() as $category) {
-        $service_keys = array_merge($service_keys, array_keys($category['services']));
-    }
+        foreach (array_keys($category['services']) as $service_key) {
+            $option = get_option("hpt_option_service_{$service_key}");
+            $option = is_array($option) ? array_map('trim', array_map('strval', $option)) : [];
 
-    foreach ($service_keys as $service_key) {
-        $option = get_option("hpt_option_service_{$service_key}");
-        // Les valeurs sont injectées dans des chaînes JS
-        $option = is_array($option) ? array_map('esc_js', array_map('trim', $option)) : [];
-
-        if ($service_key === 'google_analytics' && !empty($option['ID'])) {
-            echo "<!-- TAC : Google Analytics -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.gtagUa = '{$option['ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('gtag');
-            </script>";
-        }
-        if ($service_key === 'google_ads' && !empty($option['ID'])) {
-            echo "<!-- TAC : Google Ads -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.googleadsId = '{$option['ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('googleads');
-            </script>";
-        }
-
-        if ($service_key === 'google_tags' && !empty($option['ID'])) {
-            echo "<!-- TAC : Google tags Manager -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.googletagmanagerId = '{$option['ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('googletagmanager');
-            </script>";
-        }
-
-        if ($service_key === 'hotjar' && !empty($option['Site ID']) && !empty($option['Version'])) {
-            echo "<!-- TAC : Hotjar -->
-            <script type=\"text/javascript\">
-                (tarteaucitron.job = tarteaucitron.job || []).push('hotjar');
-            </script>
-            <script type=\"text/javascript\">
-                tarteaucitron.user.hotjarId = " . intval($option['Site ID']) . ";
-                tarteaucitron.user.HotjarSv = " . intval($option['Version']) . ";
-            </script>";
-        }
-
-        if ($service_key === 'matomo' && !empty($option['ID'])) {
-            echo "<!-- TAC : Matomo -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.matomotmUrl = '{$option['ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('matomotm');
-            </script>";
-        }
-
-        if ($service_key === 'clarity' && !empty($option['ID'])) {
-            echo "<!-- TAC : Clarity -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.clarity = '{$option['ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('clarity');
-            </script>";
-        }
-
-        if ($service_key === 'facebook_pixel' && !empty($option['Pixel ID'])) {
-            echo "<!-- TAC : Facebook Pixel -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.facebookpixelId = '{$option['Pixel ID']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('facebookpixel');
-            </script>";
-        }
-
-        if ($service_key === 'google_fonts' && !empty($option['Families'])) {
-            $families = explode(',', $option['Families']);
-            $families = array_map('trim', $families);
-            $families = array_map(function ($family) {
-                return "'{$family}'";
-            }, $families);
-            $families = implode(', ', $families);
-            echo "<!-- TAC : Google Fonts -->
-    <script type=\"text/javascript\">
-        tarteaucitron.user.googleFonts = [{$families}];
-        (tarteaucitron.job = tarteaucitron.job || []).push('googlefonts');
-    </script>";
-        }
-
-        if ($service_key === 'google_maps' && !empty($option['API Key'])) {
-            echo "<!-- TAC : Google Maps -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.googlemapsKey = '{$option['API Key']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('googlemaps');
-                        (tarteaucitron.job = tarteaucitron.job || []).push('googlemapssearch');
-
-            </script>";
-        }
-
-        if ($service_key === 'google_recaptcha' && !empty($option['API Key'])) {
-            echo "<!-- TAC : reCAPTCHA -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.recaptchaapi = '{$option['API Key']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('recaptcha');
-            </script>";
-        }
-
-
-        if ($service_key === 'hcaptcha' && !empty($option['Site Key'])) {
-            echo "<!-- TAC : hCAPTCHA -->
-            <script type=\"text/javascript\">
-                tarteaucitron.user.hcaptchaSiteKey = '{$option['Site Key']}';
-                (tarteaucitron.job = tarteaucitron.job || []).push('hcaptcha');
-            </script>";
+            switch ($service_key) {
+                case 'google_analytics':
+                    if (!empty($option['ID'])) {
+                        $user['gtagUa'] = $option['ID'];
+                        $jobs[] = 'gtag';
+                    }
+                    break;
+                case 'google_ads':
+                    if (!empty($option['ID'])) {
+                        $user['googleadsId'] = $option['ID'];
+                        $jobs[] = 'googleads';
+                    }
+                    break;
+                case 'google_tags':
+                    if (!empty($option['ID'])) {
+                        $user['googletagmanagerId'] = $option['ID'];
+                        $jobs[] = 'googletagmanager';
+                    }
+                    break;
+                case 'hotjar':
+                    if (!empty($option['Site ID']) && !empty($option['Version'])) {
+                        $user['hotjarId'] = (int) $option['Site ID'];
+                        $user['HotjarSv'] = (int) $option['Version'];
+                        $jobs[] = 'hotjar';
+                    }
+                    break;
+                case 'matomo':
+                    if (!empty($option['ID'])) {
+                        $user['matomotmUrl'] = $option['ID'];
+                        $jobs[] = 'matomotm';
+                    }
+                    break;
+                case 'clarity':
+                    if (!empty($option['ID'])) {
+                        $user['clarity'] = $option['ID'];
+                        $jobs[] = 'clarity';
+                    }
+                    break;
+                case 'facebook_pixel':
+                    if (!empty($option['Pixel ID'])) {
+                        $user['facebookpixelId'] = $option['Pixel ID'];
+                        $jobs[] = 'facebookpixel';
+                    }
+                    break;
+                case 'google_fonts':
+                    if (!empty($option['Families'])) {
+                        $user['googleFonts'] = array_values(array_filter(array_map('trim', explode(',', $option['Families']))));
+                        $jobs[] = 'googlefonts';
+                    }
+                    break;
+                case 'google_maps':
+                    if (!empty($option['API Key'])) {
+                        $user['googlemapsKey'] = $option['API Key'];
+                        $jobs[] = 'googlemaps';
+                        $jobs[] = 'googlemapssearch';
+                    }
+                    break;
+                case 'google_recaptcha':
+                    if (!empty($option['API Key'])) {
+                        $user['recaptchaapi'] = $option['API Key'];
+                        $jobs[] = 'recaptcha';
+                    }
+                    break;
+                case 'hcaptcha':
+                    if (!empty($option['Site Key'])) {
+                        $user['hcaptchaSiteKey'] = $option['Site Key'];
+                        $jobs[] = 'hcaptcha';
+                    }
+                    break;
+            }
         }
     }
 
     // Services toujours proposés au visiteur, puis Google Consent Mode v2
-    $always_on = [
+    $jobs = array_merge($jobs, [
         'facebook', 'maps_noapi', 'twitterwidgetsapi', 'dailymotion', 'youtube', 'youtubeapi',
         'gcmadstorage', 'gcmanalyticsstorage', 'gcmfunctionality', 'gcmpersonalization', 'gcmadsuserdata', 'gcmsecurity',
-    ];
-    echo "<script type=\"text/javascript\">\n";
-    foreach ($always_on as $job) {
-        echo "(tarteaucitron.job = tarteaucitron.job || []).push('{$job}');\n";
-    }
-    echo "</script>\n";
+    ]);
 
-    echo "<!-- TAC : End -->";
+    foreach ($user as $key => $value) {
+        $js .= 'tarteaucitron.user[' . wp_json_encode($key) . '] = ' . wp_json_encode($value, JSON_HEX_TAG) . ";\n";
+    }
+    $js .= 'tarteaucitron.job = tarteaucitron.job || [];' . "\n";
+    foreach ($jobs as $job) {
+        $js .= 'tarteaucitron.job.push(' . wp_json_encode($job) . ");\n";
+    }
+
+    // Bouton flottant pour rouvrir le panneau de préférences (imprimé par hpt_cookie_button())
+    $js .= <<<'JS'
+document.addEventListener('DOMContentLoaded', function () {
+    var button = document.getElementById('hpt-cookie-button');
+    if (!button) return;
+    button.addEventListener('mouseenter', function () { button.style.opacity = '1'; });
+    button.addEventListener('mouseleave', function () { button.style.opacity = '.6'; });
+    button.addEventListener('click', function () {
+        if (typeof tarteaucitron !== 'undefined') {
+            tarteaucitron.userInterface.openPanel();
+        }
+    });
+});
+JS;
+
+    return $js;
 }
 
-// Après wp_print_footer_scripts (priorité 20), qui imprime tarteaucitron.js : tarteaucitron.init() a besoin de la librairie
-add_action('wp_footer', 'hpt_options_enqueue_tracking_scripts', 21);
+/** Couleurs de la bannière et des boutons, choisies dans l'onglet Cookies. */
+function hpt_tarteaucitron_inline_style()
+{
+    $highlight = hpt_tac_color('hpt_option_tarteaucitron_highlight_color');
+
+    return '#tarteaucitron #tarteaucitronServices .tarteaucitronTitle button,'
+        . '#tarteaucitron #tarteaucitronInfo,'
+        . '#tarteaucitron #tarteaucitronServices .tarteaucitronMainLine,'
+        . '#tarteaucitronRoot #tarteaucitronAlertBig{background-color:' . $highlight . ' !important}'
+        . '#tarteaucitronRoot,#tarteaucitronRoot div#tarteaucitronSave{background-color:' . hpt_tac_color('hpt_option_tarteaucitron_banner_bg') . '}'
+        . '#tarteaucitronRoot .tarteaucitronAllow{background-color:' . hpt_tac_color('hpt_option_tarteaucitron_btn_accept') . ' !important}'
+        . '#tarteaucitronRoot .tarteaucitronDeny{background-color:' . hpt_tac_color('hpt_option_tarteaucitron_btn_deny') . ' !important}'
+        . '#tarteaucitronRoot .tarteaucitronPersonalize{background-color:' . hpt_tac_color('hpt_option_tarteaucitron_btn_customize') . ' !important}'
+        . '#tarteaucitronRoot #tarteaucitronAlertBig,#tarteaucitronAlertBig #tarteaucitronDisclaimerAlert{color:' . hpt_readable_text_color($highlight) . ' !important}'
+        . 'div#tarteaucitronInfo{border:none}'
+        . '#tarteaucitronRoot #tarteaucitronIcon{display:none !important}';
+}
+
+// Bouton flottant pour rouvrir le panneau de préférences (remplace l'icône Tarteaucitron masquée)
+add_action('wp_footer', 'hpt_cookie_button');
+function hpt_cookie_button()
+{
+    if (!get_option('hpt_option_enable_tarteaucitron')) {
+        return;
+    }
+    ?>
+    <button type="button" id="hpt-cookie-button" aria-label="Gérer les cookies" style="position:fixed;bottom:15px;right:15px;z-index:99999;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#fff;color:#1e1e1e;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;opacity:.6;transition:opacity .2s ease"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg></button>
+    <?php
+}

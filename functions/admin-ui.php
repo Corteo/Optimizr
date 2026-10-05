@@ -178,6 +178,40 @@ function hpt_switch_input($name, $checked, $label, $id = '')
 }
 
 /**
+ * Balises autorisées à la sortie du HTML construit par le plugin (icônes SVG, interrupteurs, boutons) :
+ * echo wp_kses(hpt_icon('check'), hpt_kses_ui()).
+ */
+function hpt_kses_ui()
+{
+    static $allowed = null;
+    if ($allowed !== null) {
+        return $allowed;
+    }
+
+    $common = ['class' => true, 'id' => true, 'role' => true, 'aria-hidden' => true, 'aria-label' => true, 'aria-controls' => true, 'aria-expanded' => true, 'data-*' => true];
+    $shape  = ['d' => true, 'x' => true, 'y' => true, 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'cx' => true, 'cy' => true, 'r' => true, 'rx' => true, 'ry' => true, 'width' => true, 'height' => true, 'points' => true, 'fill' => true, 'fill-opacity' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-opacity' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'stroke-dasharray' => true, 'opacity' => true, 'transform' => true, 'class' => true];
+
+    $allowed = [
+        'svg'      => $common + ['width' => true, 'height' => true, 'viewbox' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'focusable' => true, 'xmlns' => true],
+        'g'        => $shape,
+        'path'     => $shape,
+        'circle'   => $shape,
+        'rect'     => $shape,
+        'line'     => $shape,
+        'polyline' => $shape,
+        'polygon'  => $shape,
+        'ellipse'  => $shape,
+        'label'    => $common + ['for' => true],
+        'input'    => $common + ['type' => true, 'name' => true, 'value' => true, 'checked' => true, 'disabled' => true],
+        'span'     => $common,
+        'button'   => $common + ['type' => true, 'disabled' => true],
+        'select'   => $common + ['name' => true, 'disabled' => true],
+        'option'   => ['class' => true, 'value' => true, 'selected' => true],
+    ];
+    return $allowed;
+}
+
+/**
  * Icônes au trait (24×24) utilisées dans l'interface.
  */
 function hpt_icon($name, $size = 20)
@@ -277,18 +311,18 @@ function hpt_options_settings_page()
                 <h1 class="optimizr-header__title">Optimizr</h1>
                 <span class="optimizr-badge">v<?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">
-                    <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo hpt_icon('sparkles', 16); ?>Assistant de configuration</a>
+                    <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo wp_kses(hpt_icon('sparkles', 16), hpt_kses_ui()); ?>Assistant de configuration</a>
                     <?php do_action('hpt_header_actions'); ?>
                 </div>
             </div>
             <div class="optimizr-tabs-wrap" data-optimizr-tabs>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-left', 18); ?></button>
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(hpt_icon('chevron-left', 18), hpt_kses_ui()); ?></button>
                 <nav class="optimizr-tabs" aria-label="Sections d'Optimizr">
                     <?php foreach ($tabs as $slug => $tab) : ?>
                         <a href="<?php echo esc_url(hpt_admin_tab_url($slug)); ?>" class="optimizr-tabs__link" <?php echo $slug === $current ? 'aria-current="page"' : ''; ?>><?php echo esc_html($tab['label']); ?></a>
                     <?php endforeach; ?>
                 </nav>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-right', 18); ?></button>
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(hpt_icon('chevron-right', 18), hpt_kses_ui()); ?></button>
             </div>
         </header>
 
@@ -464,7 +498,7 @@ function hpt_render_dashboard()
 
     <?php if (!get_option('hpt_onboarding_done')) : ?>
         <div class="optimizr-onboarding-cta">
-            <span class="optimizr-onboarding-cta__icon"><?php echo hpt_icon('sparkles', 22); ?></span>
+            <span class="optimizr-onboarding-cta__icon"><?php echo wp_kses(hpt_icon('sparkles', 22), hpt_kses_ui()); ?></span>
             <div class="optimizr-onboarding-cta__text">
                 <h3 class="optimizr-onboarding-cta__title">Configurez l'essentiel en quelques minutes</h3>
                 <p>L'assistant active les modules utiles et les réglages recommandés de sécurité, de référencement et de confidentialité.</p>
@@ -483,8 +517,8 @@ function hpt_render_dashboard()
                     ?>
                     <article class="optimizr-module<?php echo $active ? '' : ' is-off'; ?>">
                         <div class="optimizr-module__top">
-                            <span class="optimizr-module__icon"><?php echo hpt_icon($module['icon']); ?></span>
-                            <?php echo hpt_switch_input("hpt_modules[{$slug}]", $active, 'Module ' . $module['label'], "hpt-module-{$slug}"); ?>
+                            <span class="optimizr-module__icon"><?php echo wp_kses(hpt_icon($module['icon']), hpt_kses_ui()); ?></span>
+                            <?php echo wp_kses(hpt_switch_input("hpt_modules[{$slug}]", $active, 'Module ' . $module['label'], "hpt-module-{$slug}"), hpt_kses_ui()); ?>
                         </div>
                         <h3 class="optimizr-module__title"><?php echo esc_html($module['label']); ?></h3>
                         <p class="optimizr-module__desc"><?php echo esc_html($module['desc']); ?></p>
@@ -513,7 +547,7 @@ function hpt_render_dashboard()
                     <ul class="optimizr-checks">
                         <?php foreach ($checks as $check) : ?>
                             <li class="optimizr-checks__item">
-                                <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo hpt_icon($check['status'] === 'ok' ? 'check' : 'alert', 14); ?></span>
+                                <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo wp_kses(hpt_icon($check['status'] === 'ok' ? 'check' : 'alert', 14), hpt_kses_ui()); ?></span>
                                 <span class="optimizr-checks__label"><?php echo esc_html($check['label']); ?></span>
                                 <?php if (!empty($check['link'])) : ?>
                                     <a href="<?php echo esc_url($check['link']); ?>" class="optimizr-link"><?php echo esc_html($check['link_label']); ?></a>

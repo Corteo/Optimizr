@@ -40,48 +40,55 @@ function hpt_ai_bulk_tasks()
 }
 
 /**
- * Requête SQL des éléments à traiter (sans SELECT), ou null si la tâche n'a rien à traiter.
+ * Requête SQL préparée des éléments à traiter, ou null si la tâche n'a rien à traiter.
  *
- * @param int[] $skip Éléments ignorés pendant ce traitement (erreur non bloquante)
+ * @param string $select Colonnes (« p.ID », « COUNT(*) »)
+ * @param string $order  Fin de requête (« ORDER BY p.ID DESC LIMIT 1 »), sans valeur variable
+ * @param int[]  $skip   Éléments ignorés pendant ce traitement (erreur non bloquante)
  */
-function hpt_ai_bulk_sql($task, array $skip = [])
+function hpt_ai_bulk_query($task, $select, $order = '', array $skip = [])
 {
     global $wpdb;
 
-    $skip_sql = $skip ? ' AND p.ID NOT IN (' . implode(',', array_map('intval', $skip)) . ')' : '';
+    $skip = array_values(array_filter(array_map('intval', $skip)));
+    $skip_sql = $skip ? ' AND p.ID NOT IN (' . implode(',', array_fill(0, count($skip), '%d')) . ')' : '';
 
     if ($task === 'alt') {
-        return "FROM {$wpdb->posts} p
+        return $wpdb->prepare(
+            "SELECT {$select} FROM {$wpdb->posts} p
             LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_wp_attachment_image_alt'
             WHERE p.post_type = 'attachment'
-              AND p.post_mime_type LIKE 'image/%'
+              AND p.post_mime_type LIKE %s
               AND p.post_mime_type <> 'image/svg+xml'
-              AND (m.meta_value IS NULL OR TRIM(m.meta_value) = '')" . $skip_sql;
+              AND (m.meta_value IS NULL OR TRIM(m.meta_value) = ''){$skip_sql} {$order}",
+            array_merge(['image/%'], $skip)
+        );
     }
 
     if ($task === 'descriptions') {
-        $types = array_filter((array) get_option('hpt_sitemap_post_types', ['post', 'page']));
+        $types = array_values(array_filter(array_map('strval', (array) get_option('hpt_sitemap_post_types', ['post', 'page']))));
         if (!$types) {
             return null;
         }
-        $types_sql = implode(',', array_map(function ($type) use ($wpdb) {
-            return $wpdb->prepare('%s', $type);
-        }, $types));
 
         // Pages privées de WooCommerce : pas de description utile
-        $excluded = array_filter(array_map('intval', [
+        $excluded = array_values(array_filter(array_map('intval', [
             get_option('woocommerce_cart_page_id'),
             get_option('woocommerce_checkout_page_id'),
             get_option('woocommerce_myaccount_page_id'),
-        ]));
-        $excluded_sql = $excluded ? ' AND p.ID NOT IN (' . implode(',', $excluded) . ')' : '';
+        ])));
+        $excluded_sql = $excluded ? ' AND p.ID NOT IN (' . implode(',', array_fill(0, count($excluded), '%d')) . ')' : '';
 
-        return "FROM {$wpdb->posts} p
+        $types_sql = implode(',', array_fill(0, count($types), '%s'));
+        return $wpdb->prepare(
+            "SELECT {$select} FROM {$wpdb->posts} p
             LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_hpt_og_desc'
-            WHERE p.post_type IN ($types_sql)
+            WHERE p.post_type IN ({$types_sql})
               AND p.post_status = 'publish'
               AND p.post_content <> ''
-              AND (m.meta_value IS NULL OR TRIM(m.meta_value) = '')" . $excluded_sql . $skip_sql;
+              AND (m.meta_value IS NULL OR TRIM(m.meta_value) = ''){$excluded_sql}{$skip_sql} {$order}",
+            array_merge($types, $excluded, $skip)
+        );
     }
 
     return null;
@@ -90,23 +97,23 @@ function hpt_ai_bulk_sql($task, array $skip = [])
 function hpt_ai_bulk_count($task, array $skip = [])
 {
     global $wpdb;
-    $sql = hpt_ai_bulk_sql($task, $skip);
-    return $sql ? (int) $wpdb->get_var('SELECT COUNT(*) ' . $sql) : 0;
+    $query = hpt_ai_bulk_query($task, 'COUNT(*)', '', $skip);
+    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
 }
 
 /** Tous les éléments restant à traiter (pour l'estimation du coût). */
 function hpt_ai_bulk_ids($task)
 {
     global $wpdb;
-    $sql = hpt_ai_bulk_sql($task);
-    return $sql ? array_map('intval', $wpdb->get_col('SELECT p.ID ' . $sql . ' ORDER BY p.ID DESC')) : [];
+    $query = hpt_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC');
+    return $query ? array_map('intval', $wpdb->get_col($query)) : []; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
 }
 
 function hpt_ai_bulk_next_id($task, array $skip = [])
 {
     global $wpdb;
-    $sql = hpt_ai_bulk_sql($task, $skip);
-    return $sql ? (int) $wpdb->get_var('SELECT p.ID ' . $sql . ' ORDER BY p.ID DESC LIMIT 1') : 0;
+    $query = hpt_ai_bulk_query($task, 'p.ID', 'ORDER BY p.ID DESC LIMIT 1', $skip);
+    return $query ? (int) $wpdb->get_var($query) : 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Requête préparée par hpt_ai_bulk_query().
 }
 
 /**
@@ -194,7 +201,7 @@ function hpt_ai_bulk_callback()
     $has_key = hpt_ai_api_key() !== '';
 
     if (!$has_key) {
-        echo '<div class="optimizr-notice optimizr-notice--warn">' . hpt_icon('alert', 18) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', hpt_ai_provider_config()['label'])) . '</span></div>';
+        echo '<div class="optimizr-notice optimizr-notice--warn">' . wp_kses(hpt_icon('alert', 18), hpt_kses_ui()) . '<span>' . esc_html(sprintf('Renseignez et enregistrez d\'abord la clé API %s ci-dessus.', hpt_ai_provider_config()['label'])) . '</span></div>';
     }
 
     echo '<div class="optimizr-bulk" data-optimizr-bulk data-nonce="' . esc_attr(wp_create_nonce('hpt_ai_bulk')) . '">';
@@ -219,13 +226,13 @@ function hpt_ai_bulk_callback()
                                 hpt_ai_format_unit($estimate['unit']),
                                 $model
                             ));
-                            echo hpt_ai_costs_toggle();
+                            echo wp_kses(hpt_ai_costs_toggle(), hpt_kses_ui());
                             ?>
                         </span>
                     <?php endif; ?>
                 </div>
                 <button type="button" class="optimizr-btn optimizr-btn--secondary" data-bulk-start <?php disabled(!$has_key || !$count || !hpt_ai_user_can()); ?>>
-                    <?php echo hpt_icon('sparkles', 16); ?>Générer
+                    <?php echo wp_kses(hpt_icon('sparkles', 16), hpt_kses_ui()); ?>Générer
                 </button>
                 <button type="button" class="optimizr-btn optimizr-btn--ghost" data-bulk-stop hidden>Arrêter</button>
             </div>
@@ -248,7 +255,7 @@ function hpt_ai_bulk_callback()
     echo '<p class="optimizr-field__help">Chaque élément correspond à une requête facturée par le fournisseur d\'IA choisi. Gardez cette page ouverte pendant le traitement ; vous pouvez l\'arrêter à tout moment, ce qui a été généré reste enregistré. Les textes générés sont modifiables ensuite dans la médiathèque ou dans la metabox SEO de chaque contenu.';
     // Tout est déjà traité : le détail des coûts reste accessible
     if (!array_filter(array_map('hpt_ai_bulk_count', array_keys(hpt_ai_bulk_tasks())))) {
-        echo ' Détail des coûts ' . hpt_ai_costs_toggle();
+        echo ' Détail des coûts ' . wp_kses(hpt_ai_costs_toggle(), hpt_kses_ui());
     }
     echo '</p>';
 }

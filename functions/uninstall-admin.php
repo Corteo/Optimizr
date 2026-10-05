@@ -47,7 +47,7 @@ add_action('admin_post_hpt_save_uninstall', function () {
     }
     check_admin_referer('hpt_save_uninstall');
 
-    hpt_uninstall_save_choices(wp_unslash($_POST['hpt_uninstall'] ?? []));
+    hpt_uninstall_save_choices(map_deep(wp_unslash($_POST['hpt_uninstall'] ?? []), 'sanitize_key'));
 
     wp_safe_redirect(add_query_arg('hpt_message', 'uninstall', hpt_admin_tab_url('tools')));
     exit;
@@ -88,7 +88,7 @@ add_action('wp_ajax_hpt_save_uninstall', function () {
         wp_send_json_error('Accès refusé', 403);
     }
 
-    $choices = json_decode(wp_unslash($_POST['choices'] ?? ''), true);
+    $choices = json_decode(sanitize_text_field(wp_unslash($_POST['choices'] ?? '')), true);
     hpt_uninstall_save_choices($choices, !empty($_POST['network']) && current_user_can('manage_network_plugins'));
     wp_send_json_success();
 });

@@ -170,9 +170,9 @@ function hpt_local_hours_callback()
             <label class="optimizr-check"><input type="checkbox" name="hpt_local[hours][<?php echo esc_attr($day); ?>][closed]" value="1" <?php checked($closed); ?> data-hours-closed> Fermé</label>
             <span class="optimizr-hours__ranges">
                 <?php for ($i = 1; $i <= 2; $i++) : ?>
-                    <input type="time" name="hpt_local[hours][<?php echo esc_attr($day); ?>][open<?php echo $i; ?>]" value="<?php echo esc_attr($h['open' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', ouverture ' . $i); ?>">
+                    <input type="time" name="hpt_local[hours][<?php echo esc_attr($day); ?>][open<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['open' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', ouverture ' . $i); ?>">
                     <span aria-hidden="true">–</span>
-                    <input type="time" name="hpt_local[hours][<?php echo esc_attr($day); ?>][close<?php echo $i; ?>]" value="<?php echo esc_attr($h['close' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', fermeture ' . $i); ?>">
+                    <input type="time" name="hpt_local[hours][<?php echo esc_attr($day); ?>][close<?php echo (int) $i; ?>]" value="<?php echo esc_attr($h['close' . $i] ?? ''); ?>" aria-label="<?php echo esc_attr($label . ', fermeture ' . $i); ?>">
                     <?php if ($i === 1) : ?><span class="optimizr-muted">et</span><?php endif; ?>
                 <?php endfor; ?>
             </span>
@@ -433,7 +433,7 @@ add_action('admin_post_hpt_local_import_theme', function () {
 });
 
 add_action('admin_notices', function () {
-    if (($_GET['hpt_message'] ?? '') === 'local_imported') {
+    if (sanitize_key(wp_unslash($_GET['hpt_message'] ?? '')) === 'local_imported') {
         echo '<div class="notice notice-success is-dismissible"><p>Coordonnées importées depuis le thème. Vérifiez-les puis enregistrez.</p></div>';
     }
 });

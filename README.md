@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.5.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 2.5.1 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -82,7 +82,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 ## Prérequis
 
-- WordPress 6.1 ou plus récent
+- WordPress 6.2 ou plus récent
 - PHP 7.4 ou plus récent
 - ACF Pro, uniquement pour les champs du type « Évènements »
 - Une clé API OpenAI, Anthropic ou Google, uniquement pour l'Assistant IA

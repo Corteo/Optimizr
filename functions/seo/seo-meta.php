@@ -77,7 +77,8 @@ function hpt_seo_meta_callback($post)
                 Générer la description avec l'IA
             </button>
         </p>
-        <script>
+        <?php
+        wp_print_inline_script_tag(<<<'JS'
             document.addEventListener('DOMContentLoaded', function() {
                 const button = document.getElementById('generate-seo-desc');
                 const textarea = document.getElementById('hpt_og_desc');
@@ -122,7 +123,8 @@ function hpt_seo_meta_callback($post)
                         });
                 });
             });
-        </script>
+        JS);
+        ?>
     <?php endif; ?>
 
     <p>
@@ -149,7 +151,7 @@ function hpt_seo_meta_callback($post)
  */
 function hpt_save_seo_metadata($post_id)
 {
-    if (!isset($_POST['hpt_seo_meta_nonce_field']) || !wp_verify_nonce($_POST['hpt_seo_meta_nonce_field'], 'hpt_seo_meta_nonce')) {
+    if (!isset($_POST['hpt_seo_meta_nonce_field']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['hpt_seo_meta_nonce_field'])), 'hpt_seo_meta_nonce')) {
         return;
     }
 

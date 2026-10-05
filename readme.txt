@@ -1,10 +1,10 @@
 === Haptic Optimizr ===
 Contributors: alexandrevergnaud
 Tags: seo, cookies, gdpr, redirects, ai
-Requires at least: 6.1
+Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,11 @@ Only for the fields of the ready-made "Events" post type. Everything else works 
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 2.5.1 =
+* Security hardening: all output escaped, inline scripts and styles printed with the WordPress APIs, prepared SQL queries, request data sanitized.
+* File operations use the WordPress Filesystem API.
+* Requires WordPress 6.2 or later.
 
 = 2.5.0 =
 * Version ready for the WordPress.org plugin directory: updates are handled by WordPress.

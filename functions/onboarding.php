@@ -408,7 +408,7 @@ function hpt_onboarding_render()
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title><?php echo $done ? 'Configuration terminée' : 'Assistant de configuration'; ?> - Optimizr</title>
-    <script>document.documentElement.className = 'js';</script>
+    <?php wp_print_inline_script_tag("document.documentElement.className = 'js';"); ?>
     <?php wp_print_styles('optimizr-onboarding'); ?>
 </head>
 <body class="ob-body">
@@ -442,9 +442,9 @@ function hpt_onboarding_render()
                 <?php endif; ?>
             </div>
             <ul class="ob-pillars" data-pillar="all">
-                <li class="ob-pillars__item" data-pillar-item="security"><?php echo hpt_icon('shield', 16); ?>Sécurité</li>
-                <li class="ob-pillars__item" data-pillar-item="performance"><?php echo hpt_onboarding_icon('gauge'); ?>Performance</li>
-                <li class="ob-pillars__item" data-pillar-item="optimization"><?php echo hpt_icon('sparkles', 16); ?>Optimisation</li>
+                <li class="ob-pillars__item" data-pillar-item="security"><?php echo wp_kses(hpt_icon('shield', 16), hpt_kses_ui()); ?>Sécurité</li>
+                <li class="ob-pillars__item" data-pillar-item="performance"><?php echo wp_kses(hpt_onboarding_icon('gauge'), hpt_kses_ui()); ?>Performance</li>
+                <li class="ob-pillars__item" data-pillar-item="optimization"><?php echo wp_kses(hpt_icon('sparkles', 16), hpt_kses_ui()); ?>Optimisation</li>
             </ul>
         </aside>
 
@@ -512,22 +512,22 @@ function hpt_onboarding_step_welcome($modules)
     ?>
     <div class="ob-pillar-cards">
         <div class="ob-pillar-card ob-pillar-card--security">
-            <span class="ob-pillar-card__icon"><?php echo hpt_icon('shield', 22); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_icon('shield', 22), hpt_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Sécurité</h2>
             <p class="ob-pillar-card__text">Connexion protégée, surface d'attaque réduite et consentement RGPD.</p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--performance">
-            <span class="ob-pillar-card__icon"><?php echo hpt_onboarding_icon('gauge', 22); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_onboarding_icon('gauge', 22), hpt_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Performance</h2>
             <p class="ob-pillar-card__text">Balises, sitemap et indexation pour un site que Google comprend vite.</p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--optimization">
-            <span class="ob-pillar-card__icon"><?php echo hpt_icon('sparkles', 22); ?></span>
+            <span class="ob-pillar-card__icon"><?php echo wp_kses(hpt_icon('sparkles', 22), hpt_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title">Optimisation</h2>
             <p class="ob-pillar-card__text">Textes et balises ALT générés par l'IA, modules activés à la carte.</p>
         </div>
     </div>
-    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Environ 3 minutes. Vous pouvez quitter l'assistant à tout moment et le rouvrir depuis le menu Optimizr › Assistant.</p>
+    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Environ 3 minutes. Vous pouvez quitter l'assistant à tout moment et le rouvrir depuis le menu Optimizr › Assistant.</p>
     <?php
 }
 
@@ -558,7 +558,7 @@ function hpt_onboarding_step_modules($modules)
                     $module = $modules[$slug];
                     ?>
                     <label class="ob-module" for="ob-module-<?php echo esc_attr($slug); ?>">
-                        <span class="ob-module__icon"><?php echo hpt_icon($module['icon'], 20); ?></span>
+                        <span class="ob-module__icon"><?php echo wp_kses(hpt_icon($module['icon'], 20), hpt_kses_ui()); ?></span>
                         <span class="ob-module__text">
                             <span class="ob-module__title"><?php echo esc_html($module['label']); ?></span>
                             <span class="ob-module__desc"><?php echo esc_html($module['desc']); ?></span>
@@ -579,7 +579,7 @@ function hpt_onboarding_step_security($modules)
     $locked = (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite();
     $prefix = get_option('permalink_structure') ? home_url('/') : home_url('/') . '?';
     // Même adresse que l'onglet Sécurité (proxys de confiance pris en compte quand le module est actif)
-    $ip = function_exists('hpt_sec_client_ip') ? hpt_sec_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? '');
+    $ip = function_exists('hpt_sec_client_ip') ? hpt_sec_client_ip() : sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
     $ip = $ip !== '0.0.0.0' && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
     ?>
     <div class="ob-fields">
@@ -619,7 +619,7 @@ function hpt_onboarding_step_security($modules)
             hpt_onboarding_switch('hpt_sec_' . $key, get_option('hpt_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? 'Recommandé' : '');
         } ?>
     </div>
-    <p class="ob-note"><?php echo hpt_icon('lock', 16); ?>Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
+    <p class="ob-note"><?php echo wp_kses(hpt_icon('lock', 16), hpt_kses_ui()); ?>Le blocage du PHP dans les médias et HSTS se règlent dans l'onglet Sécurité, une fois le site vérifié.</p>
     <?php
 }
 
@@ -717,7 +717,7 @@ function hpt_onboarding_step_local($modules)
             </label>
         <?php endforeach; ?>
     </div>
-    <p class="ob-note"><?php echo hpt_icon('pin', 16); ?>Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local.</p>
+    <p class="ob-note"><?php echo wp_kses(hpt_icon('pin', 16), hpt_kses_ui()); ?>Horaires, coordonnées GPS, identifiant de lieu Google et profils en ligne : onglet SEO local.</p>
     <?php
 }
 
@@ -739,7 +739,7 @@ function hpt_onboarding_step_pages($modules)
                 'echo'              => 0,
             ]);
             echo $dropdown
-                ? str_replace('<select ', '<select data-summary-value="Page 404" ', $dropdown)
+                ? wp_kses(str_replace('<select ', '<select data-summary-value="Page 404" ', $dropdown), hpt_kses_ui())
                 : '<span class="ob-field__help">Aucune page sur le site : créez-en une (« Page introuvable ») puis choisissez-la dans l\'onglet Pages spéciales.</span><input type="hidden" name="hpt_404_page" value="0">';
             ?>
         </label>
@@ -747,7 +747,7 @@ function hpt_onboarding_step_pages($modules)
     <div class="ob-options">
         <?php hpt_onboarding_switch('hpt_404_suggestions', get_option('hpt_404_suggestions', 1), 'Suggérer des contenus proches', 'Liens vers les pages dont l\'adresse ressemble à celle demandée, et un champ de recherche.', 'Recommandé'); ?>
     </div>
-    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin.</p>
+    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Le mode maintenance se règle dans l'onglet Pages spéciales, au moment où vous en avez besoin.</p>
     <?php
 }
 
@@ -783,7 +783,7 @@ function hpt_onboarding_step_cookies($modules)
             <?php endforeach; ?>
         </div>
     </fieldset>
-    <p class="ob-note"><?php echo hpt_icon('info', 16); ?>Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD.</p>
+    <p class="ob-note"><?php echo wp_kses(hpt_icon('info', 16), hpt_kses_ui()); ?>Couleurs du bandeau et autres services (Matomo, Hotjar, Google Ads, reCAPTCHA…) : onglet Cookies & RGPD.</p>
     <?php
 }
 
@@ -868,12 +868,12 @@ function hpt_onboarding_render_done()
         <p class="ob-step__intro">Les réglages sont enregistrés et actifs. Affinez chaque module depuis son onglet quand vous le souhaitez.</p>
 
         <?php foreach (array_filter($notices) as $notice) : ?>
-            <p class="ob-alert" role="alert"><?php echo hpt_icon('alert', 18); ?><?php echo esc_html($notice); ?></p>
+            <p class="ob-alert" role="alert"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><?php echo esc_html($notice); ?></p>
         <?php endforeach; ?>
 
         <?php if ($login_url) : ?>
             <div class="ob-login-card">
-                <span class="ob-login-card__icon"><?php echo hpt_icon('lock', 20); ?></span>
+                <span class="ob-login-card__icon"><?php echo wp_kses(hpt_icon('lock', 20), hpt_kses_ui()); ?></span>
                 <div>
                     <p class="ob-login-card__title">Votre adresse de connexion</p>
                     <a class="ob-login-card__url" href="<?php echo esc_url($login_url); ?>"><?php echo esc_html($login_url); ?></a>
@@ -888,9 +888,9 @@ function hpt_onboarding_render_done()
                 <?php foreach ($next as $tab => $module) : ?>
                     <li>
                         <a class="ob-next__item" href="<?php echo esc_url(hpt_admin_tab_url($tab)); ?>">
-                            <span class="ob-module__icon"><?php echo hpt_icon($module['icon'], 18); ?></span>
+                            <span class="ob-module__icon"><?php echo wp_kses(hpt_icon($module['icon'], 18), hpt_kses_ui()); ?></span>
                             <span class="ob-next__label"><?php echo esc_html($tabs[$tab]['label']); ?></span>
-                            <?php echo hpt_icon('chevron-right', 16); ?>
+                            <?php echo wp_kses(hpt_icon('chevron-right', 16), hpt_kses_ui()); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -964,13 +964,11 @@ function hpt_onboarding_badge($x, $y, $icon_svg, $gradient, $class = '')
 
 function hpt_onboarding_illustration($name)
 {
-    $open = '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
-    $close = '</svg>';
 
     switch ($name) {
         case 'welcome':
             ?>
-            <?php echo $open; ?>
+            <svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <g class="ob-a-spin"><circle cx="240" cy="180" r="158" fill="none" stroke="#fff" stroke-opacity=".14" stroke-dasharray="2 9"/></g>
                 <circle cx="240" cy="180" r="118" fill="none" stroke="#fff" stroke-opacity=".07"/>
@@ -991,23 +989,23 @@ function hpt_onboarding_illustration($name)
                     </g>
                 </g>
                 <?php
-                echo hpt_onboarding_badge(108, 96, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1');
-                echo hpt_onboarding_badge(382, 120, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2');
-                echo hpt_onboarding_badge(366, 282, hpt_onboarding_icon('sliders', 24), 'ob-g-violet', 'ob-a-float ob-delay-3');
-                echo hpt_onboarding_badge(104, 268, hpt_icon('sparkles', 24), 'ob-g-accent', 'ob-a-float');
+                echo wp_kses(hpt_onboarding_badge(108, 96, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui());
+                echo wp_kses(hpt_onboarding_badge(382, 120, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), hpt_kses_ui());
+                echo wp_kses(hpt_onboarding_badge(366, 282, hpt_onboarding_icon('sliders', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), hpt_kses_ui());
+                echo wp_kses(hpt_onboarding_badge(104, 268, hpt_icon('sparkles', 24), 'ob-g-accent', 'ob-a-float'), hpt_kses_ui());
                 ?>
                 <circle cx="70" cy="180" r="2.5" fill="#8af0ff" class="ob-a-twinkle"/>
                 <circle cx="420" cy="208" r="2" fill="#d2c4ff" class="ob-a-twinkle ob-delay-2"/>
                 <circle cx="300" cy="44" r="2.5" fill="#7ef0c4" class="ob-a-twinkle ob-delay-1"/>
                 <circle cx="190" cy="320" r="2" fill="#8aa4ff" class="ob-a-twinkle ob-delay-3"/>
-            <?php echo $close; ?>
+            </svg>
             <?php
             break;
 
         case 'modules':
             $icons = ['shield', 'search', 'sparkles', 'redirect', 'lock', 'pin', 'file', 'layers', 'image'];
             $lit = [0, 1, 2, 4];
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <path d="M240 180 L142 82 M240 180 L338 82 M240 180 L142 278 M240 180 L338 278" stroke="#8af0ff" stroke-opacity=".35" stroke-dasharray="4 8" class="ob-a-flow"/>
@@ -1017,20 +1015,20 @@ function hpt_onboarding_illustration($name)
                     $on = in_array($i, $lit, true);
                     $inner = preg_replace('#^<svg[^>]*>|</svg>$#', '', hpt_icon($icon, 24));
                     ?>
-                    <g transform="translate(<?php echo $x; ?> <?php echo $y; ?>)">
-                        <g class="ob-a-tile" style="animation-delay:<?php echo 0.08 * $i; ?>s">
+                    <g transform="translate(<?php echo esc_attr($x); ?> <?php echo esc_attr($y); ?>)">
+                        <g class="ob-a-tile" style="animation-delay:<?php echo esc_attr(0.08 * $i); ?>s">
                             <rect width="64" height="64" rx="14" fill="<?php echo $on ? 'url(#ob-g-accent)' : 'url(#ob-g-glass)'; ?>" stroke="#fff" stroke-opacity="<?php echo $on ? '.35' : '.16'; ?>"<?php echo $on ? ' filter="url(#ob-f-glow)"' : ''; ?>/>
-                            <g transform="translate(18 18)" fill="none" stroke="#fff" stroke-opacity="<?php echo $on ? '1' : '.55'; ?>" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?php echo $inner; ?></g>
+                            <g transform="translate(18 18)" fill="none" stroke="#fff" stroke-opacity="<?php echo esc_attr($on ? '1' : '.55'); ?>" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?php echo wp_kses($inner, hpt_kses_ui()); ?></g>
                             <circle cx="54" cy="10" r="4" fill="<?php echo $on ? '#7ef0c4' : '#fff'; ?>" fill-opacity="<?php echo $on ? '1' : '.18'; ?>"/>
                         </g>
                     </g>
                 <?php endforeach; ?>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'security':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <circle cx="240" cy="176" r="96" fill="none" stroke="#8af0ff" stroke-width="1.5" class="ob-a-ping"/>
@@ -1061,11 +1059,11 @@ function hpt_onboarding_illustration($name)
                     <text x="376" y="220" class="ob-svg-text">Robot bloqué</text>
                 </g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'seo':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="190" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <path d="M110 220a130 130 0 0 1 260 0" fill="none" stroke="#fff" stroke-opacity=".1" stroke-width="18" stroke-linecap="round"/>
@@ -1073,7 +1071,7 @@ function hpt_onboarding_illustration($name)
                 <?php for ($i = 0; $i <= 10; $i++) :
                     $a = deg2rad(180 + $i * 18);
                     printf('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#fff" stroke-opacity="%s" stroke-width="2" stroke-linecap="round"/>',
-                        240 + cos($a) * 100, 220 + sin($a) * 100, 240 + cos($a) * ($i % 5 ? 108 : 112), 220 + sin($a) * ($i % 5 ? 108 : 112), $i % 5 ? '.25' : '.5');
+                        (float) (240 + cos($a) * 100), (float) (220 + sin($a) * 100), (float) (240 + cos($a) * ($i % 5 ? 108 : 112)), (float) (220 + sin($a) * ($i % 5 ? 108 : 112)), $i % 5 ? '.25' : '.5');
                 endfor; ?>
                 <g transform="translate(240 220)">
                     <g class="ob-a-needle">
@@ -1098,11 +1096,11 @@ function hpt_onboarding_illustration($name)
                     <text x="58" y="274" class="ob-svg-text">Indexation</text>
                 </g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'local':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <g class="ob-a-float">
@@ -1120,7 +1118,7 @@ function hpt_onboarding_illustration($name)
                 <g class="ob-a-float ob-delay-2">
                     <rect x="300" y="226" width="150" height="56" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
                     <text x="316" y="248" class="ob-svg-text">Ouvert · 9:00–19:00</text>
-                    <g fill="#ffd27a"><?php for ($i = 0; $i < 5; $i++) : ?><path transform="translate(<?php echo 316 + $i * 14; ?> 258) scale(.5)" d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21l1.4-7L2 9.3l7-.8z"/><?php endfor; ?></g>
+                    <g fill="#ffd27a"><?php for ($i = 0; $i < 5; $i++) : ?><path transform="translate(<?php echo esc_attr(316 + $i * 14); ?> 258) scale(.5)" d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21l1.4-7L2 9.3l7-.8z"/><?php endfor; ?></g>
                 </g>
                 <g class="ob-a-float ob-delay-1">
                     <rect x="30" y="92" width="134" height="40" rx="12" fill="#101a45" stroke="#fff" stroke-opacity=".2"/>
@@ -1128,11 +1126,11 @@ function hpt_onboarding_illustration($name)
                     <text x="68" y="117" class="ob-svg-text">Appeler</text>
                 </g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'pages':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-violet)" class="ob-a-breathe"/>
                 <g class="ob-a-float">
@@ -1142,21 +1140,21 @@ function hpt_onboarding_illustration($name)
                     <text x="240" y="158" text-anchor="middle" class="ob-svg-score" style="font-size:52px">404</text>
                     <rect x="170" y="176" width="140" height="7" rx="3.5" fill="#fff" fill-opacity=".3"/>
                     <?php foreach ([0, 1, 2] as $i) : ?>
-                        <g transform="translate(150 <?php echo 198 + $i * 28; ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo 0.4 + 0.15 * $i; ?>s">
+                        <g transform="translate(150 <?php echo esc_attr(198 + $i * 28); ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo esc_attr(0.4 + 0.15 * $i); ?>s">
                             <rect width="180" height="20" rx="10" fill="#fff" fill-opacity=".1" stroke="#d2c4ff" stroke-opacity=".5"/>
-                            <path d="M12 10h<?php echo [90, 120, 70][$i]; ?>" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M12 10h<?php echo esc_attr([90, 120, 70][$i]); ?>" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
                             <path d="M162 6l4 4-4 4" fill="none" stroke="#d2c4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g></g>
                     <?php endforeach; ?>
                 </g>
-                <?php echo hpt_onboarding_badge(372, 106, hpt_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'); ?>
-                <?php echo hpt_onboarding_badge(108, 250, hpt_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'); ?>
+                <?php echo wp_kses(hpt_onboarding_badge(372, 106, hpt_icon('search', 24), 'ob-g-violet', 'ob-a-float ob-delay-2'), hpt_kses_ui()); ?>
+                <?php echo wp_kses(hpt_onboarding_badge(108, 250, hpt_icon('redirect', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui()); ?>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'cookies':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <g class="ob-a-float">
@@ -1166,39 +1164,39 @@ function hpt_onboarding_illustration($name)
                     <?php foreach ([0, 1, 2] as $i) :
                         $y = 140 + $i * 40;
                         ?>
-                        <rect x="144" y="<?php echo $y + 8; ?>" width="<?php echo [96, 120, 80][$i]; ?>" height="7" rx="3.5" fill="#fff" fill-opacity=".35"/>
-                        <g transform="translate(296 <?php echo $y; ?>)">
-                            <rect width="40" height="22" rx="11" class="ob-a-track" style="animation-delay:<?php echo 0.5 + 0.45 * $i; ?>s"/>
-                            <circle cx="29" cy="11" r="8" fill="#fff" class="ob-a-knob" style="animation-delay:<?php echo 0.5 + 0.45 * $i; ?>s"/>
+                        <rect x="144" y="<?php echo esc_attr($y + 8); ?>" width="<?php echo esc_attr([96, 120, 80][$i]); ?>" height="7" rx="3.5" fill="#fff" fill-opacity=".35"/>
+                        <g transform="translate(296 <?php echo esc_attr($y); ?>)">
+                            <rect width="40" height="22" rx="11" class="ob-a-track" style="animation-delay:<?php echo esc_attr(0.5 + 0.45 * $i); ?>s"/>
+                            <circle cx="29" cy="11" r="8" fill="#fff" class="ob-a-knob" style="animation-delay:<?php echo esc_attr(0.5 + 0.45 * $i); ?>s"/>
                         </g>
                     <?php endforeach; ?>
                     <rect x="144" y="256" width="92" height="18" rx="9" fill="none" stroke="#fff" stroke-opacity=".35"/>
                     <rect x="244" y="256" width="92" height="18" rx="9" fill="url(#ob-g-accent)"/>
                 </g>
-                <?php echo hpt_onboarding_badge(366, 82, hpt_icon('shield', 24), 'ob-g-green', 'ob-a-pop ob-delay-1'); ?>
+                <?php echo wp_kses(hpt_onboarding_badge(366, 82, hpt_icon('shield', 24), 'ob-g-green', 'ob-a-pop ob-delay-1'), hpt_kses_ui()); ?>
                 <g transform="translate(104 268)"><g class="ob-a-float ob-delay-2">
                     <circle r="30" fill="#f2b56b"/>
                     <circle cx="22" cy="-18" r="10" fill="#0b1437"/><circle cx="28" cy="-4" r="7" fill="#0b1437"/>
                     <circle cx="-10" cy="-8" r="4" fill="#8a5a22"/><circle cx="6" cy="10" r="4.5" fill="#8a5a22"/><circle cx="-12" cy="14" r="3" fill="#8a5a22"/><circle cx="4" cy="-16" r="3" fill="#8a5a22"/>
                 </g></g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'ai':
             $nodes = [[110, 92], [96, 220], [160, 300], [370, 86], [392, 196], [330, 292]];
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-violet)" class="ob-a-breathe"/>
                 <?php foreach ($nodes as $i => $n) : ?>
-                    <path d="M240 180 L<?php echo $n[0]; ?> <?php echo $n[1]; ?>" stroke="#fff" stroke-opacity=".14" stroke-width="1.5"/>
-                    <path d="M240 180 L<?php echo $n[0]; ?> <?php echo $n[1]; ?>" stroke="#8af0ff" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 160" class="ob-a-pulse" style="animation-delay:<?php echo 0.3 * $i; ?>s"/>
-                    <circle cx="<?php echo $n[0]; ?>" cy="<?php echo $n[1]; ?>" r="9" fill="#101a45" stroke="url(#ob-g-cyan)" stroke-width="2"/>
-                    <circle cx="<?php echo $n[0]; ?>" cy="<?php echo $n[1]; ?>" r="3.5" fill="#8af0ff" class="ob-a-twinkle" style="animation-delay:<?php echo 0.3 * $i; ?>s"/>
+                    <path d="M240 180 L<?php echo esc_attr($n[0]); ?> <?php echo esc_attr($n[1]); ?>" stroke="#fff" stroke-opacity=".14" stroke-width="1.5"/>
+                    <path d="M240 180 L<?php echo esc_attr($n[0]); ?> <?php echo esc_attr($n[1]); ?>" stroke="#8af0ff" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 160" class="ob-a-pulse" style="animation-delay:<?php echo esc_attr(0.3 * $i); ?>s"/>
+                    <circle cx="<?php echo esc_attr($n[0]); ?>" cy="<?php echo esc_attr($n[1]); ?>" r="9" fill="#101a45" stroke="url(#ob-g-cyan)" stroke-width="2"/>
+                    <circle cx="<?php echo esc_attr($n[0]); ?>" cy="<?php echo esc_attr($n[1]); ?>" r="3.5" fill="#8af0ff" class="ob-a-twinkle" style="animation-delay:<?php echo esc_attr(0.3 * $i); ?>s"/>
                 <?php endforeach; ?>
                 <g class="ob-a-float">
                     <?php foreach ([-24, -8, 8, 24] as $o) : ?>
-                        <path d="M<?php echo 240 + $o; ?> 126v-12M<?php echo 240 + $o; ?> 234v12M186 <?php echo 180 + $o; ?>h-12M294 <?php echo 180 + $o; ?>h12" stroke="#d2c4ff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M<?php echo esc_attr(240 + $o); ?> 126v-12M<?php echo esc_attr(240 + $o); ?> 234v12M186 <?php echo esc_attr(180 + $o); ?>h-12M294 <?php echo esc_attr(180 + $o); ?>h12" stroke="#d2c4ff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>
                     <?php endforeach; ?>
                     <rect x="186" y="126" width="108" height="108" rx="24" fill="url(#ob-g-violet)" filter="url(#ob-f-glow)"/>
                     <rect x="198" y="138" width="84" height="84" rx="16" fill="none" stroke="#fff" stroke-opacity=".4"/>
@@ -1218,11 +1216,11 @@ function hpt_onboarding_illustration($name)
                     <text x="378" y="155" class="ob-svg-text">ALT généré</text>
                 </g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'summary':
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo)" class="ob-a-breathe"/>
                 <g class="ob-a-spin"><circle cx="240" cy="180" r="150" fill="none" stroke="#fff" stroke-opacity=".14" stroke-dasharray="2 9"/></g>
@@ -1233,40 +1231,40 @@ function hpt_onboarding_illustration($name)
                         $y = 110 + $i * 42;
                         $grad = ['ob-g-cyan', 'ob-g-green', 'ob-g-accent', 'ob-g-violet'][$i];
                         ?>
-                        <g transform="translate(176 <?php echo $y; ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo 0.15 * $i; ?>s">
-                            <circle cx="11" cy="11" r="11" fill="url(#<?php echo $grad; ?>)"/>
+                        <g transform="translate(176 <?php echo esc_attr($y); ?>)"><g class="ob-a-tile" style="animation-delay:<?php echo esc_attr(0.15 * $i); ?>s">
+                            <circle cx="11" cy="11" r="11" fill="url(#<?php echo esc_attr($grad); ?>)"/>
                             <path d="M6 11l3.5 3.5L16 8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                            <rect x="32" y="4" width="<?php echo [92, 76, 100, 64][$i]; ?>" height="7" rx="3.5" fill="#fff" fill-opacity=".55"/>
-                            <rect x="32" y="15" width="<?php echo [60, 84, 52, 70][$i]; ?>" height="5" rx="2.5" fill="#fff" fill-opacity=".2"/>
+                            <rect x="32" y="4" width="<?php echo esc_attr([92, 76, 100, 64][$i]); ?>" height="7" rx="3.5" fill="#fff" fill-opacity=".55"/>
+                            <rect x="32" y="15" width="<?php echo esc_attr([60, 84, 52, 70][$i]); ?>" height="5" rx="2.5" fill="#fff" fill-opacity=".2"/>
                         </g></g>
                     <?php endforeach; ?>
                 </g>
                 <?php
-                echo hpt_onboarding_badge(110, 110, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1');
-                echo hpt_onboarding_badge(372, 140, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2');
-                echo hpt_onboarding_badge(120, 262, hpt_icon('sparkles', 24), 'ob-g-violet', 'ob-a-float ob-delay-3');
+                echo wp_kses(hpt_onboarding_badge(110, 110, hpt_icon('shield', 24), 'ob-g-cyan', 'ob-a-float ob-delay-1'), hpt_kses_ui());
+                echo wp_kses(hpt_onboarding_badge(372, 140, hpt_onboarding_icon('gauge', 24), 'ob-g-green', 'ob-a-float ob-delay-2'), hpt_kses_ui());
+                echo wp_kses(hpt_onboarding_badge(120, 262, hpt_icon('sparkles', 24), 'ob-g-violet', 'ob-a-float ob-delay-3'), hpt_kses_ui());
                 ?>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
 
         case 'done':
             $confetti = [[-120, -70, '#8af0ff'], [110, -90, '#7ef0c4'], [-90, 100, '#d2c4ff'], [130, 60, '#ffd27a'], [-150, 10, '#8aa4ff'], [150, -20, '#ff8a8a'],
                 [-40, -130, '#7ef0c4'], [50, 130, '#8af0ff'], [-130, -120, '#ffd27a'], [90, -140, '#d2c4ff'], [-60, 140, '#8aa4ff'], [160, 120, '#7ef0c4']];
-            echo $open;
+            echo '<svg class="ob-svg" viewBox="0 0 480 360" aria-hidden="true" focusable="false">';
             ?>
                 <circle cx="240" cy="180" r="170" fill="url(#ob-g-halo-green)" class="ob-a-breathe"/>
                 <circle cx="240" cy="180" r="80" fill="none" stroke="#7ef0c4" stroke-width="1.5" class="ob-a-ping"/>
                 <circle cx="240" cy="180" r="80" fill="none" stroke="#7ef0c4" stroke-width="1.5" class="ob-a-ping ob-delay-2"/>
                 <?php foreach ($confetti as $i => $c) : ?>
-                    <g transform="translate(240 180)"><rect x="-4" y="-4" width="8" height="<?php echo $i % 2 ? 8 : 14; ?>" rx="2" fill="<?php echo $c[2]; ?>" class="ob-a-burst" style="--dx:<?php echo $c[0]; ?>px;--dy:<?php echo $c[1]; ?>px;--r:<?php echo ($i * 47) % 360; ?>deg"/></g>
+                    <g transform="translate(240 180)"><rect x="-4" y="-4" width="8" height="<?php echo esc_attr($i % 2 ? 8 : 14); ?>" rx="2" fill="<?php echo esc_attr($c[2]); ?>" class="ob-a-burst" style="--dx:<?php echo esc_attr($c[0]); ?>px;--dy:<?php echo esc_attr($c[1]); ?>px;--r:<?php echo esc_attr(($i * 47) % 360); ?>deg"/></g>
                 <?php endforeach; ?>
                 <g class="ob-a-pop">
                     <circle cx="240" cy="180" r="76" fill="url(#ob-g-green)" filter="url(#ob-f-glow)"/>
                     <path d="M204 182l24 24 50-52" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" pathLength="100" class="ob-a-draw ob-delay-1"/>
                 </g>
             <?php
-            echo $close;
+            echo '</svg>';
             break;
     }
 }

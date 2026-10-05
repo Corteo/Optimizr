@@ -358,7 +358,7 @@ function haptic_GPT_enable_evenements_callback()
 {
     $options = get_option('hpt_options_settings');
     $enabled = isset($options['enable_evenements']) && $options['enable_evenements'];
-    echo hpt_switch_input('hpt_options_settings[enable_evenements]', $enabled, 'Activer le type Évènements');
+    echo wp_kses(hpt_switch_input('hpt_options_settings[enable_evenements]', $enabled, 'Activer le type Évènements'), hpt_kses_ui());
 }
 
 /**
@@ -382,7 +382,8 @@ function haptic_GPT_custom_cpts_callback()
     echo '</div>';
     echo '<button id="add_custom_cpt" type="button" class="optimizr-btn optimizr-btn--secondary">+ Ajouter un type</button>';
 ?>
-    <script>
+    <?php
+    wp_print_inline_script_tag(<<<'JS'
         document.getElementById('add_custom_cpt').addEventListener('click', function() {
             var container = document.getElementById('hpt_custom_cpts_container');
             // Index unique : les lignes supprimées ne doivent pas provoquer de collision
@@ -404,6 +405,7 @@ function haptic_GPT_custom_cpts_callback()
                 if (form) form.dispatchEvent(new Event('change'));
             }
         });
-    </script>
+    JS);
+    ?>
 <?php
 }

@@ -59,7 +59,7 @@ function hpt_redirects_normalize($url)
 /** Adresse demandée par le visiteur, normalisée. */
 function hpt_redirects_current_request()
 {
-    return hpt_redirects_normalize(wp_unslash($_SERVER['REQUEST_URI'] ?? '/'));
+    return hpt_redirects_normalize(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '/')));
 }
 
 /** URL complète de destination (chemin du site ou adresse externe). */
@@ -99,7 +99,7 @@ function hpt_redirects_wildcards()
 function hpt_redirects_refresh_cache()
 {
     global $wpdb;
-    $rules = (array) $wpdb->get_results('SELECT id, source, target, code FROM ' . hpt_redirects_table() . " WHERE source LIKE '%*' ORDER BY CHAR_LENGTH(source) DESC", ARRAY_A);
+    $rules = (array) $wpdb->get_results($wpdb->prepare('SELECT id, source, target, code FROM %i WHERE source LIKE %s ORDER BY CHAR_LENGTH(source) DESC', hpt_redirects_table(), '%*'), ARRAY_A);
     // Table inaccessible : rien en cache, nouvel essai à la prochaine page
     if (!$wpdb->last_error) {
         set_transient('hpt_redirects_wildcards', $rules);
@@ -119,7 +119,8 @@ function hpt_redirects_match($request)
     $path = strtok($request, '?');
 
     $rule = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM $table WHERE source IN (%s, %s) ORDER BY CHAR_LENGTH(source) DESC LIMIT 1",
+        'SELECT * FROM %i WHERE source IN (%s, %s) ORDER BY CHAR_LENGTH(source) DESC LIMIT 1',
+        $table,
         $request,
         $path
     ));
@@ -182,7 +183,7 @@ function hpt_redirects_save($source, $target, $code = 301, $note = '', $id = 0)
     }
 
     $data = ['source' => $source, 'target' => $target, 'code' => $code, 'note' => mb_substr(sanitize_text_field((string) $note), 0, 255)];
-    $existing = (int) $wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE source = %s", $source));
+    $existing = (int) $wpdb->get_var($wpdb->prepare('SELECT id FROM %i WHERE source = %s', $table, $source));
 
     if ($existing && $existing !== (int) $id) {
         if (!$id) {
@@ -232,7 +233,8 @@ add_action('template_redirect', function () {
 
     global $wpdb;
     $wpdb->query($wpdb->prepare(
-        'UPDATE ' . hpt_redirects_table() . ' SET hits = hits + 1, last_hit = %s WHERE id = %d',
+        'UPDATE %i SET hits = hits + 1, last_hit = %s WHERE id = %d',
+        hpt_redirects_table(),
         current_time('mysql'),
         $rule->id
     ));
@@ -251,7 +253,7 @@ add_action('template_redirect', function () {
     $url = hpt_redirects_target_url($rule->target);
 
     // Paramètres de la demande conservés si la destination n'en a pas (campagnes, suivi)
-    $query = (string) wp_parse_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_QUERY);
+    $query = (string) wp_parse_url(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_QUERY);
     if ($query !== '' && strpos($rule->source, '?') === false && strpos($url, '?') === false) {
         $url .= '?' . $query;
     }
@@ -286,8 +288,9 @@ add_action('template_redirect', function () {
     global $wpdb;
     $now = current_time('mysql');
     $wpdb->query($wpdb->prepare(
-        'INSERT INTO ' . hpt_404_table() . ' (path, referrer, hits, first_seen, last_seen) VALUES (%s, %s, 1, %s, %s)
+        'INSERT INTO %i (path, referrer, hits, first_seen, last_seen) VALUES (%s, %s, 1, %s, %s)
          ON DUPLICATE KEY UPDATE hits = hits + 1, last_seen = VALUES(last_seen), referrer = IF(VALUES(referrer) = \'\', referrer, VALUES(referrer))',
+        hpt_404_table(),
         $path,
         $referrer,
         $now,
@@ -296,9 +299,9 @@ add_action('template_redirect', function () {
 
     // 2 000 adresses au plus : les plus anciennes sont oubliées
     if (wp_rand(1, 50) === 1) {
-        $count = (int) $wpdb->get_var('SELECT COUNT(*) FROM ' . hpt_404_table());
+        $count = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', hpt_404_table()));
         if ($count > 2000) {
-            $wpdb->query('DELETE FROM ' . hpt_404_table() . ' ORDER BY last_seen ASC LIMIT ' . ($count - 2000));
+            $wpdb->query($wpdb->prepare('DELETE FROM %i ORDER BY last_seen ASC LIMIT %d', hpt_404_table(), $count - 2000));
         }
     }
 }, 99);

@@ -98,10 +98,7 @@ function hpt_uninstall_site()
     // Toujours : journal de debug (uploads/optimizr-logs, cf. hpt_log_dir()), autrefois effacé avec le dossier du plugin
     $log_dir = trailingslashit(wp_upload_dir(null, false)['basedir']) . 'optimizr-logs';
     if (is_dir($log_dir)) {
-        foreach (array_diff((array) scandir($log_dir), ['.', '..']) as $file) {
-            @unlink($log_dir . '/' . $file);
-        }
-        @rmdir($log_dir);
+        hpt_filesystem()->rmdir($log_dir, true);
     }
 
     // Toujours : caches temporaires (verrous de connexion, notices, token de mise à jour…)

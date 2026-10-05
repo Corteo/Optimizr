@@ -163,8 +163,8 @@ function hpt_sitemap_write_file($name, $content)
         return false;
     }
 
-    if (!@rename($tmp, $path)) {
-        @unlink($tmp);
+    if (!hpt_filesystem()->move($tmp, $path, true)) {
+        wp_delete_file($tmp);
         return false;
     }
 
@@ -237,7 +237,7 @@ function hpt_sitemap_publish(array $files)
     // Fichiers de découpage devenus inutiles (le site a perdu des contenus)
     foreach ((array) glob(ABSPATH . 'sitemap-*.xml') as $path) {
         if (!isset($files[basename($path)]) && hpt_sitemap_is_ours($path)) {
-            @unlink($path);
+            wp_delete_file($path);
         }
     }
 
@@ -371,7 +371,7 @@ function hpt_sitemap_serve()
     // Site simple : fichier présent, mais la requête arrive tout de même à WordPress (configuration du serveur)
     if (!is_multisite() && is_file(ABSPATH . $name)) {
         header('Content-Type: application/xml; charset=utf-8');
-        readfile(ABSPATH . $name);
+        echo hpt_filesystem()->get_contents(ABSPATH . $name); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sitemap XML écrit par hpt_sitemap_write_file().
         exit;
     }
 
@@ -395,7 +395,7 @@ function hpt_sitemap_serve()
     }
 
     header('Content-Type: application/xml; charset=utf-8');
-    echo $files[$name];
+    echo $files[$name]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XML construit par hpt_sitemap_build(), valeurs échappées à la construction.
     exit;
 }
 // Avant redirect_canonical(), qui redirigerait vers /sitemap.xml/

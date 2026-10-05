@@ -41,8 +41,8 @@ function hpt_options_featured_image_post_types_callback()
 
     echo '<div class="optimizr-pills">';
     foreach ($post_types as $post_type) {
-        $checked = is_array($option) && in_array($post_type->name, $option) ? 'checked="checked"' : '';
-        echo '<label class="optimizr-pill"><input type="checkbox" name="hpt_option_featured_image_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label>';
+        $checked = is_array($option) && in_array($post_type->name, $option, true);
+        echo '<label class="optimizr-pill"><input type="checkbox" name="hpt_option_featured_image_post_types[]" value="' . esc_attr($post_type->name) . '" ' . checked($checked, true, false) . ' /> ' . esc_html($post_type->label) . '</label>';
     }
     echo '</div>';
 }

@@ -193,6 +193,7 @@ add_action('wp_head', function () {
     $title = hpt_seo_current_title();
     $html = ob_get_clean();
 
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- <head> déjà produit par WordPress et le thème, seul le <title> est remplacé (échappé ci-dessous).
     echo preg_replace_callback('#<title\b[^>]*>.*?</title>#is', function () use ($title) {
         return '<title>' . esc_html($title) . '</title>';
     }, $html, 1);
@@ -245,8 +246,11 @@ function hpt_generate_meta_tags()
             if ($content === '' || $content === false || $content === null) {
                 continue;
             }
-            $value = in_array($property, ['og:url', 'og:image'], true) ? esc_url($content) : esc_attr($content);
-            echo '<meta property="' . esc_attr($property) . '" content="' . $value . '">' . PHP_EOL;
+            if (in_array($property, ['og:url', 'og:image'], true)) {
+                echo '<meta property="' . esc_attr($property) . '" content="' . esc_url($content) . '">' . PHP_EOL;
+            } else {
+                echo '<meta property="' . esc_attr($property) . '" content="' . esc_attr($content) . '">' . PHP_EOL;
+            }
         }
 
         echo '<meta name="twitter:card" content="' . ($seo['image'] ? 'summary_large_image' : 'summary') . '">' . PHP_EOL;

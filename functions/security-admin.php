@@ -92,7 +92,7 @@ function hpt_sec_register_settings()
 function hpt_sec_add_toggle($name, $label, $description, $section)
 {
     add_settings_field('hpt_sec_' . $name, $label, function () use ($name, $label) {
-        echo hpt_switch_input('hpt_sec_' . $name, hpt_sec_option($name), $label);
+        echo wp_kses(hpt_switch_input('hpt_sec_' . $name, hpt_sec_option($name), $label), hpt_kses_ui());
     }, hpt_settings_page('security'), $section, ['description' => $description]);
 }
 
@@ -106,11 +106,11 @@ function hpt_sec_login_slug_callback()
         <input type="text" name="hpt_sec_login_slug" id="hpt_sec_login_slug" value="<?php echo esc_attr($slug); ?>" placeholder="laisser vide pour garder wp-login.php" spellcheck="false" autocomplete="off" />
     </div>
     <?php if (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) : ?>
-        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Désactivée par la constante <code>OPTIMIZR_DISABLE_CUSTOM_LOGIN</code> dans wp-config.php : la connexion se fait par wp-login.php.</span></div>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><span>Désactivée par la constante <code>OPTIMIZR_DISABLE_CUSTOM_LOGIN</code> dans wp-config.php : la connexion se fait par wp-login.php.</span></div>
     <?php elseif (is_multisite()) : ?>
-        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Non disponible sur un réseau multisite.</span></div>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><span>Non disponible sur un réseau multisite.</span></div>
     <?php elseif ($slug !== '') : ?>
-        <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span><strong>Connexion :</strong> <a href="<?php echo esc_url(hpt_sec_login_url()); ?>"><?php echo esc_html(hpt_sec_login_url()); ?></a> — wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs.</span></div>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(hpt_icon('check', 18), hpt_kses_ui()); ?><span><strong>Connexion :</strong> <a href="<?php echo esc_url(hpt_sec_login_url()); ?>"><?php echo esc_html(hpt_sec_login_url()); ?></a> — wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs.</span></div>
     <?php endif; ?>
     <p class="optimizr-field__help">Ajoutez la nouvelle adresse à vos favoris : un email la rappelle à l'administrateur à chaque changement. En cas de blocage, ajoutez <code>define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);</code> dans wp-config.php.</p>
     <?php
@@ -118,7 +118,7 @@ function hpt_sec_login_slug_callback()
 
 function hpt_sec_limit_login_callback()
 {
-    echo hpt_switch_input('hpt_sec_limit_login', hpt_sec_option('limit_login'), 'Limiter les tentatives de connexion');
+    echo wp_kses(hpt_switch_input('hpt_sec_limit_login', hpt_sec_option('limit_login'), 'Limiter les tentatives de connexion'), hpt_kses_ui());
     ?>
     <div class="optimizr-inline">
         <label class="optimizr-muted" for="hpt_sec_login_max">Verrouiller après</label>
@@ -135,28 +135,28 @@ function hpt_sec_limit_login_callback()
 
 function hpt_sec_proxies_callback()
 {
-    $remote = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ?: '';
+    $remote = filter_var(sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? '')), FILTER_VALIDATE_IP) ?: '';
     $client = hpt_sec_client_ip();
     // En-têtes qui contiennent déjà l'adresse vue par le serveur : il les a lui-même traités (mod_remoteip, real_ip de nginx), rien à déclarer
     $forwarded = array_filter(array_map('trim', array_merge(
-        [(string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? '')],
-        explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''))
+        [sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''))],
+        explode(',', sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')))
     )));
     $proxied = $forwarded && !in_array($remote, $forwarded, true);
     ?>
     <div class="optimizr-check-row">
-        <?php echo hpt_switch_input('hpt_sec_proxy_cloudflare', hpt_sec_option('proxy_cloudflare'), 'Site derrière Cloudflare'); ?>
+        <?php echo wp_kses(hpt_switch_input('hpt_sec_proxy_cloudflare', hpt_sec_option('proxy_cloudflare'), 'Site derrière Cloudflare'), hpt_kses_ui()); ?>
         <span><strong>Site derrière Cloudflare</strong><br><span class="optimizr-muted">Adresse du visiteur lue dans l'en-tête CF-Connecting-IP, pour les seules requêtes venant des serveurs de Cloudflare.</span></span>
     </div>
     <label for="hpt_sec_trusted_proxies" class="optimizr-muted">Autres proxys : adresses IP ou plages CIDR, une par ligne</label>
     <textarea name="hpt_sec_trusted_proxies" id="hpt_sec_trusted_proxies" rows="2" class="optimizr-code" spellcheck="false" placeholder="10.0.0.0/8"><?php echo esc_textarea(hpt_sec_option('trusted_proxies', '')); ?></textarea>
     <p class="optimizr-field__help">Pour une requête venant de ces adresses, celle du visiteur est lue dans l'en-tête X-Forwarded-For. N'ajoutez que les adresses de vos proxys (hébergeur, CDN, répartiteur de charge) : une adresse déclarée peut transmettre n'importe quelle adresse de visiteur. Laissez vide si le site n'est derrière aucun proxy.</p>
     <?php if ($remote !== '' && $client !== $remote) : ?>
-        <div class="optimizr-notice optimizr-notice--ok"><?php echo hpt_icon('check', 18); ?><span>Votre requête passe par le proxy <code><?php echo esc_html($remote); ?></code> : votre adresse retenue est <code><?php echo esc_html($client); ?></code>.</span></div>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(hpt_icon('check', 18), hpt_kses_ui()); ?><span>Votre requête passe par le proxy <code><?php echo esc_html($remote); ?></code> : votre adresse retenue est <code><?php echo esc_html($client); ?></code>.</span></div>
     <?php elseif ($remote !== '' && hpt_sec_ip_in_ranges($remote, hpt_sec_trusted_proxies())) : ?>
-        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Votre requête vient du proxy déclaré <code><?php echo esc_html($remote); ?></code>, mais il ne transmet aucune adresse de visiteur lisible : c'est la sienne qui est retenue.</span></div>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><span>Votre requête vient du proxy déclaré <code><?php echo esc_html($remote); ?></code>, mais il ne transmet aucune adresse de visiteur lisible : c'est la sienne qui est retenue.</span></div>
     <?php elseif ($proxied) : ?>
-        <div class="optimizr-notice optimizr-notice--warn"><?php echo hpt_icon('alert', 18); ?><span>Votre requête semble passer par un proxy (adresse vue par le serveur : <code><?php echo esc_html($remote); ?></code>). S'il est le vôtre, déclarez-le ici.</span></div>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(hpt_icon('alert', 18), hpt_kses_ui()); ?><span>Votre requête semble passer par un proxy (adresse vue par le serveur : <code><?php echo esc_html($remote); ?></code>). S'il est le vôtre, déclarez-le ici.</span></div>
     <?php endif; ?>
     <?php
 }
@@ -167,13 +167,13 @@ function hpt_sec_file_edit_callback()
         echo '<p class="optimizr-muted">Déjà ' . (DISALLOW_FILE_EDIT ? 'désactivé' : 'réglé') . ' par la constante <code>DISALLOW_FILE_EDIT</code> dans wp-config.php.</p>';
         return;
     }
-    echo hpt_switch_input('hpt_sec_disable_file_edit', hpt_sec_option('disable_file_edit'), 'Désactiver l\'éditeur de fichiers');
+    echo wp_kses(hpt_switch_input('hpt_sec_disable_file_edit', hpt_sec_option('disable_file_edit'), 'Désactiver l\'éditeur de fichiers'), hpt_kses_ui());
 }
 
 function hpt_sec_uploads_callback()
 {
     global $is_apache, $is_nginx;
-    echo hpt_switch_input('hpt_sec_uploads_php', hpt_sec_option('uploads_php'), 'Bloquer le PHP dans les médias');
+    echo wp_kses(hpt_switch_input('hpt_sec_uploads_php', hpt_sec_option('uploads_php'), 'Bloquer le PHP dans les médias'), hpt_kses_ui());
 
     if (hpt_sec_option('uploads_php')) {
         echo hpt_sec_uploads_rule_present()
@@ -191,7 +191,7 @@ function hpt_sec_hsts_callback()
         echo '<p class="optimizr-muted">Disponible uniquement pour un site servi en HTTPS.</p>';
         return;
     }
-    echo hpt_switch_input('hpt_sec_hsts', hpt_sec_option('hsts'), 'Forcer HTTPS');
+    echo wp_kses(hpt_switch_input('hpt_sec_hsts', hpt_sec_option('hsts'), 'Forcer HTTPS'), hpt_kses_ui());
     echo '<p class="optimizr-field__help">À n\'activer que si le site et tous ses sous-domaines fonctionnent en HTTPS (avec « En-têtes recommandés »).</p>';
 }
 
@@ -220,13 +220,13 @@ add_action('hpt_admin_aside_security', function () {
             <ul class="optimizr-checks">
                 <?php foreach (hpt_sec_environment_checks() as $check) : ?>
                     <li class="optimizr-checks__item">
-                        <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo hpt_icon($check['status'] === 'ok' ? 'check' : 'alert', 14); ?></span>
+                        <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo wp_kses(hpt_icon($check['status'] === 'ok' ? 'check' : 'alert', 14), hpt_kses_ui()); ?></span>
                         <span class="optimizr-checks__label"><?php echo esc_html($check['label']); ?></span>
                     </li>
                 <?php endforeach; ?>
                 <?php foreach ($protections as $label => $on) : ?>
                     <li class="optimizr-checks__item">
-                        <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo $on ? 'ok' : 'off'; ?>"><?php echo hpt_icon($on ? 'check' : 'alert', 14); ?></span>
+                        <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo $on ? 'ok' : 'off'; ?>"><?php echo wp_kses(hpt_icon($on ? 'check' : 'alert', 14), hpt_kses_ui()); ?></span>
                         <span class="optimizr-checks__label"><?php echo esc_html($label); ?></span>
                     </li>
                 <?php endforeach; ?>
