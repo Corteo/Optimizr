@@ -7,25 +7,25 @@ if (!defined('ABSPATH')) {
 /*
  * Liens cassés : recherche des liens et des images introuvables dans les contenus publiés.
  *
- * Deux étapes pilotées par le navigateur (action AJAX hpt_links_scan, js/optimizr-admin.js) :
+ * Deux étapes pilotées par le navigateur (action AJAX haptic_links_scan, js/optimizr-admin.js) :
  * 1. « collect » rassemble les adresses uniques et les contenus qui les citent ;
  * 2. « check » en vérifie quelques-unes par requête, jusqu'à la fin de la liste.
- * Le dernier rapport est conservé dans l'option hpt_links_report.
+ * Le dernier rapport est conservé dans l'option haptic_links_report.
  */
 
 /** Nombre maximal d'adresses vérifiées par analyse. */
-const HPT_LINKS_MAX = 2000;
+const HAPTIC_LINKS_MAX = 2000;
 
 /**
  * Adresses vérifiées par requête AJAX : au pire 2 × (5 s HEAD + 5 s GET), loin des délais
  * d'exécution courants (30 s pour PHP, 60 s pour nginx).
  */
-const HPT_LINKS_BATCH = 2;
+const HAPTIC_LINKS_BATCH = 2;
 
 /** Types de contenu analysés : ceux du sitemap s'il est configuré, sinon articles et pages. */
-function hpt_links_post_types()
+function haptic_links_post_types()
 {
-    return array_values(array_filter((array) get_option('hpt_sitemap_post_types', ['post', 'page'])));
+    return array_values(array_filter((array) get_option('haptic_sitemap_post_types', ['post', 'page'])));
 }
 
 /**
@@ -33,7 +33,7 @@ function hpt_links_post_types()
  *
  * @return string[]
  */
-function hpt_links_extract($html)
+function haptic_links_extract($html)
 {
     preg_match_all('#<(?:a|img)\b[^>]*?\s(?:href|src)\s*=\s*(["\'])(.*?)\1#is', (string) $html, $matches);
 
@@ -57,7 +57,7 @@ function hpt_links_extract($html)
     return array_unique($urls);
 }
 
-function hpt_links_is_internal($url)
+function haptic_links_is_internal($url)
 {
     return strcasecmp((string) wp_parse_url($url, PHP_URL_HOST), (string) wp_parse_url(home_url(), PHP_URL_HOST)) === 0;
 }
@@ -67,9 +67,9 @@ function hpt_links_is_internal($url)
  *
  * @return array ['state' => ok|broken|blocked|error, 'code' => int, 'label' => string]
  */
-function hpt_links_check($url)
+function haptic_links_check($url)
 {
-    $internal = hpt_links_is_internal($url);
+    $internal = haptic_links_is_internal($url);
 
     // Domaine accentué d'un autre site : forme ASCII (punycode), seule résolue par wp_http_validate_url()
     // (celui du site, même accentué, est reconnu tel quel)
@@ -85,7 +85,7 @@ function hpt_links_check($url)
     // Liens saisis par les auteurs : jamais de requête vers le réseau local du serveur ni vers un port inhabituel
     // (wp_http_validate_url, comme wp_safe_remote_* ; les adresses du site lui-même restent autorisées)
     if (!wp_http_validate_url($url)) {
-        return ['state' => 'error', 'code' => 0, 'label' => 'Inaccessible (domaine introuvable ou adresse non autorisée)'];
+        return ['state' => 'error', 'code' => 0, 'label' => __('Unreachable (domain not found or address not allowed)', 'optimizr')];
     }
 
     $args = [
@@ -107,23 +107,35 @@ function hpt_links_check($url)
     }
 
     if (is_wp_error($response)) {
-        return ['state' => 'error', 'code' => 0, 'label' => 'Inaccessible (' . $response->get_error_message() . ')'];
+        /* translators: %s: HTTP error message */
+        return ['state' => 'error', 'code' => 0, 'label' => sprintf(__('Unreachable (%s)', 'optimizr'), $response->get_error_message())];
     }
     if ($code >= 200 && $code < 400) {
         return ['state' => 'ok', 'code' => $code, 'label' => (string) $code];
     }
     if (in_array($code, [401, 403, 429], true)) {
         // Protection anti-robots fréquente sur les sites externes : à vérifier à la main
-        return ['state' => 'blocked', 'code' => $code, 'label' => $code . ' — accès refusé au vérificateur, à contrôler'];
+        /* translators: %d: HTTP status code */
+        return ['state' => 'blocked', 'code' => $code, 'label' => sprintf(__('%d — access denied to the checker, check manually', 'optimizr'), $code)];
     }
-    $labels = [404 => 'Page introuvable', 410 => 'Supprimée définitivement'];
-    return ['state' => 'broken', 'code' => $code, 'label' => $code . ' — ' . ($labels[$code] ?? ($code >= 500 ? 'Erreur du serveur' : 'Erreur'))];
+    $labels = [
+        /* translators: %d: HTTP status code (404) */
+        404 => __('%d — Page not found', 'optimizr'),
+        /* translators: %d: HTTP status code (410) */
+        410 => __('%d — Permanently deleted', 'optimizr'),
+    ];
+    $label = $labels[$code] ?? ($code >= 500
+        /* translators: %d: HTTP status code (5xx) */
+        ? __('%d — Server error', 'optimizr')
+        /* translators: %d: HTTP status code */
+        : __('%d — Error', 'optimizr'));
+    return ['state' => 'broken', 'code' => $code, 'label' => sprintf($label, $code)];
 }
 
-add_action('wp_ajax_hpt_links_scan', function () {
-    check_ajax_referer('hpt_links_scan', 'nonce');
+add_action('wp_ajax_haptic_links_scan', function () {
+    check_ajax_referer('haptic_links_scan', 'nonce');
     if (!current_user_can('manage_options')) {
-        wp_send_json_error('Permissions insuffisantes.');
+        wp_send_json_error(__('Insufficient permissions.', 'optimizr'));
     }
 
     $step = sanitize_key($_POST['step'] ?? '');
@@ -133,15 +145,15 @@ add_action('wp_ajax_hpt_links_scan', function () {
         $page = 1;
         do {
             $posts = get_posts([
-                'post_type' => hpt_links_post_types(),
+                'post_type' => haptic_links_post_types(),
                 'post_status' => 'publish',
                 'numberposts' => 200,
                 'paged' => $page++,
                 'suppress_filters' => false,
             ]);
             foreach ($posts as $post) {
-                foreach (hpt_links_extract($post->post_content) as $url) {
-                    if (count($queue) >= HPT_LINKS_MAX && !isset($queue[$url])) {
+                foreach (haptic_links_extract($post->post_content) as $url) {
+                    if (count($queue) >= HAPTIC_LINKS_MAX && !isset($queue[$url])) {
                         continue;
                     }
                     $queue[$url][] = $post->ID;
@@ -149,30 +161,30 @@ add_action('wp_ajax_hpt_links_scan', function () {
             }
         } while (count($posts) === 200);
 
-        update_option('hpt_links_queue', $queue, false);
-        update_option('hpt_links_report', ['date' => current_time('mysql'), 'checked' => 0, 'total' => count($queue), 'running' => true, 'issues' => []], false);
+        update_option('haptic_links_queue', $queue, false);
+        update_option('haptic_links_report', ['date' => current_time('mysql'), 'checked' => 0, 'total' => count($queue), 'running' => true, 'issues' => []], false);
 
         wp_send_json_success(['total' => count($queue)]);
     }
 
     if ($step === 'check') {
-        $queue = (array) get_option('hpt_links_queue', []);
-        $report = (array) get_option('hpt_links_report', []);
-        $batch = array_slice($queue, 0, HPT_LINKS_BATCH, true);
+        $queue = (array) get_option('haptic_links_queue', []);
+        $report = (array) get_option('haptic_links_report', []);
+        $batch = array_slice($queue, 0, HAPTIC_LINKS_BATCH, true);
         $found = [];
 
         foreach ($batch as $url => $sources) {
-            $result = hpt_links_check($url);
+            $result = haptic_links_check($url);
             if ($result['state'] !== 'ok') {
                 $issue = [
                     'url'      => $url,
-                    'internal' => hpt_links_is_internal($url),
+                    'internal' => haptic_links_is_internal($url),
                     'sources'  => array_values(array_unique(array_map('intval', $sources))),
                 ] + $result;
                 $report['issues'][] = $issue;
                 // Ligne prête à afficher, mise en forme par le même gabarit que la liste enregistrée
                 ob_start();
-                hpt_links_render_row($issue);
+                haptic_links_render_row($issue);
                 $found[] = ob_get_clean();
             }
             unset($queue[$url]);
@@ -180,8 +192,8 @@ add_action('wp_ajax_hpt_links_scan', function () {
 
         $report['checked'] = (int) ($report['checked'] ?? 0) + count($batch);
         $report['running'] = !empty($queue);
-        update_option('hpt_links_queue', $queue, false);
-        update_option('hpt_links_report', $report, false);
+        update_option('haptic_links_queue', $queue, false);
+        update_option('haptic_links_report', $report, false);
 
         wp_send_json_success([
             'checked'   => $report['checked'],
@@ -191,5 +203,5 @@ add_action('wp_ajax_hpt_links_scan', function () {
         ]);
     }
 
-    wp_send_json_error('Étape inconnue.');
+    wp_send_json_error(__('Unknown step.', 'optimizr'));
 });

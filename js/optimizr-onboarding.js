@@ -5,6 +5,9 @@
 (function () {
     'use strict';
 
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
+
     var form = document.querySelector('[data-ob-form]');
     if (!form) return;
 
@@ -68,11 +71,12 @@
         var last = index === list.length - 1;
         prev.hidden = index === 0;
         next.classList.toggle('is-hidden', last);
-        next.textContent = index === 0 ? 'Commencer' : 'Continuer';
+        next.textContent = index === 0 ? __('Get started', 'optimizr') : __('Continue', 'optimizr');
         submit.classList.toggle('is-visible', last);
 
         if (progress) progress.style.width = Math.round((index / (list.length - 1)) * 100) + '%';
-        if (count) count.textContent = 'Étape ' + (index + 1) + ' sur ' + list.length;
+        /* translators: 1: current step number, 2: total number of steps */
+        if (count) count.textContent = sprintf(__('Step %1$s of %2$s', 'optimizr'), index + 1, list.length);
 
         if (slug === 'summary') buildSummary(list);
 
@@ -111,16 +115,17 @@
                 var value = input.tagName === 'SELECT'
                     ? (input.selectedIndex > -1 ? input.options[input.selectedIndex].text : '')
                     : input.value.trim().split(/\s*\n\s*/).join(', ');
-                if (value) items.push(input.dataset.summaryValue + ' : ' + (input.dataset.summaryPrefix || '') + value);
+                /* translators: 1: setting label, 2: entered value */
+                if (value) items.push(sprintf(__('%1$s: %2$s', 'optimizr'), input.dataset.summaryValue, (input.dataset.summaryPrefix || '') + value));
             });
             var key = step.querySelector('[data-ob-key]');
-            if (key && key.value.trim()) items.push('Nouvelle clé API');
+            if (key && key.value.trim()) items.push(__('New API key', 'optimizr'));
 
             var group = el('section', 'ob-summary__group');
             group.style.animationDelay = (i * 0.06) + 's';
             var head = el('div', 'ob-summary__head');
             head.appendChild(el('h2', 'ob-summary__title', step.querySelector('.ob-step__eyebrow').textContent));
-            var edit = el('button', 'ob-summary__edit', 'Modifier');
+            var edit = el('button', 'ob-summary__edit', __('Edit', 'optimizr'));
             edit.type = 'button';
             edit.addEventListener('click', function () { show(i, true); });
             head.appendChild(edit);
@@ -131,7 +136,7 @@
                 items.forEach(function (item) { ul.appendChild(el('li', '', item)); });
                 group.appendChild(ul);
             } else {
-                group.appendChild(el('p', 'ob-summary__empty', 'Rien d\'activé.'));
+                group.appendChild(el('p', 'ob-summary__empty', __('Nothing enabled.', 'optimizr')));
             }
             box.appendChild(group);
         });
@@ -143,7 +148,7 @@
     var keyLink = form.querySelector('[data-ob-key-link]');
 
     function syncProvider() {
-        var radio = form.querySelector('input[name="hpt_ai_provider"]:checked');
+        var radio = form.querySelector('input[name="haptic_ai_provider"]:checked');
         if (!radio || !keyInput) return;
         keyInput.placeholder = radio.dataset.hasKey === '1' ? keyInput.dataset.placeholderSaved : keyInput.dataset.placeholderEmpty;
         if (keyLink) {
@@ -152,7 +157,7 @@
         }
     }
 
-    form.querySelectorAll('input[name="hpt_ai_provider"]').forEach(function (radio) {
+    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
         radio.addEventListener('change', function () {
             keyInput.value = '';
             syncProvider();
@@ -161,7 +166,7 @@
     syncProvider();
 
     // Modèle proposé selon le fournisseur choisi
-    form.querySelectorAll('input[name="hpt_ai_provider"]').forEach(function (radio) {
+    form.querySelectorAll('input[name="haptic_ai_provider"]').forEach(function (radio) {
         radio.addEventListener('change', function () {
             form.querySelectorAll('[data-ob-provider-row]').forEach(function (row) {
                 row.hidden = row.dataset.obProviderRow !== radio.value;
@@ -175,7 +180,8 @@
     var suggest = form.querySelector('[data-ob-suggest-slug]');
     if (suggest && slugInput) {
         suggest.addEventListener('click', function () {
-            var words = ['espace', 'acces', 'gestion', 'atelier', 'bureau', 'coulisses'];
+            /* translators: comma-separated words used to suggest a login URL; letters a-z only, no spaces or accents */
+            var words = __('area,access,manage,workshop,office,backstage', 'optimizr').split(',');
             var rand = Math.random().toString(36).slice(2, 6);
             slugInput.value = words[Math.floor(Math.random() * words.length)] + '-' + rand;
             slugInput.focus();
@@ -191,7 +197,7 @@
             if (lines.indexOf(ip) === -1) lines.push(ip);
             area.value = lines.join('\n');
             addIp.disabled = true;
-            addIp.textContent = 'Adresse ajoutée';
+            addIp.textContent = __('Address added', 'optimizr');
         });
     }
 
@@ -244,7 +250,7 @@
             return;
         }
         submit.setAttribute('aria-busy', 'true');
-        submit.textContent = 'Application…';
+        submit.textContent = __('Applying…', 'optimizr');
     });
 
     // Un module décoché en revenant en arrière ne doit pas laisser l'étape courante hors de la liste

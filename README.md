@@ -4,7 +4,7 @@ Plugin WordPress qui regroupe, dans une seule page d'administration, les réglag
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-**Version actuelle :** 2.5.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 3.0.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -72,17 +72,13 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 - **En-têtes de sécurité** (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) et HSTS en option.
 - **Bilan** : HTTPS, compte « admin », affichage des erreurs PHP, version de PHP, journal des verrouillages et alertes (30 jours).
 
-### Outils développeur
-- Mode debug : journal dans `wp-content/uploads/optimizr-logs/` (requêtes des administrateurs, tâches planifiées et WP-CLI) et alerte des erreurs PHP dans l'administration.
-- Fonction `vd($variable)` : affiche le contenu d'une variable dans une fenêtre, visible par les seuls administrateurs.
-
 ### Outils
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
 - **Suppression du plugin** : à la désactivation (ou dans l'onglet Outils), on choisit ce qui sera effacé si le plugin est ensuite supprimé : réglages, redirections et SEO des contenus, journaux. Par défaut, tout est conservé ; les tâches planifiées, caches et fichiers générés sont toujours supprimés.
 
 ## Prérequis
 
-- WordPress 6.1 ou plus récent
+- WordPress 6.2 ou plus récent
 - PHP 7.4 ou plus récent
 - ACF Pro, uniquement pour les champs du type « Évènements »
 - Une clé API OpenAI, Anthropic ou Google, uniquement pour l'Assistant IA
@@ -123,26 +119,26 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 | Hook | Type | Rôle |
 |---|---|---|
-| `hpt_modules` | filtre | Ajouter ou modifier un module du tableau de bord. |
-| `hpt_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
-| `hpt_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
-| `hpt_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
-| `hpt_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
-| `hpt_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
-| `hpt_ai_providers` | filtre | Fournisseurs, modèles proposés et tarifs (dollars pour 1 million de tokens), à ajuster quand un fournisseur change ses prix ou ses modèles. |
-| `hpt_ai_capability` | filtre | Droit requis pour lancer une génération IA facturée (`publish_posts` par défaut). |
-| `hpt_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
-| `hpt_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
-| `hpt_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
-| `before_hpt_options_enqueue_scripts` / `after_…` | action | Charger des scripts côté site. |
-| `before_hpt_options_enqueue_admin_scripts` / `after_…` | action | Charger des scripts côté administration. |
+| `haptic_modules` | filtre | Ajouter ou modifier un module du tableau de bord. |
+| `haptic_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
+| `haptic_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
+| `haptic_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
+| `haptic_sitemap_excluded_ids` | filtre | Exclure des contenus du sitemap (tableau d'ID). |
+| `haptic_sitemap_max_urls` | filtre | Nombre d'URL par fichier de sitemap (50 000 par défaut). |
+| `haptic_ai_providers` | filtre | Fournisseurs, modèles proposés et tarifs (dollars pour 1 million de tokens), à ajuster quand un fournisseur change ses prix ou ses modèles. |
+| `haptic_ai_capability` | filtre | Droit requis pour lancer une génération IA facturée (`publish_posts` par défaut). |
+| `haptic_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
+| `haptic_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
+| `haptic_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
+| `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
+| `haptic_before_enqueue_admin_scripts` / `haptic_after_…` | action | Charger des scripts côté administration. |
 
-Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant `hpt_settings_group($onglet)` pour `register_setting()` et `hpt_settings_page($onglet)` pour `add_settings_section()` et `add_settings_field()`. Les sections sont affichées sous forme de cartes ; l'argument `toggle` d'une section place un interrupteur dans son en-tête.
+Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant `haptic_settings_group($onglet)` pour `register_setting()` et `haptic_settings_page($onglet)` pour `add_settings_section()` et `add_settings_field()`. Les sections sont affichées sous forme de cartes ; l'argument `toggle` d'une section place un interrupteur dans son en-tête.
 
 ### Organisation du code
 
 ```
-hpt_options.php          Fichier principal : constantes, chargement des modules
+optimizr.php             Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
 functions/tabs.php       Affichage des sections en cartes
@@ -160,10 +156,13 @@ functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité (+ security-admin.php : onglet de réglages)
-functions/settings.php   Module Outils développeur (+ functions/utils.php)
 functions/updates.php    Mises à jour depuis GitHub (absent de la version WordPress.org)
 css/, js/                Interface de la page d'options
 ```
+
+### Traductions
+
+Les textes du code sont en anglais (domaine `optimizr`) ; la traduction française est dans `languages/optimizr-fr_FR.po`. Après avoir ajouté ou modifié un texte, ajoutez sa traduction au `.po` puis lancez `python3 bin/build-translations.py`, qui produit le `.mo` (PHP), un `.json` par script JS et le modèle `optimizr.pot`. Un script JS traduit dépend de `wp-i18n` et appelle `wp_set_script_translations()`.
 
 ### Numérotation des versions
 
@@ -176,9 +175,9 @@ Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.M
 
 Pour publier une version :
 
-1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HPT_OPTIMIZR_VERSION` de `hpt_options.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
+1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `hpt_options.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
+3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `optimizr.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
    - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en beta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
    - **Pré-version** : fusionnez seulement dans `beta`.
 
@@ -191,11 +190,11 @@ Le plugin existe en deux distributions construites à partir du même code :
 - **GitHub** (ce dépôt tel quel) : mises à jour par GitHub avec les canaux Stable, Beta et Développement.
 - **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `js/optimizr-updates.js`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`.
 
-Le bouton « Vérifier les mises à jour » et la carte du canal sont ajoutés par `functions/updates.php` via les actions `hpt_header_actions` et `hpt_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
+Le bouton « Vérifier les mises à jour » et la carte du canal sont ajoutés par `functions/updates.php` via les actions `haptic_header_actions` et `haptic_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 
-Une migration à exécuter une seule fois se place dans `hpt_options_maybe_upgrade()` (`functions/activation.php`).
+Une migration à exécuter une seule fois se place dans `haptic_options_maybe_upgrade()` (`functions/activation.php`).
 
-Les modèles et tarifs sont dans `hpt_ai_providers()` (`functions/ai-pricing.php`), avec leur date de relevé `HPT_AI_PRICING_DATE` : à vérifier à chaque version sur les grilles officielles d'[OpenAI](https://developers.openai.com/api/docs/pricing), d'[Anthropic](https://platform.claude.com/docs/en/about-claude/pricing) et de [Google](https://ai.google.dev/gemini-api/docs/pricing).
+Les modèles et tarifs sont dans `haptic_ai_providers()` (`functions/ai-pricing.php`), avec leur date de relevé `HAPTIC_AI_PRICING_DATE` : à vérifier à chaque version sur les grilles officielles d'[OpenAI](https://developers.openai.com/api/docs/pricing), d'[Anthropic](https://platform.claude.com/docs/en/about-claude/pricing) et de [Google](https://ai.google.dev/gemini-api/docs/pricing).
 
 ## Auteur
 

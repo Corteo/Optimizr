@@ -1,16 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const titleInput = document.getElementById("hpt_og_title");
-    const descInput = document.getElementById("hpt_og_desc");
-    const imageInput = document.getElementById("hpt_og_image");
+    const { __ } = wp.i18n;
+    const titleInput = document.getElementById("haptic_og_title");
+    const descInput = document.getElementById("haptic_og_desc");
+    const imageInput = document.getElementById("haptic_og_image");
 
-    const previewBox = document.getElementById("hpt_seo_preview");
+    const previewBox = document.getElementById("haptic_seo_preview");
     // La metabox SEO n'est présente que sur les types de contenu du sitemap
     if (!previewBox || !titleInput || !descInput) return;
 
     const previewTitle = previewBox.querySelector(".seo-title");
     const previewDesc = previewBox.querySelector(".seo-desc");
-    const titleCount = document.getElementById("hpt_title_count");
-    const descCount = document.getElementById("hpt_desc_count");
+    const titleCount = document.getElementById("haptic_title_count");
+    const descCount = document.getElementById("haptic_desc_count");
 
     // Un champ vide applique le motif, affiché en placeholder
     function effective(input) {
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             previewBox.appendChild(img);
         }
         img.src = url;
-        img.alt = "Prévisualisation SEO";
+        img.alt = __("SEO preview", "optimizr");
     });
 
     // Initialisation de la prévisualisation et des compteurs avec les valeurs actuelles

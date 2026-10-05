@@ -2,15 +2,16 @@
 
 /**
  * Plugin Name: Haptic Optimizr
- * Description: Cookies et RGPD (Tarteaucitron), SEO, assistant IA, types de contenu personnalisés et outils de maintenance, réunis dans une seule page de réglages et activables module par module.
- * Version: 2.5.0
- * Requires at least: 6.1
+ * Description: Cookie consent (Tarteaucitron), SEO, AI assistant, custom post types and maintenance tools in a single settings page, enabled module by module.
+ * Version: 3.0.0
+ * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
  * Author URI: https://alexandrevergnaud.fr/
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: hpt-options
+ * Text Domain: optimizr
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) {
@@ -18,62 +19,67 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HPT_OPTIMIZR_VERSION', '2.5.0');
-define('HPT_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
-define('HPT_OPTIMIZR_URL', plugin_dir_url(__FILE__));
+define('HAPTIC_OPTIMIZR_VERSION', '3.0.0');
+define('HAPTIC_OPTIMIZR_FILE', __FILE__);
+define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
+define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
 // Hook de la page d'options (menu de premier niveau, cf. functions/admin-ui.php)
-define('HPT_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_hpt-options');
+define('HAPTIC_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_haptic-options');
+
+// Traductions fournies avec le plugin (languages/) : français pour les sites installés depuis GitHub.
+// Sur WordPress.org, les traductions de translate.wordpress.org (wp-content/languages/plugins) passent avant.
+add_action('init', function () {
+    load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages');
+}, 0);
 
 // Plugin core includes (activation, admin UI, assets, updates)
 require_once(__DIR__ . '/functions/activation.php');
 require_once(__DIR__ . '/functions/admin-ui.php');
 require_once(__DIR__ . '/functions/assets.php');
 
-require_once(__DIR__ . '/hpt_admin-page.php');
-require_once(__DIR__ . '/functions/utils.php');
+require_once(__DIR__ . '/haptic_admin-page.php');
 require_once(__DIR__ . '/functions/updates.php'); // build:github-only (retiré de la version WordPress.org)
 require_once(__DIR__ . '/functions/tabs.php');
-require_once(__DIR__ . '/functions/settings.php');
 require_once(__DIR__ . '/functions/tools.php');
 require_once(__DIR__ . '/functions/uninstall.php');
 require_once(__DIR__ . '/functions/uninstall-admin.php');
 require_once(__DIR__ . '/functions/onboarding.php');
 
-// Modules activables depuis le tableau de bord (cf. hpt_modules())
-if (hpt_is_module_active('emails')) {
+// Modules activables depuis le tableau de bord (cf. haptic_modules())
+if (haptic_is_module_active('emails')) {
     require_once(__DIR__ . '/functions/mails.php');
 }
-if (hpt_is_module_active('thumbnails')) {
+if (haptic_is_module_active('thumbnails')) {
     require_once(__DIR__ . '/functions/thumbnails.php');
 }
-if (hpt_is_module_active('cpts')) {
+if (haptic_is_module_active('cpts')) {
     require_once(__DIR__ . '/functions/cpts.php');
 }
-if (hpt_is_module_active('cookies')) {
+if (haptic_is_module_active('cookies')) {
     require_once(__DIR__ . '/functions/cookies.php');
 }
-if (hpt_is_module_active('ai')) {
+if (haptic_is_module_active('ai')) {
     require_once(__DIR__ . '/functions/ai-pricing.php');
     require_once(__DIR__ . '/functions/ai-providers.php');
     require_once(__DIR__ . '/functions/ai.php');
     require_once(__DIR__ . '/functions/ai-bulk.php');
     require_once(__DIR__ . '/functions/media.php');
 }
-if (hpt_is_module_active('redirects')) {
+if (haptic_is_module_active('redirects')) {
     require_once(__DIR__ . '/functions/redirects.php');
     require_once(__DIR__ . '/functions/links.php');
     require_once(__DIR__ . '/functions/redirects-admin.php');
 }
-if (hpt_is_module_active('local')) {
+if (haptic_is_module_active('local')) {
     require_once(__DIR__ . '/functions/local-seo.php');
 }
-if (hpt_is_module_active('pages')) {
+if (haptic_is_module_active('pages')) {
     require_once(__DIR__ . '/functions/pages.php');
 }
-if (hpt_is_module_active('security')) {
+if (haptic_is_module_active('security')) {
     require_once(__DIR__ . '/functions/security.php');
     require_once(__DIR__ . '/functions/security-admin.php');
 }
-if (hpt_is_module_active('seo')) {
+if (haptic_is_module_active('seo')) {
     require_once(__DIR__ . '/functions/seo/seo.php');
 }

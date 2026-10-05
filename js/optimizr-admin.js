@@ -4,6 +4,21 @@
 (function () {
     'use strict';
 
+    var __ = wp.i18n.__;
+    var _x = wp.i18n._x;
+    var _n = wp.i18n._n;
+    var sprintf = wp.i18n.sprintf;
+
+    // Nombre au format de la langue de l'admin (attribut lang de la page), repli sur le format du navigateur
+    function formatNumber(value, digits) {
+        var options = { minimumFractionDigits: digits, maximumFractionDigits: digits };
+        try {
+            return value.toLocaleString(document.documentElement.lang || undefined, options);
+        } catch (e) {
+            return value.toLocaleString(undefined, options);
+        }
+    }
+
     /* ---------- Utilitaires couleur ---------- */
 
     function luminance(hex) {
@@ -18,7 +33,7 @@
         return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
     }
 
-    // Même règle que hpt_readable_text_color() côté PHP
+    // Même règle que haptic_readable_text_color() côté PHP
     function readableText(hex) {
         return luminance(hex) > 0.179 ? '#1e1e1e' : '#ffffff';
     }
@@ -56,12 +71,12 @@
         function refresh() {
             var dirty = isDirty();
             bar.classList.toggle('is-dirty', dirty);
-            text.textContent = dirty ? 'Modifications non enregistrées' : 'Toutes les modifications sont enregistrées';
+            text.textContent = dirty ? __('Unsaved changes', 'optimizr') : __('All changes saved', 'optimizr');
         }
 
         form.addEventListener('input', refresh);
         form.addEventListener('change', refresh);
-        document.addEventListener('hpt:seo-pattern-change', refresh);
+        document.addEventListener('haptic:seo-pattern-change', refresh);
 
         form.addEventListener('submit', function () {
             submitting = true;
@@ -110,12 +125,18 @@
                 if (contrast) {
                     var ratio = contrastWithWhite(value);
                     var ok = ratio >= 4.5;
-                    contrast.textContent = (ok ? 'AA ' : 'Faible ') + ratio.toFixed(1).replace('.', ',') + ':1';
+                    if (ok) {
+                        /* translators: %s: contrast ratio, e.g. 4.5 */
+                        contrast.textContent = sprintf(__('AA %s:1', 'optimizr'), formatNumber(ratio, 1));
+                    } else {
+                        /* translators: %s: contrast ratio, e.g. 3.2 */
+                        contrast.textContent = sprintf(__('Low %s:1', 'optimizr'), formatNumber(ratio, 1));
+                    }
                     contrast.className = 'optimizr-contrast ' + (ok ? 'is-ok' : 'is-warn');
                 }
 
                 if (!preview) return;
-                if (input.dataset.tacColor === 'hpt_option_tarteaucitron_highlight_color') {
+                if (input.dataset.tacColor === 'haptic_option_tarteaucitron_highlight_color') {
                     banner.style.background = value;
                     banner.style.color = readableText(value);
                 }
@@ -166,7 +187,7 @@
             first.addEventListener('input', function () {
                 var active = first.value.trim() !== '';
                 status.className = 'optimizr-status optimizr-status--' + (active ? 'ok' : 'off');
-                status.textContent = active ? 'Actif' : 'Inactif';
+                status.textContent = active ? _x('Active', 'service status', 'optimizr') : _x('Inactive', 'service status', 'optimizr');
             });
         });
     }
@@ -178,12 +199,12 @@
         if (!root) return;
 
         var vars = JSON.parse(root.dataset.seoVars || '{}');
-        var titleInput = document.getElementById('hpt_seo_title_pattern');
-        var descInput = document.getElementById('hpt_seo_desc_pattern');
+        var titleInput = document.getElementById('haptic_seo_title_pattern');
+        var descInput = document.getElementById('haptic_seo_desc_pattern');
         var titleCount = root.querySelector('[data-seo-count-title]');
         var descCount = root.querySelector('[data-seo-count-desc]');
 
-        // Même résultat que hpt_generate_seo_content() : variables remplacées, séparateurs orphelins retirés
+        // Même résultat que haptic_generate_seo_content() : variables remplacées, séparateurs orphelins retirés
         function render(pattern) {
             var text = Object.keys(vars).reduce(function (acc, code) {
                 return acc.split(code).join(vars[code]);
@@ -192,7 +213,8 @@
         }
 
         function count(el, text, max) {
-            el.textContent = text.length + ' / ' + max + ' caractères';
+            /* translators: 1: current length, 2: recommended maximum length */
+            el.textContent = sprintf(__('%1$s / %2$s characters', 'optimizr'), text.length, max);
             el.classList.toggle('is-warn', text.length > max);
         }
 
@@ -206,7 +228,7 @@
             count(descCount, desc, 160);
         }
 
-        document.addEventListener('hpt:seo-pattern-change', update);
+        document.addEventListener('haptic:seo-pattern-change', update);
         update();
     }
 
@@ -244,7 +266,7 @@
 
                 var badge = document.createElement('span');
                 badge.className = 'optimizr-status optimizr-status--' + (kind === 'ok' ? 'ok' : 'warn');
-                badge.textContent = kind === 'ok' ? 'Généré' : 'Ignoré';
+                badge.textContent = kind === 'ok' ? _x('Generated', 'bulk log status', 'optimizr') : _x('Skipped', 'bulk log status', 'optimizr');
                 li.appendChild(badge);
 
                 var name = document.createElement(item.link ? 'a' : 'span');
@@ -268,10 +290,8 @@
 
             // Montant en dollars : « 0,0042 $ » sous un centime, « 0,42 $ » au-delà
             function formatCost(amount) {
-                return amount.toLocaleString('fr-FR', {
-                    minimumFractionDigits: amount < 0.01 ? 4 : 2,
-                    maximumFractionDigits: amount < 0.01 ? 4 : 2
-                }) + ' $';
+                /* translators: %s: amount in US dollars */
+                return sprintf(__('$%s', 'optimizr'), formatNumber(amount, amount < 0.01 ? 4 : 2));
             }
 
             function render() {
@@ -280,9 +300,19 @@
                 var percent = total ? Math.round(processed / total * 100) : 100;
                 bar.firstElementChild.style.width = percent + '%';
                 bar.setAttribute('aria-valuenow', percent);
-                status.textContent = processed + ' / ' + total + ' traité(s) · ' + state.done + ' généré(s)'
-                    + (state.skipped.length ? ' · ' + state.skipped.length + ' ignoré(s)' : '')
-                    + ' · coût réel ' + formatCost(state.cost);
+                var parts = [
+                    /* translators: 1: items processed so far, 2: total number of items */
+                    sprintf(__('%1$s / %2$s processed', 'optimizr'), processed, total),
+                    /* translators: %s: number of items generated */
+                    sprintf(_n('%s generated', '%s generated', state.done, 'optimizr'), state.done)
+                ];
+                if (state.skipped.length) {
+                    /* translators: %s: number of items skipped */
+                    parts.push(sprintf(_n('%s skipped', '%s skipped', state.skipped.length, 'optimizr'), state.skipped.length));
+                }
+                /* translators: %s: cost in US dollars */
+                parts.push(sprintf(__('actual cost %s', 'optimizr'), formatCost(state.cost)));
+                status.textContent = parts.join(' · ');
             }
 
             function finish(message, remaining) {
@@ -290,7 +320,8 @@
                 state.running = false;
                 start.hidden = false;
                 stop.hidden = true;
-                status.textContent = message + ' Coût réel : ' + formatCost(state.cost) + '.';
+                /* translators: 1: status message, 2: cost in US dollars */
+                status.textContent = sprintf(__('%1$s Actual cost: %2$s.', 'optimizr'), message, formatCost(state.cost));
                 task.dataset.count = remaining;
                 summary.textContent = remaining > 0 ? remaining + ' ' + task.dataset.unit + '.' : task.dataset.empty;
                 start.disabled = remaining === 0;
@@ -298,11 +329,12 @@
 
             function next() {
                 if (!state.running) {
-                    finish('Traitement arrêté · ' + state.done + ' généré(s).', state.remaining);
+                    /* translators: %s: number of items generated */
+                    finish(sprintf(_n('Processing stopped · %s generated.', 'Processing stopped · %s generated.', state.done, 'optimizr'), state.done), state.remaining);
                     return;
                 }
 
-                var body = new URLSearchParams({ action: 'hpt_ai_bulk_next', nonce: nonce, task: task.dataset.task });
+                var body = new URLSearchParams({ action: 'haptic_ai_bulk_next', nonce: nonce, task: task.dataset.task });
                 // Liste complète gardée par le serveur : les 500 derniers suffisent (sous max_input_vars de PHP), en secours si son cache est perdu
                 state.skipped.slice(-500).forEach(function (id) { body.append('skip[]', id); });
 
@@ -314,12 +346,19 @@
 
                         if (!res.success || data.status === 'fatal') {
                             if (data.id) addLog('skipped', data, data.message);
-                            finish('Arrêt : ' + (data.message || 'erreur inconnue.'), state.remaining);
+                            /* translators: %s: error message */
+                            finish(sprintf(__('Stopped: %s', 'optimizr'), data.message || __('unknown error.', 'optimizr')), state.remaining);
                             return;
                         }
                         if (data.status === 'done') {
                             render();
-                            finish('Terminé · ' + state.done + ' généré(s)' + (state.skipped.length ? ', ' + state.skipped.length + ' ignoré(s)' : '') + '.', state.skipped.length);
+                            if (state.skipped.length) {
+                                /* translators: 1: number of items generated, 2: number of items skipped */
+                                finish(sprintf(__('Done · %1$s generated, %2$s skipped.', 'optimizr'), state.done, state.skipped.length), state.skipped.length);
+                            } else {
+                                /* translators: %s: number of items generated */
+                                finish(sprintf(_n('Done · %s generated.', 'Done · %s generated.', state.done, 'optimizr'), state.done), state.skipped.length);
+                            }
                             return;
                         }
                         if (data.status === 'ok') {
@@ -334,7 +373,7 @@
                         next();
                     })
                     .catch(function () {
-                        finish('Arrêt : la requête a échoué (connexion perdue ?).', state.remaining);
+                        finish(__('Stopped: the request failed (connection lost?).', 'optimizr'), state.remaining);
                     });
             }
 
@@ -354,7 +393,7 @@
             stop.addEventListener('click', function () {
                 if (state) state.running = false;
                 stop.hidden = true;
-                status.textContent = 'Arrêt après l\'élément en cours…';
+                status.textContent = __('Stopping after the current item…', 'optimizr');
             });
         });
     }
@@ -388,8 +427,8 @@
         var notice = document.querySelector('[data-ai-provider-notice]');
 
         select.addEventListener('change', function () {
-            document.querySelectorAll('.hpt-ai-provider-row').forEach(function (row) {
-                row.classList.toggle('optimizr-field--hidden', !row.classList.contains('hpt-ai-provider-' + select.value));
+            document.querySelectorAll('.haptic-ai-provider-row').forEach(function (row) {
+                row.classList.toggle('optimizr-field--hidden', !row.classList.contains('haptic-ai-provider-' + select.value));
             });
             if (notice) notice.hidden = select.value === initial;
         });
@@ -429,13 +468,13 @@
 
         function call(step) {
             var body = new FormData();
-            body.append('action', 'hpt_links_scan');
+            body.append('action', 'haptic_links_scan');
             body.append('nonce', root.getAttribute('data-nonce'));
             body.append('step', step);
             return fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
                 .then(function (response) { return response.json(); })
                 .then(function (json) {
-                    if (!json || !json.success) throw new Error((json && json.data) || 'Réponse inattendue du serveur.');
+                    if (!json || !json.success) throw new Error((json && json.data) || __('Unexpected server response.', 'optimizr'));
                     return json.data;
                 });
         }
@@ -444,7 +483,8 @@
             var percent = total ? Math.round(checked / total * 100) : 100;
             bar.firstElementChild.style.width = percent + '%';
             bar.setAttribute('aria-valuenow', percent);
-            status.textContent = checked + ' / ' + total + ' lien(s) vérifié(s)…';
+            /* translators: 1: links checked so far, 2: total number of links */
+            status.textContent = sprintf(_n('%1$s / %2$s link checked…', '%1$s / %2$s links checked…', total, 'optimizr'), checked, total);
         }
 
         function finish(message) {
@@ -465,10 +505,12 @@
                 if (data.remaining > 0) {
                     check();
                 } else {
-                    finish('Analyse terminée : ' + data.checked + ' lien(s) vérifié(s), ' + issues + ' problème(s).');
+                    /* translators: 1: number of links checked, 2: number of issues found */
+                    finish(sprintf(__('Scan complete: %1$s link(s) checked, %2$s issue(s).', 'optimizr'), data.checked, issues));
                 }
             }).catch(function (error) {
-                finish('Analyse interrompue : ' + error.message);
+                /* translators: %s: error message */
+                finish(sprintf(__('Scan interrupted: %s', 'optimizr'), error.message));
             });
         }
 
@@ -480,17 +522,18 @@
             summary.hidden = true;
             progress.hidden = false;
             bar.firstElementChild.style.width = '0';
-            status.textContent = 'Recherche des liens dans les contenus…';
+            status.textContent = __('Looking for links in your content…', 'optimizr');
 
             call('collect').then(function (data) {
                 if (!data.total) {
-                    finish('Aucun lien trouvé dans les contenus publiés.');
+                    finish(__('No links found in published content.', 'optimizr'));
                     return;
                 }
                 setProgress(0, data.total);
                 check();
             }).catch(function (error) {
-                finish('Analyse impossible : ' + error.message);
+                /* translators: %s: error message */
+                finish(sprintf(__('Scan failed: %s', 'optimizr'), error.message));
             });
         });
     }

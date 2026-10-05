@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
 
 /* ---------- Outils ---------- */
 
-function hpt_sec_option($name, $default = 0)
+function haptic_sec_option($name, $default = 0)
 {
-    return get_option('hpt_sec_' . $name, $default);
+    return get_option('haptic_sec_' . $name, $default);
 }
 
 /**
@@ -28,20 +28,20 @@ function hpt_sec_option($name, $default = 0)
  * qui vient d'un proxy de confiance (réglage « Proxys de confiance »), sinon tous les visiteurs d'un site
  * derrière Cloudflare ou un répartiteur de charge auraient la même adresse.
  */
-function hpt_sec_client_ip()
+function haptic_sec_client_ip()
 {
-    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
     if (!filter_var($ip, FILTER_VALIDATE_IP)) {
         return '0.0.0.0';
     }
-    $proxies = hpt_sec_trusted_proxies();
-    if (!hpt_sec_ip_in_ranges($ip, $proxies)) {
+    $proxies = haptic_sec_trusted_proxies();
+    if (!haptic_sec_ip_in_ranges($ip, $proxies)) {
         return $ip;
     }
 
     // Cloudflare remplace toujours cet en-tête : fiable seulement si la requête vient directement de ses serveurs
-    if (hpt_sec_option('proxy_cloudflare') && hpt_sec_ip_in_ranges($ip, hpt_sec_cloudflare_ranges())) {
-        $cf = trim((string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+    if (haptic_sec_option('proxy_cloudflare') && haptic_sec_ip_in_ranges($ip, haptic_sec_cloudflare_ranges())) {
+        $cf = trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP'] ?? '')));
         if (filter_var($cf, FILTER_VALIDATE_IP)) {
             return $cf;
         }
@@ -49,12 +49,12 @@ function hpt_sec_client_ip()
 
     // « visiteur, proxy 1, proxy 2 » : chaque proxy ajoute à droite l'adresse qui l'a contacté, le début de la liste est falsifiable.
     // On remonte depuis la droite jusqu'à la première adresse qui n'est pas un proxy de confiance.
-    $forwarded = array_map('trim', explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')));
+    $forwarded = array_map('trim', explode(',', sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''))));
     foreach (array_reverse($forwarded) as $candidate) {
         if (!filter_var($candidate, FILTER_VALIDATE_IP)) {
             break;
         }
-        if (!hpt_sec_ip_in_ranges($candidate, $proxies)) {
+        if (!haptic_sec_ip_in_ranges($candidate, $proxies)) {
             return $candidate;
         }
     }
@@ -62,7 +62,7 @@ function hpt_sec_client_ip()
 }
 
 /** Adresse IP seule ou plage CIDR (10.0.0.0/8, 2001:db8::/32). */
-function hpt_sec_is_ip_range($range)
+function haptic_sec_is_ip_range($range)
 {
     $parts = explode('/', (string) $range, 2);
     if (!filter_var($parts[0], FILTER_VALIDATE_IP)) {
@@ -75,15 +75,15 @@ function hpt_sec_is_ip_range($range)
     return ctype_digit($parts[1]) && (int) $parts[1] <= $max;
 }
 
-/** L'adresse appartient-elle à l'une des plages (adresses seules ou CIDR, cf. hpt_sec_is_ip_range) ? */
-function hpt_sec_ip_in_ranges($ip, $ranges)
+/** L'adresse appartient-elle à l'une des plages (adresses seules ou CIDR, cf. haptic_sec_is_ip_range) ? */
+function haptic_sec_ip_in_ranges($ip, $ranges)
 {
     $packed = filter_var($ip, FILTER_VALIDATE_IP) ? inet_pton($ip) : false;
     if ($packed === false) {
         return false;
     }
     foreach ($ranges as $range) {
-        if (!hpt_sec_is_ip_range($range)) {
+        if (!haptic_sec_is_ip_range($range)) {
             continue;
         }
         $parts = explode('/', $range, 2);
@@ -107,9 +107,9 @@ function hpt_sec_ip_in_ranges($ip, $ranges)
 }
 
 /** Plages d'adresses des serveurs de Cloudflare (https://www.cloudflare.com/ips/). */
-function hpt_sec_cloudflare_ranges()
+function haptic_sec_cloudflare_ranges()
 {
-    return apply_filters('hpt_sec_cloudflare_ranges', [
+    return apply_filters('haptic_sec_cloudflare_ranges', [
         '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18',
         '108.162.192.0/18', '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17',
         '162.158.0.0/15', '104.16.0.0/13', '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
@@ -119,19 +119,19 @@ function hpt_sec_cloudflare_ranges()
 }
 
 /** Proxys de confiance : plages saisies (une par ligne), et celles de Cloudflare si l'option est active. Vide par défaut. */
-function hpt_sec_trusted_proxies()
+function haptic_sec_trusted_proxies()
 {
-    $ranges = array_filter(array_map('trim', preg_split('/\R/', (string) hpt_sec_option('trusted_proxies', ''))), 'hpt_sec_is_ip_range');
-    if (hpt_sec_option('proxy_cloudflare')) {
-        $ranges = array_merge($ranges, hpt_sec_cloudflare_ranges());
+    $ranges = array_filter(array_map('trim', preg_split('/\R/', (string) haptic_sec_option('trusted_proxies', ''))), 'haptic_sec_is_ip_range');
+    if (haptic_sec_option('proxy_cloudflare')) {
+        $ranges = array_merge($ranges, haptic_sec_cloudflare_ranges());
     }
     return array_values($ranges);
 }
 
 /** Adresses IP jamais limitées (une par ligne). */
-function hpt_sec_whitelist()
+function haptic_sec_whitelist()
 {
-    $lines = preg_split('/\R/', (string) hpt_sec_option('login_whitelist', ''));
+    $lines = preg_split('/\R/', (string) haptic_sec_option('login_whitelist', ''));
     return array_values(array_filter(array_map('trim', $lines), function ($ip) {
         return filter_var($ip, FILTER_VALIDATE_IP);
     }));
@@ -141,44 +141,44 @@ function hpt_sec_whitelist()
  * Journal des évènements de sécurité (100 derniers, 30 jours maximum).
  * Les adresses IP sont des données personnelles : la durée de conservation est volontairement courte.
  */
-function hpt_sec_log($event, $detail = '')
+function haptic_sec_log($event, $detail = '')
 {
-    $log = hpt_sec_get_log();
-    array_unshift($log, ['time' => time(), 'ip' => hpt_sec_client_ip(), 'event' => $event, 'detail' => $detail]);
-    update_option('hpt_security_log', array_slice($log, 0, 100), false);
+    $log = haptic_sec_get_log();
+    array_unshift($log, ['time' => time(), 'ip' => haptic_sec_client_ip(), 'event' => $event, 'detail' => $detail]);
+    update_option('haptic_security_log', array_slice($log, 0, 100), false);
 }
 
 /** Évènements des 30 derniers jours. Les plus anciens sont supprimés de la base au passage, même sans nouvel évènement. */
-function hpt_sec_get_log()
+function haptic_sec_get_log()
 {
-    $stored = array_values((array) get_option('hpt_security_log', []));
+    $stored = array_values((array) get_option('haptic_security_log', []));
     $limit = time() - 30 * DAY_IN_SECONDS;
     $log = array_values(array_filter($stored, function ($entry) use ($limit) {
         return ($entry['time'] ?? 0) >= $limit;
     }));
     if ($log !== $stored) {
-        update_option('hpt_security_log', $log, false);
+        update_option('haptic_security_log', $log, false);
     }
     return $log;
 }
 // Purge quotidienne (tâche planifiée de WordPress), même si personne n'ouvre l'onglet Sécurité
-add_action('wp_scheduled_delete', 'hpt_sec_get_log');
+add_action('wp_scheduled_delete', 'haptic_sec_get_log');
 
 /* ---------- Adresse de connexion personnalisée ---------- */
 
 /** Identifiant de l'adresse de connexion, ou chaîne vide si la fonction est inactive. */
-function hpt_sec_login_slug()
+function haptic_sec_login_slug()
 {
     if ((defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite()) {
         return '';
     }
-    return (string) hpt_sec_option('login_slug', '');
+    return (string) haptic_sec_option('login_slug', '');
 }
 
 /** Nouvelle adresse de connexion (avec permaliens simples : https://site/?identifiant). */
-function hpt_sec_login_url($scheme = null, $slug = null)
+function haptic_sec_login_url($scheme = null, $slug = null)
 {
-    $slug = $slug ?? hpt_sec_login_slug();
+    $slug = $slug ?? haptic_sec_login_slug();
     if (get_option('permalink_structure')) {
         return home_url('/' . $slug . '/', $scheme);
     }
@@ -186,9 +186,9 @@ function hpt_sec_login_url($scheme = null, $slug = null)
 }
 
 /** Chemin demandé, relatif à l'installation (« » pour l'accueil). */
-function hpt_sec_request_path()
+function haptic_sec_request_path()
 {
-    $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    $path = trim((string) wp_parse_url(wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_PATH), '/');
     $home = trim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
     if ($home !== '' && strpos($path, $home) === 0) {
         $path = ltrim(substr($path, strlen($home)), '/');
@@ -196,10 +196,10 @@ function hpt_sec_request_path()
     return $path;
 }
 
-function hpt_sec_is_custom_login_request()
+function haptic_sec_is_custom_login_request()
 {
-    $slug = hpt_sec_login_slug();
-    $path = hpt_sec_request_path();
+    $slug = haptic_sec_login_slug();
+    $path = haptic_sec_request_path();
 
     if (get_option('permalink_structure')) {
         return $path === $slug;
@@ -207,13 +207,13 @@ function hpt_sec_is_custom_login_request()
     return in_array($path, ['', 'index.php'], true) && isset($_GET[$slug]);
 }
 
-function hpt_sec_is_wp_login_request()
+function haptic_sec_is_wp_login_request()
 {
-    return basename(hpt_sec_request_path()) === 'wp-login.php';
+    return basename(haptic_sec_request_path()) === 'wp-login.php';
 }
 
 /** Page introuvable : modèle 404 du thème côté site, page minimale côté administration. */
-function hpt_sec_not_found()
+function haptic_sec_not_found()
 {
     status_header(404);
     nocache_headers();
@@ -230,33 +230,33 @@ function hpt_sec_not_found()
         }
     }
 
-    echo '<!doctype html><html lang="fr"><meta charset="utf-8"><title>Page introuvable</title><p>Page introuvable.</p><p><a href="' . esc_url(home_url('/')) . '">Retour à l\'accueil</a></p></html>';
+    echo '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><meta charset="utf-8"><title>' . esc_html__('Page not found', 'optimizr') . '</title><p>' . esc_html__('Page not found.', 'optimizr') . '</p><p><a href="' . esc_url(home_url('/')) . '">' . esc_html__('Back to the home page', 'optimizr') . '</a></p></html>';
     exit;
 }
 
 /** Remplace wp-login.php par la nouvelle adresse dans une URL (paramètres conservés). */
-function hpt_sec_replace_login_url($url, $scheme = null)
+function haptic_sec_replace_login_url($url, $scheme = null)
 {
-    if (strpos($url, 'wp-login.php') === false || !hpt_sec_login_slug()) {
+    if (strpos($url, 'wp-login.php') === false || !haptic_sec_login_slug()) {
         return $url;
     }
     $parts = explode('?', $url, 2);
-    $new = hpt_sec_login_url($scheme);
+    $new = haptic_sec_login_url($scheme);
     if (!empty($parts[1])) {
         $new .= (strpos($new, '?') === false ? '?' : '&') . $parts[1];
     }
     return $new;
 }
 
-if (hpt_sec_login_slug()) {
+if (haptic_sec_login_slug()) {
     // Liens générés par WordPress : connexion, déconnexion, mot de passe perdu, emails, formulaire des contenus protégés
     add_filter('site_url', function ($url, $path, $scheme) {
-        return hpt_sec_replace_login_url($url, $scheme);
+        return haptic_sec_replace_login_url($url, $scheme);
     }, 10, 3);
     add_filter('network_site_url', function ($url, $path, $scheme) {
-        return hpt_sec_replace_login_url($url, $scheme);
+        return haptic_sec_replace_login_url($url, $scheme);
     }, 10, 3);
-    add_filter('wp_redirect', 'hpt_sec_replace_login_url');
+    add_filter('wp_redirect', 'haptic_sec_replace_login_url');
 
     // Raccourcis /login, /admin, /dashboard : ils redirigeraient vers la nouvelle adresse et la révéleraient
     remove_action('template_redirect', 'wp_redirect_admin_locations', 1000);
@@ -264,8 +264,8 @@ if (hpt_sec_login_slug()) {
     add_action('wp_loaded', function () {
         global $pagenow;
 
-        if (hpt_sec_is_custom_login_request()) {
-            hpt_sec_load_login_page();
+        if (haptic_sec_is_custom_login_request()) {
+            haptic_sec_load_login_page();
         }
 
         if (is_user_logged_in()) {
@@ -273,16 +273,16 @@ if (hpt_sec_login_slug()) {
         }
 
         // wp-login.php et l'administration n'existent plus pour les visiteurs non connectés
-        if (hpt_sec_is_wp_login_request()) {
-            hpt_sec_not_found();
+        if (haptic_sec_is_wp_login_request()) {
+            haptic_sec_not_found();
         }
         if (is_admin() && !wp_doing_ajax() && !wp_doing_cron() && $pagenow !== 'admin-post.php') {
-            hpt_sec_not_found();
+            haptic_sec_not_found();
         }
     }, 1);
 }
 
-function hpt_sec_load_login_page()
+function haptic_sec_load_login_page()
 {
     // wp-login.php s'attend à des variables globales
     global $error, $interim_login, $action, $user_login, $pagenow;
@@ -292,7 +292,7 @@ function hpt_sec_load_login_page()
 }
 
 /** Valide l'identifiant de connexion (lettres, chiffres, tirets ; 4 caractères minimum, non réservé). */
-function hpt_sec_sanitize_login_slug($value)
+function haptic_sec_sanitize_login_slug($value)
 {
     $value = sanitize_title((string) $value);
     if ($value === '') {
@@ -302,116 +302,122 @@ function hpt_sec_sanitize_login_slug($value)
     $reserved = ['wp-admin', 'wp-login', 'wp-login-php', 'admin', 'login', 'dashboard', 'wp-content', 'wp-includes', 'wp-json', 'feed', 'xmlrpc', 'sitemap'];
     $error = '';
     if (strlen($value) < 4) {
-        $error = 'L\'adresse de connexion doit contenir au moins 4 caractères.';
+        $error = __('The login address must be at least 4 characters long.', 'optimizr');
     } elseif (in_array($value, $reserved, true)) {
-        $error = 'Cette adresse de connexion est réservée par WordPress.';
+        $error = __('This login address is reserved by WordPress.', 'optimizr');
     } elseif (get_page_by_path($value, OBJECT, get_post_types(['public' => true]))) {
-        $error = 'Un contenu du site utilise déjà cette adresse.';
+        $error = __('Some content on the site already uses this address.', 'optimizr');
     }
 
     if ($error) {
         // Fonction de l'administration : absente si l'option est enregistrée depuis un autre contexte
         if (function_exists('add_settings_error')) {
-            add_settings_error('hpt_sec_login_slug', 'hpt_sec_login_slug', $error);
+            add_settings_error('haptic_sec_login_slug', 'haptic_sec_login_slug', $error);
         }
-        return (string) get_option('hpt_sec_login_slug', '');
+        return (string) get_option('haptic_sec_login_slug', '');
     }
 
     return $value;
 }
 
 // Nouvelle adresse envoyée par email : on ne la perd pas
-function hpt_sec_mail_login_url($old, $new)
+function haptic_sec_mail_login_url($old, $new)
 {
     if ($new === '' || $new === $old) {
         return;
     }
     wp_mail(
         get_option('admin_email'),
-        sprintf('[%s] Nouvelle adresse de connexion', wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
+        /* translators: %s: site name */
+        sprintf(__('[%s] New login address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
         sprintf(
-            "L'adresse de connexion à l'administration a été modifiée.\n\nNouvelle adresse : %s\n\nL'ancienne adresse (wp-login.php) affiche désormais une page introuvable.\nConservez cet email. En cas de blocage, ajoutez define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); dans wp-config.php.",
-            hpt_sec_login_url(null, $new)
+            /* translators: %s: new login URL */
+            __("The admin login address has been changed.\n\nNew address: %s\n\nThe old address (wp-login.php) now shows a not-found page.\nKeep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php.", 'optimizr'),
+            haptic_sec_login_url(null, $new)
         )
     );
 }
-add_action('update_option_hpt_sec_login_slug', 'hpt_sec_mail_login_url', 10, 2);
-add_action('add_option_hpt_sec_login_slug', function ($option, $value) {
-    hpt_sec_mail_login_url('', $value);
+add_action('update_option_haptic_sec_login_slug', 'haptic_sec_mail_login_url', 10, 2);
+add_action('add_option_haptic_sec_login_slug', function ($option, $value) {
+    haptic_sec_mail_login_url('', $value);
 }, 10, 2);
 
 /* ---------- Tentatives de connexion ---------- */
 
-function hpt_sec_lock_key($ip)
+function haptic_sec_lock_key($ip)
 {
-    return 'hpt_sec_lock_' . md5($ip);
+    return 'haptic_sec_lock_' . md5($ip);
 }
 
-function hpt_sec_fail_key($ip)
+function haptic_sec_fail_key($ip)
 {
-    return 'hpt_sec_fail_' . md5($ip);
+    return 'haptic_sec_fail_' . md5($ip);
 }
 
-if (hpt_sec_option('limit_login')) {
+if (haptic_sec_option('limit_login')) {
     // Après toutes les vérifications d'identifiants : une adresse verrouillée est refusée, même avec le bon mot de passe
     add_filter('authenticate', function ($user) {
-        $ip = hpt_sec_client_ip();
-        if (in_array($ip, hpt_sec_whitelist(), true)) {
+        $ip = haptic_sec_client_ip();
+        if (in_array($ip, haptic_sec_whitelist(), true)) {
             return $user;
         }
-        $until = (int) get_transient(hpt_sec_lock_key($ip));
+        $until = (int) get_transient(haptic_sec_lock_key($ip));
         if ($until > time()) {
-            return new WP_Error('hpt_sec_locked', sprintf(
-                'Trop de tentatives de connexion. Réessayez dans %d minute(s).',
-                max(1, (int) ceil(($until - time()) / 60))
+            $minutes = max(1, (int) ceil(($until - time()) / 60));
+            return new WP_Error('haptic_sec_locked', sprintf(
+                /* translators: %s: number of minutes */
+                _n('Too many login attempts. Try again in %s minute.', 'Too many login attempts. Try again in %s minutes.', $minutes, 'optimizr'),
+                number_format_i18n($minutes)
             ));
         }
         return $user;
     }, 99);
 
     add_action('wp_login_failed', function ($username) {
-        $ip = hpt_sec_client_ip();
-        if (in_array($ip, hpt_sec_whitelist(), true) || get_transient(hpt_sec_lock_key($ip))) {
+        $ip = haptic_sec_client_ip();
+        if (in_array($ip, haptic_sec_whitelist(), true) || get_transient(haptic_sec_lock_key($ip))) {
             return;
         }
 
-        $max = max(1, (int) hpt_sec_option('login_max', 5));
-        $lockout = max(1, (int) hpt_sec_option('login_lockout', 15)) * MINUTE_IN_SECONDS;
-        $fails = (int) get_transient(hpt_sec_fail_key($ip)) + 1;
+        $max = max(1, (int) haptic_sec_option('login_max', 5));
+        $lockout = max(1, (int) haptic_sec_option('login_lockout', 15)) * MINUTE_IN_SECONDS;
+        $fails = (int) get_transient(haptic_sec_fail_key($ip)) + 1;
 
         if ($fails >= $max) {
-            delete_transient(hpt_sec_fail_key($ip));
-            set_transient(hpt_sec_lock_key($ip), time() + $lockout, $lockout);
-            hpt_sec_log('Verrouillage', sprintf('%d échecs, dernier identifiant essayé : %s', $fails, sanitize_user((string) $username)));
+            delete_transient(haptic_sec_fail_key($ip));
+            set_transient(haptic_sec_lock_key($ip), time() + $lockout, $lockout);
+            // Type d'évènement enregistré tel quel (clé du journal), libellé traduit à l'affichage ; détail traduit à l'écriture
+            /* translators: 1: number of failed attempts, 2: last username tried */
+            haptic_sec_log('Verrouillage', sprintf(_n('%1$s failed attempt, last username tried: %2$s', '%1$s failed attempts, last username tried: %2$s', $fails, 'optimizr'), number_format_i18n($fails), sanitize_user((string) $username)));
         } else {
-            set_transient(hpt_sec_fail_key($ip), $fails, $lockout);
+            set_transient(haptic_sec_fail_key($ip), $fails, $lockout);
         }
     });
 
     add_action('wp_login', function () {
-        delete_transient(hpt_sec_fail_key(hpt_sec_client_ip()));
+        delete_transient(haptic_sec_fail_key(haptic_sec_client_ip()));
     });
 }
 
 // Message neutre : ne révèle pas si l'identifiant existe
-if (hpt_sec_option('generic_errors')) {
+if (haptic_sec_option('generic_errors')) {
     add_filter('authenticate', function ($user) {
         if (is_wp_error($user) && array_intersect($user->get_error_codes(), ['invalid_username', 'invalid_email', 'incorrect_password'])) {
-            return new WP_Error('hpt_sec_invalid', 'Identifiant ou mot de passe incorrect.');
+            return new WP_Error('haptic_sec_invalid', __('Incorrect username or password.', 'optimizr'));
         }
         return $user;
     }, 100);
 }
 
 // Alerte lors d'une connexion administrateur depuis une adresse IP inconnue
-if (hpt_sec_option('login_alert')) {
+if (haptic_sec_option('login_alert')) {
     add_action('wp_login', function ($login, $user) {
         if (!user_can($user, 'manage_options')) {
             return;
         }
-        $hash = wp_hash(hpt_sec_client_ip());
+        $hash = wp_hash(haptic_sec_client_ip());
         // get_user_meta() renvoie « » pour un compte jamais suivi : (array) « » donnerait [''], pris pour une adresse connue
-        $known = array_values(array_filter((array) get_user_meta($user->ID, 'hpt_sec_known_ips', true)));
+        $known = array_values(array_filter((array) get_user_meta($user->ID, 'haptic_sec_known_ips', true)));
 
         if (in_array($hash, $known, true)) {
             return;
@@ -420,51 +426,56 @@ if (hpt_sec_option('login_alert')) {
         if ($known) {
             wp_mail(
                 $user->user_email,
-                sprintf('[%s] Connexion administrateur depuis une nouvelle adresse', wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
+                /* translators: %s: site name */
+                sprintf(__('[%s] Administrator login from a new address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
                 sprintf(
-                    "Le compte « %s » vient de se connecter depuis une adresse IP inconnue.\n\nDate : %s\nAdresse IP : %s\nNavigateur : %s\n\nSi ce n'est pas vous, changez immédiatement votre mot de passe.",
+                    /* translators: 1: username, 2: date and time, 3: IP address, 4: browser user agent */
+                    __("The account \"%1\$s\" has just logged in from an unknown IP address.\n\nDate: %2\$s\nIP address: %3\$s\nBrowser: %4\$s\n\nIf this wasn't you, change your password immediately.", 'optimizr'),
                     $user->user_login,
-                    wp_date('j F Y à H:i'),
-                    hpt_sec_client_ip(),
-                    sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? 'inconnu'))
+                    /* translators: date format in the login alert email, see https://www.php.net/manual/datetime.format.php */
+                    wp_date(__('F j, Y \a\t H:i', 'optimizr')),
+                    haptic_sec_client_ip(),
+                    sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? __('unknown', 'optimizr')))
                 )
             );
-            hpt_sec_log('Alerte de connexion', 'Compte ' . $user->user_login);
+            // Type d'évènement enregistré tel quel (clé du journal), libellé traduit à l'affichage
+            /* translators: %s: username */
+            haptic_sec_log('Alerte de connexion', sprintf(__('Account %s', 'optimizr'), $user->user_login));
         }
         array_unshift($known, $hash);
-        update_user_meta($user->ID, 'hpt_sec_known_ips', array_slice(array_values(array_filter($known)), 0, 20));
+        update_user_meta($user->ID, 'haptic_sec_known_ips', array_slice(array_values(array_filter($known)), 0, 20));
     }, 10, 2);
 }
 
 /* ---------- Discrétion ---------- */
 
-if (hpt_sec_option('hide_version')) {
+if (haptic_sec_option('hide_version')) {
     remove_action('wp_head', 'wp_generator');
     add_filter('the_generator', '__return_empty_string');
 
     // ?ver=6.x des fichiers du cœur remplacé par une empreinte : le cache navigateur fonctionne toujours
-    $hide_ver = function ($src) {
+    $haptic_hide_ver = function ($src) {
         global $wp_version;
         if (!is_admin() && strpos((string) $src, 'ver=' . $wp_version) !== false) {
             $src = str_replace('ver=' . $wp_version, 'ver=' . substr(md5($wp_version . wp_salt('nonce')), 0, 8), $src);
         }
         return $src;
     };
-    add_filter('style_loader_src', $hide_ver, 9999);
-    add_filter('script_loader_src', $hide_ver, 9999);
+    add_filter('style_loader_src', $haptic_hide_ver, 9999);
+    add_filter('script_loader_src', $haptic_hide_ver, 9999);
 
     add_action('send_headers', function () {
         header_remove('X-Powered-By');
     });
 }
 
-if (hpt_sec_option('block_enumeration')) {
+if (haptic_sec_option('block_enumeration')) {
     // ?author=1 redirige normalement vers /author/identifiant/ : priorité 1, avant redirect_canonical
     add_action('template_redirect', function () {
         if (is_user_logged_in() || !is_author()) {
             return;
         }
-        if (isset($_GET['author']) || hpt_sec_option('block_author_pages')) {
+        if (isset($_GET['author']) || haptic_sec_option('block_author_pages')) {
             global $wp_query;
             $wp_query->set_404();
             status_header(404);
@@ -475,7 +486,7 @@ if (hpt_sec_option('block_enumeration')) {
     // Liste des comptes de l'API REST réservée aux utilisateurs connectés
     add_filter('rest_pre_dispatch', function ($result, $server, $request) {
         if (!is_user_logged_in() && preg_match('#^/wp/v2/users#', $request->get_route())) {
-            return new WP_Error('rest_user_cannot_view', 'Accès refusé.', ['status' => 401]);
+            return new WP_Error('rest_user_cannot_view', __('Access denied.', 'optimizr'), ['status' => 401]);
         }
         return $result;
     }, 10, 3);
@@ -494,7 +505,7 @@ if (hpt_sec_option('block_enumeration')) {
 
 /* ---------- Surface d'attaque ---------- */
 
-if (hpt_sec_option('disable_xmlrpc')) {
+if (haptic_sec_option('disable_xmlrpc')) {
     add_filter('xmlrpc_enabled', '__return_false');
     add_filter('xmlrpc_methods', '__return_empty_array');
     remove_action('wp_head', 'rsd_link');
@@ -502,19 +513,21 @@ if (hpt_sec_option('disable_xmlrpc')) {
         unset($headers['X-Pingback']);
         return $headers;
     });
-    // xmlrpc.php refusé avant tout traitement
+    // xmlrpc.php refusé avant tout traitement (sur « init » : message traduit, traductions chargées)
     if (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) {
-        status_header(403);
-        exit('XML-RPC est désactivé sur ce site.');
+        add_action('init', function () {
+            status_header(403);
+            exit(esc_html__('XML-RPC is disabled on this site.', 'optimizr'));
+        }, 0);
     }
 }
 
-if (hpt_sec_option('disable_app_passwords')) {
+if (haptic_sec_option('disable_app_passwords')) {
     add_filter('wp_is_application_passwords_available', '__return_false');
 }
 
-if (hpt_sec_option('disable_file_edit') && !defined('DISALLOW_FILE_EDIT')) {
-    define('DISALLOW_FILE_EDIT', true);
+if (haptic_sec_option('disable_file_edit') && !defined('DISALLOW_FILE_EDIT')) {
+    define('DISALLOW_FILE_EDIT', true); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- constante du cœur
 }
 
 /**
@@ -522,7 +535,7 @@ if (hpt_sec_option('disable_file_edit') && !defined('DISALLOW_FILE_EDIT')) {
  *
  * @return bool
  */
-function hpt_sec_apply_uploads_rule($enable)
+function haptic_sec_apply_uploads_rule($enable)
 {
     require_once ABSPATH . 'wp-admin/includes/misc.php';
     $file = trailingslashit(wp_upload_dir()['basedir']) . '.htaccess';
@@ -544,22 +557,22 @@ function hpt_sec_apply_uploads_rule($enable)
     return (bool) insert_with_markers($file, 'Optimizr', $lines);
 }
 
-function hpt_sec_uploads_rule_present()
+function haptic_sec_uploads_rule_present()
 {
     $file = trailingslashit(wp_upload_dir()['basedir']) . '.htaccess';
     return is_readable($file) && strpos((string) file_get_contents($file), '# BEGIN Optimizr') !== false;
 }
 
-add_action('update_option_hpt_sec_uploads_php', function ($old, $new) {
-    hpt_sec_apply_uploads_rule((bool) $new);
+add_action('update_option_haptic_sec_uploads_php', function ($old, $new) {
+    haptic_sec_apply_uploads_rule((bool) $new);
 }, 10, 2);
-add_action('add_option_hpt_sec_uploads_php', function ($option, $value) {
-    hpt_sec_apply_uploads_rule((bool) $value);
+add_action('add_option_haptic_sec_uploads_php', function ($option, $value) {
+    haptic_sec_apply_uploads_rule((bool) $value);
 }, 10, 2);
 
 /* ---------- En-têtes HTTP ---------- */
 
-function hpt_sec_send_headers()
+function haptic_sec_send_headers()
 {
     if (headers_sent()) {
         return;
@@ -570,14 +583,14 @@ function hpt_sec_send_headers()
     // Pas de « payment » : les paiements Apple Pay / Google Pay de WooCommerce en ont besoin
     header('Permissions-Policy: camera=(), microphone=(), geolocation=(self)');
 
-    if (hpt_sec_option('hsts') && is_ssl()) {
+    if (haptic_sec_option('hsts') && is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000');
     }
 }
 
-if (hpt_sec_option('headers')) {
-    add_action('send_headers', 'hpt_sec_send_headers');
-    add_action('login_init', 'hpt_sec_send_headers');
+if (haptic_sec_option('headers')) {
+    add_action('send_headers', 'haptic_sec_send_headers');
+    add_action('login_init', 'haptic_sec_send_headers');
 }
 
 /* ---------- Bilan ---------- */
@@ -587,27 +600,29 @@ if (hpt_sec_option('headers')) {
  *
  * @return array[] ['status' => ok|warn, 'label' => …]
  */
-function hpt_sec_environment_checks()
+function haptic_sec_environment_checks()
 {
     $checks = [];
 
     $checks[] = is_ssl() || strpos(home_url(), 'https://') === 0
-        ? ['status' => 'ok', 'label' => 'Site servi en HTTPS']
-        : ['status' => 'warn', 'label' => 'Site servi sans HTTPS : identifiants transmis en clair'];
+        ? ['status' => 'ok', 'label' => __('Site served over HTTPS', 'optimizr')]
+        : ['status' => 'warn', 'label' => __('Site served without HTTPS: credentials sent in clear text', 'optimizr')];
 
     $admin = get_user_by('login', 'admin');
     $checks[] = $admin && user_can($admin, 'manage_options')
-        ? ['status' => 'warn', 'label' => 'Un administrateur s\'appelle « admin », le premier identifiant essayé par les robots']
-        : ['status' => 'ok', 'label' => 'Aucun administrateur nommé « admin »'];
+        ? ['status' => 'warn', 'label' => __('An administrator is named "admin", the first username bots try', 'optimizr')]
+        : ['status' => 'ok', 'label' => __('No administrator named "admin"', 'optimizr')];
 
     $display = defined('WP_DEBUG') && WP_DEBUG && (!defined('WP_DEBUG_DISPLAY') || WP_DEBUG_DISPLAY);
     $checks[] = $display
-        ? ['status' => 'warn', 'label' => 'Les erreurs PHP s\'affichent aux visiteurs (WP_DEBUG_DISPLAY)']
-        : ['status' => 'ok', 'label' => 'Erreurs PHP masquées aux visiteurs'];
+        ? ['status' => 'warn', 'label' => __('PHP errors are shown to visitors (WP_DEBUG_DISPLAY)', 'optimizr')]
+        : ['status' => 'ok', 'label' => __('PHP errors hidden from visitors', 'optimizr')];
 
     $checks[] = version_compare(PHP_VERSION, '8.2', '<')
-        ? ['status' => 'warn', 'label' => sprintf('PHP %s n\'est plus maintenu : demandez une version récente à l\'hébergeur', PHP_VERSION)]
-        : ['status' => 'ok', 'label' => sprintf('PHP %s maintenu', PHP_VERSION)];
+        /* translators: %s: PHP version */
+        ? ['status' => 'warn', 'label' => sprintf(__('PHP %s is no longer maintained: ask your host for a recent version', 'optimizr'), PHP_VERSION)]
+        /* translators: %s: PHP version */
+        : ['status' => 'ok', 'label' => sprintf(__('PHP %s is maintained', 'optimizr'), PHP_VERSION)];
 
     return $checks;
 }

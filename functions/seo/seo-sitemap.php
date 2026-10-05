@@ -15,21 +15,21 @@ if (!defined('ABSPATH')) {
  */
 
 /** Nombre maximal d'URL par fichier (limite Google : 50 000). */
-function hpt_sitemap_max_urls()
+function haptic_sitemap_max_urls()
 {
-    return (int) apply_filters('hpt_sitemap_max_urls', 50000);
+    return (int) apply_filters('haptic_sitemap_max_urls', 50000);
 }
 
-function hpt_sitemap_post_types()
+function haptic_sitemap_post_types()
 {
-    return array_values(array_filter((array) get_option('hpt_sitemap_post_types', ['post', 'page'])));
+    return array_values(array_filter((array) get_option('haptic_sitemap_post_types', ['post', 'page'])));
 }
 
 /**
  * Contenus à ne jamais envoyer aux moteurs : pages privées de WooCommerce, page d'accueil
  * statique (ajoutée séparément sous l'URL du site), et exclusions ajoutées par filtre.
  */
-function hpt_sitemap_excluded_ids()
+function haptic_sitemap_excluded_ids()
 {
     $ids = [(int) get_option('page_on_front')];
 
@@ -37,7 +37,7 @@ function hpt_sitemap_excluded_ids()
         $ids[] = (int) get_option($option);
     }
 
-    return array_values(array_filter(array_unique(apply_filters('hpt_sitemap_excluded_ids', $ids))));
+    return array_values(array_filter(array_unique(apply_filters('haptic_sitemap_excluded_ids', $ids))));
 }
 
 /**
@@ -45,9 +45,9 @@ function hpt_sitemap_excluded_ids()
  *
  * @param callable $callback Reçoit chaque WP_Post
  */
-function hpt_sitemap_each_post(callable $callback)
+function haptic_sitemap_each_post(callable $callback)
 {
-    $post_types = hpt_sitemap_post_types();
+    $post_types = haptic_sitemap_post_types();
     if (!$post_types) {
         return;
     }
@@ -58,7 +58,7 @@ function hpt_sitemap_each_post(callable $callback)
             'post_type'              => $post_types,
             'post_status'            => 'publish',
             'has_password'           => false,
-            'post__not_in'           => hpt_sitemap_excluded_ids(),
+            'post__not_in'           => haptic_sitemap_excluded_ids(),
             'posts_per_page'         => 500,
             'paged'                  => $page,
             'orderby'                => 'modified',
@@ -70,8 +70,8 @@ function hpt_sitemap_each_post(callable $callback)
             // Contenus marqués « ne pas indexer » dans la metabox SEO
             'meta_query'             => [
                 'relation' => 'OR',
-                ['key' => '_hpt_noindex', 'compare' => 'NOT EXISTS'],
-                ['key' => '_hpt_noindex', 'value' => '1', 'compare' => '!='],
+                ['key' => '_haptic_noindex', 'compare' => 'NOT EXISTS'],
+                ['key' => '_haptic_noindex', 'value' => '1', 'compare' => '!='],
             ],
         ]);
 
@@ -94,12 +94,12 @@ function hpt_sitemap_each_post(callable $callback)
  *
  * @return array[] ['loc' => ..., 'lastmod' => ...]
  */
-function hpt_sitemap_urls()
+function haptic_sitemap_urls()
 {
     $urls = [];
     $latest = '';
 
-    hpt_sitemap_each_post(function ($post) use (&$urls, &$latest) {
+    haptic_sitemap_each_post(function ($post) use (&$urls, &$latest) {
         $lastmod = get_post_modified_time('c', false, $post);
         $latest = max($latest, (string) $lastmod);
         $urls[] = ['loc' => get_permalink($post), 'lastmod' => $lastmod];
@@ -115,7 +115,7 @@ function hpt_sitemap_urls()
     return $urls;
 }
 
-function hpt_sitemap_urlset_xml(array $urls)
+function haptic_sitemap_urlset_xml(array $urls)
 {
     $xml = new DOMDocument('1.0', 'UTF-8');
     $xml->formatOutput = true;
@@ -134,7 +134,7 @@ function hpt_sitemap_urlset_xml(array $urls)
     return $xml->saveXML();
 }
 
-function hpt_sitemap_index_xml(array $files)
+function haptic_sitemap_index_xml(array $files)
 {
     $xml = new DOMDocument('1.0', 'UTF-8');
     $xml->formatOutput = true;
@@ -154,7 +154,7 @@ function hpt_sitemap_index_xml(array $files)
 /**
  * Écriture atomique : fichier temporaire puis renommage, pour ne jamais servir un fichier à moitié écrit.
  */
-function hpt_sitemap_write_file($name, $content)
+function haptic_sitemap_write_file($name, $content)
 {
     $path = ABSPATH . $name;
     $tmp = $path . '.tmp';
@@ -163,8 +163,8 @@ function hpt_sitemap_write_file($name, $content)
         return false;
     }
 
-    if (!@rename($tmp, $path)) {
-        @unlink($tmp);
+    if (!haptic_filesystem()->move($tmp, $path, true)) {
+        wp_delete_file($tmp);
         return false;
     }
 
@@ -172,42 +172,42 @@ function hpt_sitemap_write_file($name, $content)
 }
 
 /**
- * Contenu des fichiers du sitemap, dans l'ordre d'écriture : au-delà de hpt_sitemap_max_urls() URL,
+ * Contenu des fichiers du sitemap, dans l'ordre d'écriture : au-delà de haptic_sitemap_max_urls() URL,
  * les fichiers de découpage (sitemap-N.xml) puis leur index (sitemap.xml).
  *
  * @param int $count Reçoit le nombre d'URL
  * @return array nom du fichier => XML
  */
-function hpt_sitemap_build(&$count = 0)
+function haptic_sitemap_build(&$count = 0)
 {
-    $urls = hpt_sitemap_urls();
+    $urls = haptic_sitemap_urls();
     $count = count($urls);
-    $chunks = array_chunk($urls, max(1, hpt_sitemap_max_urls()));
+    $chunks = array_chunk($urls, max(1, haptic_sitemap_max_urls()));
 
     if (count($chunks) === 1) {
-        return ['sitemap.xml' => hpt_sitemap_urlset_xml($chunks[0])];
+        return ['sitemap.xml' => haptic_sitemap_urlset_xml($chunks[0])];
     }
 
     $files = [];
     foreach ($chunks as $i => $chunk) {
-        $files['sitemap-' . ($i + 1) . '.xml'] = hpt_sitemap_urlset_xml($chunk);
+        $files['sitemap-' . ($i + 1) . '.xml'] = haptic_sitemap_urlset_xml($chunk);
     }
-    $files['sitemap.xml'] = hpt_sitemap_index_xml(array_keys($files));
+    $files['sitemap.xml'] = haptic_sitemap_index_xml(array_keys($files));
 
     return $files;
 }
 
 /** Copie servie par WordPress (multisite, ou racine non accessible en écriture). */
-function hpt_sitemap_cache_set(array $files)
+function haptic_sitemap_cache_set(array $files)
 {
     // Renouvelée à chaque génération : la tâche quotidienne passe avant l'expiration
-    set_transient('hpt_sitemap_cache', $files, 2 * DAY_IN_SECONDS);
+    set_transient('haptic_sitemap_cache', $files, 2 * DAY_IN_SECONDS);
 }
 
 /**
  * Le sitemap est-il publié ? Fichier à la racine sur un site simple, servi par WordPress sur un multisite.
  */
-function hpt_sitemap_is_published()
+function haptic_sitemap_is_published()
 {
     return is_multisite() || is_file(ABSPATH . 'sitemap.xml');
 }
@@ -216,35 +216,35 @@ function hpt_sitemap_is_published()
  * Publie le sitemap : fichiers à la racine sur un site simple, cache servi par WordPress sur un multisite.
  * Si l'écriture échoue, WordPress sert le cache en attendant (permaliens personnalisés).
  *
- * @param array $files nom du fichier => XML (cf. hpt_sitemap_build())
+ * @param array $files nom du fichier => XML (cf. haptic_sitemap_build())
  * @return bool false si l'écriture des fichiers a échoué
  */
-function hpt_sitemap_publish(array $files)
+function haptic_sitemap_publish(array $files)
 {
     // Multisite : jamais de fichier à la racine, commune à tous les sites du réseau
     if (is_multisite()) {
         // Fichier commun écrit par une version précédente : il masquerait le sitemap de chaque site
-        hpt_sitemap_delete_physical_files();
-        hpt_sitemap_cache_set($files);
+        haptic_sitemap_delete_physical_files();
+        haptic_sitemap_cache_set($files);
         return true;
     }
 
     $ok = true;
     foreach ($files as $name => $xml) {
-        $ok = hpt_sitemap_write_file($name, $xml) && $ok;
+        $ok = haptic_sitemap_write_file($name, $xml) && $ok;
     }
 
     // Fichiers de découpage devenus inutiles (le site a perdu des contenus)
     foreach ((array) glob(ABSPATH . 'sitemap-*.xml') as $path) {
-        if (!isset($files[basename($path)]) && hpt_sitemap_is_ours($path)) {
-            @unlink($path);
+        if (!isset($files[basename($path)]) && haptic_sitemap_is_ours($path)) {
+            wp_delete_file($path);
         }
     }
 
     if ($ok) {
-        delete_transient('hpt_sitemap_cache');
+        delete_transient('haptic_sitemap_cache');
     } else {
-        hpt_sitemap_cache_set($files);
+        haptic_sitemap_cache_set($files);
     }
 
     return $ok;
@@ -256,87 +256,91 @@ function hpt_sitemap_publish(array $files)
  * @param string $origin Déclencheur affiché dans l'historique (manuel, automatique, quotidien…)
  * @return bool
  */
-function haptic_GPT_write_sitemap_to_file($origin = 'manuel')
+function haptic_write_sitemap_to_file($origin = null)
 {
-    $ok = hpt_sitemap_publish(hpt_sitemap_build($count));
-    hpt_sitemap_record($origin, $count, $ok);
+    if ($origin === null) {
+        $origin = _x('manual', 'sitemap generation trigger', 'optimizr');
+    }
+    $ok = haptic_sitemap_publish(haptic_sitemap_build($count));
+    haptic_sitemap_record($origin, $count, $ok);
 
     // L'onglet SEO refait son test d'accessibilité
-    hpt_seo_http_check_reset('sitemap');
+    haptic_seo_http_check_reset('sitemap');
 
     return $ok;
 }
 
 /** Résultat d'une génération : date, message d'erreur et historique. */
-function hpt_sitemap_record($origin, $count, $ok)
+function haptic_sitemap_record($origin, $count, $ok)
 {
     if ($ok) {
-        update_option('hpt_sitemap_last_generated', current_time('mysql'));
-        delete_option('hpt_sitemap_error');
+        update_option('haptic_sitemap_last_generated', current_time('mysql'));
+        delete_option('haptic_sitemap_error');
     } else {
-        update_option('hpt_sitemap_error', sprintf(
-            'Impossible d\'écrire dans %s. Vérifiez les droits d\'écriture du dossier racine du site.',
+        update_option('haptic_sitemap_error', sprintf(
+            /* translators: %s: path of the site root folder */
+            __('Unable to write to %s. Check the write permissions of the site root folder.', 'optimizr'),
             untrailingslashit(ABSPATH)
         ), false);
     }
 
-    hpt_sitemap_add_history($origin, $count, $ok);
+    haptic_sitemap_add_history($origin, $count, $ok);
 }
 
 /** Historique des 20 dernières générations, affiché dans l'onglet SEO. */
-function hpt_sitemap_add_history($origin, $count, $ok)
+function haptic_sitemap_add_history($origin, $count, $ok)
 {
-    $history = (array) get_option('hpt_sitemap_history', []);
+    $history = (array) get_option('haptic_sitemap_history', []);
     array_unshift($history, [
         'time'   => current_time('mysql'),
         'origin' => $origin,
         'count'  => (int) $count,
         'ok'     => (bool) $ok,
     ]);
-    update_option('hpt_sitemap_history', array_slice($history, 0, 20), false);
+    update_option('haptic_sitemap_history', array_slice($history, 0, 20), false);
 }
 
 /* ---------- Déclencheurs ---------- */
 
 // Modification d'un contenu : régénération en arrière-plan une minute plus tard.
 // Plusieurs modifications rapprochées ne déclenchent qu'une seule régénération.
-function haptic_GPT_maybe_write_sitemap_on_post_change($post_id)
+function haptic_maybe_write_sitemap_on_post_change($post_id)
 {
     if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
         return;
     }
 
-    if (!in_array(get_post_type($post_id), hpt_sitemap_post_types(), true)) {
+    if (!in_array(get_post_type($post_id), haptic_sitemap_post_types(), true)) {
         return;
     }
 
-    if (!wp_next_scheduled('hpt_sitemap_regenerate')) {
-        wp_schedule_single_event(time() + MINUTE_IN_SECONDS, 'hpt_sitemap_regenerate');
+    if (!wp_next_scheduled('haptic_sitemap_regenerate')) {
+        wp_schedule_single_event(time() + MINUTE_IN_SECONDS, 'haptic_sitemap_regenerate');
     }
 }
-add_action('save_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
-add_action('delete_post', 'haptic_GPT_maybe_write_sitemap_on_post_change');
+add_action('save_post', 'haptic_maybe_write_sitemap_on_post_change');
+add_action('delete_post', 'haptic_maybe_write_sitemap_on_post_change');
 
-add_action('hpt_sitemap_regenerate', function () {
-    haptic_GPT_write_sitemap_to_file('automatique');
+add_action('haptic_sitemap_regenerate', function () {
+    haptic_write_sitemap_to_file(_x('automatic', 'sitemap generation trigger', 'optimizr'));
 });
 
 // Tâche quotidienne
-if (!wp_next_scheduled('haptic_GPT_daily_sitemap_cron')) {
-    wp_schedule_event(time(), 'daily', 'haptic_GPT_daily_sitemap_cron');
+if (!wp_next_scheduled('haptic_daily_sitemap_cron')) {
+    wp_schedule_event(time(), 'daily', 'haptic_daily_sitemap_cron');
 }
-add_action('haptic_GPT_daily_sitemap_cron', function () {
-    haptic_GPT_write_sitemap_to_file('quotidien');
+add_action('haptic_daily_sitemap_cron', function () {
+    haptic_write_sitemap_to_file(_x('daily', 'sitemap generation trigger', 'optimizr'));
 });
 
 // Un seul sitemap publié : celui de WordPress (wp-sitemap.xml) est désactivé
 add_filter('wp_sitemaps_enabled', '__return_false');
 
 // Sans fichier à la racine (multisite, fichier disparu ou non inscriptible), WordPress sert le sitemap (permaliens personnalisés)
-function haptic_GPT_add_sitemap_endpoint()
+function haptic_add_sitemap_endpoint()
 {
-    add_rewrite_rule('^sitemap\.xml$', 'index.php?hpt_sitemap=1', 'top');
-    add_rewrite_rule('^sitemap-([0-9]+)\.xml$', 'index.php?hpt_sitemap=1&hpt_sitemap_part=$matches[1]', 'top');
+    add_rewrite_rule('^sitemap\.xml$', 'index.php?haptic_sitemap=1', 'top');
+    add_rewrite_rule('^sitemap-([0-9]+)\.xml$', 'index.php?haptic_sitemap=1&haptic_sitemap_part=$matches[1]', 'top');
 
     // Règles enregistrées sans celles-ci (mise à jour, activation) : WordPress les recalcule à la prochaine requête
     $rules = get_option('rewrite_rules');
@@ -344,46 +348,46 @@ function haptic_GPT_add_sitemap_endpoint()
         delete_option('rewrite_rules');
     }
 }
-add_action('init', 'haptic_GPT_add_sitemap_endpoint');
+add_action('init', 'haptic_add_sitemap_endpoint');
 
-function haptic_GPT_sitemap_query_var($vars)
+function haptic_sitemap_query_var($vars)
 {
-    $vars[] = 'hpt_sitemap';
-    $vars[] = 'hpt_sitemap_part';
+    $vars[] = 'haptic_sitemap';
+    $vars[] = 'haptic_sitemap_part';
     return $vars;
 }
-add_filter('query_vars', 'haptic_GPT_sitemap_query_var');
+add_filter('query_vars', 'haptic_sitemap_query_var');
 
 /**
  * Sert le sitemap depuis le cache. Une seule génération par requête quand il est absent ou expiré,
  * et aucun historique en cas d'échec : chaque visite la répéterait.
  */
-function hpt_sitemap_serve()
+function haptic_sitemap_serve()
 {
-    if (!get_query_var('hpt_sitemap')) {
+    if (!get_query_var('haptic_sitemap')) {
         return;
     }
 
     // /sitemap-0.xml ne doit pas servir l'index
-    $part = (string) get_query_var('hpt_sitemap_part');
+    $part = (string) get_query_var('haptic_sitemap_part');
     $name = $part === '' ? 'sitemap.xml' : 'sitemap-' . absint($part) . '.xml';
 
     // Site simple : fichier présent, mais la requête arrive tout de même à WordPress (configuration du serveur)
     if (!is_multisite() && is_file(ABSPATH . $name)) {
         header('Content-Type: application/xml; charset=utf-8');
-        readfile(ABSPATH . $name);
+        echo haptic_filesystem()->get_contents(ABSPATH . $name); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sitemap XML écrit par haptic_sitemap_write_file().
         exit;
     }
 
-    $files = get_transient('hpt_sitemap_cache');
+    $files = get_transient('haptic_sitemap_cache');
     if (!is_array($files) && !is_multisite() && is_file(ABSPATH . 'sitemap.xml')) {
         // Site simple, sitemap publié : ce fichier de découpage n'existe pas, rien à régénérer
         $files = [];
     } elseif (!is_array($files)) {
-        $files = hpt_sitemap_build($count);
+        $files = haptic_sitemap_build($count);
         // Site simple : le fichier disparu est réécrit ; en cas d'échec, le cache prend le relais
-        if (hpt_sitemap_publish($files) && !is_multisite()) {
-            hpt_sitemap_record('à la demande', $count, true);
+        if (haptic_sitemap_publish($files) && !is_multisite()) {
+            haptic_sitemap_record(_x('on demand', 'sitemap generation trigger', 'optimizr'), $count, true);
         }
     }
 
@@ -395,14 +399,14 @@ function hpt_sitemap_serve()
     }
 
     header('Content-Type: application/xml; charset=utf-8');
-    echo $files[$name];
+    echo $files[$name]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XML construit par haptic_sitemap_build(), valeurs échappées à la construction.
     exit;
 }
 // Avant redirect_canonical(), qui redirigerait vers /sitemap.xml/
-add_action('template_redirect', 'hpt_sitemap_serve', 1);
+add_action('template_redirect', 'haptic_sitemap_serve', 1);
 
 // Le robots.txt indique l'adresse du sitemap
-function haptic_GPT_add_robots_sitemap($output, $public)
+function haptic_add_robots_sitemap($output, $public)
 {
     // Le robots.txt personnalisé peut déjà contenir la directive
     if (stripos($output, 'sitemap:') === false) {
@@ -410,7 +414,7 @@ function haptic_GPT_add_robots_sitemap($output, $public)
     }
     return $output;
 }
-add_filter('robots_txt', 'haptic_GPT_add_robots_sitemap', 20, 2);
+add_filter('robots_txt', 'haptic_add_robots_sitemap', 20, 2);
 
 /* ---------- Plan du site pour les visiteurs ---------- */
 
@@ -418,19 +422,19 @@ add_filter('robots_txt', 'haptic_GPT_add_robots_sitemap', 20, 2);
  * [optimizr_plan_du_site recent="6" types="post,page"]
  * Liste les contenus du sitemap, avec le style du thème. recent="0" masque les dernières mises à jour.
  */
-function hpt_sitemap_shortcode($atts)
+function haptic_sitemap_shortcode($atts)
 {
     $atts = shortcode_atts([
         'recent' => 6,
         'types'  => '',
     ], $atts, 'optimizr_plan_du_site');
 
-    $allowed = hpt_sitemap_post_types();
+    $allowed = haptic_sitemap_post_types();
     $types = $atts['types'] !== '' ? array_intersect(array_map('trim', explode(',', $atts['types'])), $allowed) : $allowed;
 
     $by_type = [];
     $recent = [];
-    hpt_sitemap_each_post(function ($post) use (&$by_type, &$recent, $types, $atts) {
+    haptic_sitemap_each_post(function ($post) use (&$by_type, &$recent, $types, $atts) {
         if (!in_array($post->post_type, $types, true)) {
             return;
         }
@@ -445,7 +449,7 @@ function hpt_sitemap_shortcode($atts)
     echo '<div class="optimizr-plan-du-site">';
 
     if ($recent) {
-        echo '<section class="optimizr-plan-du-site__recent"><h2>Dernières mises à jour</h2><ul>';
+        echo '<section class="optimizr-plan-du-site__recent"><h2>' . esc_html__('Latest updates', 'optimizr') . '</h2><ul>';
         foreach ($recent as $item) {
             printf('<li><a href="%s">%s</a> <time>%s</time></li>', esc_url($item['url']), esc_html($item['title']), esc_html($item['date']));
         }
@@ -470,4 +474,4 @@ function hpt_sitemap_shortcode($atts)
     echo '</div>';
     return ob_get_clean();
 }
-add_shortcode('optimizr_plan_du_site', 'hpt_sitemap_shortcode');
+add_shortcode('optimizr_plan_du_site', 'haptic_sitemap_shortcode');

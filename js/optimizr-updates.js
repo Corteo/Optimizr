@@ -5,9 +5,12 @@
 (function () {
     'use strict';
 
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
+
     function initUpdateCheck() {
-        var button = document.getElementById('hpt-check-update-btn');
-        var status = document.getElementById('hpt-update-status');
+        var button = document.getElementById('haptic-check-update-btn');
+        var status = document.getElementById('haptic-update-status');
         if (!button || !status || typeof window.ajaxurl === 'undefined') return;
 
         function show(message, state) {
@@ -20,7 +23,8 @@
         function install(version) {
             button.setAttribute('aria-busy', 'true');
             button.disabled = true;
-            show('Installation de la version ' + version + '…');
+            /* translators: %s: version number */
+            show(sprintf(__('Installing version %s…', 'optimizr'), version));
 
             var plugin = button.dataset.plugin;
             var body = new URLSearchParams({
@@ -34,21 +38,23 @@
                 .then(function (res) { return res.json(); })
                 .then(function (res) {
                     if (res.success) {
-                        // Le rechargement exécute les migrations de la nouvelle version (hpt_options_maybe_upgrade)
-                        show('Version ' + version + ' installée. Rechargement…', 'ok');
+                        // Le rechargement exécute les migrations de la nouvelle version (haptic_options_maybe_upgrade)
+                        /* translators: %s: version number */
+                        show(sprintf(__('Version %s installed. Reloading…', 'optimizr'), version), 'ok');
                         window.setTimeout(function () { window.location.reload(); }, 1500);
                         return;
                     }
                     var message = res.data && res.data.errorMessage ? res.data.errorMessage : '';
                     if (res.data && res.data.errorCode === 'unable_to_connect_to_filesystem') {
-                        message = 'WordPress n\'a pas accès aux fichiers du site. Renseignez les accès FTP dans wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) ou mettez à jour depuis la page Extensions.';
+                        message = __('WordPress cannot access the site files. Add the FTP credentials to wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) or update from the Plugins page.', 'optimizr');
                     }
-                    show('La mise à jour a échoué' + (message ? ' : ' + message : '.'), 'warn');
+                    /* translators: %s: error message */
+                    show(message ? sprintf(__('The update failed: %s', 'optimizr'), message) : __('The update failed.', 'optimizr'), 'warn');
                     button.removeAttribute('aria-busy');
                     button.disabled = false;
                 })
                 .catch(function () {
-                    show('La mise à jour n\'a pas abouti. Rechargez la page pour vérifier la version installée.', 'warn');
+                    show(__('The update did not complete. Reload the page to check the installed version.', 'optimizr'), 'warn');
                     button.removeAttribute('aria-busy');
                     button.disabled = false;
                 });
@@ -57,20 +63,22 @@
         button.addEventListener('click', function () {
             button.setAttribute('aria-busy', 'true');
             button.disabled = true;
-            show('Vérification en cours…');
+            show(__('Checking…', 'optimizr'));
 
-            var body = new URLSearchParams({ action: 'hpt_ajax_check_update', nonce: button.dataset.nonce });
+            var body = new URLSearchParams({ action: 'haptic_ajax_check_update', nonce: button.dataset.nonce });
 
             fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
                 .then(function (res) { return res.json(); })
                 .then(function (res) {
                     if (!res.success) {
-                        show('La vérification a échoué' + (res.data && res.data.message ? ' : ' + res.data.message : '.'), 'warn');
+                        /* translators: %s: error message */
+                        show(res.data && res.data.message ? sprintf(__('The check failed: %s', 'optimizr'), res.data.message) : __('The check failed.', 'optimizr'), 'warn');
                     } else if (res.data.status === 'update_available') {
-                        show('Version ' + res.data.new_version + ' disponible. ', 'warn');
+                        /* translators: %s: version number */
+                        show(sprintf(__('Version %s available.', 'optimizr'), res.data.new_version) + ' ', 'warn');
                         var link = document.createElement('a');
                         link.href = res.data.details_url;
-                        link.textContent = 'Mettre à jour';
+                        link.textContent = __('Update now', 'optimizr');
                         link.addEventListener('click', function (e) {
                             // Sans les données nécessaires, le lien mène à la page des mises à jour de WordPress
                             if (!button.dataset.updateNonce || !button.dataset.plugin) return;
@@ -79,11 +87,11 @@
                         });
                         status.appendChild(link);
                     } else {
-                        show('Optimizr est à jour.', 'ok');
+                        show(__('Optimizr is up to date.', 'optimizr'), 'ok');
                     }
                 })
                 .catch(function () {
-                    show('La requête a échoué. Vérifiez votre connexion.', 'warn');
+                    show(__('The request failed. Check your connection.', 'optimizr'), 'warn');
                 })
                 .finally(function () {
                     button.removeAttribute('aria-busy');

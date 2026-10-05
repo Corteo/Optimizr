@@ -13,9 +13,12 @@
         return;
     }
 
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
+
     function save(choices) {
         var body = new URLSearchParams();
-        body.append('action', 'hpt_save_uninstall');
+        body.append('action', 'haptic_save_uninstall');
         body.append('_ajax_nonce', data.nonce);
         body.append('choices', JSON.stringify(choices));
         body.append('network', data.network ? '1' : '');
@@ -63,8 +66,8 @@
 
         var dialog = el('dialog', { 'class': 'optimizr-uninstall-dialog', 'aria-labelledby': 'optimizr-uninstall-title' });
         var form = el('form', { method: 'dialog' });
-        form.appendChild(el('h2', { id: 'optimizr-uninstall-title' }, 'Désactiver Optimizr'));
-        form.appendChild(el('p', {}, 'La désactivation n\'efface rien. Si vous supprimez ensuite le plugin, que faut-il effacer avec lui ? Ce qui n\'est pas coché est conservé et sera retrouvé en cas de réinstallation.'));
+        form.appendChild(el('h2', { id: 'optimizr-uninstall-title' }, __('Deactivate Optimizr', 'optimizr')));
+        form.appendChild(el('p', {}, __('Deactivating erases nothing. If you then delete the plugin, what should be erased with it? Anything left unchecked is kept and will be restored if you reinstall.', 'optimizr')));
 
         var boxes = {};
         Object.keys(data.groups).forEach(function (key) {
@@ -72,20 +75,21 @@
             var box = el('input', { type: 'checkbox' });
             box.checked = !!data.choices[key];
             boxes[key] = box;
-            var text = el('span', {}, 'Effacer : ' + data.groups[key].label);
+            /* translators: %s: name of a group of data (settings, logs…) */
+            var text = el('span', {}, sprintf(__('Erase: %s', 'optimizr'), data.groups[key].label));
             text.appendChild(el('span', { 'class': 'description' }, data.groups[key].help));
             label.appendChild(box);
             label.appendChild(text);
             form.appendChild(label);
         });
 
-        form.appendChild(el('p', { 'class': 'description' }, 'Les tâches planifiées, caches et fichiers générés (sitemap, clé IndexNow) sont toujours supprimés. Les pages, médias et textes alternatifs ne sont jamais touchés.'));
+        form.appendChild(el('p', { 'class': 'description' }, __('Scheduled tasks, caches and generated files (sitemap, IndexNow key) are always deleted. Pages, media and alt texts are never touched.', 'optimizr')));
         var error = el('p', { 'class': 'optimizr-uninstall-dialog__error', role: 'alert' });
         form.appendChild(error);
 
         var actions = el('div', { 'class': 'optimizr-uninstall-dialog__actions' });
-        var cancel = el('button', { type: 'button', 'class': 'button' }, 'Annuler');
-        var confirm = el('button', { type: 'submit', 'class': 'button button-primary' }, 'Désactiver');
+        var cancel = el('button', { type: 'button', 'class': 'button' }, __('Cancel', 'optimizr'));
+        var confirm = el('button', { type: 'submit', 'class': 'button button-primary' }, __('Deactivate', 'optimizr'));
         actions.appendChild(cancel);
         actions.appendChild(confirm);
         form.appendChild(actions);
@@ -111,7 +115,7 @@
                 onConfirm();
             }).catch(function () {
                 confirm.disabled = false;
-                error.textContent = 'Les choix n\'ont pas pu être enregistrés. Rechargez la page et réessayez.';
+                error.textContent = __('Your choices could not be saved. Reload the page and try again.', 'optimizr');
             });
         });
 

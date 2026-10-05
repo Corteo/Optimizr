@@ -19,76 +19,90 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
  * « beta » reçoit aussi les versions finales (elles sont publiées sur les deux branches, cf. README.md).
  * « main » suit la branche de développement, pour tester avant de publier sur stable ou beta.
  */
-function hpt_update_channels()
+function haptic_update_channel_slugs()
 {
-    return ['stable' => 'Stable', 'beta' => 'Beta', 'main' => 'Développement (main)'];
+    // Sans libellé traduit : lu dès plugins_loaded (haptic_initialize_updater), avant le chargement des traductions
+    return ['stable', 'beta', 'main'];
+}
+
+function haptic_update_channels()
+{
+    return [
+        'stable' => _x('Stable', 'update channel', 'optimizr'),
+        'beta'   => _x('Beta', 'update channel', 'optimizr'),
+        'main'   => _x('Development (main)', 'update channel', 'optimizr'),
+    ];
 }
 
 /** Canal suivi. Sur un multisite, celui du site principal (les mises à jour concernent tout le réseau). */
-function hpt_update_channel()
+function haptic_update_channel()
 {
-    $channel = is_multisite() ? get_blog_option(get_main_site_id(), 'hpt_update_channel') : get_option('hpt_update_channel');
-    return isset(hpt_update_channels()[$channel]) ? $channel : 'stable';
+    $channel = is_multisite() ? get_blog_option(get_main_site_id(), 'haptic_update_channel') : get_option('haptic_update_channel');
+    return in_array($channel, haptic_update_channel_slugs(), true) ? $channel : 'stable';
 }
 
-function hpt_sanitize_update_channel($value)
+function haptic_sanitize_update_channel($value)
 {
     // Choix réservé à qui peut installer les mises à jour (sinon on garde la valeur actuelle)
     if (!current_user_can('update_plugins')) {
-        return get_option('hpt_update_channel', 'stable');
+        return get_option('haptic_update_channel', 'stable');
     }
-    return isset(hpt_update_channels()[$value]) ? $value : 'stable';
+    return in_array($value, haptic_update_channel_slugs(), true) ? $value : 'stable';
 }
 
 add_action('admin_init', function () {
-    register_setting(hpt_settings_group('dashboard'), 'hpt_update_channel', [
+    register_setting(haptic_settings_group('dashboard'), 'haptic_update_channel', [
         'type'              => 'string',
-        'sanitize_callback' => 'hpt_sanitize_update_channel',
+        'sanitize_callback' => 'haptic_sanitize_update_channel',
     ]);
 });
 
 // En-tête de la page d'options : bouton « Vérifier les mises à jour » (script : js/optimizr-updates.js)
-add_action('hpt_header_actions', function () {
+add_action('haptic_header_actions', function () {
     ?>
-    <span id="hpt-update-status" class="optimizr-header__status" role="status"></span>
-    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="hpt-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('hpt_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HPT_OPTIMIZR_PATH . 'hpt_options.php')); ?>">
-        <?php echo hpt_icon('refresh', 16); ?>Vérifier les mises à jour
+    <span id="haptic-update-status" class="optimizr-header__status" role="status"></span>
+    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="haptic-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HAPTIC_OPTIMIZR_FILE)); ?>">
+        <?php echo wp_kses(haptic_icon('refresh', 16), haptic_kses_ui()); ?><?php esc_html_e('Check for updates', 'optimizr'); ?>
     </button>
     <?php
 });
 
 add_action('admin_enqueue_scripts', function ($hook) {
-    if ($hook !== HPT_OPTIMIZR_ADMIN_HOOK) {
+    if ($hook !== HAPTIC_OPTIMIZR_ADMIN_HOOK) {
         return;
     }
-    $js = HPT_OPTIMIZR_PATH . 'js/optimizr-updates.js';
-    wp_enqueue_script('optimizr-updates', HPT_OPTIMIZR_URL . 'js/optimizr-updates.js', [], filemtime($js), true);
+    $js = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-updates.js';
+    wp_enqueue_script('optimizr-updates', HAPTIC_OPTIMIZR_URL . 'js/optimizr-updates.js', ['wp-i18n'], filemtime($js), true);
+    wp_set_script_translations('optimizr-updates', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 });
 
 // Carte « Mises à jour » du tableau de bord : canal suivi
-add_action('hpt_dashboard_updates', function () {
+add_action('haptic_dashboard_updates', function () {
     ?>
     <dl class="optimizr-dl">
-        <dt>Canal</dt>
-        <dd><?php echo esc_html(hpt_update_channels()[hpt_update_channel()]); ?></dd>
+        <dt><?php echo esc_html_x('Channel', 'update channel', 'optimizr'); ?></dt>
+        <dd><?php echo esc_html(haptic_update_channels()[haptic_update_channel()]); ?></dd>
     </dl>
     <?php if (current_user_can('update_plugins') && (!is_multisite() || is_main_site())) : ?>
-        <label class="optimizr-field__label" for="hpt_update_channel">Canal suivi</label>
-        <select name="hpt_update_channel" id="hpt_update_channel">
-            <?php foreach (hpt_update_channels() as $channel => $label) : ?>
-                <option value="<?php echo esc_attr($channel); ?>" <?php selected(hpt_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
+        <label class="optimizr-field__label" for="haptic_update_channel"><?php esc_html_e('Followed channel', 'optimizr'); ?></label>
+        <select name="haptic_update_channel" id="haptic_update_channel">
+            <?php foreach (haptic_update_channels() as $channel => $label) : ?>
+                <option value="<?php echo esc_attr($channel); ?>" <?php selected(haptic_update_channel(), $channel); ?>><?php echo esc_html($label); ?></option>
             <?php endforeach; ?>
         </select>
-        <p class="optimizr-card__hint">Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans <code>main</code>, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée.</p>
+        <p class="optimizr-card__hint"><?php
+        /* translators: %s: name of the development branch, "main" */
+        echo wp_kses(sprintf(__('Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered.', 'optimizr'), '<code>main</code>'), ['code' => []]);
+        ?></p>
     <?php endif; ?>
-    <p class="optimizr-card__hint">Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page.</p>
+    <p class="optimizr-card__hint"><?php esc_html_e('The “Check for updates” button at the top of the page queries GitHub immediately, then “Update now” installs the new version without leaving the page.', 'optimizr'); ?></p>
     <?php
 });
 
 // Changement de canal : on oublie la dernière vérification, la suivante lit la nouvelle branche
-add_action('update_option_hpt_update_channel', 'hpt_update_channel_reset');
-add_action('add_option_hpt_update_channel', 'hpt_update_channel_reset');
-function hpt_update_channel_reset()
+add_action('update_option_haptic_update_channel', 'haptic_update_channel_reset');
+add_action('add_option_haptic_update_channel', 'haptic_update_channel_reset');
+function haptic_update_channel_reset()
 {
     delete_site_option('external_updates-optimizr');
 }
@@ -96,7 +110,7 @@ function hpt_update_channel_reset()
 /**
  * Initialise le système de mise à jour du plugin (instance unique par requête).
  */
-function haptic_GPT_initialize_updater()
+function haptic_initialize_updater()
 {
     static $updater = null;
 
@@ -107,22 +121,22 @@ function haptic_GPT_initialize_updater()
     $updater = PucFactory::buildUpdateChecker(
         // Sans « .git » : la librairie en déduit l'URL d'API /repos/Corteo/Optimizr
         'https://github.com/Corteo/Optimizr/',
-        plugin_dir_path(__DIR__) . 'hpt_options.php',
+        HAPTIC_OPTIMIZR_FILE,
         'optimizr'
     );
 
-    $updater->setBranch(hpt_update_channel());
+    $updater->setBranch(haptic_update_channel());
 
     // Sur « main », la librairie lirait la dernière release GitHub (donc la version stable) :
     // on lui fait lire la branche elle-même, comme pour stable et beta.
     $updater->addFilter('vcs_update_detection_strategies', function ($strategies, $slug) {
-        if ($slug === 'optimizr' && hpt_update_channel() === 'main' && isset($strategies['branch'])) {
+        if ($slug === 'optimizr' && haptic_update_channel() === 'main' && isset($strategies['branch'])) {
             return ['branch' => $strategies['branch']];
         }
         return $strategies;
     }, 10, 2);
 
-    $token = hpt_get_github_token();
+    $token = haptic_get_github_token();
     if ($token) {
         $updater->setAuthentication($token);
     }
@@ -131,7 +145,7 @@ function haptic_GPT_initialize_updater()
 }
 
 // Construit à chaque chargement pour que WordPress détecte les mises à jour automatiquement
-add_action('plugins_loaded', 'haptic_GPT_initialize_updater');
+add_action('plugins_loaded', 'haptic_initialize_updater');
 
 /**
  * Récupère le token GitHub : constante OPTIMIZR_GITHUB_TOKEN (wp-config.php) en priorité,
@@ -139,7 +153,7 @@ add_action('plugins_loaded', 'haptic_GPT_initialize_updater');
  *
  * @return string|false
  */
-function hpt_get_github_token()
+function haptic_get_github_token()
 {
     if (defined('OPTIMIZR_GITHUB_TOKEN') && OPTIMIZR_GITHUB_TOKEN) {
         return OPTIMIZR_GITHUB_TOKEN;
@@ -156,13 +170,11 @@ function hpt_get_github_token()
     $response = wp_remote_get('https://cdn.alexandrevergnaud.fr/opti/token.php', ['timeout' => 5]);
 
     if (is_wp_error($response)) {
-        hpt_log('[Updates] Erreur lors de la récupération du token : ' . $response->get_error_message());
         set_transient($transient_key, '', 15 * MINUTE_IN_SECONDS);
         return false;
     }
 
     if (wp_remote_retrieve_response_code($response) !== 200) {
-        hpt_log('[Updates] Code HTTP inattendu lors de la récupération du token : ' . wp_remote_retrieve_response_code($response));
         set_transient($transient_key, '', 15 * MINUTE_IN_SECONDS);
         return false;
     }
@@ -174,30 +186,27 @@ function hpt_get_github_token()
         return $body['token'];
     }
 
-    hpt_log('[Updates] Réponse invalide : token manquant');
     set_transient($transient_key, '', 15 * MINUTE_IN_SECONDS);
     return false;
 }
 
-add_action('wp_ajax_hpt_ajax_check_update', 'haptic_GPT_ajax_check_github_updates');
+add_action('wp_ajax_haptic_ajax_check_update', 'haptic_ajax_check_github_updates');
 
-function haptic_GPT_ajax_check_github_updates()
+function haptic_ajax_check_github_updates()
 {
-    check_ajax_referer('hpt_check_update_action', 'nonce');
+    check_ajax_referer('haptic_check_update_action', 'nonce');
 
     if (!current_user_can('update_plugins')) {
-        wp_send_json_error(['status' => 'error', 'message' => 'Permissions insuffisantes']);
+        wp_send_json_error(['status' => 'error', 'message' => __('Insufficient permissions', 'optimizr')]);
     }
 
-    $checker = haptic_GPT_initialize_updater();
-    hpt_log('[AJAX Updates] Lancement de la vérification via AJAX.');
+    $checker = haptic_initialize_updater();
 
     try {
         $update = $checker->checkForUpdates();
 
         // La librairie renvoie un objet Update : le numéro est dans « version » (« new_version » n'existe qu'au format WordPress)
         if ($update && !empty($update->version)) {
-            hpt_log('[AJAX Updates] Nouvelle version disponible : ' . $update->version);
             wp_send_json_success([
                 'status' => 'update_available',
                 'new_version' => $update->version,
@@ -208,23 +217,21 @@ function haptic_GPT_ajax_check_github_updates()
         // Dépôt injoignable ou jeton refusé : le signaler plutôt qu'annoncer « à jour »
         $errors = $checker->getLastRequestApiErrors();
         if ($errors) {
-            $message = $errors[0]['error'] instanceof WP_Error ? $errors[0]['error']->get_error_message() : 'GitHub injoignable';
-            hpt_log('[AJAX Updates] Erreur lors de la vérification : ' . $message);
+            $message = $errors[0]['error'] instanceof WP_Error ? $errors[0]['error']->get_error_message() : __('GitHub unreachable', 'optimizr');
             wp_send_json_error([
                 'status' => 'error',
                 'message' => $message,
             ]);
         } else {
-            hpt_log('[AJAX Updates] Aucune mise à jour détectée.');
             wp_send_json_success([
                 'status' => 'no_update',
             ]);
         }
     } catch (Exception $e) {
-        hpt_log('[AJAX Updates] Erreur lors de la vérification : ' . $e->getMessage());
         wp_send_json_error([
             'status' => 'error',
-            'message' => 'Erreur : ' . $e->getMessage(),
+            /* translators: %s: error message */
+            'message' => sprintf(__('Error: %s', 'optimizr'), $e->getMessage()),
         ]);
     }
 }

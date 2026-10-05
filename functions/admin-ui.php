@@ -8,74 +8,68 @@ if (!defined('ABSPATH')) {
  * Modules activables depuis le tableau de bord.
  * Chaque module est rattaché à l'onglet qui contient ses réglages.
  */
-function hpt_modules()
+function haptic_modules()
 {
-    return apply_filters('hpt_modules', [
+    return apply_filters('haptic_modules', [
         'cookies' => [
-            'label' => 'Cookies & RGPD',
-            'desc'  => 'Bandeau Tarteaucitron, Google Consent Mode v2 et services de mesure d\'audience.',
+            'label' => __('Cookies & GDPR', 'optimizr'),
+            'desc'  => __('Tarteaucitron banner, Google Consent Mode v2 and audience measurement services.', 'optimizr'),
             'icon'  => 'shield',
             'tab'   => 'cookies',
         ],
         'seo' => [
-            'label' => 'SEO',
-            'desc'  => 'Balises meta et OpenGraph, sitemap XML, fichier robots.txt.',
+            'label' => __('SEO', 'optimizr'),
+            'desc'  => __('Meta and OpenGraph tags, XML sitemap, robots.txt file.', 'optimizr'),
             'icon'  => 'search',
             'tab'   => 'seo',
         ],
         'ai' => [
-            'label' => 'Assistant IA',
-            'desc'  => 'Meta descriptions et balises ALT générées avec OpenAI, Claude ou Gemini, à partir du contexte du site.',
+            'label' => __('AI assistant', 'optimizr'),
+            'desc'  => __('Meta descriptions and ALT text generated with OpenAI, Claude or Gemini, based on your site context.', 'optimizr'),
             'icon'  => 'sparkles',
             'tab'   => 'ai',
         ],
         'redirects' => [
-            'label' => 'Redirections & liens',
-            'desc'  => 'Redirections 301, journal des pages introuvables, liens cassés et redirection automatique des contenus déplacés.',
+            'label' => __('Redirects & links', 'optimizr'),
+            'desc'  => __('301 redirects, 404 log, broken links and automatic redirects for moved content.', 'optimizr'),
             'icon'  => 'redirect',
             'tab'   => 'redirects',
         ],
         'local' => [
-            'label' => 'SEO local',
-            'desc'  => 'Fiche de l\'établissement pour Google : adresse, horaires, avis, itinéraire et shortcodes de coordonnées.',
+            'label' => __('Local SEO', 'optimizr'),
+            'desc'  => __('Business profile for Google: address, opening hours, reviews, directions and contact detail shortcodes.', 'optimizr'),
             'icon'  => 'pin',
             'tab'   => 'local',
         ],
         'pages' => [
-            'label' => 'Pages spéciales',
-            'desc'  => 'Page 404 rédigée dans l\'éditeur avec suggestions de contenus, et mode maintenance (503) avec date de réouverture.',
+            'label' => __('Special pages', 'optimizr'),
+            'desc'  => __('404 page written in the editor with content suggestions, and maintenance mode (503) with a reopening date.', 'optimizr'),
             'icon'  => 'file',
             'tab'   => 'pages',
         ],
         'cpts' => [
-            'label' => 'Types de contenu',
-            'desc'  => 'CPT Évènements prêt à l\'emploi et types personnalisés créés depuis l\'admin.',
+            'label' => __('Content types', 'optimizr'),
+            'desc'  => __('Ready-to-use Events CPT and custom post types created from the admin.', 'optimizr'),
             'icon'  => 'layers',
             'tab'   => 'content',
         ],
         'thumbnails' => [
-            'label' => 'Images à la une',
-            'desc'  => 'Choisissez les types de contenu qui acceptent une image de couverture.',
+            'label' => __('Featured images', 'optimizr'),
+            'desc'  => __('Choose which content types accept a cover image.', 'optimizr'),
             'icon'  => 'image',
             'tab'   => 'content',
         ],
         'emails' => [
-            'label' => 'Emails',
-            'desc'  => 'Coupez les emails envoyés après les mises à jour automatiques.',
+            'label' => __('Emails', 'optimizr'),
+            'desc'  => __('Turn off the emails sent after automatic updates.', 'optimizr'),
             'icon'  => 'mail',
             'tab'   => 'advanced',
         ],
         'security' => [
-            'label' => 'Sécurité',
-            'desc'  => 'Adresse de connexion personnalisée, limitation des tentatives, version masquée, XML-RPC et en-têtes de sécurité.',
+            'label' => __('Security', 'optimizr'),
+            'desc'  => __('Custom login URL, login attempt limits, hidden version, XML-RPC and security headers.', 'optimizr'),
             'icon'  => 'lock',
             'tab'   => 'security',
-        ],
-        'devtools' => [
-            'label' => 'Outils développeur',
-            'desc'  => 'Mode debug, inspection vd() et journal des erreurs PHP, réservés aux admins.',
-            'icon'  => 'code',
-            'tab'   => 'advanced',
         ],
     ]);
 }
@@ -83,9 +77,9 @@ function hpt_modules()
 /**
  * Un module est actif tant que le tableau de bord n'a jamais été enregistré.
  */
-function hpt_is_module_active($slug)
+function haptic_is_module_active($slug)
 {
-    $modules = get_option('hpt_modules');
+    $modules = get_option('haptic_modules');
 
     if (!is_array($modules)) {
         return true;
@@ -94,33 +88,24 @@ function hpt_is_module_active($slug)
     return !empty($modules[$slug]);
 }
 
-// Sans le module, les options de debug sont forcées à 0 partout où elles sont lues
-add_action('plugins_loaded', function () {
-    if (hpt_is_module_active('devtools')) {
-        return;
-    }
-    add_filter('pre_option_hpt_debug_mode', '__return_zero');
-    add_filter('pre_option_hpt_dev_mode', '__return_zero');
-}, 0);
-
 /**
  * Onglets de la page d'options, filtrés selon les modules actifs.
  */
-function hpt_admin_tabs()
+function haptic_admin_tabs()
 {
     $tabs = [
-        'dashboard' => ['label' => 'Tableau de bord', 'modules' => []],
-        'cookies'   => ['label' => 'Cookies & RGPD', 'modules' => ['cookies']],
-        'seo'       => ['label' => 'SEO', 'modules' => ['seo']],
-        'redirects' => ['label' => 'Redirections', 'modules' => ['redirects'], 'render' => 'hpt_render_redirects_tab'],
-        'local'     => ['label' => 'SEO local', 'modules' => ['local']],
-        'pages'     => ['label' => 'Pages spéciales', 'modules' => ['pages']],
-        'ai'        => ['label' => 'Assistant IA', 'modules' => ['ai']],
-        'content'   => ['label' => 'Contenus', 'modules' => ['cpts', 'thumbnails']],
-        'security'  => ['label' => 'Sécurité', 'modules' => ['security']],
-        'advanced'  => ['label' => 'Avancé', 'modules' => ['emails', 'devtools']],
+        'dashboard' => ['label' => __('Dashboard', 'optimizr'), 'modules' => []],
+        'cookies'   => ['label' => __('Cookies & GDPR', 'optimizr'), 'modules' => ['cookies']],
+        'seo'       => ['label' => __('SEO', 'optimizr'), 'modules' => ['seo']],
+        'redirects' => ['label' => _x('Redirects', 'admin tab', 'optimizr'), 'modules' => ['redirects'], 'render' => 'haptic_render_redirects_tab'],
+        'local'     => ['label' => __('Local SEO', 'optimizr'), 'modules' => ['local']],
+        'pages'     => ['label' => __('Special pages', 'optimizr'), 'modules' => ['pages']],
+        'ai'        => ['label' => __('AI assistant', 'optimizr'), 'modules' => ['ai']],
+        'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['cpts', 'thumbnails']],
+        'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security']],
+        'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails']],
         // Onglet sans réglages : ses propres formulaires, pas de barre d'enregistrement
-        'tools'     => ['label' => 'Outils', 'modules' => [], 'render' => 'hpt_render_tools_tab'],
+        'tools'     => ['label' => _x('Tools', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_tools_tab'],
     ];
 
     $tabs = array_filter($tabs, function ($tab) {
@@ -128,43 +113,43 @@ function hpt_admin_tabs()
             return true;
         }
         foreach ($tab['modules'] as $module) {
-            if (hpt_is_module_active($module)) {
+            if (haptic_is_module_active($module)) {
                 return true;
             }
         }
         return false;
     });
 
-    return apply_filters('hpt_admin_tabs', $tabs);
+    return apply_filters('haptic_admin_tabs', $tabs);
 }
 
-function hpt_current_tab()
+function haptic_current_tab()
 {
     $tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'dashboard';
-    return array_key_exists($tab, hpt_admin_tabs()) ? $tab : 'dashboard';
+    return array_key_exists($tab, haptic_admin_tabs()) ? $tab : 'dashboard';
 }
 
 /** Page Settings API d'un onglet (add_settings_section / add_settings_field). */
-function hpt_settings_page($tab)
+function haptic_settings_page($tab)
 {
-    return 'hpt-options-' . $tab;
+    return 'haptic-options-' . $tab;
 }
 
 /** Groupe Settings API d'un onglet (register_setting / settings_fields). */
-function hpt_settings_group($tab)
+function haptic_settings_group($tab)
 {
-    return 'hpt_group_' . $tab;
+    return 'haptic_group_' . $tab;
 }
 
-function hpt_admin_tab_url($tab)
+function haptic_admin_tab_url($tab)
 {
-    return admin_url('admin.php?page=hpt-options&tab=' . $tab);
+    return admin_url('admin.php?page=haptic-options&tab=' . $tab);
 }
 
 /**
  * Interrupteur (case à cocher stylée) conforme à l'interface du plugin.
  */
-function hpt_switch_input($name, $checked, $label, $id = '')
+function haptic_switch_input($name, $checked, $label, $id = '')
 {
     $id = $id ?: sanitize_html_class(str_replace(['[', ']'], '-', $name));
 
@@ -178,9 +163,43 @@ function hpt_switch_input($name, $checked, $label, $id = '')
 }
 
 /**
+ * Balises autorisées à la sortie du HTML construit par le plugin (icônes SVG, interrupteurs, boutons) :
+ * echo wp_kses(haptic_icon('check'), haptic_kses_ui()).
+ */
+function haptic_kses_ui()
+{
+    static $allowed = null;
+    if ($allowed !== null) {
+        return $allowed;
+    }
+
+    $common = ['class' => true, 'id' => true, 'role' => true, 'aria-hidden' => true, 'aria-label' => true, 'aria-controls' => true, 'aria-expanded' => true, 'data-*' => true];
+    $shape  = ['d' => true, 'x' => true, 'y' => true, 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'cx' => true, 'cy' => true, 'r' => true, 'rx' => true, 'ry' => true, 'width' => true, 'height' => true, 'points' => true, 'fill' => true, 'fill-opacity' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-opacity' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'stroke-dasharray' => true, 'opacity' => true, 'transform' => true, 'class' => true];
+
+    $allowed = [
+        'svg'      => $common + ['width' => true, 'height' => true, 'viewbox' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true, 'focusable' => true, 'xmlns' => true],
+        'g'        => $shape,
+        'path'     => $shape,
+        'circle'   => $shape,
+        'rect'     => $shape,
+        'line'     => $shape,
+        'polyline' => $shape,
+        'polygon'  => $shape,
+        'ellipse'  => $shape,
+        'label'    => $common + ['for' => true],
+        'input'    => $common + ['type' => true, 'name' => true, 'value' => true, 'checked' => true, 'disabled' => true],
+        'span'     => $common,
+        'button'   => $common + ['type' => true, 'disabled' => true],
+        'select'   => $common + ['name' => true, 'disabled' => true],
+        'option'   => ['class' => true, 'value' => true, 'selected' => true],
+    ];
+    return $allowed;
+}
+
+/**
  * Icônes au trait (24×24) utilisées dans l'interface.
  */
-function hpt_icon($name, $size = 20)
+function haptic_icon($name, $size = 20)
 {
     $paths = [
         'shield'   => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
@@ -213,16 +232,26 @@ function hpt_icon($name, $size = 20)
     );
 }
 
-add_action('admin_menu', 'hpt_options_admin_menu');
+add_action('admin_menu', 'haptic_options_admin_menu');
 
-function hpt_options_admin_menu()
+// Adresses des versions 2.x (favoris, liens enregistrés) : page renommée en 3.0. Sur admin_menu, avant que
+// WordPress refuse l'accès à une page inconnue.
+add_action('admin_menu', function () {
+    $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    if (strpos($page, 'hpt-') === 0) {
+        wp_safe_redirect(add_query_arg('page', 'haptic-' . substr($page, 4)));
+        exit;
+    }
+}, 0);
+
+function haptic_options_admin_menu()
 {
     add_menu_page(
-        'Réglages - Optimizr',
+        __('Settings - Optimizr', 'optimizr'),
         'Optimizr',
         'manage_options',
-        'hpt-options',
-        'hpt_options_settings_page',
+        'haptic-options',
+        'haptic_options_settings_page',
         'dashicons-admin-generic',
         81
     );
@@ -230,19 +259,19 @@ function hpt_options_admin_menu()
 
 // Réglages du tableau de bord : liste des modules actifs (le canal de mise à jour est dans functions/updates.php)
 add_action('admin_init', function () {
-    register_setting(hpt_settings_group('dashboard'), 'hpt_modules', [
+    register_setting(haptic_settings_group('dashboard'), 'haptic_modules', [
         'type'              => 'array',
-        'sanitize_callback' => 'hpt_sanitize_modules',
+        'sanitize_callback' => 'haptic_sanitize_modules',
     ]);
 });
 
-function hpt_sanitize_modules($input)
+function haptic_sanitize_modules($input)
 {
     $input = is_array($input) ? $input : [];
     // Marqueur toujours envoyé : distingue « tout désactivé » de « jamais enregistré »
     $clean = ['_saved' => 1];
 
-    foreach (array_keys(hpt_modules()) as $slug) {
+    foreach (array_keys(haptic_modules()) as $slug) {
         $clean[$slug] = empty($input[$slug]) ? 0 : 1;
     }
 
@@ -250,45 +279,46 @@ function hpt_sanitize_modules($input)
 }
 
 add_action('admin_enqueue_scripts', function ($hook) {
-    if ($hook !== HPT_OPTIMIZR_ADMIN_HOOK) {
+    if ($hook !== HAPTIC_OPTIMIZR_ADMIN_HOOK) {
         return;
     }
 
-    $css = HPT_OPTIMIZR_PATH . 'css/optimizr-admin.css';
-    $js  = HPT_OPTIMIZR_PATH . 'js/optimizr-admin.js';
+    $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-admin.css';
+    $js  = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-admin.js';
 
-    wp_enqueue_style('optimizr-admin', HPT_OPTIMIZR_URL . 'css/optimizr-admin.css', [], filemtime($css));
-    wp_enqueue_script('optimizr-admin', HPT_OPTIMIZR_URL . 'js/optimizr-admin.js', [], filemtime($js), true);
+    wp_enqueue_style('optimizr-admin', HAPTIC_OPTIMIZR_URL . 'css/optimizr-admin.css', [], filemtime($css));
+    wp_enqueue_script('optimizr-admin', HAPTIC_OPTIMIZR_URL . 'js/optimizr-admin.js', ['wp-i18n'], filemtime($js), true);
+    wp_set_script_translations('optimizr-admin', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 });
 
-function hpt_options_settings_page()
+function haptic_options_settings_page()
 {
     if (!current_user_can('manage_options')) {
         return;
     }
 
-    $tabs    = hpt_admin_tabs();
-    $current = hpt_current_tab();
+    $tabs    = haptic_admin_tabs();
+    $current = haptic_current_tab();
     ?>
     <div class="wrap optimizr">
         <header class="optimizr-header">
             <div class="optimizr-header__top">
                 <span class="optimizr-logo" aria-hidden="true">O</span>
                 <h1 class="optimizr-header__title">Optimizr</h1>
-                <span class="optimizr-badge">v<?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></span>
+                <span class="optimizr-badge">v<?php echo esc_html(HAPTIC_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">
-                    <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo hpt_icon('sparkles', 16); ?>Assistant de configuration</a>
-                    <?php do_action('hpt_header_actions'); ?>
+                    <a href="<?php echo esc_url(haptic_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--ghost"><?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?><?php esc_html_e('Setup wizard', 'optimizr'); ?></a>
+                    <?php do_action('haptic_header_actions'); ?>
                 </div>
             </div>
             <div class="optimizr-tabs-wrap" data-optimizr-tabs>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-left', 18); ?></button>
-                <nav class="optimizr-tabs" aria-label="Sections d'Optimizr">
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(haptic_icon('chevron-left', 18), haptic_kses_ui()); ?></button>
+                <nav class="optimizr-tabs" aria-label="<?php esc_attr_e('Optimizr sections', 'optimizr'); ?>">
                     <?php foreach ($tabs as $slug => $tab) : ?>
-                        <a href="<?php echo esc_url(hpt_admin_tab_url($slug)); ?>" class="optimizr-tabs__link" <?php echo $slug === $current ? 'aria-current="page"' : ''; ?>><?php echo esc_html($tab['label']); ?></a>
+                        <a href="<?php echo esc_url(haptic_admin_tab_url($slug)); ?>" class="optimizr-tabs__link" <?php echo $slug === $current ? 'aria-current="page"' : ''; ?>><?php echo esc_html($tab['label']); ?></a>
                     <?php endforeach; ?>
                 </nav>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo hpt_icon('chevron-right', 18); ?></button>
+                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(haptic_icon('chevron-right', 18), haptic_kses_ui()); ?></button>
             </div>
         </header>
 
@@ -303,23 +333,23 @@ function hpt_options_settings_page()
         <?php else : ?>
 
         <form method="post" action="options.php" class="optimizr-form" data-optimizr-form>
-            <?php settings_fields(hpt_settings_group($current)); ?>
+            <?php settings_fields(haptic_settings_group($current)); ?>
 
             <main class="optimizr-main">
                 <?php
                 if ($current === 'dashboard') {
-                    hpt_render_dashboard();
+                    haptic_render_dashboard();
                 } else {
-                    hpt_render_settings_tab($current, $tabs[$current]);
+                    haptic_render_settings_tab($current, $tabs[$current]);
                 }
                 ?>
             </main>
 
             <div class="optimizr-savebar" data-optimizr-savebar>
                 <span class="optimizr-savebar__dot" aria-hidden="true"></span>
-                <span class="optimizr-savebar__text" data-optimizr-savebar-text>Toutes les modifications sont enregistrées</span>
-                <button type="reset" class="optimizr-btn optimizr-btn--ghost" data-optimizr-reset>Annuler</button>
-                <button type="submit" class="optimizr-btn optimizr-btn--primary">Enregistrer les modifications</button>
+                <span class="optimizr-savebar__text" data-optimizr-savebar-text><?php esc_html_e('All changes saved', 'optimizr'); ?></span>
+                <button type="reset" class="optimizr-btn optimizr-btn--ghost" data-optimizr-reset><?php esc_html_e('Cancel', 'optimizr'); ?></button>
+                <button type="submit" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Save changes', 'optimizr'); ?></button>
             </div>
         </form>
         <?php endif; ?>
@@ -329,22 +359,22 @@ function hpt_options_settings_page()
 
 /**
  * Onglet de réglages : sections du Settings API en colonne principale,
- * panneau latéral optionnel via l'action hpt_admin_aside_{onglet}.
+ * panneau latéral optionnel via l'action haptic_admin_aside_{onglet}.
  */
-function hpt_render_settings_tab($slug, $tab)
+function haptic_render_settings_tab($slug, $tab)
 {
     $intros = [
-        'cookies'  => 'Consentement des visiteurs et services tiers chargés uniquement après autorisation.',
-        'seo'      => 'Titres et descriptions par défaut, plan du site et consignes pour les robots d\'indexation.',
-        'local'    => 'Informations de l\'établissement reprises par Google (recherche locale, Maps) et affichables sur le site.',
-        'pages'    => 'Contenu de la page introuvable et fermeture temporaire du site, avec la mise en page du thème.',
-        'ai'       => 'Génération de contenus avec OpenAI, Claude ou Gemini : meta descriptions et balises ALT des images.',
-        'content'  => 'Types de contenu personnalisés et images de couverture.',
-        'security' => 'Protections activables une à une. Aucune n\'est active tant que vous ne l\'activez pas.',
-        'advanced' => 'Notifications et outils réservés aux développeurs.',
+        'cookies'  => __('Visitor consent, with third-party services loaded only once allowed.', 'optimizr'),
+        'seo'      => __('Default titles and descriptions, sitemap and instructions for search engine crawlers.', 'optimizr'),
+        'local'    => __('Business information used by Google (local search, Maps) and displayable on your site.', 'optimizr'),
+        'pages'    => __('Content of the not-found page and temporary site closure, using your theme layout.', 'optimizr'),
+        'ai'       => __('Content generation with OpenAI, Claude or Gemini: meta descriptions and image ALT text.', 'optimizr'),
+        'content'  => __('Custom post types and cover images.', 'optimizr'),
+        'security' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr'),
+        'advanced' => __('Notifications sent by WordPress after automatic updates.', 'optimizr'),
     ];
 
-    $has_aside = has_action("hpt_admin_aside_{$slug}");
+    $has_aside = has_action("haptic_admin_aside_{$slug}");
     ?>
     <div class="optimizr-page-head">
         <h2 class="optimizr-page-head__title"><?php echo esc_html($tab['label']); ?></h2>
@@ -354,11 +384,11 @@ function hpt_render_settings_tab($slug, $tab)
     </div>
     <div class="optimizr-layout<?php echo $has_aside ? ' optimizr-layout--aside' : ''; ?>">
         <div class="optimizr-layout__main">
-            <?php hpt_do_settings_sections(hpt_settings_page($slug)); ?>
+            <?php haptic_do_settings_sections(haptic_settings_page($slug)); ?>
         </div>
         <?php if ($has_aside) : ?>
             <aside class="optimizr-layout__aside">
-                <?php do_action("hpt_admin_aside_{$slug}"); ?>
+                <?php do_action("haptic_admin_aside_{$slug}"); ?>
             </aside>
         <?php endif; ?>
     </div>
@@ -370,65 +400,57 @@ function hpt_render_settings_tab($slug, $tab)
  *
  * @return array[] Liste de ['status' => ok|warn, 'label' => ..., 'link' => ?, 'link_label' => ?]
  */
-function hpt_site_health_checks()
+function haptic_site_health_checks()
 {
     $checks = [];
 
     if (!get_option('blog_public')) {
         $checks[] = [
             'status' => 'warn',
-            'label' => 'Les moteurs de recherche sont invités à ne pas indexer le site',
+            'label' => __('Search engines are discouraged from indexing the site', 'optimizr'),
             'link' => admin_url('options-reading.php'),
-            'link_label' => 'Régler',
+            'link_label' => _x('Adjust', 'site health check link', 'optimizr'),
         ];
     }
 
-    if (hpt_is_module_active('seo')) {
-        // Multisite : pas de fichier à la racine, chaque site sert le sien (cf. hpt_sitemap_is_published())
-        $sitemap = (function_exists('hpt_sitemap_is_published') ? hpt_sitemap_is_published() : file_exists(ABSPATH . 'sitemap.xml')) && !get_option('hpt_sitemap_error');
+    if (haptic_is_module_active('seo')) {
+        // Multisite : pas de fichier à la racine, chaque site sert le sien (cf. haptic_sitemap_is_published())
+        $sitemap = (function_exists('haptic_sitemap_is_published') ? haptic_sitemap_is_published() : file_exists(ABSPATH . 'sitemap.xml')) && !get_option('haptic_sitemap_error');
         $checks[] = [
             'status' => $sitemap ? 'ok' : 'warn',
-            'label' => $sitemap ? 'Sitemap XML généré' : (get_option('hpt_sitemap_error') ? 'Échec d\'écriture du sitemap XML' : 'Sitemap XML absent'),
-            'link' => $sitemap ? home_url('/sitemap.xml') : hpt_admin_tab_url('seo'),
-            'link_label' => $sitemap ? 'Voir' : 'Générer',
+            'label' => $sitemap ? __('XML sitemap generated', 'optimizr') : (get_option('haptic_sitemap_error') ? __('Could not write the XML sitemap', 'optimizr') : __('XML sitemap missing', 'optimizr')),
+            'link' => $sitemap ? home_url('/sitemap.xml') : haptic_admin_tab_url('seo'),
+            'link_label' => $sitemap ? _x('View', 'site health check link', 'optimizr') : _x('Generate', 'site health check link', 'optimizr'),
         ];
         $checks[] = [
             'status' => 'ok',
-            'label' => get_option('hpt_enable_robots') ? 'robots.txt personnalisé' : 'robots.txt géré par WordPress',
+            'label' => get_option('haptic_enable_robots') ? __('Custom robots.txt', 'optimizr') : __('robots.txt managed by WordPress', 'optimizr'),
             'link' => home_url('/robots.txt'),
-            'link_label' => 'Voir',
+            'link_label' => _x('View', 'site health check link', 'optimizr'),
         ];
     }
 
-    if (hpt_is_module_active('cookies')) {
-        $tac = get_option('hpt_option_enable_tarteaucitron');
+    if (haptic_is_module_active('cookies')) {
+        $tac = get_option('haptic_option_enable_tarteaucitron');
         $checks[] = [
             'status' => $tac ? 'ok' : 'warn',
-            'label' => $tac ? 'Bandeau cookies actif' : 'Bandeau cookies désactivé',
-            'link' => $tac ? '' : hpt_admin_tab_url('cookies'),
-            'link_label' => 'Activer',
+            'label' => $tac ? __('Cookie banner active', 'optimizr') : __('Cookie banner disabled', 'optimizr'),
+            'link' => $tac ? '' : haptic_admin_tab_url('cookies'),
+            'link_label' => _x('Enable', 'site health check link', 'optimizr'),
         ];
     }
 
-    if (hpt_is_module_active('ai') && function_exists('hpt_ai_api_key') && hpt_ai_api_key() === '') {
+    if (haptic_is_module_active('ai') && function_exists('haptic_ai_api_key') && haptic_ai_api_key() === '') {
         $checks[] = [
             'status' => 'warn',
-            'label' => sprintf('Clé API %s manquante', hpt_ai_provider_config()['label']),
-            'link' => hpt_admin_tab_url('ai'),
-            'link_label' => 'Ajouter',
+            /* translators: %s: AI provider name (OpenAI, Claude, Gemini) */
+            'label' => sprintf(__('%s API key missing', 'optimizr'), haptic_ai_provider_config()['label']),
+            'link' => haptic_admin_tab_url('ai'),
+            'link_label' => _x('Add', 'site health check link', 'optimizr'),
         ];
     }
 
-    if ((get_option('hpt_debug_mode') || get_option('hpt_dev_mode')) && wp_get_environment_type() === 'production') {
-        $checks[] = [
-            'status' => 'warn',
-            'label' => 'Mode debug activé en production',
-            'link' => hpt_admin_tab_url('advanced'),
-            'link_label' => 'Régler',
-        ];
-    }
-
-    return apply_filters('hpt_site_health_checks', $checks);
+    return apply_filters('haptic_site_health_checks', $checks);
 }
 
 /**
@@ -436,62 +458,64 @@ function hpt_site_health_checks()
  *
  * @return array ['status' => ok|warn|off, 'label' => ...]
  */
-function hpt_module_status($slug)
+function haptic_module_status($slug)
 {
-    if (!hpt_is_module_active($slug)) {
-        return ['status' => 'off', 'label' => 'Désactivé'];
+    if (!haptic_is_module_active($slug)) {
+        return ['status' => 'off', 'label' => _x('Disabled', 'module status', 'optimizr')];
     }
 
-    if ($slug === 'ai' && function_exists('hpt_ai_api_key') && hpt_ai_api_key() === '') {
-        return ['status' => 'warn', 'label' => 'Clé API manquante'];
+    if ($slug === 'ai' && function_exists('haptic_ai_api_key') && haptic_ai_api_key() === '') {
+        return ['status' => 'warn', 'label' => __('API key missing', 'optimizr')];
     }
 
-    if ($slug === 'cookies' && !get_option('hpt_option_enable_tarteaucitron')) {
-        return ['status' => 'warn', 'label' => 'Bandeau désactivé'];
+    if ($slug === 'cookies' && !get_option('haptic_option_enable_tarteaucitron')) {
+        return ['status' => 'warn', 'label' => __('Banner disabled', 'optimizr')];
     }
 
-    return ['status' => 'ok', 'label' => 'Actif'];
+    return ['status' => 'ok', 'label' => _x('Active', 'module status', 'optimizr')];
 }
 
-function hpt_render_dashboard()
+function haptic_render_dashboard()
 {
-    $checks = hpt_site_health_checks();
+    $checks = haptic_site_health_checks();
     ?>
     <div class="optimizr-page-head">
-        <h2 class="optimizr-page-head__title">Vue d'ensemble</h2>
-        <p class="optimizr-page-head__intro">Activez les modules dont votre site a besoin. Chaque module actif ajoute son onglet de réglages.</p>
+        <h2 class="optimizr-page-head__title"><?php esc_html_e('Overview', 'optimizr'); ?></h2>
+        <p class="optimizr-page-head__intro"><?php esc_html_e('Enable the modules your site needs. Each active module adds its own settings tab.', 'optimizr'); ?></p>
     </div>
 
-    <?php if (!get_option('hpt_onboarding_done')) : ?>
+    <?php if (!get_option('haptic_onboarding_done')) : ?>
         <div class="optimizr-onboarding-cta">
-            <span class="optimizr-onboarding-cta__icon"><?php echo hpt_icon('sparkles', 22); ?></span>
+            <span class="optimizr-onboarding-cta__icon"><?php echo wp_kses(haptic_icon('sparkles', 22), haptic_kses_ui()); ?></span>
             <div class="optimizr-onboarding-cta__text">
-                <h3 class="optimizr-onboarding-cta__title">Configurez l'essentiel en quelques minutes</h3>
-                <p>L'assistant active les modules utiles et les réglages recommandés de sécurité, de référencement et de confidentialité.</p>
+                <h3 class="optimizr-onboarding-cta__title"><?php esc_html_e('Set up the essentials in a few minutes', 'optimizr'); ?></h3>
+                <p><?php esc_html_e('The wizard enables the useful modules and the recommended security, SEO and privacy settings.', 'optimizr'); ?></p>
             </div>
-            <a href="<?php echo esc_url(hpt_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--primary">Lancer l'assistant</a>
+            <a href="<?php echo esc_url(haptic_onboarding_url()); ?>" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Launch the wizard', 'optimizr'); ?></a>
         </div>
     <?php endif; ?>
 
     <div class="optimizr-layout optimizr-layout--aside">
         <div class="optimizr-layout__main">
-            <input type="hidden" name="hpt_modules[_saved]" value="1">
+            <input type="hidden" name="haptic_modules[_saved]" value="1">
             <div class="optimizr-modules">
-                <?php foreach (hpt_modules() as $slug => $module) :
-                    $active = hpt_is_module_active($slug);
-                    $status = hpt_module_status($slug);
+                <?php foreach (haptic_modules() as $slug => $module) :
+                    $active = haptic_is_module_active($slug);
+                    $status = haptic_module_status($slug);
+                    /* translators: %s: module name */
+                    $switch_label = sprintf(__('%s module', 'optimizr'), $module['label']);
                     ?>
                     <article class="optimizr-module<?php echo $active ? '' : ' is-off'; ?>">
                         <div class="optimizr-module__top">
-                            <span class="optimizr-module__icon"><?php echo hpt_icon($module['icon']); ?></span>
-                            <?php echo hpt_switch_input("hpt_modules[{$slug}]", $active, 'Module ' . $module['label'], "hpt-module-{$slug}"); ?>
+                            <span class="optimizr-module__icon"><?php echo wp_kses(haptic_icon($module['icon']), haptic_kses_ui()); ?></span>
+                            <?php echo wp_kses(haptic_switch_input("haptic_modules[{$slug}]", $active, $switch_label, "haptic-module-{$slug}"), haptic_kses_ui()); ?>
                         </div>
                         <h3 class="optimizr-module__title"><?php echo esc_html($module['label']); ?></h3>
                         <p class="optimizr-module__desc"><?php echo esc_html($module['desc']); ?></p>
                         <div class="optimizr-module__foot">
                             <span class="optimizr-status optimizr-status--<?php echo esc_attr($status['status']); ?>"><?php echo esc_html($status['label']); ?></span>
                             <?php if ($active) : ?>
-                                <a href="<?php echo esc_url(hpt_admin_tab_url($module['tab'])); ?>" class="optimizr-link">Configurer →</a>
+                                <a href="<?php echo esc_url(haptic_admin_tab_url($module['tab'])); ?>" class="optimizr-link"><?php esc_html_e('Configure →', 'optimizr'); ?></a>
                             <?php endif; ?>
                         </div>
                     </article>
@@ -503,17 +527,17 @@ function hpt_render_dashboard()
             <section class="optimizr-card">
                 <div class="optimizr-card__header">
                     <div>
-                        <h2 class="optimizr-card__title">État du site</h2>
-                        <p class="optimizr-card__desc">Vérifié à l'ouverture de cette page.</p>
+                        <h2 class="optimizr-card__title"><?php esc_html_e('Site status', 'optimizr'); ?></h2>
+                        <p class="optimizr-card__desc"><?php esc_html_e('Checked when this page was opened.', 'optimizr'); ?></p>
                     </div>
                 </div>
                 <?php if (empty($checks)) : ?>
-                    <p class="optimizr-card__empty">Rien à signaler.</p>
+                    <p class="optimizr-card__empty"><?php esc_html_e('Nothing to report.', 'optimizr'); ?></p>
                 <?php else : ?>
                     <ul class="optimizr-checks">
                         <?php foreach ($checks as $check) : ?>
                             <li class="optimizr-checks__item">
-                                <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo hpt_icon($check['status'] === 'ok' ? 'check' : 'alert', 14); ?></span>
+                                <span class="optimizr-checks__icon optimizr-checks__icon--<?php echo esc_attr($check['status']); ?>"><?php echo wp_kses(haptic_icon($check['status'] === 'ok' ? 'check' : 'alert', 14), haptic_kses_ui()); ?></span>
                                 <span class="optimizr-checks__label"><?php echo esc_html($check['label']); ?></span>
                                 <?php if (!empty($check['link'])) : ?>
                                     <a href="<?php echo esc_url($check['link']); ?>" class="optimizr-link"><?php echo esc_html($check['link_label']); ?></a>
@@ -526,17 +550,17 @@ function hpt_render_dashboard()
 
             <section class="optimizr-card">
                 <div class="optimizr-card__header">
-                    <h2 class="optimizr-card__title">Mises à jour</h2>
+                    <h2 class="optimizr-card__title"><?php esc_html_e('Updates', 'optimizr'); ?></h2>
                 </div>
                 <div class="optimizr-card__body">
                     <dl class="optimizr-dl">
-                        <dt>Version installée</dt>
-                        <dd><?php echo esc_html(HPT_OPTIMIZR_VERSION); ?></dd>
+                        <dt><?php esc_html_e('Installed version', 'optimizr'); ?></dt>
+                        <dd><?php echo esc_html(HAPTIC_OPTIMIZR_VERSION); ?></dd>
                     </dl>
-                    <?php if (has_action('hpt_dashboard_updates')) : ?>
-                        <?php do_action('hpt_dashboard_updates'); ?>
+                    <?php if (has_action('haptic_dashboard_updates')) : ?>
+                        <?php do_action('haptic_dashboard_updates'); ?>
                     <?php else : ?>
-                        <p class="optimizr-card__hint">Les nouvelles versions sont proposées par WordPress, dans Extensions et Tableau de bord › Mises à jour.</p>
+                        <p class="optimizr-card__hint"><?php esc_html_e('New versions are offered by WordPress, under Plugins and Dashboard › Updates.', 'optimizr'); ?></p>
                     <?php endif; ?>
                 </div>
             </section>

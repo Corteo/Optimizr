@@ -9,16 +9,19 @@
  * - supprimer avec leur croix ou la touche Retour arrière.
  *
  * La valeur texte est recopiée à chaque modification dans le champ caché
- * indiqué par data-hidden-input, puis l'évènement « hpt:seo-pattern-change »
+ * indiqué par data-hidden-input, puis l'évènement « haptic:seo-pattern-change »
  * prévient les aperçus et la barre d'enregistrement (js/optimizr-admin.js).
  */
 (function () {
     'use strict';
 
-    // Fournies par PHP (hpt_seo_pattern_variables()) : { '{code}': 'Libellé' }
-    var VARIABLES = window.hptSeoVariables || {};
+    var __ = wp.i18n.__;
+    var sprintf = wp.i18n.sprintf;
+
+    // Fournies par PHP (haptic_seo_pattern_variables()) : { '{code}': 'Libellé' }
+    var VARIABLES = window.hapticSeoVariables || {};
     var CODES = Object.keys(VARIABLES);
-    var TOKEN_MIME = 'application/x-hpt-seo-token';
+    var TOKEN_MIME = 'application/x-haptic-seo-token';
 
     var dragSource = null;   // Étiquette en cours de déplacement (null si elle vient de la liste)
     var dropCaret = null;    // Repère visuel de la position de dépôt
@@ -50,7 +53,8 @@
         remove.type = 'button';
         remove.className = 'optimizr-token__remove';
         remove.tabIndex = -1;
-        remove.setAttribute('aria-label', 'Retirer ' + label.textContent);
+        /* translators: %s: variable label */
+        remove.setAttribute('aria-label', sprintf(__('Remove %s', 'optimizr'), label.textContent));
         remove.textContent = '×';
         token.appendChild(remove);
 
@@ -110,7 +114,7 @@
         var value = clean(serialize(editor));
         if (hidden.value !== value) {
             hidden.value = value;
-            document.dispatchEvent(new CustomEvent('hpt:seo-pattern-change'));
+            document.dispatchEvent(new CustomEvent('haptic:seo-pattern-change'));
         }
     }
 

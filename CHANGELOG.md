@@ -6,6 +6,27 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [3.0.0] - 2026-10-05
+
+### Modifié (incompatible)
+- Préfixe `hpt_` remplacé par `haptic_` partout (fonctions, options, métadonnées, hooks, actions AJAX, nonces, tâches planifiées, constantes `HAPTIC_*`, classes CSS `haptic-*`), comme le demande WordPress.org (préfixe d'au moins 4 caractères). Les anciennes fonctions `haptic_GPT_*` suivent la même règle. Le code personnalisé qui utilise un filtre ou une action `hpt_*` doit être renommé. Les actions `before_hpt_options_*` et `after_hpt_options_*` deviennent `haptic_before_*` et `haptic_after_*`, `add_hpt_options_tabs` devient `haptic_add_options_tabs`. Le fichier principal `hpt_options.php` devient `optimizr.php` : sur les sites mis à jour, WordPress désactive le plugin, qu'il faut réactiver (réglages conservés). Les sites en 2.x ne voient pas cette mise à jour dans leur outil de mise à jour (il lit `hpt_options.php` sur GitHub) : elle s'installe manuellement.
+- Migration automatique au premier chargement après la mise à jour : réglages, SEO des contenus, adresses IP connues des comptes et tâches planifiées passent sous le nouveau nom, sans rien perdre. Un export de réglages fait en 2.x s'importe toujours. Les anciennes adresses de la page d'options (`page=hpt-options`) redirigent vers la nouvelle.
+- Plugin traduisible : textes sources en anglais (domaine `optimizr`), traduction française fournie dans `languages/` (PHP et scripts). Un site en français s'affiche comme avant ; un site dans une autre langue est en anglais. Les invites envoyées à l'IA suivent la langue de l'utilisateur.
+
+### Retiré
+- Module « Outils développeur » : mode debug, journal de debug (`wp-content/uploads/optimizr-logs/`, supprimé à la mise à jour), alerte des erreurs PHP et fonction `vd()`.
+
+### Sécurité
+- Toutes les sorties HTML sont échappées au moment de l'affichage (icônes et interrupteurs filtrés par `wp_kses()` avec la liste `haptic_kses_ui()`, contenu de la page de maintenance par `wp_kses_post()`…), comme l'exige la vérification Plugin Check de WordPress.org.
+- Requêtes SQL préparées avec `$wpdb->prepare()`, noms de table compris (`%i`), y compris le traitement en masse de l'IA et la liste paginée des redirections.
+- Données reçues (formulaires, adresse demandée, adresses IP des en-têtes) nettoyées et débarrassées des barres obliques ajoutées par WordPress avant usage. Les actions de l'onglet Redirections vérifient leur nonce directement.
+
+### Modifié
+- Bandeau cookies : la configuration de Tarteaucitron et les services sont ajoutés par `wp_add_inline_script()` juste après la librairie, et les couleurs par `wp_add_inline_style()`, au lieu de balises imprimées à la main dans le footer. Le comportement du bandeau ne change pas.
+- Autres scripts en ligne (metabox SEO, types de contenu, assistant) imprimés avec `wp_print_inline_script_tag()` ; style du rappel de maintenance de la barre d'administration ajouté par `wp_add_inline_style()`.
+- Fichiers (sitemap, robots.txt, clé IndexNow) supprimés et déplacés par l'API Filesystem de WordPress (`wp_delete_file()`, `haptic_filesystem()`) ; export et import CSV des redirections sans accès fichier direct.
+- WordPress 6.2 minimum (marqueur `%i` de `$wpdb->prepare()`).
+
 ## [2.5.0] - 2026-10-05
 
 ### Ajouté
