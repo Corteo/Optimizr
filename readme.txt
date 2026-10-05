@@ -1,5 +1,5 @@
 === Haptic Optimizr ===
-Contributors: REPLACE_WITH_WPORG_USERNAME
+Contributors: alexandrevergnaud
 Tags: seo, cookies, gdpr, redirects, ai
 Requires at least: 6.1
 Tested up to: 6.9
