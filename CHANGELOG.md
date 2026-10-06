@@ -6,6 +6,14 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [4.0.4] - 2026-10-06
+
+### Retiré
+- Choix du canal de mise à jour (Stable, Beta, Développement) dans la carte « Mises à jour » du tableau de bord. Tous les sites suivent désormais la branche `stable` ; à la mise à jour, le canal enregistré est supprimé. Un site qui suivait Beta ou Développement ne reçoit plus que les versions publiées sur `stable`. Optimizr Pro suit le même canal.
+
+### Ajouté
+- En-tête `Plugin URI` : la page Extensions affiche un lien vers le site d'Optimizr (https://optimizr.hapticstudio.fr/).
+
 ## [4.0.3] - 2026-10-06
 
 ### Modifié

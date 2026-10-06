@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 4.0.0\n"
+"Project-Id-Version: Haptic Optimizr 4.0.4\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1726,35 +1726,6 @@ msgstr ""
 
 #: js/optimizr-uninstall.js
 msgid "Your choices could not be saved. Reload the page and try again."
-msgstr ""
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Stable"
-msgstr ""
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Beta"
-msgstr ""
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Development (main)"
-msgstr ""
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Channel"
-msgstr ""
-
-#: functions/updates.php
-msgid "Followed channel"
-msgstr ""
-
-#. %s: name of the development branch, "main"
-#: functions/updates.php
-msgid "Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered."
 msgstr ""
 
 #: functions/activation.php

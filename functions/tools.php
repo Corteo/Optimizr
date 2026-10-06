@@ -39,7 +39,7 @@ function haptic_settings_internal_options()
         'haptic_maintenance_until',
         // Ce qu'efface la suppression du plugin sur ce site (cf. functions/uninstall.php)
         'haptic_uninstall',
-        // Canal de mise à jour : propre à chaque installation (un site client ne doit pas hériter du canal beta)
+        // Ancien canal de mise à jour (jusqu'à 4.0.3) : jamais importé depuis un ancien export
         'haptic_update_channel',
         // Assistant de configuration déjà passé sur ce site
         'haptic_onboarding_done',
