@@ -323,7 +323,7 @@ function haptic_onboarding_render()
     <div class="ob<?php echo $done ? ' ob--done' : ''; ?>">
         <aside class="ob-visual" aria-hidden="true">
             <div class="ob-brand">
-                <span class="ob-brand__logo">O</span>
+                <img class="ob-brand__logo" src="<?php echo esc_url(HAPTIC_OPTIMIZR_URL . 'images/optimizr-icon.svg'); ?>" width="34" height="34" alt="" />
                 <span class="ob-brand__name">Optimizr</span>
             </div>
             <div class="ob-stage">
