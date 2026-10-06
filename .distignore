@@ -19,7 +19,6 @@ functions/seo/sitemap.log
 
 # Mises à jour depuis GitHub : interdites sur WordPress.org, qui distribue lui-même les versions
 functions/updates.php
-js/optimizr-updates.js
 assets/plugin-update-checker
 
 # Fichiers de développement de Tarteaucitron

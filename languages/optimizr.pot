@@ -1092,10 +1092,6 @@ msgstr ""
 msgid "Ideally between 120 and 160 characters."
 msgstr ""
 
-#: js/optimizr-updates.js
-msgid "The request failed. Check your connection."
-msgstr ""
-
 #: functions/seo/seo-meta.php
 msgid "Share image"
 msgstr ""
@@ -1110,11 +1106,6 @@ msgstr ""
 
 #: functions/seo/seo-meta.php
 msgid "Default: the featured image. Ideal size: 1200 × 630 px."
-msgstr ""
-
-#. %s: error message
-#: functions/updates.php
-msgid "Error: %s"
 msgstr ""
 
 #. %s: URL of the Optimizr SEO settings tab
@@ -1133,10 +1124,6 @@ msgstr ""
 
 #: functions/seo/seo-output.php
 msgid "Uncategorized"
-msgstr ""
-
-#: functions/updates.php
-msgid "Insufficient permissions"
 msgstr ""
 
 #: functions/redirects.php
@@ -1757,10 +1744,6 @@ msgid "Development (main)"
 msgstr ""
 
 #: functions/updates.php
-msgid "Check for updates"
-msgstr ""
-
-#: functions/updates.php
 msgctxt "update channel"
 msgid "Channel"
 msgstr ""
@@ -1772,67 +1755,6 @@ msgstr ""
 #. %s: name of the development branch, "main"
 #: functions/updates.php
 msgid "Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered."
-msgstr ""
-
-#: functions/updates.php
-msgid "The “Check for updates” button at the top of the page queries GitHub immediately, then “Update now” installs the new version without leaving the page."
-msgstr ""
-
-#: functions/updates.php
-msgid "GitHub unreachable"
-msgstr ""
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Installing version %s…"
-msgstr ""
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Version %s installed. Reloading…"
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "WordPress cannot access the site files. Add the FTP credentials to wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) or update from the Plugins page."
-msgstr ""
-
-#. %s: error message
-#: js/optimizr-updates.js
-msgid "The update failed: %s"
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "The update failed."
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "The update did not complete. Reload the page to check the installed version."
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "Checking…"
-msgstr ""
-
-#. %s: error message
-#: js/optimizr-updates.js
-msgid "The check failed: %s"
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "The check failed."
-msgstr ""
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Version %s available."
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "Update now"
-msgstr ""
-
-#: js/optimizr-updates.js
-msgid "Optimizr is up to date."
 msgstr ""
 
 #: functions/activation.php
