@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [4.0.1] - 2026-10-06
+
+### Retiré
+- Boutons de mise à jour d'Optimizr : « Vérifier les mises à jour » et « Mettre à jour » en haut de la page du plugin, et le lien « Vérifier les mises à jour » de la page Extensions. WordPress continue de détecter les nouvelles versions et les propose dans **Extensions** et **Tableau de bord › Mises à jour**. Le choix du canal reste dans la carte « Mises à jour ».
+
 ## [4.0.0] - 2026-10-05
 
 ### Modifié (incompatible)

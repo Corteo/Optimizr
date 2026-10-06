@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 /*
  * Mises à jour depuis GitHub (canaux Stable, Beta, Développement), pour la version distribuée par GitHub.
- * Ce fichier, js/optimizr-updates.js et assets/plugin-update-checker/ sont retirés de la version
+ * Ce fichier et assets/plugin-update-checker/ sont retirés de la version
  * WordPress.org (bin/build-wporg.sh), où WordPress gère lui-même les mises à jour.
  */
 
@@ -57,25 +57,6 @@ add_action('admin_init', function () {
     ]);
 });
 
-// En-tête de la page d'options : bouton « Vérifier les mises à jour » (script : js/optimizr-updates.js)
-add_action('haptic_header_actions', function () {
-    ?>
-    <span id="haptic-update-status" class="optimizr-header__status" role="status"></span>
-    <button type="button" class="optimizr-btn optimizr-btn--secondary" id="haptic-check-update-btn" data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_check_update_action')); ?>" data-update-nonce="<?php echo esc_attr(wp_create_nonce('updates')); ?>" data-plugin="<?php echo esc_attr(plugin_basename(HAPTIC_OPTIMIZR_FILE)); ?>">
-        <?php echo wp_kses(haptic_icon('refresh', 16), haptic_kses_ui()); ?><?php esc_html_e('Check for updates', 'optimizr'); ?>
-    </button>
-    <?php
-});
-
-add_action('admin_enqueue_scripts', function ($hook) {
-    if ($hook !== HAPTIC_OPTIMIZR_ADMIN_HOOK) {
-        return;
-    }
-    $js = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-updates.js';
-    wp_enqueue_script('optimizr-updates', HAPTIC_OPTIMIZR_URL . 'js/optimizr-updates.js', ['wp-i18n'], filemtime($js), true);
-    wp_set_script_translations('optimizr-updates', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
-});
-
 // Carte « Mises à jour » du tableau de bord : canal suivi
 add_action('haptic_dashboard_updates', function () {
     ?>
@@ -94,9 +75,7 @@ add_action('haptic_dashboard_updates', function () {
         /* translators: %s: name of the development branch, "main" */
         echo wp_kses(sprintf(__('Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered.', 'optimizr'), '<code>main</code>'), ['code' => []]);
         ?></p>
-    <?php endif; ?>
-    <p class="optimizr-card__hint"><?php esc_html_e('The “Check for updates” button at the top of the page queries GitHub immediately, then “Update now” installs the new version without leaving the page.', 'optimizr'); ?></p>
-    <?php
+    <?php endif;
 });
 
 // Changement de canal : on oublie la dernière vérification, la suivante lit la nouvelle branche
@@ -135,6 +114,9 @@ function haptic_initialize_updater()
         }
         return $strategies;
     }, 10, 2);
+
+    // Pas de lien « Vérifier les mises à jour » sur la page Extensions : WordPress vérifie de lui-même
+    add_filter($updater->getUniqueName('manual_check_link'), '__return_empty_string');
 
     $token = haptic_get_github_token();
     if ($token) {
@@ -188,50 +170,4 @@ function haptic_get_github_token()
 
     set_transient($transient_key, '', 15 * MINUTE_IN_SECONDS);
     return false;
-}
-
-add_action('wp_ajax_haptic_ajax_check_update', 'haptic_ajax_check_github_updates');
-
-function haptic_ajax_check_github_updates()
-{
-    check_ajax_referer('haptic_check_update_action', 'nonce');
-
-    if (!current_user_can('update_plugins')) {
-        wp_send_json_error(['status' => 'error', 'message' => __('Insufficient permissions', 'optimizr')]);
-    }
-
-    $checker = haptic_initialize_updater();
-
-    try {
-        $update = $checker->checkForUpdates();
-
-        // La librairie renvoie un objet Update : le numéro est dans « version » (« new_version » n'existe qu'au format WordPress)
-        if ($update && !empty($update->version)) {
-            wp_send_json_success([
-                'status' => 'update_available',
-                'new_version' => $update->version,
-                'details_url' => self_admin_url('update-core.php'),
-            ]);
-        }
-
-        // Dépôt injoignable ou jeton refusé : le signaler plutôt qu'annoncer « à jour »
-        $errors = $checker->getLastRequestApiErrors();
-        if ($errors) {
-            $message = $errors[0]['error'] instanceof WP_Error ? $errors[0]['error']->get_error_message() : __('GitHub unreachable', 'optimizr');
-            wp_send_json_error([
-                'status' => 'error',
-                'message' => $message,
-            ]);
-        } else {
-            wp_send_json_success([
-                'status' => 'no_update',
-            ]);
-        }
-    } catch (Exception $e) {
-        wp_send_json_error([
-            'status' => 'error',
-            /* translators: %s: error message */
-            'message' => sprintf(__('Error: %s', 'optimizr'), $e->getMessage()),
-        ]);
-    }
 }

@@ -1094,10 +1094,6 @@ msgstr "(Google, partages)"
 msgid "Ideally between 120 and 160 characters."
 msgstr "Idéalement entre 120 et 160 caractères."
 
-#: js/optimizr-updates.js
-msgid "The request failed. Check your connection."
-msgstr "La requête a échoué. Vérifiez votre connexion."
-
 #: functions/seo/seo-meta.php
 msgid "Share image"
 msgstr "Image de partage"
@@ -1113,11 +1109,6 @@ msgstr "Image à la une du contenu"
 #: functions/seo/seo-meta.php
 msgid "Default: the featured image. Ideal size: 1200 × 630 px."
 msgstr "Par défaut : l'image à la une. Format idéal : 1200 × 630 px."
-
-#. %s: error message
-#: functions/updates.php
-msgid "Error: %s"
-msgstr "Erreur : %s"
 
 #. %s: URL of the Optimizr SEO settings tab
 #: functions/seo/seo-meta.php
@@ -1136,10 +1127,6 @@ msgstr "Prévisualisation SEO"
 #: functions/seo/seo-output.php
 msgid "Uncategorized"
 msgstr "Sans catégorie"
-
-#: functions/updates.php
-msgid "Insufficient permissions"
-msgstr "Permissions insuffisantes"
 
 #: functions/redirects.php
 msgid "Permanent (301)"
@@ -1772,10 +1759,6 @@ msgid "Development (main)"
 msgstr "Développement (main)"
 
 #: functions/updates.php
-msgid "Check for updates"
-msgstr "Vérifier les mises à jour"
-
-#: functions/updates.php
 msgctxt "update channel"
 msgid "Channel"
 msgstr "Canal"
@@ -1788,67 +1771,6 @@ msgstr "Canal suivi"
 #: functions/updates.php
 msgid "Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered."
 msgstr "Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans %s, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée."
-
-#: functions/updates.php
-msgid "The “Check for updates” button at the top of the page queries GitHub immediately, then “Update now” installs the new version without leaving the page."
-msgstr "Le bouton « Vérifier les mises à jour » en haut de page interroge GitHub immédiatement, puis « Mettre à jour » installe la nouvelle version sans quitter la page."
-
-#: functions/updates.php
-msgid "GitHub unreachable"
-msgstr "GitHub injoignable"
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Installing version %s…"
-msgstr "Installation de la version %s…"
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Version %s installed. Reloading…"
-msgstr "Version %s installée. Rechargement…"
-
-#: js/optimizr-updates.js
-msgid "WordPress cannot access the site files. Add the FTP credentials to wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) or update from the Plugins page."
-msgstr "WordPress n'a pas accès aux fichiers du site. Renseignez les accès FTP dans wp-config.php (FTP_HOST, FTP_USER, FTP_PASS) ou mettez à jour depuis la page Extensions."
-
-#. %s: error message
-#: js/optimizr-updates.js
-msgid "The update failed: %s"
-msgstr "La mise à jour a échoué : %s"
-
-#: js/optimizr-updates.js
-msgid "The update failed."
-msgstr "La mise à jour a échoué."
-
-#: js/optimizr-updates.js
-msgid "The update did not complete. Reload the page to check the installed version."
-msgstr "La mise à jour n'a pas abouti. Rechargez la page pour vérifier la version installée."
-
-#: js/optimizr-updates.js
-msgid "Checking…"
-msgstr "Vérification en cours…"
-
-#. %s: error message
-#: js/optimizr-updates.js
-msgid "The check failed: %s"
-msgstr "La vérification a échoué : %s"
-
-#: js/optimizr-updates.js
-msgid "The check failed."
-msgstr "La vérification a échoué."
-
-#. %s: version number
-#: js/optimizr-updates.js
-msgid "Version %s available."
-msgstr "Version %s disponible."
-
-#: js/optimizr-updates.js
-msgid "Update now"
-msgstr "Mettre à jour"
-
-#: js/optimizr-updates.js
-msgid "Optimizr is up to date."
-msgstr "Optimizr est à jour."
 
 #: functions/activation.php
 msgctxt "sitemap generation trigger"

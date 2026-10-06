@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (SEO local, pages spéciales, assistant IA, sitemap, redirections illimitées, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 4.0.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 4.0.1 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -61,7 +61,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
 3. Activez **Haptic Optimizr**.
 
-Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, comme pour toute extension. Le bouton « Vérifier les mises à jour » en haut de la page du plugin force une vérification immédiate ; si une version est disponible, « Mettre à jour » l'installe directement, puis la page se recharge et les éventuelles migrations de la base s'exécutent.
+Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, et dans **Extensions**, comme pour toute extension : la mise à jour se lance depuis ces pages. Les éventuelles migrations de la base s'exécutent au chargement suivant.
 
 ### Mise à jour depuis la 1.5
 
@@ -172,9 +172,9 @@ Un site de test réglé sur le canal **Développement** reçoit chaque version f
 Le plugin existe en deux distributions construites à partir du même code :
 
 - **GitHub** (ce dépôt tel quel) : mises à jour par GitHub avec les canaux Stable, Beta et Développement.
-- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `js/optimizr-updates.js`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`.
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`.
 
-Le bouton « Vérifier les mises à jour » et la carte du canal sont ajoutés par `functions/updates.php` via les actions `haptic_header_actions` et `haptic_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
+Le choix du canal est ajouté par `functions/updates.php` via l'action `haptic_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 
 Une migration à exécuter une seule fois se place dans `haptic_options_maybe_upgrade()` (`functions/activation.php`).
 
