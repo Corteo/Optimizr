@@ -6,6 +6,14 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [4.0.2] - 2026-10-06
+
+### Modifié
+- Logo Optimizr dans l'en-tête de la page du plugin, dans l'assistant de configuration et comme icône du menu d'administration (à la place du « O » et de l'icône générique). L'icône du menu prend la couleur du jeu de couleurs de l'administration.
+
+### Ajouté
+- Dossier `.wordpress-org/` : icônes et bannières de la fiche WordPress.org (non incluses dans le plugin).
+
 ## [4.0.1] - 2026-10-06
 
 ### Retiré

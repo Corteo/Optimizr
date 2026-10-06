@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (SEO local, pages spéciales, assistant IA, sitemap, redirections illimitées, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 4.0.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 4.0.2 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -172,7 +172,7 @@ Un site de test réglé sur le canal **Développement** reçoit chaque version f
 Le plugin existe en deux distributions construites à partir du même code :
 
 - **GitHub** (ce dépôt tel quel) : mises à jour par GitHub avec les canaux Stable, Beta et Développement.
-- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`.
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
 Le choix du canal est ajouté par `functions/updates.php` via l'action `haptic_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 

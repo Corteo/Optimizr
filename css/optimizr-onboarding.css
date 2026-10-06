@@ -130,15 +130,11 @@ body.ob-body {
 }
 
 .ob-brand__logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     width: 34px;
     height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #8aa4ff, #3858e9);
+    border-radius: 8px;
     box-shadow: 0 6px 18px rgba(56, 88, 233, .45);
-    font-weight: 700;
 }
 
 .ob-stage {

@@ -250,6 +250,13 @@ add_action('admin_menu', function () {
     }
 }, 0);
 
+/** Icône du menu : SVG monochrome en data URI, recoloré par WordPress selon le jeu de couleurs de l'administration. */
+function haptic_menu_icon()
+{
+    $svg = file_get_contents(HAPTIC_OPTIMIZR_PATH . 'images/optimizr-menu.svg'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- fichier local du plugin
+    return $svg ? 'data:image/svg+xml;base64,' . base64_encode($svg) : 'dashicons-admin-generic'; // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- format attendu par add_menu_page()
+}
+
 function haptic_options_admin_menu()
 {
     add_menu_page(
@@ -258,7 +265,7 @@ function haptic_options_admin_menu()
         'manage_options',
         'haptic-options',
         'haptic_options_settings_page',
-        'dashicons-admin-generic',
+        haptic_menu_icon(),
         81
     );
 }
@@ -314,7 +321,7 @@ function haptic_options_settings_page()
     <div class="wrap optimizr">
         <header class="optimizr-header">
             <div class="optimizr-header__top">
-                <span class="optimizr-logo" aria-hidden="true">O</span>
+                <img class="optimizr-logo" src="<?php echo esc_url(HAPTIC_OPTIMIZR_URL . 'images/optimizr-icon.svg'); ?>" width="36" height="36" alt="" />
                 <h1 class="optimizr-header__title">Optimizr</h1>
                 <span class="optimizr-badge">v<?php echo esc_html(HAPTIC_OPTIMIZR_VERSION); ?></span>
                 <div class="optimizr-header__actions">

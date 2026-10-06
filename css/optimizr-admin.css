@@ -73,16 +73,9 @@
 }
 
 .optimizr-logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    background: var(--o-accent);
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
 }
 
 .optimizr .optimizr-header__title {

@@ -14,6 +14,7 @@ dist
 misc
 logs
 README.md
+.wordpress-org
 CHANGELOG.md
 functions/seo/sitemap.log
 
