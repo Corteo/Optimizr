@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [4.0.3] - 2026-10-06
+
+### Modifié
+- Le lien « En savoir plus sur Optimizr Pro » du tableau de bord mène à la page des offres du site d'Optimizr (optimizr.hapticstudio.fr/tarifs/), où Optimizr Pro s'achète avec sa licence.
+
 ## [4.0.2] - 2026-10-06
 
 ### Modifié
