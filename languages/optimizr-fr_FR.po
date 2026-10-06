@@ -1743,35 +1743,6 @@ msgstr "Désactiver"
 msgid "Your choices could not be saved. Reload the page and try again."
 msgstr "Les choix n'ont pas pu être enregistrés. Rechargez la page et réessayez."
 
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Stable"
-msgstr "Stable"
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Beta"
-msgstr "Beta"
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Development (main)"
-msgstr "Développement (main)"
-
-#: functions/updates.php
-msgctxt "update channel"
-msgid "Channel"
-msgstr "Canal"
-
-#: functions/updates.php
-msgid "Followed channel"
-msgstr "Canal suivi"
-
-#. %s: name of the development branch, "main"
-#: functions/updates.php
-msgid "Beta: test versions in addition to final releases. Development: every version merged into %s, before release. Only for a test site. Switching back to Stable does not reinstall the previous version: the next final release will be offered."
-msgstr "Beta : les versions de test en plus des versions finales. Développement : chaque version fusionnée dans %s, avant publication. À réserver à un site de test. Revenir en Stable ne réinstalle pas l'ancienne version : la prochaine version finale sera proposée."
-
 #: functions/activation.php
 msgctxt "sitemap generation trigger"
 msgid "plugin update"

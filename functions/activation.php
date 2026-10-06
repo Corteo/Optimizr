@@ -345,6 +345,13 @@ function haptic_options_maybe_upgrade()
         haptic_sitemap_delete_files();
     }
 
+    if (version_compare($installed, '4.0.4', '<') && get_option('haptic_update_channel') !== false) {
+        // Choix du canal de mise à jour retiré : tous les sites suivent la branche « stable »
+        delete_option('haptic_update_channel');
+        delete_site_option('external_updates-optimizr');
+        delete_site_option('external_updates-optimizr-pro');
+    }
+
     update_option('haptic_optimizr_version', HAPTIC_OPTIMIZR_VERSION);
 }
 // Sur init (tard) : types de contenu et shortcodes chargés, nécessaires pour comparer les extraits

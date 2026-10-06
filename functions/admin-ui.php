@@ -270,7 +270,7 @@ function haptic_options_admin_menu()
     );
 }
 
-// Réglages du tableau de bord : liste des modules actifs (le canal de mise à jour est dans functions/updates.php)
+// Réglages du tableau de bord : liste des modules actifs
 add_action('admin_init', function () {
     register_setting(haptic_settings_group('dashboard'), 'haptic_modules', [
         'type'              => 'array',
@@ -533,11 +533,7 @@ function haptic_render_dashboard()
                         <dt><?php esc_html_e('Installed version', 'optimizr'); ?></dt>
                         <dd><?php echo esc_html(HAPTIC_OPTIMIZR_VERSION); ?></dd>
                     </dl>
-                    <?php if (has_action('haptic_dashboard_updates')) : ?>
-                        <?php do_action('haptic_dashboard_updates'); ?>
-                    <?php else : ?>
-                        <p class="optimizr-card__hint"><?php esc_html_e('New versions are offered by WordPress, under Plugins and Dashboard › Updates.', 'optimizr'); ?></p>
-                    <?php endif; ?>
+                    <p class="optimizr-card__hint"><?php esc_html_e('New versions are offered by WordPress, under Plugins and Dashboard › Updates.', 'optimizr'); ?></p>
                 </div>
             </section>
 

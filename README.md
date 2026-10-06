@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (SEO local, pages spéciales, assistant IA, sitemap, redirections illimitées, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 4.0.3 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 4.0.4 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -155,32 +155,29 @@ Le plugin suit le [Semantic Versioning](https://semver.org/lang/fr/) : `MAJEUR.M
 - **MAJEUR** (4.0.0) : changement qui casse la compatibilité (structure des réglages, fonctionnalité retirée, migration nécessaire).
 - **MINEUR** (2.1.0) : nouvelle fonctionnalité ou nouveau module, sans rien casser.
 - **CORRECTIF** (2.0.1) : correction de bug ou de sécurité, sans nouvelle fonctionnalité.
-- **Pré-version** (`2.1.0-beta.1`) : version de test, publiée uniquement sur la branche `beta`, jamais sur `stable`.
 
 Pour publier une version :
 
 1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Publiez sur la branche du canal : les sites installés lisent l'en-tête de `optimizr.php` sur la branche de leur canal (choisi dans le tableau de bord, carte « Mises à jour ») pour proposer la mise à jour.
-   - **Version finale** : fusionnez dans `stable` **et** dans `beta`, pour que les sites en beta la reçoivent aussi. Ajoutez le tag `vX.Y.Z`.
-   - **Pré-version** : fusionnez seulement dans `beta`.
+3. Fusionnez dans `stable` et ajoutez le tag `vX.Y.Z` : les sites installés lisent l'en-tête de `optimizr.php` sur la branche `stable` pour proposer la mise à jour.
 
-Un site de test réglé sur le canal **Développement** reçoit chaque version fusionnée dans `main`, avant toute publication. Il ne voit une nouveauté que si le numéro de version a augmenté : chaque PR incrémente donc la version.
+Depuis 4.0.4, tous les sites suivent `stable` : il n'y a plus de canal Beta ni Développement à choisir. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
 
 ### Version WordPress.org
 
 Le plugin existe en deux distributions construites à partir du même code :
 
-- **GitHub** (ce dépôt tel quel) : mises à jour par GitHub avec les canaux Stable, Beta et Développement.
+- **GitHub** (ce dépôt tel quel) : mises à jour par GitHub, depuis la branche `stable`.
 - **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
-Le choix du canal est ajouté par `functions/updates.php` via l'action `haptic_dashboard_updates` : sans ce fichier, la carte « Mises à jour » renvoie vers les mises à jour de WordPress. `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
+`readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 
 Une migration à exécuter une seule fois se place dans `haptic_options_maybe_upgrade()` (`functions/activation.php`).
 
 ## Auteur
 
-Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/)
+Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/) · Site du plugin : [optimizr.hapticstudio.fr](https://optimizr.hapticstudio.fr/)
 
 ## Licence
 
