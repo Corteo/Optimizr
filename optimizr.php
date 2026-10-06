@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Haptic Optimizr
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, redirects, login protection, custom post types and maintenance tools in a single settings page, enabled module by module.
- * Version: 4.0.2
+ * Version: 4.0.3
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -19,12 +19,12 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '4.0.2');
+define('HAPTIC_OPTIMIZR_VERSION', '4.0.3');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
 // Page de présentation d'Optimizr Pro (lien du tableau de bord)
-define('HAPTIC_OPTIMIZR_PRO_INFO_URL', 'https://alexandrevergnaud.fr/');
+define('HAPTIC_OPTIMIZR_PRO_INFO_URL', 'https://optimizr.hapticstudio.fr/tarifs/');
 // Hook de la page d'options (menu de premier niveau, cf. functions/admin-ui.php)
 define('HAPTIC_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_haptic-options');
 
