@@ -438,7 +438,7 @@ function haptic_onboarding_step_welcome($modules)
         <div class="ob-pillar-card ob-pillar-card--performance">
             <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_onboarding_icon('gauge', 22), haptic_kses_ui()); ?></span>
             <h2 class="ob-pillar-card__title"><?php esc_html_e('Performance', 'optimizr'); ?></h2>
-            <p class="ob-pillar-card__text"><?php esc_html_e('Meta tags, redirects and indexing for a site Google understands quickly.', 'optimizr'); ?></p>
+            <p class="ob-pillar-card__text"><?php esc_html_e('Meta tags and indexing for a site Google understands quickly.', 'optimizr'); ?></p>
         </div>
         <div class="ob-pillar-card ob-pillar-card--optimization">
             <span class="ob-pillar-card__icon"><?php echo wp_kses(haptic_icon('sparkles', 22), haptic_kses_ui()); ?></span>

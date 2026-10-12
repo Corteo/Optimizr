@@ -231,25 +231,6 @@
         update();
     }
 
-    /* ---------- Redirections : type 410 ---------- */
-
-    // Une page supprimée (410) n'a pas de destination
-    function initRedirectForm() {
-        var code = document.querySelector('[data-redirect-code]');
-        var target = document.querySelector('[data-redirect-target]');
-        if (!code || !target) return;
-
-        var field = target.closest('label');
-        var sync = function () {
-            var gone = code.value === '410';
-            field.hidden = gone;
-            target.disabled = gone;
-            code.closest('.optimizr-redirect-form').classList.toggle('is-gone', gone);
-        };
-        code.addEventListener('change', sync);
-        sync();
-    }
-
     /* ---------- Onglets : défilement horizontal quand la largeur manque ---------- */
 
     function initTabsScroll() {
@@ -307,6 +288,5 @@
         initCookieBanner();
         initServices();
         initSeoPreview();
-        initRedirectForm();
     });
 })();

@@ -6,6 +6,17 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [5.0.0] - 2026-10-12
+
+### Retiré
+- **Module Redirections** (redirections et journal des pages introuvables) : il passe dans Optimizr Pro 1.2.0, sans la limite de 5 redirections. Optimizr ne contient plus ni onglet Redirections ni redirection appliquée aux visiteurs.
+- Points d'extension `haptic_redirects_*` (limite, recherche, validation, textes et contenu de l'onglet) et fonctions `haptic_redirects_*`, désormais internes à Optimizr Pro.
+
+### Modifié
+- Les redirections et le journal des 404 déjà enregistrés sont conservés (tables `{prefix}optimizr_redirects` et `{prefix}optimizr_404`, réglage du journal) : Optimizr Pro 1.2.0 les reprend tels quels, et l'état activé ou non du module est gardé. La suppression d'Optimizr les efface toujours selon les choix de l'onglet Outils.
+- Optimizr Pro antérieur à 1.2.0 : ses compléments de redirection sont mis en pause (ils s'appuyaient sur le module retiré) et un avertissement demande sa mise à jour.
+- Le comportement du formulaire de redirection (type 410 sans destination) passe dans le script d'Optimizr Pro.
+
 ## [4.0.4] - 2026-10-06
 
 ### Retiré

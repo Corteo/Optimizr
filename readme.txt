@@ -1,14 +1,14 @@
 === Haptic Optimizr ===
 Contributors: alexandrevergnaud
-Tags: seo, cookies, gdpr, redirects, security
+Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 4.0.4
+Stable tag: 5.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Cookie consent (GDPR), SEO meta tags, redirects, login protection and maintenance tools in one settings page, enabled module by module.
+Cookie consent (GDPR), SEO meta tags, login protection and maintenance tools in one settings page, enabled module by module.
 
 == Description ==
 
@@ -25,11 +25,6 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 
 * Default title and description patterns built from variables, with Google and social previews.
 * OpenGraph tags and a "SEO & OpenGraph" meta box in the editor (custom title, description, image, noindex).
-
-= Redirects =
-
-* 404 log (no IP address stored), with a one-click redirect from a logged URL.
-* Up to 5 redirects (301, 302, 307 or 410), with hit counter.
 
 = Security =
 
@@ -60,9 +55,14 @@ Only for the fields of the ready-made "Events" post type. Everything else works 
 
 = What is deleted when I uninstall the plugin? =
 
-You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects and logs are kept; scheduled tasks, caches and generated files are always removed.
+You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 5.0.0 =
+* Removed: the Redirects module (redirects and 404 log). It is now part of Optimizr Pro 1.2.0, without the 5-redirect limit.
+* Existing redirects and the 404 log stay in the database: Optimizr Pro 1.2.0 picks them up as they are. Without Optimizr Pro, they no longer apply.
+* An older Optimizr Pro (before 1.2.0) pauses its redirects and shows a notice asking for its update.
 
 = 4.0.0 =
 * The plugin now covers cookie consent with Google Analytics and Google Tag Manager, SEO meta tags, the 404 log with up to 5 redirects, login protection, custom post types, featured images, emails and tools.
