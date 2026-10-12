@@ -25,3 +25,4 @@ assets/plugin-update-checker
 # Fichiers de développement de Tarteaucitron
 assets/tarteaucitron/package.json
 assets/tarteaucitron/SECURITY.md
+assets/tarteaucitron/.github

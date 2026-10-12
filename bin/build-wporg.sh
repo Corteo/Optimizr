@@ -46,6 +46,12 @@ if grep -rqE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_toke
     grep -rnE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out" >&2
     exit 1
 fi
+hidden="$(find "$out" -mindepth 1 -name '.*')"
+if [ -n "$hidden" ]; then
+    echo "Erreur : fichiers cachés refusés par WordPress.org (à ajouter dans .distignore) :" >&2
+    echo "$hidden" >&2
+    exit 1
+fi
 if grep -q 'REPLACE_WITH_WPORG_USERNAME' "$out/readme.txt"; then
     echo "Erreur : renseignez l'identifiant WordPress.org dans « Contributors » (readme.txt)" >&2
     exit 1
