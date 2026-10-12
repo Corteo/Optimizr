@@ -37,6 +37,7 @@ add_action('admin_init', function () {
     delete_transient('haptic_onboarding_redirect');
 
     // Pas pendant une activation groupée, une requête AJAX ou depuis l'administration du réseau
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- paramètre ajouté par WordPress après une activation groupée, seulement testé
     if (wp_doing_ajax() || is_network_admin() || isset($_GET['activate-multi']) || !current_user_can('manage_options')) {
         return;
     }
@@ -303,7 +304,8 @@ function haptic_onboarding_render()
     wp_register_script('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'js/optimizr-onboarding.js', ['wp-i18n'], filemtime($js), true);
     wp_set_script_translations('optimizr-onboarding', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 
-    $done = isset($_GET['step']) && $_GET['step'] === 'done';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- étape affichée, lecture seule
+    $done = sanitize_key(wp_unslash($_GET['step'] ?? '')) === 'done';
     $steps = haptic_onboarding_steps();
 
     nocache_headers();

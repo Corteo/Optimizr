@@ -2,9 +2,9 @@
 Contributors: alexandrevergnaud
 Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.0.0
+Stable tag: 5.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,11 @@ Only for the fields of the ready-made "Events" post type. Everything else works 
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 5.0.1 =
+* Tested up to WordPress 7.1.
+* Development files of the bundled Tarteaucitron library are no longer shipped.
+* Code cleanup following Plugin Check: URL parameters are unslashed and sanitized, intended direct database queries are documented.
 
 = 5.0.0 =
 * Removed: the Redirects module (redirects and 404 log). It is now part of Optimizr Pro 1.2.0, without the 5-redirect limit.

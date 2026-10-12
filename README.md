@@ -163,7 +163,9 @@ Depuis 4.0.4, tous les sites suivent `stable` : il n'y a plus de canal Beta ni D
 Le plugin existe en deux distributions construites à partir du même code :
 
 - **GitHub** (ce dépôt tel quel) : mises à jour par GitHub, depuis la branche `stable`.
-- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
+
+Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort le système de mise à jour, `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).
 
 `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 

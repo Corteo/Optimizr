@@ -172,6 +172,7 @@ function haptic_seo_cleanup_saved_meta()
 {
     global $wpdb;
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- nettoyage ponctuel sur toutes les publications, résultat non réutilisé
     $rows = $wpdb->get_results(
         "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta}
          WHERE meta_key IN ('_haptic_og_title', '_haptic_og_desc', '_haptic_og_image')"

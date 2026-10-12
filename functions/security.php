@@ -205,6 +205,7 @@ function haptic_sec_is_custom_login_request()
     if (get_option('permalink_structure')) {
         return $path === $slug;
     }
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- adresse de connexion personnalisée (?slug sans permaliens), seulement testée
     return in_array($path, ['', 'index.php'], true) && isset($_GET[$slug]);
 }
 

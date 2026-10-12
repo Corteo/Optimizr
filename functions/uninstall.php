@@ -105,6 +105,7 @@ function haptic_uninstall_site()
     }
 
     // Toujours : caches temporaires (verrous de connexion, notices, token de mise à jour…)
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- suppression des transients par préfixe, qu'aucune fonction WordPress ne permet
     $wpdb->query(
         "DELETE FROM {$wpdb->options}
          WHERE option_name LIKE '\\_transient\\_haptic\\_%'
@@ -117,6 +118,7 @@ function haptic_uninstall_site()
         foreach (haptic_uninstall_log_options() as $name) {
             delete_option($name);
         }
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- suppression, à la désinstallation, d'une table propre au plugin
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}optimizr_404");
         // Adresses IP déjà vues pour l'alerte de connexion (métadonnée propre à chaque compte, partagée sur un multisite)
         if (!is_multisite() || is_main_site()) {
@@ -125,6 +127,7 @@ function haptic_uninstall_site()
     }
 
     if ($choices['content']) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- suppression, à la désinstallation, d'une table propre au plugin
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}optimizr_redirects");
         foreach (['_haptic_noindex', '_haptic_og_title', '_haptic_og_desc', '_haptic_og_image'] as $meta_key) {
             delete_post_meta_by_key($meta_key);
@@ -133,6 +136,7 @@ function haptic_uninstall_site()
 
     if ($choices['settings']) {
         // Toutes les options haptic_*, comme l'export (functions/tools.php), sauf les journaux si on les garde
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- aucune fonction WordPress ne liste les options par préfixe ; lecture unique à la désinstallation
         $names = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'haptic\\_%'");
         $keep = $choices['logs'] ? [] : haptic_uninstall_log_options();
         foreach ($names as $name) {
