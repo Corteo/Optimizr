@@ -1,12 +1,12 @@
 # Haptic Optimizr
 
-Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, redirections, protection de la connexion, types de contenu personnalisés et quelques outils de maintenance.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, types de contenu personnalisés et quelques outils de maintenance.
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (SEO local, pages spéciales, assistant IA, sitemap, redirections illimitées, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
+Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 4.0.4 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 5.0.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -24,9 +24,9 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - *Optimizr Pro :* sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow, données structurées.
 
 ### Redirections
-- Journal des pages introuvables (404), sans adresse IP, avec création d'une redirection en un clic.
-- Jusqu'à 5 redirections 301, 302, 307 ou 410, avec compteur de visites. Au-delà, les redirections existantes continuent de fonctionner mais aucune ne peut être ajoutée.
-- *Optimizr Pro :* redirections illimitées, jokers, import/export CSV, redirection automatique des contenus déplacés, liens cassés.
+- *Optimizr Pro uniquement* (depuis Optimizr 5.0.0) : redirections 301, 302, 307 et 410 illimitées, journal des pages introuvables (404), jokers, import/export CSV, redirection automatique des contenus déplacés, liens cassés.
+- Les redirections et le journal créés avec Optimizr 4.x restent dans la base (tables `{prefix}optimizr_redirects` et `{prefix}optimizr_404`) : Optimizr Pro 1.2.0 ou plus récent les reprend tels quels. Sans Optimizr Pro, ils ne s'appliquent plus mais ne sont pas effacés.
+- Optimizr Pro antérieur à 1.2.0 : ses redirections sont en pause et un avertissement demande sa mise à jour.
 
 ### Types de contenu
 - Type « Évènements » prêt à l'emploi : date de début, date de fin, lieu, horaires (champs [ACF Pro](https://www.advancedcustomfields.com/pro/)).
@@ -106,11 +106,6 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_cookies_consent_note` | filtre | Texte de l'encadré sur les modes de consentement (onglet Cookies). |
 | `haptic_seo_post_types` | filtre | Types de contenu qui ont la metabox SEO. |
 | `haptic_seo_metabox_after_description` | action | Contenu ajouté sous le champ description de la metabox SEO. |
-| `haptic_redirects_limit` | filtre | Nombre maximal de redirections (5 ; 0 = illimité). |
-| `haptic_redirects_match` / `haptic_redirects_validate` | filtre | Recherche d'une redirection pour une adresse ; validation d'une adresse source (jokers…). |
-| `haptic_redirects_saved` / `haptic_redirects_deleted` | action | Redirection enregistrée ou supprimée. |
-| `haptic_redirects_intro`, `haptic_redirects_form_help` | filtre | Textes de l'onglet Redirections. |
-| `haptic_redirects_before_render`, `haptic_redirects_tab_main`, `haptic_redirects_tab_aside`, `haptic_redirects_settings_fields`, `haptic_redirects_settings_save` | action | Contenu et réglages ajoutés à l'onglet Redirections. |
 | `haptic_sec_protections` / `haptic_sec_environment_checks` | filtre | Protections et vérifications du bilan de l'onglet Sécurité. |
 | `haptic_onboarding_steps` | filtre | Étapes de l'assistant (une étape peut fournir sa fonction `render`). |
 | `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement. |
@@ -121,7 +116,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
 | `haptic_before_enqueue_admin_scripts` / `haptic_after_…` | action | Charger des scripts côté administration. |
 
-`haptic_is_pro()` indique si Optimizr Pro est actif. Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
+`haptic_is_pro()` indique si Optimizr Pro est actif, `haptic_pro_is_outdated()` s'il est antérieur à la version minimale `HAPTIC_OPTIMIZR_PRO_MIN_VERSION` (1.2.0). Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
 
 Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant `haptic_settings_group($onglet)` pour `register_setting()` et `haptic_settings_page($onglet)` pour `add_settings_section()` et `add_settings_field()`. Les sections sont affichées sous forme de cartes ; l'argument `toggle` d'une section place un interrupteur dans son en-tête.
 
@@ -134,7 +129,6 @@ functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, balises)
-functions/redirects.php  Module Redirections (+ redirects-admin.php : onglet)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une

@@ -28,6 +28,8 @@ function haptic_settings_internal_options()
         'haptic_links_report',
         'haptic_indexnow_key',
         'haptic_indexnow_last',
+        // Version des tables de redirection d'Optimizr Pro : importée, elle empêcherait leur création sur ce site
+        'haptic_redirects_db_version',
         // Propre à chaque site, et à ne pas diffuser
         'haptic_sec_login_slug',
         // Proxys de confiance : propres à l'hébergement de chaque site (importés ailleurs, ils pourraient falsifier X-Forwarded-For)

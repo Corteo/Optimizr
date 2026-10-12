@@ -23,12 +23,6 @@ function haptic_modules()
             'icon'  => 'search',
             'tab'   => 'seo',
         ],
-        'redirects' => [
-            'label' => __('Redirects', 'optimizr'),
-            'desc'  => __('Not-found pages log and up to 5 redirects.', 'optimizr'),
-            'icon'  => 'redirect',
-            'tab'   => 'redirects',
-        ],
         'cpts' => [
             'label' => __('Content types', 'optimizr'),
             'desc'  => __('Ready-to-use Events CPT and custom post types created from the admin.', 'optimizr'),
@@ -61,6 +55,11 @@ function haptic_modules()
  */
 function haptic_is_module_active($slug)
 {
+    // Redirections d'Optimizr Pro antérieur à 1.2.0 : elles s'appuient sur le module retiré d'Optimizr 5.0 et ne doivent pas se charger
+    if ($slug === 'redirects' && haptic_pro_is_outdated()) {
+        return false;
+    }
+
     $modules = get_option('haptic_modules');
 
     if (!is_array($modules)) {
@@ -83,7 +82,6 @@ function haptic_admin_tabs()
             'intro' => __('Visitor consent, with third-party services loaded only once allowed.', 'optimizr')],
         'seo'       => ['label' => __('SEO', 'optimizr'), 'modules' => ['seo'],
             'intro' => __('Default titles and descriptions, used for any content that has none.', 'optimizr')],
-        'redirects' => ['label' => _x('Redirects', 'admin tab', 'optimizr'), 'modules' => ['redirects'], 'render' => 'haptic_render_redirects_tab'],
         'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['cpts', 'thumbnails'],
             'intro' => __('Custom post types and cover images.', 'optimizr')],
         'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security'],
@@ -128,6 +126,29 @@ function haptic_is_pro()
 {
     return defined('HAPTIC_OPTIMIZR_PRO_VERSION');
 }
+
+/** Version minimale d'Optimizr Pro : la première qui contient le module Redirections, retiré d'Optimizr 5.0. */
+define('HAPTIC_OPTIMIZR_PRO_MIN_VERSION', '1.2.0');
+
+/** Optimizr Pro actif mais antérieur à HAPTIC_OPTIMIZR_PRO_MIN_VERSION ? */
+function haptic_pro_is_outdated()
+{
+    return haptic_is_pro() && version_compare(HAPTIC_OPTIMIZR_PRO_VERSION, HAPTIC_OPTIMIZR_PRO_MIN_VERSION, '<');
+}
+
+// Optimizr Pro trop ancien : ses redirections restent enregistrées mais ne s'appliquent plus jusqu'à sa mise à jour
+add_action('admin_notices', function () {
+    if (!haptic_pro_is_outdated() || !current_user_can('update_plugins')) {
+        return;
+    }
+    $message = sprintf(
+        /* translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version */
+        __('Redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to apply your redirects again: they are kept in the meantime.', 'optimizr'),
+        HAPTIC_OPTIMIZR_PRO_MIN_VERSION,
+        HAPTIC_OPTIMIZR_PRO_VERSION
+    );
+    echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
+});
 
 function haptic_current_tab()
 {
@@ -571,7 +592,7 @@ function haptic_pro_features()
     return [
         __('Cookies: every service, banner colors', 'optimizr'),
         __('SEO: XML sitemap, robots.txt, IndexNow, structured data', 'optimizr'),
-        __('Unlimited redirects, wildcards, CSV import, broken links', 'optimizr'),
+        __('Unlimited redirects, 404 log, wildcards, CSV import, broken links', 'optimizr'),
         __('Local SEO, 404 page and maintenance mode', 'optimizr'),
         __('AI assistant for meta descriptions and ALT text', 'optimizr'),
         __('Full security: discretion, unused features, headers', 'optimizr'),

@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 4.0.4\n"
+"Project-Id-Version: Haptic Optimizr 5.0.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -50,11 +50,6 @@ msgstr ""
 
 #: functions/admin-ui.php
 msgctxt "admin tab"
-msgid "Redirects"
-msgstr ""
-
-#: functions/admin-ui.php
-msgctxt "admin tab"
 msgid "Content"
 msgstr ""
 
@@ -84,7 +79,7 @@ msgstr ""
 msgid "All changes saved"
 msgstr ""
 
-#: functions/admin-ui.php functions/redirects-admin.php js/optimizr-uninstall.js
+#: functions/admin-ui.php js/optimizr-uninstall.js
 msgid "Cancel"
 msgstr ""
 
@@ -289,10 +284,6 @@ msgstr ""
 msgid "Add yours if it is static (office, fiber) so you never lock yourself out."
 msgstr ""
 
-#: functions/redirects-admin.php
-msgid "Address"
-msgstr ""
-
 #: js/optimizr-onboarding.js
 msgid "Address added"
 msgstr ""
@@ -383,7 +374,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: functions/redirects-admin.php js/optimizr-onboarding.js
+#: js/optimizr-onboarding.js
 msgid "Edit"
 msgstr ""
 
@@ -979,7 +970,7 @@ msgstr ""
 msgid "Dashicons icon"
 msgstr ""
 
-#: functions/cpts.php functions/redirects-admin.php
+#: functions/cpts.php
 msgid "Delete"
 msgstr ""
 
@@ -987,7 +978,7 @@ msgstr ""
 msgid "+ Add a type"
 msgstr ""
 
-#: functions/redirects-admin.php functions/tools.php functions/uninstall-admin.php
+#: functions/tools.php functions/uninstall-admin.php
 msgid "Access denied"
 msgstr ""
 
@@ -1126,190 +1117,13 @@ msgstr ""
 msgid "Uncategorized"
 msgstr ""
 
-#: functions/redirects.php
-msgid "Permanent (301)"
-msgstr ""
-
-#: functions/redirects.php
-msgid "Temporary (302)"
-msgstr ""
-
-#: functions/redirects.php
-msgid "Temporary, method preserved (307)"
-msgstr ""
-
-#: functions/redirects.php
-msgid "Permanently deleted (410)"
-msgstr ""
-
-#: functions/redirects.php
-msgid "Enter the address to redirect (the home page cannot be redirected)."
-msgstr ""
-
-#: functions/redirects.php
-msgid "Enter the redirect destination."
-msgstr ""
-
-#: functions/redirects.php
-msgid "The destination is the same as the source: the redirect would loop."
-msgstr ""
-
-#: functions/redirects.php
-msgid "The destination leads back to the source: the redirect would loop."
-msgstr ""
-
-#: functions/redirects.php
-msgid "Another redirect already exists for this address."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Redirect saved."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Redirect deleted."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Not-found pages log cleared."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Address removed from the log."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Settings saved."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Edit redirect"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Add a redirect"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Old address"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "/old-page"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Destination"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "/new-page or https://…"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgctxt "redirect type"
-msgid "Type"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgctxt "redirect note field"
-msgid "Note"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "(optional)"
-msgstr ""
-
-#: functions/redirects-admin.php functions/uninstall-admin.php
+#: functions/uninstall-admin.php
 msgid "Save"
 msgstr ""
 
-#: functions/redirects-admin.php
-msgid "Add redirect"
-msgstr ""
-
-#: functions/admin-ui.php functions/redirects-admin.php
-msgid "Redirects"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Search"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Search redirects"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "No matching redirects."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "No redirects yet."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Visits"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Actions"
-msgstr ""
-
-#. date format for the last redirect hit, see https://www.php.net/manual/datetime.format.php
-#: functions/redirects-admin.php
-msgid "M j, Y"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Delete this redirect?"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Not-found pages"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Addresses requested by visitors or bots that end in a 404 error, most frequent first."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Clear the not-found pages log?"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Clear"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "The log is disabled in the settings below."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "No not-found pages recorded."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgctxt "last visit column"
-msgid "Last"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Referrer"
-msgstr ""
-
 #. date format (last visit of a not-found page / security log entry), see https://www.php.net/manual/datetime.format.php
-#: functions/redirects-admin.php functions/security-admin.php
+#: functions/security-admin.php
 msgid "M j, H:i"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgctxt "action: create a redirect"
-msgid "Redirect"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Ignore"
 msgstr ""
 
 #. date format (last link scan / login alert email), see https://www.php.net/manual/datetime.format.php
@@ -1317,16 +1131,8 @@ msgstr ""
 msgid "F j, Y \\a\\\t H:i"
 msgstr ""
 
-#: functions/redirects-admin.php functions/uninstall.php
+#: functions/uninstall.php
 msgid "Settings"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Not-found pages log"
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "No IP address: only the requested address and the referring page are kept."
 msgstr ""
 
 #: functions/security.php
@@ -1742,10 +1548,6 @@ msgid "Title, description and OpenGraph tags, with a SEO box in the editor."
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Not-found pages log and up to 5 redirects."
-msgstr ""
-
-#: functions/admin-ui.php
 msgid "Custom login URL, login attempt limits, neutral error messages and login alerts."
 msgstr ""
 
@@ -1774,7 +1576,7 @@ msgid "SEO: XML sitemap, robots.txt, IndexNow, structured data"
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Unlimited redirects, wildcards, CSV import, broken links"
+msgid "Unlimited redirects, 404 log, wildcards, CSV import, broken links"
 msgstr ""
 
 #: functions/admin-ui.php
@@ -1798,33 +1600,19 @@ msgid "Clean title and description tags: Google shows your pages the way you wan
 msgstr ""
 
 #: functions/onboarding.php
-msgid "Meta tags, redirects and indexing for a site Google understands quickly."
+msgid "Meta tags and indexing for a site Google understands quickly."
 msgstr ""
 
 #: functions/onboarding.php
 msgid "Content types, featured images and modules enabled as you need them."
 msgstr ""
 
-#: functions/redirects-admin.php
-msgid "Redirect old addresses and monitor not-found pages."
-msgstr ""
-
-#: functions/redirects-admin.php
-msgid "Relative (<code>/old-page</code>) or full address."
-msgstr ""
-
-#. translators: %s: maximum number of redirects
-#: functions/redirects-admin.php functions/redirects.php
-msgid "The free version is limited to %s redirect. Optimizr Pro removes this limit."
-msgid_plural "The free version is limited to %s redirects. Optimizr Pro removes this limit."
-msgstr[0] ""
-msgstr[1] ""
-
-#: functions/redirects.php
-msgid "Wildcards (*) require Optimizr Pro."
-msgstr ""
-
 #. Description of the plugin
 #: optimizr.php
-msgid "Cookie consent (Tarteaucitron), SEO meta tags, redirects, login protection, custom post types and maintenance tools in a single settings page, enabled module by module."
+msgid "Cookie consent (Tarteaucitron), SEO meta tags, login protection, custom post types and maintenance tools in a single settings page, enabled module by module."
+msgstr ""
+
+#. translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version
+#: functions/admin-ui.php
+msgid "Redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to apply your redirects again: they are kept in the meantime."
 msgstr ""

@@ -85,7 +85,6 @@ haptic_migrate_legacy_prefix();
 
 function haptic_options_activate()
 {
-    haptic_redirects_install();
     // Extensions (Optimizr Pro) : fichiers à republier (sitemap, clé IndexNow)
     do_action('haptic_activate');
     // Première activation : l'assistant de configuration s'ouvre (WordPress confirme déjà l'activation)
@@ -116,68 +115,6 @@ function haptic_options_deactivate()
         insert_with_markers($htaccess, 'Optimizr', []);
     }
 }
-
-/* ---------- Tables du module Redirections (créées même si le module est activé plus tard) ---------- */
-
-function haptic_redirects_table()
-{
-    global $wpdb;
-    return $wpdb->prefix . 'optimizr_redirects';
-}
-
-function haptic_404_table()
-{
-    global $wpdb;
-    return $wpdb->prefix . 'optimizr_404';
-}
-
-/** Création ou mise à jour des tables (activation et migration). */
-function haptic_redirects_install()
-{
-    global $wpdb;
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    $charset = $wpdb->get_charset_collate();
-
-    dbDelta("CREATE TABLE " . haptic_redirects_table() . " (
-        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-        source varchar(255) NOT NULL,
-        target text NOT NULL,
-        code smallint(3) unsigned NOT NULL DEFAULT 301,
-        hits bigint(20) unsigned NOT NULL DEFAULT 0,
-        last_hit datetime NULL DEFAULT NULL,
-        note varchar(255) NOT NULL DEFAULT '',
-        created datetime NOT NULL,
-        PRIMARY KEY  (id),
-        UNIQUE KEY source (source(191))
-    ) $charset;");
-
-    dbDelta("CREATE TABLE " . haptic_404_table() . " (
-        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-        path varchar(255) NOT NULL,
-        referrer varchar(255) NOT NULL DEFAULT '',
-        hits bigint(20) unsigned NOT NULL DEFAULT 1,
-        first_seen datetime NOT NULL,
-        last_seen datetime NOT NULL,
-        PRIMARY KEY  (id),
-        UNIQUE KEY path (path(191)),
-        KEY last_seen (last_seen)
-    ) $charset;");
-}
-
-// Activation du module depuis le tableau de bord : ses tables doivent exister avant la première visite
-function haptic_redirects_maybe_install($new)
-{
-    if (is_array($new) && !empty($new['redirects'])) {
-        haptic_redirects_install();
-    }
-}
-add_action('update_option_haptic_modules', function ($old, $new) {
-    haptic_redirects_maybe_install($new);
-}, 10, 2);
-// Premier enregistrement du tableau de bord ou de l'assistant : l'option est créée, pas modifiée
-add_action('add_option_haptic_modules', function ($option, $value) {
-    haptic_redirects_maybe_install($value);
-}, 10, 2);
 
 /** Marqueur présent dans chaque fichier de sitemap généré par Optimizr. */
 define('HAPTIC_SITEMAP_MARKER', '<!-- Généré par Optimizr -->');
@@ -301,14 +238,11 @@ function haptic_options_maybe_upgrade()
         }
     }
 
-    if (version_compare($installed, '2.0.0-beta.11', '<')) {
-        haptic_redirects_install();
-    }
-
     if (version_compare($installed, '2.4.1', '<')) {
         // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
         global $wpdb;
-        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', haptic_404_table(), '%?%'));
+        // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier
+        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
 
         // Ancien journal de debug public (logs/ du plugin), supprimé depuis :
         // une mise à jour manuelle (FTP, git) le laisse en place
