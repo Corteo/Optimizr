@@ -152,7 +152,8 @@ add_action('admin_notices', function () {
 
 function haptic_current_tab()
 {
-    $tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'dashboard';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- onglet affiché, lecture seule
+    $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'dashboard';
     return array_key_exists($tab, haptic_admin_tabs()) ? $tab : 'dashboard';
 }
 

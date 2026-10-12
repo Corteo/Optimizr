@@ -10,6 +10,7 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ### Corrigé
 - Erreurs de Plugin Check sur la version WordPress.org : `readme.txt` indique « Tested up to: 7.1 » (la version actuelle de WordPress), et le zip construit par `bin/build-wporg.sh` ne contient plus le dossier `.github` de Tarteaucitron. Le script échoue désormais s'il reste un fichier caché dans le zip.
+- Avertissements de Plugin Check : paramètres d'URL `tab` et `step` passés par `wp_unslash()` et `sanitize_key()`, et justification en commentaire (`phpcs:ignore`) des cas voulus : requêtes SQL ponctuelles sur les options et tables du plugin (export, migration, désinstallation, nettoyage des métadonnées SEO), paramètres d'URL seulement lus pour l'affichage, fichier d'import, chargement des traductions fournies. Aucun changement de comportement.
 
 ## [5.0.0] - 2026-10-12
 

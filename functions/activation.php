@@ -242,6 +242,7 @@ function haptic_options_maybe_upgrade()
         // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
         global $wpdb;
         // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
         $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
 
         // Ancien journal de debug public (logs/ du plugin), supprimé depuis :

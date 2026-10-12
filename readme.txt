@@ -62,6 +62,7 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 = 5.0.1 =
 * Tested up to WordPress 7.1.
 * Development files of the bundled Tarteaucitron library are no longer shipped.
+* Code cleanup following Plugin Check: URL parameters are unslashed and sanitized, intended direct database queries are documented.
 
 = 5.0.0 =
 * Removed: the Redirects module (redirects and 404 log). It is now part of Optimizr Pro 1.2.0, without the 5-redirect limit.

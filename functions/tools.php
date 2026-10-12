@@ -66,6 +66,7 @@ function haptic_exportable_settings($include_api_key = false)
 {
     global $wpdb;
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- aucune fonction WordPress ne liste les options par préfixe ; lecture ponctuelle (export, onglet Outils)
     $names = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'haptic\\_%' ORDER BY option_name");
     $settings = [];
 
@@ -247,6 +248,7 @@ add_action('admin_post_haptic_import_settings', function () {
     }
     check_admin_referer('haptic_import_settings');
 
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- fichier téléversé : seuls error, size et tmp_name (contrôlé par is_uploaded_file()) sont lus, son contenu est validé comme JSON
     $file = $_FILES['haptic_import_file'] ?? null;
     $result = null;
 
@@ -274,6 +276,7 @@ add_action('admin_post_haptic_import_settings', function () {
 function haptic_render_tools_tab()
 {
     $result = get_transient('haptic_import_result_' . get_current_user_id());
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- message affiché après la redirection d'un formulaire déjà vérifié par nonce, sans action
     if ($result && sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'import') {
         delete_transient('haptic_import_result_' . get_current_user_id());
     } else {
@@ -305,7 +308,8 @@ function haptic_render_tools_tab()
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'uninstall') : ?>
+    <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- message affiché après la redirection d'un formulaire déjà vérifié par nonce, sans action
+    if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'uninstall') : ?>
         <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Choices saved.', 'optimizr'); ?></strong> <?php esc_html_e('They will be applied if the plugin is deleted.', 'optimizr'); ?></span></div>
     <?php endif; ?>
 

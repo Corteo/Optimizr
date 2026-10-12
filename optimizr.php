@@ -32,6 +32,7 @@ define('HAPTIC_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_haptic-options');
 // Traductions fournies avec le plugin (languages/) : français pour les sites installés depuis GitHub.
 // Sur WordPress.org, les traductions de translate.wordpress.org (wp-content/languages/plugins) passent avant.
 add_action('init', function () {
+    // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- traduction française fournie dans languages/, utilisée tant que translate.wordpress.org n'en propose pas
     load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages');
 }, 0);
 
