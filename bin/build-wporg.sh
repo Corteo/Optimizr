@@ -2,7 +2,7 @@
 # Construit la version WordPress.org d'Optimizr : dist/<slug>/ et dist/<slug>-<version>.zip.
 #
 # Différences avec la version GitHub :
-#   - fichiers listés dans .distignore retirés (mises à jour GitHub, fichiers de développement) ;
+#   - fichiers listés dans .distignore retirés (fichiers de développement) ;
 #   - lignes marquées « build:github-only » retirées des fichiers PHP.
 #
 # Usage : bin/build-wporg.sh [slug]   (slug par défaut : optimizr)
@@ -36,11 +36,11 @@ git ls-files -z | while IFS= read -r -d '' file; do
 done
 
 # Retrait des lignes propres à la version GitHub
-grep -rl 'build:github-only' "$out" --include='*.php' | while IFS= read -r file; do
+{ grep -rl 'build:github-only' "$out" --include='*.php' || true; } | while IFS= read -r file; do
     sed -i.bak '/build:github-only/d' "$file" && rm -f "$file.bak"
 done
 
-# Garde-fous : readme.txt complété, rien ne doit rester du système de mise à jour GitHub
+# Garde-fous : readme.txt complété, aucun système de mise à jour hors WordPress.org (Plugin Update Checker, retiré en 6.0.0)
 if grep -rqE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out"; then
     echo "Erreur : du code de mise à jour GitHub subsiste dans $out" >&2
     grep -rnE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out" >&2

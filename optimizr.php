@@ -4,7 +4,7 @@
  * Plugin Name: Haptic Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, custom post types and maintenance tools in a single settings page, enabled module by module.
- * Version: 5.0.1
+ * Version: 6.0.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '5.0.1');
+define('HAPTIC_OPTIMIZR_VERSION', '6.0.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -36,13 +36,12 @@ add_action('init', function () {
     load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages');
 }, 0);
 
-// Plugin core includes (activation, admin UI, assets, updates)
+// Plugin core includes (activation, admin UI, assets)
 require_once(__DIR__ . '/functions/activation.php');
 require_once(__DIR__ . '/functions/admin-ui.php');
 require_once(__DIR__ . '/functions/assets.php');
 
 require_once(__DIR__ . '/haptic_admin-page.php');
-require_once(__DIR__ . '/functions/updates.php'); // build:github-only (retiré de la version WordPress.org)
 require_once(__DIR__ . '/functions/tabs.php');
 require_once(__DIR__ . '/functions/tools.php');
 require_once(__DIR__ . '/functions/uninstall.php');

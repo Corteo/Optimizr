@@ -287,6 +287,13 @@ function haptic_options_maybe_upgrade()
         delete_site_option('external_updates-optimizr-pro');
     }
 
+    if (version_compare($installed, '6.0.0', '<')) {
+        // Mises à jour depuis GitHub retirées (Plugin Update Checker) : état mis en cache et jeton d'accès
+        delete_site_option('external_updates-optimizr');
+        delete_site_option('external_updates-optimizr-pro');
+        delete_transient('optimizr_github_token');
+    }
+
     update_option('haptic_optimizr_version', HAPTIC_OPTIMIZR_VERSION);
 }
 // Sur init (tard) : types de contenu et shortcodes chargés, nécessaires pour comparer les extraits

@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.0.1
+Stable tag: 6.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,10 @@ Only for the fields of the ready-made "Events" post type. Everything else works 
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 6.0.0 =
+* Removed: updates from GitHub (Plugin Update Checker) in the GitHub distribution. Updates now come from WordPress.org only. Sites installed from GitHub get them once Optimizr is published there under the `optimizr` slug.
+* The `OPTIMIZR_GITHUB_TOKEN` constant is no longer used.
 
 = 5.0.1 =
 * Tested up to WordPress 7.1.

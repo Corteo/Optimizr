@@ -61,7 +61,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
 3. Activez **Haptic Optimizr**.
 
-Les mises à jour suivantes sont proposées directement dans **Tableau de bord › Mises à jour**, et dans **Extensions**, comme pour toute extension : la mise à jour se lance depuis ces pages. Les éventuelles migrations de la base s'exécutent au chargement suivant.
+Le dossier du plugin doit s'appeler `optimizr`. Les mises à jour viennent de WordPress.org : une fois Optimizr publié sous le slug `optimizr`, elles sont proposées dans **Tableau de bord › Mises à jour** et dans **Extensions**, comme pour toute extension. Avant cela, une nouvelle version s'installe à la main de la même façon (« Remplacer la version installée »). Les éventuelles migrations de la base s'exécutent au chargement suivant.
 
 ### Mise à jour depuis la 1.5
 
@@ -84,7 +84,6 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 | Constante (`wp-config.php`) | Rôle |
 |---|---|
-| `OPTIMIZR_GITHUB_TOKEN` | Token GitHub utilisé pour les mises à jour depuis un dépôt privé. Prioritaire sur le token distant. |
 | `OPTIMIZR_DISABLE_CUSTOM_LOGIN` | `true` désactive l'adresse de connexion personnalisée (retour à wp-login.php), en cas de blocage. |
 
 ### Points d'extension
@@ -134,7 +133,6 @@ functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
-functions/updates.php    Mises à jour depuis GitHub (absent de la version WordPress.org)
 css/, js/                Interface de la page d'options
 ```
 
@@ -154,18 +152,18 @@ Pour publier une version :
 
 1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Fusionnez dans `stable` et ajoutez le tag `vX.Y.Z` : les sites installés lisent l'en-tête de `optimizr.php` sur la branche `stable` pour proposer la mise à jour.
+3. Construisez le zip WordPress.org (`bin/build-wporg.sh`) et publiez-le dans le dépôt SVN de WordPress.org : c'est de là que les sites reçoivent la mise à jour.
 
-Depuis 4.0.4, tous les sites suivent `stable` : il n'y a plus de canal Beta ni Développement à choisir. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
+Depuis 6.0.0, Optimizr ne se met plus à jour depuis GitHub (Plugin Update Checker retiré) : WordPress propose les versions publiées sur WordPress.org, y compris aux sites installés depuis GitHub, tant que le dossier du plugin s'appelle `optimizr` comme le slug. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
 
 ### Version WordPress.org
 
 Le plugin existe en deux distributions construites à partir du même code :
 
-- **GitHub** (ce dépôt tel quel) : mises à jour par GitHub, depuis la branche `stable`.
-- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans `functions/updates.php`, `assets/plugin-update-checker/` ni les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il reste du code de mise à jour GitHub ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
+- **GitHub** (ce dépôt tel quel) : sans mise à jour automatique propre ; WordPress lui propose celles de WordPress.org.
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il trouve un système de mise à jour hors WordPress.org ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
-Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort le système de mise à jour, `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).
+Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).
 
 `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 

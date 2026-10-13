@@ -6,6 +6,16 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [6.0.0] - 2026-10-13
+
+### Retiré
+- **Mises à jour depuis GitHub** : Plugin Update Checker (`assets/plugin-update-checker/`) et `functions/updates.php` sont supprimés. La version GitHub ne lit plus la branche `stable` et ne contacte plus `cdn.alexandrevergnaud.fr/opti/token.php` pour obtenir un jeton. Les mises à jour viennent de WordPress.org, y compris pour les sites installés depuis GitHub (dossier `optimizr`), une fois le plugin publié sous ce slug ; d'ici là, ils se mettent à jour à la main.
+- Constante `OPTIMIZR_GITHUB_TOKEN` et fonctions `haptic_initialize_updater()`, `haptic_update_channel()` et `haptic_get_github_token()`.
+
+### Modifié
+- À la mise à jour, le jeton GitHub mis en cache et l'état enregistré par Plugin Update Checker (d'Optimizr et d'Optimizr Pro) sont effacés.
+- `bin/build-wporg.sh` ne s'arrête plus en silence quand aucun fichier ne contient de ligne `build:github-only` (cas depuis ce retrait).
+
 ## [5.0.1] - 2026-10-12
 
 ### Corrigé
