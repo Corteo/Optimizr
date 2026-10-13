@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [6.0.1] - 2026-10-13
+
+### Retiré
+- `haptic_admin-page.php` et sa fonction `haptic_options_admin_init()` : les actions `haptic_before_admin_init`, `haptic_add_options_tabs` et `haptic_after_admin_init`, déclenchées sur `admin_init`, ne sont plus émises. Aucun code d'Optimizr ni d'Optimizr Pro ne s'y branchait ; les onglets s'ajoutent par le filtre `haptic_admin_tabs`.
+
 ## [6.0.0] - 2026-10-13
 
 ### Retiré
