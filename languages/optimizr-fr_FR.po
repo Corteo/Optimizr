@@ -22,10 +22,6 @@ msgstr "SEO"
 msgid "Content types"
 msgstr "Types de contenu"
 
-#: functions/admin-ui.php
-msgid "Ready-to-use Events CPT and custom post types created from the admin."
-msgstr "CPT Évènements prêt à l'emploi et types personnalisés créés depuis l'admin."
-
 #: functions/admin-ui.php functions/thumbnails.php
 msgid "Featured images"
 msgstr "Images à la une"
@@ -94,8 +90,8 @@ msgid "Visitor consent, with third-party services loaded only once allowed."
 msgstr "Consentement des visiteurs et services tiers chargés uniquement après autorisation."
 
 #: functions/admin-ui.php
-msgid "Custom post types and cover images."
-msgstr "Types de contenu personnalisés et images de couverture."
+msgid "Content types that accept a cover image."
+msgstr "Types de contenu qui acceptent une image de couverture."
 
 #: functions/admin-ui.php
 msgid "Protections you can enable one by one. None is active until you turn it on."
@@ -822,164 +818,6 @@ msgstr "Aperçu indicatif : le rendu final dépend aussi du thème."
 msgid "Manage cookies"
 msgstr "Gérer les cookies"
 
-#: functions/cpts.php
-msgctxt "Post Type General Name"
-msgid "Events"
-msgstr "Évènements"
-
-#: functions/cpts.php
-msgctxt "Post Type Singular Name"
-msgid "Event"
-msgstr "Évènement"
-
-#: functions/cpts.php
-msgid "Events"
-msgstr "Évènements"
-
-#: functions/cpts.php
-msgid "Event"
-msgstr "Évènement"
-
-#: functions/cpts.php
-msgid "Add New"
-msgstr "Ajouter nouveau"
-
-#: functions/cpts.php
-msgid "Add New Event"
-msgstr "Ajouter un nouvel évènement"
-
-#: functions/cpts.php
-msgid "New Event"
-msgstr "Nouvel évènement"
-
-#: functions/cpts.php
-msgid "Edit Event"
-msgstr "Modifier l'évènement"
-
-#: functions/cpts.php
-msgid "View Event"
-msgstr "Voir l'évènement"
-
-#: functions/cpts.php
-msgid "All Events"
-msgstr "Tous les évènements"
-
-#: functions/cpts.php
-msgid "Search Events"
-msgstr "Rechercher des évènements"
-
-#: functions/cpts.php
-msgid "No events found"
-msgstr "Aucun évènement trouvé"
-
-#: functions/cpts.php
-msgid "No events found in Trash"
-msgstr "Aucun évènement dans la corbeille"
-
-#: functions/cpts.php
-msgid "Additional fields for Events"
-msgstr "Champs supplémentaires pour Évènements"
-
-#: functions/cpts.php
-msgid "Start date (all day)"
-msgstr "Date de début (journée entière)"
-
-#: functions/cpts.php
-msgid "End date"
-msgstr "Date de fin"
-
-#: functions/cpts.php
-msgid "Event location"
-msgstr "Lieu de l'évènement"
-
-#: functions/cpts.php
-msgid "Event times"
-msgstr "Horaires de l'évènement"
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Select the event start date. This date is required and must be in \"all day\" format. (slug: %s)"
-msgstr "Sélectionnez la date de début de l'évènement. Cette date est obligatoire et doit être au format \"journée entière\". (slug : %s)"
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Select the event end date. This date is optional and must be in \"all day\" format. (slug: %s)"
-msgstr "Sélectionnez la date de fin de l'évènement. Cette date est facultative et doit être au format \"journée entière\". (slug : %s)"
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Enter the event location. (slug: %s)"
-msgstr "Entrez le lieu de l'évènement. (slug : %s)"
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Enter the event times. (slug: %s)"
-msgstr "Entrez les horaires de l'évènement. (slug : %s)"
-
-#: functions/cpts.php
-msgid "its name must contain at least one letter or digit"
-msgstr "son nom doit contenir au moins une lettre ou un chiffre"
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is longer than 20 characters"
-msgstr "son identifiant « %s » dépasse 20 caractères"
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is already used by another content type"
-msgstr "son identifiant « %s » est déjà utilisé par un autre type de contenu"
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is reserved by WordPress"
-msgstr "son identifiant « %s » est réservé par WordPress"
-
-#. 1: content type name, 2: reason it was refused
-#: functions/cpts.php
-msgid "The type “%1$s” was not saved: %2$s. Choose another name."
-msgstr "Le type « %1$s » n'a pas été enregistré : %2$s. Choisissez un autre nom."
-
-#: functions/cpts.php
-msgid "Custom content types"
-msgstr "Types de contenu personnalisés"
-
-#: functions/cpts.php
-msgid "Start and end dates, location and times (ACF Pro fields)."
-msgstr "Dates de début et de fin, lieu et horaires (champs ACF Pro)."
-
-#: functions/cpts.php
-msgid "Custom types"
-msgstr "Types personnalisés"
-
-#: functions/cpts.php
-msgid "Display name and Dashicons icon (e.g. dashicons-portfolio). Renaming a type changes neither its content nor its URLs."
-msgstr "Nom affiché et icône Dashicons (ex. dashicons-portfolio). Renommer un type ne change ni ses contenus ni ses adresses."
-
-#: functions/cpts.php
-msgid "Enable the Events type or create your own content types."
-msgstr "Activez le type Évènements ou créez vos propres types de contenu."
-
-#: functions/cpts.php
-msgid "Enable the Events type"
-msgstr "Activer le type Évènements"
-
-#: functions/cpts.php
-msgid "Type name"
-msgstr "Nom du type"
-
-#: functions/cpts.php
-msgid "Dashicons icon"
-msgstr "Icône Dashicons"
-
-#: functions/cpts.php
-msgid "Delete"
-msgstr "Supprimer"
-
-#: functions/cpts.php
-msgid "+ Add a type"
-msgstr "+ Ajouter un type"
-
 #: functions/tools.php functions/uninstall-admin.php
 msgid "Access denied"
 msgstr "Accès refusé"
@@ -1599,6 +1437,10 @@ msgid "Local SEO, 404 page and maintenance mode"
 msgstr "SEO local, page 404 et mode maintenance"
 
 #: functions/admin-ui.php
+msgid "Content types: ready-made Events type and custom post types"
+msgstr "Types de contenu : type Évènements prêt à l'emploi et types personnalisés"
+
+#: functions/admin-ui.php
 msgid "AI assistant for meta descriptions and ALT text"
 msgstr "Assistant IA pour les méta-descriptions et les textes ALT"
 
@@ -1629,5 +1471,5 @@ msgstr "Cookies et RGPD (Tarteaucitron), balises meta SEO, protection de la conn
 
 #: functions/admin-ui.php
 #. translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version
-msgid "Redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to apply your redirects again: they are kept in the meantime."
-msgstr "Les redirections font désormais partie d'Optimizr Pro %1$s (version %2$s installée). Mettez à jour Optimizr Pro pour qu'elles s'appliquent de nouveau : elles sont conservées en attendant."
+msgid "Content types and redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to use them again: your content types, their content and your redirects are kept in the meantime."
+msgstr "Les types de contenu et les redirections font désormais partie d'Optimizr Pro %1$s (version %2$s installée). Mettez à jour Optimizr Pro pour les utiliser de nouveau : vos types de contenu, leurs contenus et vos redirections sont conservés en attendant."

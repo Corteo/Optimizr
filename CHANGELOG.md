@@ -6,6 +6,17 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.0.0] - 2026-10-14
+
+### Retiré
+- **Module Types de contenu** (type « Évènements » prêt à l'emploi et types personnalisés créés depuis l'administration) : il passe dans Optimizr Pro 1.3.0, qui n'a plus besoin d'ACF Pro pour les champs des évènements. Optimizr ne contient plus `functions/cpts.php` ni ses fonctions `haptic_*` (enregistrement des types, réglages, champs ACF).
+- ACF Pro n'est plus mentionné dans les prérequis.
+
+### Modifié
+- Les types de contenu déjà créés sont conservés (options `haptic_custom_cpts` et `haptic_options_settings`, état activé ou non du module `cpts`), ainsi que leurs contenus : Optimizr Pro 1.3.0 les reprend tels quels, avec les mêmes identifiants et adresses. Sans Optimizr Pro, ces types ne sont plus enregistrés et leurs contenus ne sont plus accessibles, sans être effacés.
+- Version minimale d'Optimizr Pro (`HAPTIC_OPTIMIZR_PRO_MIN_VERSION`) portée à 1.3.0 : un Optimizr Pro plus ancien affiche un avertissement demandant sa mise à jour. La mise en pause des redirections reste limitée à Optimizr Pro antérieur à 1.2.0.
+- Onglet Contenu : il ne contient plus que le module Images à la une, et Optimizr Pro y ajoute les types de contenu. La liste des fonctionnalités Pro du tableau de bord mentionne les types de contenu.
+
 ## [6.0.1] - 2026-10-13
 
 ### Retiré
