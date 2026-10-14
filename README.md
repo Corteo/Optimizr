@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.0.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.1.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -43,8 +43,9 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 Toutes les protections sont désactivées par défaut et s'activent une à une.
 - **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php.
 - **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche, proxys de confiance et Cloudflare), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
-- Journal des verrouillages et alertes (30 jours).
-- *Optimizr Pro :* discrétion, fonctions inutilisées désactivées, en-têtes de sécurité, bilan de l'environnement.
+- **Double authentification** : après le mot de passe, un code à 6 chiffres donné par une application d'authentification (Google Authenticator, Microsoft Authenticator, 1Password…). Codes TOTP calculés par le plugin, sans service externe ; QR code dessiné dans le navigateur (bibliothèque qrcode-generator, MIT, dans `assets/qrcode-generator/`). Chacun l'active depuis son profil, avec 10 codes de secours à usage unique ; elle peut être imposée à certains rôles (leur administration se limite au profil tant qu'elle n'est pas en place). Un administrateur peut la réinitialiser depuis le profil d'un compte. La saisie du code se fait sur l'adresse de connexion, personnalisée ou non ; les codes faux comptent dans la limitation des tentatives ; XML-RPC avec le mot de passe d'un compte protégé est refusé. En cas de blocage : `define('OPTIMIZR_DISABLE_2FA', true);` dans wp-config.php.
+- Journal des verrouillages, alertes et évènements de double authentification (30 jours).
+- *Optimizr Pro :* passkeys (connexion sans mot de passe, qui dispense du code), discrétion, fonctions inutilisées désactivées, en-têtes de sécurité, bilan de l'environnement.
 
 ### Outils
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
@@ -106,6 +107,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_seo_post_types` | filtre | Types de contenu qui ont la metabox SEO. |
 | `haptic_seo_metabox_after_description` | action | Contenu ajouté sous le champ description de la metabox SEO. |
 | `haptic_sec_protections` / `haptic_sec_environment_checks` | filtre | Protections et vérifications du bilan de l'onglet Sécurité. |
+| `haptic_sec_login` | action | Connexion terminée (après le code de double authentification s'il y en a un), à la place de `wp_login`. |
+| `haptic_sec_two_factor_bypass` | filtre | Renvoyer `true` pour une connexion qui vaut déjà deux facteurs (passkey d'Optimizr Pro) : pas de code demandé. |
+| `haptic_sec_log_labels` | filtre | Libellés des types d'évènement du journal de sécurité. |
 | `haptic_onboarding_steps` | filtre | Étapes de l'assistant (une étape peut fournir sa fonction `render`). |
 | `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement. |
 | `haptic_onboarding_seo_fields`, `haptic_onboarding_step_after`, `haptic_onboarding_print_scripts`, `haptic_onboarding_illustration` | action | Contenu ajouté aux étapes de l'assistant. |
@@ -132,6 +136,8 @@ functions/tools.php      Onglet Outils : export et import des réglages
 functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
+functions/security-2fa*.php  Double authentification : connexion (security-2fa.php), profil (security-2fa-profile.php, js/optimizr-2fa.js)
+assets/qrcode-generator/ Bibliothèque de QR code (MIT) pour la mise en place de la double authentification
 css/, js/                Interface de la page d'options
 ```
 

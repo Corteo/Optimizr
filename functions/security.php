@@ -13,6 +13,8 @@ if (!defined('ABSPATH')) {
  * Adresse de connexion personnalisée : en cas de blocage, ajouter dans wp-config.php
  *     define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);
  * pour revenir à wp-login.php.
+ *
+ * Double authentification : functions/security-2fa.php (connexion) et functions/security-2fa-profile.php (profil).
  */
 
 /* ---------- Outils ---------- */
@@ -356,23 +358,45 @@ function haptic_sec_fail_key($ip)
     return 'haptic_sec_fail_' . md5($ip);
 }
 
+/** Minutes de verrouillage restantes pour l'adresse du visiteur (0 si elle n'est pas verrouillée ou si la limitation est inactive). */
+function haptic_sec_lockout_minutes()
+{
+    if (!haptic_sec_option('limit_login')) {
+        return 0;
+    }
+    $ip = haptic_sec_client_ip();
+    if (in_array($ip, haptic_sec_whitelist(), true)) {
+        return 0;
+    }
+    $until = (int) get_transient(haptic_sec_lock_key($ip));
+    return $until > time() ? max(1, (int) ceil(($until - time()) / 60)) : 0;
+}
+
+function haptic_sec_lockout_error($minutes)
+{
+    return new WP_Error('haptic_sec_locked', sprintf(
+        /* translators: %s: number of minutes */
+        _n('Too many login attempts. Try again in %s minute.', 'Too many login attempts. Try again in %s minutes.', $minutes, 'optimizr'),
+        number_format_i18n($minutes)
+    ));
+}
+
+/*
+ * Connexion terminée : action haptic_sec_login, déclenchée à la place de wp_login pour les protections du module.
+ * Pour un compte protégé par la double authentification, elle ne l'est qu'une fois le code validé (functions/security-2fa.php).
+ */
+add_action('wp_login', function ($login, $user) {
+    if (function_exists('haptic_2fa_challenge_needed') && haptic_2fa_challenge_needed($user)) {
+        return;
+    }
+    do_action('haptic_sec_login', $user);
+}, 10, 2);
+
 if (haptic_sec_option('limit_login')) {
     // Après toutes les vérifications d'identifiants : une adresse verrouillée est refusée, même avec le bon mot de passe
     add_filter('authenticate', function ($user) {
-        $ip = haptic_sec_client_ip();
-        if (in_array($ip, haptic_sec_whitelist(), true)) {
-            return $user;
-        }
-        $until = (int) get_transient(haptic_sec_lock_key($ip));
-        if ($until > time()) {
-            $minutes = max(1, (int) ceil(($until - time()) / 60));
-            return new WP_Error('haptic_sec_locked', sprintf(
-                /* translators: %s: number of minutes */
-                _n('Too many login attempts. Try again in %s minute.', 'Too many login attempts. Try again in %s minutes.', $minutes, 'optimizr'),
-                number_format_i18n($minutes)
-            ));
-        }
-        return $user;
+        $minutes = haptic_sec_lockout_minutes();
+        return $minutes ? haptic_sec_lockout_error($minutes) : $user;
     }, 99);
 
     add_action('wp_login_failed', function ($username) {
@@ -396,7 +420,8 @@ if (haptic_sec_option('limit_login')) {
         }
     });
 
-    add_action('wp_login', function () {
+    // Pas dès le mot de passe quand un code de double authentification est encore attendu : les échecs de code comptent aussi
+    add_action('haptic_sec_login', function () {
         delete_transient(haptic_sec_fail_key(haptic_sec_client_ip()));
     });
 }
@@ -413,7 +438,7 @@ if (haptic_sec_option('generic_errors')) {
 
 // Alerte lors d'une connexion administrateur depuis une adresse IP inconnue
 if (haptic_sec_option('login_alert')) {
-    add_action('wp_login', function ($login, $user) {
+    add_action('haptic_sec_login', function ($user) {
         if (!user_can($user, 'manage_options')) {
             return;
         }
@@ -446,5 +471,5 @@ if (haptic_sec_option('login_alert')) {
         }
         array_unshift($known, $hash);
         update_user_meta($user->ID, 'haptic_sec_known_ips', array_slice(array_values(array_filter($known)), 0, 20));
-    }, 10, 2);
+    });
 }
