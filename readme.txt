@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 6.0.1
+Stable tag: 7.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,7 +32,7 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 
 = Also included =
 
-* Custom post types (including a ready-made "Events" type using ACF Pro fields, if ACF Pro is installed), featured image tools, email settings.
+* Featured image tools, email settings.
 * Settings export and import, setup wizard, choice of what is deleted when the plugin is uninstalled.
 
 == External services ==
@@ -49,15 +49,16 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 
 == Frequently Asked Questions ==
 
-= Does the plugin need ACF Pro? =
-
-Only for the fields of the ready-made "Events" post type. Everything else works without it.
-
 = What is deleted when I uninstall the plugin? =
 
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.0.0 =
+* Removed: the Content types module (ready-made "Events" type and custom post types). It is now part of Optimizr Pro 1.3.0, without ACF Pro.
+* Existing content types and their content stay in the database: Optimizr Pro 1.3.0 picks them up as they are. Without Optimizr Pro, they are no longer registered.
+* An older Optimizr Pro (before 1.3.0) shows a notice asking for its update.
 
 = 6.0.1 =
 * Removed unused legacy admin hooks (`haptic_before_admin_init`, `haptic_add_options_tabs`, `haptic_after_admin_init`).

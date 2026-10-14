@@ -81,7 +81,7 @@
             submitting = true;
         });
 
-        // Les éditeurs personnalisés (motifs SEO, lignes CPT) ne suivent pas form.reset() : on recharge
+        // Les éditeurs personnalisés (motifs SEO, lignes des types de contenu d'Optimizr Pro) ne suivent pas form.reset() : on recharge
         reset.addEventListener('click', function (e) {
             e.preventDefault();
             submitting = true;

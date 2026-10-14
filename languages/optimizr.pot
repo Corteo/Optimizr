@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 5.0.0\n"
+"Project-Id-Version: Haptic Optimizr 7.0.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,10 +18,6 @@ msgstr ""
 
 #: functions/admin-ui.php functions/thumbnails.php
 msgid "Content types"
-msgstr ""
-
-#: functions/admin-ui.php
-msgid "Ready-to-use Events CPT and custom post types created from the admin."
 msgstr ""
 
 #: functions/admin-ui.php functions/thumbnails.php
@@ -92,7 +88,7 @@ msgid "Visitor consent, with third-party services loaded only once allowed."
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Custom post types and cover images."
+msgid "Content types that accept a cover image."
 msgstr ""
 
 #: functions/admin-ui.php
@@ -820,164 +816,6 @@ msgstr ""
 msgid "Manage cookies"
 msgstr ""
 
-#: functions/cpts.php
-msgctxt "Post Type General Name"
-msgid "Events"
-msgstr ""
-
-#: functions/cpts.php
-msgctxt "Post Type Singular Name"
-msgid "Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Events"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Add New"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Add New Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "New Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Edit Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "View Event"
-msgstr ""
-
-#: functions/cpts.php
-msgid "All Events"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Search Events"
-msgstr ""
-
-#: functions/cpts.php
-msgid "No events found"
-msgstr ""
-
-#: functions/cpts.php
-msgid "No events found in Trash"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Additional fields for Events"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Start date (all day)"
-msgstr ""
-
-#: functions/cpts.php
-msgid "End date"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Event location"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Event times"
-msgstr ""
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Select the event start date. This date is required and must be in \"all day\" format. (slug: %s)"
-msgstr ""
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Select the event end date. This date is optional and must be in \"all day\" format. (slug: %s)"
-msgstr ""
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Enter the event location. (slug: %s)"
-msgstr ""
-
-#. %s: field name (slug)
-#: functions/cpts.php
-msgid "Enter the event times. (slug: %s)"
-msgstr ""
-
-#: functions/cpts.php
-msgid "its name must contain at least one letter or digit"
-msgstr ""
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is longer than 20 characters"
-msgstr ""
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is already used by another content type"
-msgstr ""
-
-#. %s: post type key
-#: functions/cpts.php
-msgid "its key “%s” is reserved by WordPress"
-msgstr ""
-
-#. 1: content type name, 2: reason it was refused
-#: functions/cpts.php
-msgid "The type “%1$s” was not saved: %2$s. Choose another name."
-msgstr ""
-
-#: functions/cpts.php
-msgid "Custom content types"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Start and end dates, location and times (ACF Pro fields)."
-msgstr ""
-
-#: functions/cpts.php
-msgid "Custom types"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Display name and Dashicons icon (e.g. dashicons-portfolio). Renaming a type changes neither its content nor its URLs."
-msgstr ""
-
-#: functions/cpts.php
-msgid "Enable the Events type or create your own content types."
-msgstr ""
-
-#: functions/cpts.php
-msgid "Enable the Events type"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Type name"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Dashicons icon"
-msgstr ""
-
-#: functions/cpts.php
-msgid "Delete"
-msgstr ""
-
-#: functions/cpts.php
-msgid "+ Add a type"
-msgstr ""
-
 #: functions/tools.php functions/uninstall-admin.php
 msgid "Access denied"
 msgstr ""
@@ -1584,6 +1422,10 @@ msgid "Local SEO, 404 page and maintenance mode"
 msgstr ""
 
 #: functions/admin-ui.php
+msgid "Content types: ready-made Events type and custom post types"
+msgstr ""
+
+#: functions/admin-ui.php
 msgid "AI assistant for meta descriptions and ALT text"
 msgstr ""
 
@@ -1614,5 +1456,5 @@ msgstr ""
 
 #. translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version
 #: functions/admin-ui.php
-msgid "Redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to apply your redirects again: they are kept in the meantime."
+msgid "Content types and redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to use them again: your content types, their content and your redirects are kept in the meantime."
 msgstr ""

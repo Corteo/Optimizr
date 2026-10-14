@@ -1,12 +1,12 @@
 # Haptic Optimizr
 
-Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, types de contenu personnalisés et quelques outils de maintenance.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images à la une et quelques outils de maintenance.
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
-Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
+Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 5.0.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.0.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -29,8 +29,9 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - Optimizr Pro antérieur à 1.2.0 : ses redirections sont en pause et un avertissement demande sa mise à jour.
 
 ### Types de contenu
-- Type « Évènements » prêt à l'emploi : date de début, date de fin, lieu, horaires (champs [ACF Pro](https://www.advancedcustomfields.com/pro/)).
-- Création de types de contenu personnalisés depuis l'administration (nom et icône Dashicons).
+- *Optimizr Pro uniquement* (depuis Optimizr 7.0.0) : type « Évènements » prêt à l'emploi (date de début, date de fin, lieu, horaires, sans ACF) et création de types de contenu personnalisés depuis l'administration (nom et icône Dashicons).
+- Les types créés avec Optimizr 6.x et leurs contenus restent dans la base (options `haptic_custom_cpts` et `haptic_options_settings`, articles) : Optimizr Pro 1.3.0 ou plus récent les reprend tels quels, avec les mêmes adresses. Sans Optimizr Pro, ces types ne sont plus enregistrés : leurs contenus ne sont plus visibles mais ne sont pas effacés.
+- Optimizr Pro antérieur à 1.3.0 : un avertissement demande sa mise à jour.
 
 ### Images à la une
 - Choix des types de contenu qui proposent une image de couverture.
@@ -53,7 +54,6 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 - WordPress 6.2 ou plus récent
 - PHP 7.4 ou plus récent
-- ACF Pro, uniquement pour les champs du type « Évènements »
 
 ## Installation
 
@@ -115,7 +115,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
 | `haptic_before_enqueue_admin_scripts` / `haptic_after_…` | action | Charger des scripts côté administration. |
 
-`haptic_is_pro()` indique si Optimizr Pro est actif, `haptic_pro_is_outdated()` s'il est antérieur à la version minimale `HAPTIC_OPTIMIZR_PRO_MIN_VERSION` (1.2.0). Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
+`haptic_is_pro()` indique si Optimizr Pro est actif, `haptic_pro_is_outdated()` s'il est antérieur à la version minimale `HAPTIC_OPTIMIZR_PRO_MIN_VERSION` (1.3.0). Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
 
 Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant `haptic_settings_group($onglet)` pour `register_setting()` et `haptic_settings_page($onglet)` pour `add_settings_section()` et `add_settings_field()`. Les sections sont affichées sous forme de cartes ; l'argument `toggle` d'une section place un interrupteur dans son en-tête.
 
@@ -129,7 +129,6 @@ functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
-functions/cpts.php       Module Types de contenu
 functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
