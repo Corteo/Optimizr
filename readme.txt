@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.1.0
+Stable tag: 7.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,7 +29,8 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 = Security =
 
 * Custom login URL, login attempt limiting (IP whitelist, trusted proxies and Cloudflare), neutral login error messages, email alert on administrator login from a new IP address.
-* Two-factor authentication with an authenticator app (TOTP codes computed by the plugin, no external service), backup codes, required for chosen roles.
+* Two-factor authentication with an authenticator app (TOTP codes computed by the plugin, no external service) or a code sent by email, backup codes, required for chosen roles.
+* "Secure your account" screen right after login: users set up two-factor authentication in a few seconds.
 
 = Also included =
 
@@ -55,6 +56,11 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.2.0 =
+* New: the code can be sent by email instead of an authenticator app (setting "Code by email", on by default). Valid for 10 minutes, up to 3 emails per login, always sent to the address verified at setup. A setting can require the app for the roles where two-factor authentication is mandatory.
+* New: "Secure your account" screen. At the first login after two-factor authentication is enabled, users are offered to set it up in a few seconds before reaching the dashboard. "Later" postpones it by a week; required roles can only set it up.
+* Security: new backup codes, changing the method and disabling two-factor authentication now require a code. At most 5 wrong codes per account every 15 minutes (login and profile together) and 10 emailed codes per hour. An administrator can no longer reset their own two-factor authentication without a code. Application passwords of a protected account can only be created within 10 minutes of logging in.
 
 = 7.1.0 =
 * New: two-factor authentication. After the password, a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…). Set up from each user's profile with a QR code, with 10 single-use backup codes. Can be required for chosen roles.

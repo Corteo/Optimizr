@@ -1545,10 +1545,6 @@ msgid "Generate new backup codes"
 msgstr "Générer de nouveaux codes de secours"
 
 #: functions/security-2fa-profile.php
-msgid "To disable it, enter a code from the app or a backup code:"
-msgstr "Pour la désactiver, saisissez un code de l'application ou un code de secours :"
-
-#: functions/security-2fa-profile.php
 msgid "Disable"
 msgstr "Désactiver"
 
@@ -1567,14 +1563,6 @@ msgstr "Si cette personne a perdu son téléphone et ses codes de secours : elle
 #: functions/security-2fa-profile.php
 msgid "Not enabled"
 msgstr "Non activée"
-
-#: functions/security-2fa-profile.php
-msgid "After your password, a 6-digit code from an app on your phone will be asked (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Someone who finds your password still cannot log in."
-msgstr "Après votre mot de passe, un code à 6 chiffres donné par une application de votre téléphone sera demandé (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Quelqu'un qui découvre votre mot de passe ne peut toujours pas se connecter."
-
-#: functions/security-2fa-profile.php
-msgid "Set up"
-msgstr "Mettre en place"
 
 #: functions/security-2fa-profile.php
 msgid "1. In your authentication app, add an account and scan this QR code:"
@@ -1603,10 +1591,6 @@ msgstr "Obligatoire pour ce rôle : tant qu'elle n'est pas en place, l'administr
 #: functions/security-2fa-profile.php js/optimizr-2fa.js
 msgid "The request failed. Reload the page and try again."
 msgstr "La demande a échoué. Rechargez la page et réessayez."
-
-#: functions/security-2fa-profile.php js/optimizr-2fa.js
-msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone. They will not be shown again."
-msgstr "Vos codes de secours. Gardez-les en lieu sûr (gestionnaire de mots de passe, version imprimée) : chacun permet de se connecter une fois sans votre téléphone. Ils ne seront plus affichés."
 
 #: functions/security-2fa-profile.php js/optimizr-2fa.js
 msgid "Download"
@@ -1671,3 +1655,231 @@ msgstr "Pas encore activée sur votre compte : <a href=\"%s\">mettez-la en place
 #: functions/security-admin.php
 msgid "Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
 msgstr "Téléphone perdu : un code de secours remplace le code de l'application, et un administrateur peut réinitialiser le compte depuis son profil. Si plus aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
+
+#: functions/security-2fa.php
+msgid "Your code to log in as \"%1$s\": %2$s\n\nIt is valid for %3$s minutes.\n\nIf you have not just tried to log in, someone knows your password: change it."
+msgstr "Votre code pour vous connecter en tant que « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous n'essayez pas de vous connecter en ce moment, quelqu'un connaît votre mot de passe : changez-le."
+
+#: functions/security-2fa.php
+msgid "Your code to confirm two-factor authentication for the account \"%1$s\": %2$s\n\nIt is valid for %3$s minutes.\n\nIf you did not request it, you can ignore this email."
+msgstr "Votre code pour confirmer la double authentification du compte « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous ne l'avez pas demandé, vous pouvez ignorer cet e-mail."
+
+#: functions/security-2fa.php
+msgid "[%s] Your verification code"
+msgstr "[%s] Votre code de vérification"
+
+#: functions/security-2fa.php
+msgid "No more codes can be sent for this login. Use a backup code, or log in again later."
+msgstr "Plus aucun code ne peut être envoyé pour cette connexion. Utilisez un code de secours, ou reconnectez-vous plus tard."
+
+#: functions/security-2fa.php
+msgid "Wait a few seconds before asking for a new code."
+msgstr "Patientez quelques secondes avant de demander un nouveau code."
+
+#: functions/security-2fa.php
+msgid "A new code has been sent. Only the latest one works."
+msgstr "Un nouveau code a été envoyé. Seul le dernier fonctionne."
+
+#: functions/security-2fa.php
+msgid "Invalid code. Check that you are using the latest email received."
+msgstr "Code invalide. Vérifiez que vous utilisez le dernier e-mail reçu."
+
+#: functions/security-2fa.php
+msgid "The site could not send the email. Use one of your backup codes, or contact the administrator."
+msgstr "Le site n'a pas pu envoyer l'e-mail. Utilisez l'un de vos codes de secours, ou contactez l'administrateur."
+
+#: functions/security-2fa.php
+msgid "Enter the 6-digit code sent to %s."
+msgstr "Saisissez le code à 6 chiffres envoyé à %s."
+
+#: functions/security-2fa.php
+msgid "No email? Check your spam folder, ask for a new code, or enter one of your backup codes."
+msgstr "Pas d'e-mail ? Regardez dans les indésirables, demandez un nouveau code, ou saisissez l'un de vos codes de secours."
+
+#: functions/security-2fa.php
+msgid "Send a new code"
+msgstr "Envoyer un nouveau code"
+
+#: functions/security-2fa-profile.php
+msgid "Second step"
+msgstr "Seconde étape"
+
+#: functions/security-2fa-profile.php
+msgid "code sent by email to %s"
+msgstr "code envoyé par e-mail à %s"
+
+#: functions/security-2fa-profile.php
+msgid "authentication app"
+msgstr "application d'authentification"
+
+#: functions/security-2fa-profile.php
+msgid "Choose the new method. The current one keeps working until the new one is enabled."
+msgstr "Choisissez la nouvelle méthode. L'actuelle reste valable jusqu'à l'activation de la nouvelle."
+
+#: functions/security-2fa-profile.php
+msgid "To change these settings, enter a code received by email, or a backup code:"
+msgstr "Pour modifier ces réglages, saisissez un code reçu par e-mail, ou un code de secours :"
+
+#: functions/security-2fa-profile.php
+msgid "To change these settings, enter a code from the app, or a backup code:"
+msgstr "Pour modifier ces réglages, saisissez un code de l'application, ou un code de secours :"
+
+#: functions/security-2fa-profile.php
+msgid "Email me a code"
+msgstr "M'envoyer un code"
+
+#: functions/security-2fa-profile.php
+msgid "Change method"
+msgstr "Changer de méthode"
+
+#: functions/security-2fa-profile.php
+msgid "After your password, a 6-digit code will be asked. Someone who finds your password still cannot log in."
+msgstr "Après votre mot de passe, un code à 6 chiffres sera demandé. Quelqu'un qui trouve votre mot de passe ne peut toujours pas se connecter."
+
+#: functions/security-2fa-profile.php
+msgid "A code from an app on your phone: Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden… The most secure."
+msgstr "Un code donné par une application sur votre téléphone : Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden… Le plus sûr."
+
+#: functions/security-2fa-profile.php
+msgid "Email"
+msgstr "E-mail"
+
+#: functions/security-2fa-profile.php
+msgid "A code sent to your email address at each login. Nothing to install, but only as safe as your mailbox."
+msgstr "Un code envoyé à votre adresse e-mail à chaque connexion. Rien à installer, mais aussi sûr que votre boîte mail, pas plus."
+
+#: functions/security-2fa-profile.php
+msgid "Choose another method"
+msgstr "Choisir une autre méthode"
+
+#: functions/security-2fa-profile.php
+msgid "1. Receive a code at %s:"
+msgstr "1. Recevez un code à %s :"
+
+#: functions/security-2fa-profile.php
+msgid "Send the code"
+msgstr "Envoyer le code"
+
+#: functions/security-2fa-profile.php
+msgid "2. Enter the code received:"
+msgstr "2. Saisissez le code reçu :"
+
+#: functions/security-2fa-profile.php
+msgid "Codes will always be sent to this address, even if the account email changes later."
+msgstr "Les codes seront toujours envoyés à cette adresse, même si l'e-mail du compte change plus tard."
+
+#: functions/security-2fa-profile.php
+msgid "Too many wrong attempts. Try again in 15 minutes."
+msgstr "Trop d'essais erronés. Réessayez dans 15 minutes."
+
+#: functions/security-2fa-profile.php
+msgid "Invalid code."
+msgstr "Code invalide."
+
+#: functions/security-2fa-profile.php
+msgid "The site could not send the email. Check its email settings (SMTP), or use an authentication app."
+msgstr "Le site n'a pas pu envoyer l'e-mail. Vérifiez ses réglages d'envoi (SMTP), ou utilisez une application d'authentification."
+
+#: functions/security-2fa-profile.php
+msgid "Code sent to %s. It is valid for 10 minutes."
+msgstr "Code envoyé à %s. Il est valable 10 minutes."
+
+#: functions/security-2fa-profile.php
+msgid "Invalid or expired code. Ask for a new code and use the latest email received."
+msgstr "Code invalide ou expiré. Demandez un nouveau code et utilisez le dernier e-mail reçu."
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: method changed to %2$s"
+msgstr "Compte %1$s : méthode changée pour %2$s"
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: enabled (%2$s)"
+msgstr "Compte %1$s : activée (%2$s)"
+
+#: functions/security-2fa-profile.php
+msgid "email"
+msgstr "e-mail"
+
+#: functions/security-2fa-profile.php
+msgid "Incorrect password."
+msgstr "Mot de passe incorrect."
+
+#: functions/security-2fa-profile.php
+msgid "For security, application passwords of an account protected by two-factor authentication can only be created within 10 minutes of logging in. Log out, log in again, then create it."
+msgstr "Par sécurité, les mots de passe d'application d'un compte protégé par la double authentification ne peuvent être créés que dans les 10 minutes qui suivent la connexion. Déconnectez-vous, reconnectez-vous, puis créez-le."
+
+#: functions/security-welcome.php
+msgid "Secure your account"
+msgstr "Sécurisez votre compte"
+
+#: functions/security-welcome.php
+msgid "%s, your role requires a second step after the password. Set it up now: it only takes a minute."
+msgstr "%s, votre rôle demande une seconde étape après le mot de passe. Mettez-la en place maintenant : c'est l'affaire d'une minute."
+
+#: functions/security-welcome.php
+msgid "%s, protect your account in less than a minute: even with your password, nobody else will be able to log in."
+msgstr "%s, protégez votre compte en moins d'une minute : même avec votre mot de passe, personne d'autre ne pourra se connecter."
+
+#: functions/security-welcome.php
+msgid "Later"
+msgstr "Plus tard"
+
+#: functions/security-welcome.php
+msgid "Required"
+msgstr "Obligatoire"
+
+#: functions/security-welcome.php
+msgid "After your password, a 6-digit code is asked. Choose how to receive it:"
+msgstr "Après votre mot de passe, un code à 6 chiffres est demandé. Choisissez comment le recevoir :"
+
+#: functions/security-admin.php
+msgid "After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…) or sent by email. Computed by the site itself, without any external service. At their next login, users are offered to set it up in a few seconds."
+msgstr "Après le mot de passe, un code à 6 chiffres donné par une application sur le téléphone (Google Authenticator, Microsoft Authenticator, 1Password…) ou envoyé par e-mail. Calculé par le site lui-même, sans service externe. À leur prochaine connexion, les utilisateurs se voient proposer de la mettre en place en quelques secondes."
+
+#: functions/security-admin.php
+msgid "Code by email"
+msgstr "Code par e-mail"
+
+#: functions/security-admin.php
+msgid "Users can receive the code by email instead of using an app. Less secure: whoever accesses the mailbox can also reset the password."
+msgstr "Les utilisateurs peuvent recevoir le code par e-mail plutôt que d'utiliser une application. Moins sûr : qui accède à la boîte mail peut aussi réinitialiser le mot de passe."
+
+#: functions/security-admin.php
+msgid "App for required roles"
+msgstr "Application pour les rôles obligatoires"
+
+#: functions/security-admin.php
+msgid "For the roles above, the code by email is not enough: an authentication app is required. Accounts that use email are asked to switch at their next login."
+msgstr "Pour les rôles ci-dessus, le code par e-mail ne suffit pas : une application d'authentification est exigée. Les comptes qui utilisent l'e-mail sont invités à changer à leur prochaine connexion."
+
+#: functions/security-admin.php
+msgid "The code only arrives if the site sends its emails reliably: an SMTP extension is recommended. Backup codes remain available if an email does not arrive."
+msgstr "Le code n'arrive que si le site envoie ses e-mails de façon fiable : une extension SMTP est conseillée. Les codes de secours restent possibles si un e-mail n'arrive pas."
+
+#: functions/security-admin.php
+msgid "Lost phone or email not received: a backup code replaces the code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
+msgstr "Téléphone perdu ou e-mail non reçu : un code de secours remplace le code, et un administrateur peut réinitialiser le compte depuis son profil. Si aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
+
+#: js/optimizr-2fa.js
+msgid "Two-factor authentication is enabled."
+msgstr "La double authentification est activée."
+
+#: js/optimizr-2fa.js
+msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone or your email. They will not be shown again."
+msgstr "Vos codes de secours. Gardez-les en lieu sûr (gestionnaire de mots de passe, version imprimée) : chacun permet de se connecter une fois sans votre téléphone ni votre e-mail. Ils ne seront plus affichés."
+
+#: functions/security-2fa.php
+msgid "Too many wrong codes for this account. Try again in 15 minutes."
+msgstr "Trop de codes erronés pour ce compte. Réessayez dans 15 minutes."
+
+#: functions/security-2fa.php
+msgid "Too many codes have been sent in the last hour. Use one of your backup codes, or try again later."
+msgstr "Trop de codes ont été envoyés au cours de la dernière heure. Utilisez l'un de vos codes de secours, ou réessayez plus tard."
+
+#: functions/security-2fa-profile.php
+msgid "Too many codes have been sent in the last hour. Try again later."
+msgstr "Trop de codes ont été envoyés au cours de la dernière heure. Réessayez plus tard."
+
+#: functions/security-2fa-profile.php
+msgid "Cannot Authorize Application"
+msgstr "Impossible d'autoriser l'application"

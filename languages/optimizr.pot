@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 7.0.0\n"
+"Project-Id-Version: Haptic Optimizr 7.2.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1530,10 +1530,6 @@ msgid "Generate new backup codes"
 msgstr ""
 
 #: functions/security-2fa-profile.php
-msgid "To disable it, enter a code from the app or a backup code:"
-msgstr ""
-
-#: functions/security-2fa-profile.php
 msgid "Disable"
 msgstr ""
 
@@ -1551,14 +1547,6 @@ msgstr ""
 
 #: functions/security-2fa-profile.php
 msgid "Not enabled"
-msgstr ""
-
-#: functions/security-2fa-profile.php
-msgid "After your password, a 6-digit code from an app on your phone will be asked (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Someone who finds your password still cannot log in."
-msgstr ""
-
-#: functions/security-2fa-profile.php
-msgid "Set up"
 msgstr ""
 
 #: functions/security-2fa-profile.php
@@ -1587,10 +1575,6 @@ msgstr ""
 
 #: functions/security-2fa-profile.php js/optimizr-2fa.js
 msgid "The request failed. Reload the page and try again."
-msgstr ""
-
-#: functions/security-2fa-profile.php js/optimizr-2fa.js
-msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone. They will not be shown again."
 msgstr ""
 
 #: functions/security-2fa-profile.php js/optimizr-2fa.js
@@ -1655,4 +1639,242 @@ msgstr ""
 
 #: functions/security-admin.php
 msgid "Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid ""
+"Your code to log in as \"%1$s\": %2$s\n"
+"\n"
+"It is valid for %3$s minutes.\n"
+"\n"
+"If you have not just tried to log in, someone knows your password: change it."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid ""
+"Your code to confirm two-factor authentication for the account \"%1$s\": %2$s\n"
+"\n"
+"It is valid for %3$s minutes.\n"
+"\n"
+"If you did not request it, you can ignore this email."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "[%s] Your verification code"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "No more codes can be sent for this login. Use a backup code, or log in again later."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Wait a few seconds before asking for a new code."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "A new code has been sent. Only the latest one works."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Invalid code. Check that you are using the latest email received."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "The site could not send the email. Use one of your backup codes, or contact the administrator."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Enter the 6-digit code sent to %s."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "No email? Check your spam folder, ask for a new code, or enter one of your backup codes."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Send a new code"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Second step"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "code sent by email to %s"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "authentication app"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Choose the new method. The current one keeps working until the new one is enabled."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "To change these settings, enter a code received by email, or a backup code:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "To change these settings, enter a code from the app, or a backup code:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Email me a code"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Change method"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "After your password, a 6-digit code will be asked. Someone who finds your password still cannot log in."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "A code from an app on your phone: Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden… The most secure."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Email"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "A code sent to your email address at each login. Nothing to install, but only as safe as your mailbox."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Choose another method"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "1. Receive a code at %s:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Send the code"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "2. Enter the code received:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Codes will always be sent to this address, even if the account email changes later."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Too many wrong attempts. Try again in 15 minutes."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Invalid code."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "The site could not send the email. Check its email settings (SMTP), or use an authentication app."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Code sent to %s. It is valid for 10 minutes."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Invalid or expired code. Ask for a new code and use the latest email received."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: method changed to %2$s"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: enabled (%2$s)"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "email"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Incorrect password."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "For security, application passwords of an account protected by two-factor authentication can only be created within 10 minutes of logging in. Log out, log in again, then create it."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "Secure your account"
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "%s, your role requires a second step after the password. Set it up now: it only takes a minute."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "%s, protect your account in less than a minute: even with your password, nobody else will be able to log in."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "Later"
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "Required"
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "After your password, a 6-digit code is asked. Choose how to receive it:"
+msgstr ""
+
+#: functions/security-admin.php
+msgid "After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…) or sent by email. Computed by the site itself, without any external service. At their next login, users are offered to set it up in a few seconds."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Code by email"
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Users can receive the code by email instead of using an app. Less secure: whoever accesses the mailbox can also reset the password."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "App for required roles"
+msgstr ""
+
+#: functions/security-admin.php
+msgid "For the roles above, the code by email is not enough: an authentication app is required. Accounts that use email are asked to switch at their next login."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "The code only arrives if the site sends its emails reliably: an SMTP extension is recommended. Backup codes remain available if an email does not arrive."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Lost phone or email not received: a backup code replaces the code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
+msgstr ""
+
+#: js/optimizr-2fa.js
+msgid "Two-factor authentication is enabled."
+msgstr ""
+
+#: js/optimizr-2fa.js
+msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone or your email. They will not be shown again."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Too many wrong codes for this account. Try again in 15 minutes."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Too many codes have been sent in the last hour. Use one of your backup codes, or try again later."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Too many codes have been sent in the last hour. Try again later."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Cannot Authorize Application"
 msgstr ""

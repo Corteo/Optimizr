@@ -15,7 +15,7 @@ function haptic_sec_register_settings()
     $group = haptic_settings_group('security');
     $page = haptic_settings_page('security');
 
-    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert', 'two_factor'];
+    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert', 'two_factor', 'two_factor_email', 'two_factor_app_required'];
     foreach ($toggles as $toggle) {
         register_setting($group, 'haptic_sec_' . $toggle, ['sanitize_callback' => 'absint']);
     }
@@ -60,7 +60,7 @@ function haptic_sec_register_settings()
 
     /* Double authentification */
     add_settings_section('haptic_sec_2fa_section', __('Two-factor authentication', 'optimizr'), function () {
-        echo '<p>' . esc_html__('After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…). Computed by the site itself, without any external service.', 'optimizr') . '</p>';
+        echo '<p>' . esc_html__('After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…) or sent by email. Computed by the site itself, without any external service. At their next login, users are offered to set it up in a few seconds.', 'optimizr') . '</p>';
     }, $page);
     add_settings_field('haptic_sec_two_factor', __('Two-factor authentication', 'optimizr'), 'haptic_sec_two_factor_callback', $page, 'haptic_sec_2fa_section', [
         'description' => __('Each user can enable it from their profile.', 'optimizr'),
@@ -68,6 +68,21 @@ function haptic_sec_register_settings()
     add_settings_field('haptic_sec_two_factor_roles', __('Required for', 'optimizr'), 'haptic_sec_two_factor_roles_callback', $page, 'haptic_sec_2fa_section', [
         'description' => __('Users with these roles must set it up: until they do, the dashboard is limited to their profile.', 'optimizr'),
     ]);
+    add_settings_field('haptic_sec_two_factor_email', __('Code by email', 'optimizr'), 'haptic_sec_two_factor_email_callback', $page, 'haptic_sec_2fa_section', [
+        'description' => __('Users can receive the code by email instead of using an app. Less secure: whoever accesses the mailbox can also reset the password.', 'optimizr'),
+    ]);
+    add_settings_field('haptic_sec_two_factor_app_required', __('App for required roles', 'optimizr'), function () {
+        echo wp_kses(haptic_switch_input('haptic_sec_two_factor_app_required', haptic_sec_option('two_factor_app_required'), __('App for required roles', 'optimizr')), haptic_kses_ui());
+    }, $page, 'haptic_sec_2fa_section', [
+        'description' => __('For the roles above, the code by email is not enough: an authentication app is required. Accounts that use email are asked to switch at their next login.', 'optimizr'),
+    ]);
+}
+
+function haptic_sec_two_factor_email_callback()
+{
+    // Activé tant que le réglage n'a jamais été enregistré
+    echo wp_kses(haptic_switch_input('haptic_sec_two_factor_email', haptic_sec_option('two_factor_email', 1), __('Code by email', 'optimizr')), haptic_kses_ui());
+    echo '<p class="optimizr-field__help">' . esc_html__('The code only arrives if the site sends its emails reliably: an SMTP extension is recommended. Backup codes remain available if an email does not arrive.', 'optimizr') . '</p>';
 }
 
 function haptic_sec_two_factor_callback()
@@ -84,7 +99,7 @@ function haptic_sec_two_factor_callback()
                 : sprintf(__('Not enabled on your account yet: <a href="%s">set it up in your profile</a>.', 'optimizr'), esc_url(admin_url('profile.php#optimizr-2fa'))));
         ?></span></div>
     <?php endif; ?>
-    <p class="optimizr-field__help"><?php /* translators: %s: PHP line to add to wp-config.php */ echo wp_kses_post(sprintf(__('Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php.', 'optimizr'), '<code>define(\'OPTIMIZR_DISABLE_2FA\', true);</code>')); ?></p>
+    <p class="optimizr-field__help"><?php /* translators: %s: PHP line to add to wp-config.php */ echo wp_kses_post(sprintf(__('Lost phone or email not received: a backup code replaces the code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php.', 'optimizr'), '<code>define(\'OPTIMIZR_DISABLE_2FA\', true);</code>')); ?></p>
     <?php
 }
 
