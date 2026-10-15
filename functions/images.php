@@ -88,11 +88,11 @@ function haptic_image_quality()
 }
 
 // Correspondance des formats utilisée par l'éditeur d'images : tailles intermédiaires, taille « full » (WordPress 6.7+)
-add_filter('image_editor_output_format', 'haptic_image_output_format');
-function haptic_image_output_format($formats)
+add_filter('image_editor_output_format', 'haptic_image_output_format', 10, 3);
+function haptic_image_output_format($formats, $filename = null, $mime_type = null)
 {
     $target = haptic_image_target_mime();
-    if ($target === '') {
+    if ($target === '' || haptic_image_is_unconvertible_cmyk($filename, $mime_type)) {
         return $formats;
     }
 
@@ -107,6 +107,46 @@ function haptic_image_output_format($formats)
     }
 
     return $formats;
+}
+
+/*
+ * Images CMJN (JPEG préparé pour l'impression) : WebP et AVIF n'acceptent que le RVB. Les éditeurs d'Optimizr
+ * (functions/class-haptic-image-editors.php) remplacent ceux de WordPress tant que la conversion est active :
+ * avec Imagick, l'image passe en sRGB avec son profil ICC ; avec GD, qui ignore les profils, elle reste en JPEG.
+ */
+add_filter('wp_image_editors', 'haptic_image_editors');
+function haptic_image_editors($editors)
+{
+    // Pas haptic_image_target_mime() : elle interroge les éditeurs, donc ce filtre (récursion)
+    if (!get_option('haptic_image_convert') || !class_exists('WP_Image_Editor_Imagick', false) || !class_exists('WP_Image_Editor_GD', false)) {
+        return $editors;
+    }
+
+    require_once __DIR__ . '/class-haptic-image-editors.php';
+    $replace = ['WP_Image_Editor_Imagick' => 'Haptic_Image_Editor_Imagick', 'WP_Image_Editor_GD' => 'Haptic_Image_Editor_GD'];
+
+    return array_map(function ($editor) use ($replace) {
+        return is_string($editor) && isset($replace[$editor]) ? $replace[$editor] : $editor;
+    }, (array) $editors);
+}
+
+/**
+ * Image CMJN que le serveur ne sait pas convertir fidèlement (GD, qui ignore les profils ICC) : elle garde son format.
+ */
+function haptic_image_is_unconvertible_cmyk($filename, $mime_type)
+{
+    static $cache = [];
+
+    if ($mime_type !== 'image/jpeg' || !$filename || !is_string($filename) || !file_exists($filename)) {
+        return false;
+    }
+    if (!isset($cache[$filename])) {
+        $size = wp_getimagesize($filename);
+        $cmyk = is_array($size) && isset($size['channels']) && (int) $size['channels'] === 4;
+        $cache[$filename] = $cmyk && _wp_image_editor_choose(['path' => $filename, 'mime_type' => $mime_type]) !== 'Haptic_Image_Editor_Imagick';
+    }
+
+    return $cache[$filename];
 }
 
 // Qualité des images converties (n'agit pas sur les JPEG et PNG non convertis)
@@ -145,7 +185,8 @@ function haptic_image_convert_attachment_file($metadata, $attachment_id)
 
     $file = get_attached_file($attachment_id);
     $type = $file ? wp_check_filetype($file) : [];
-    if (!$file || !file_exists($file) || empty($type['type']) || !in_array($type['type'], haptic_image_source_mimes(), true)) {
+    if (!$file || !file_exists($file) || empty($type['type']) || !in_array($type['type'], haptic_image_source_mimes(), true)
+        || haptic_image_is_unconvertible_cmyk($file, $type['type'])) {
         return $metadata;
     }
 
