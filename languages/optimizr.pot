@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 7.2.0\n"
+"Project-Id-Version: Haptic Optimizr 7.3.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1808,14 +1808,6 @@ msgid "Secure your account"
 msgstr ""
 
 #: functions/security-welcome.php
-msgid "%s, your role requires a second step after the password. Set it up now: it only takes a minute."
-msgstr ""
-
-#: functions/security-welcome.php
-msgid "%s, protect your account in less than a minute: even with your password, nobody else will be able to log in."
-msgstr ""
-
-#: functions/security-welcome.php
 msgid "Later"
 msgstr ""
 
@@ -1877,4 +1869,44 @@ msgstr ""
 
 #: functions/security-2fa-profile.php
 msgid "Cannot Authorize Application"
+msgstr ""
+
+#: functions/onboarding.php
+msgid "After the password, a 6-digit code from an app or sent by email. Each account sets it up in a minute, right after logging in."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Your account"
+msgstr ""
+
+#: functions/onboarding.php
+msgid "A leaked password is no longer enough: without the second step, nobody gets in."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Account login"
+msgstr ""
+
+#: functions/onboarding.php
+msgid "You set up your own account right after the wizard. Other accounts are offered the same at their next login."
+msgstr ""
+
+#: functions/onboarding.php
+msgid "Settings applied"
+msgstr ""
+
+#: functions/onboarding.php
+msgid "One last minute for your own login. Your team will be offered the same at their next login."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "Hello %s! Your role requires a second step after the password. Set it up now: it only takes a minute."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "Hello %s! Protect your account in less than a minute: even with your password, nobody else will be able to log in."
+msgstr ""
+
+#: functions/security-welcome.php
+msgid "You can also do it later from your profile."
 msgstr ""

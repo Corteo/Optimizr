@@ -1813,14 +1813,6 @@ msgid "Secure your account"
 msgstr "Sécurisez votre compte"
 
 #: functions/security-welcome.php
-msgid "%s, your role requires a second step after the password. Set it up now: it only takes a minute."
-msgstr "%s, votre rôle demande une seconde étape après le mot de passe. Mettez-la en place maintenant : c'est l'affaire d'une minute."
-
-#: functions/security-welcome.php
-msgid "%s, protect your account in less than a minute: even with your password, nobody else will be able to log in."
-msgstr "%s, protégez votre compte en moins d'une minute : même avec votre mot de passe, personne d'autre ne pourra se connecter."
-
-#: functions/security-welcome.php
 msgid "Later"
 msgstr "Plus tard"
 
@@ -1883,3 +1875,43 @@ msgstr "Trop de codes ont été envoyés au cours de la dernière heure. Réessa
 #: functions/security-2fa-profile.php
 msgid "Cannot Authorize Application"
 msgstr "Impossible d'autoriser l'application"
+
+#: functions/onboarding.php
+msgid "After the password, a 6-digit code from an app or sent by email. Each account sets it up in a minute, right after logging in."
+msgstr "Après le mot de passe, un code à 6 chiffres donné par une application ou reçu par e-mail. Chaque compte la met en place en une minute, juste après sa connexion."
+
+#: functions/onboarding.php
+msgid "Your account"
+msgstr "Votre compte"
+
+#: functions/onboarding.php
+msgid "A leaked password is no longer enough: without the second step, nobody gets in."
+msgstr "Un mot de passe qui fuite ne suffit plus : sans la seconde étape, personne n'entre."
+
+#: functions/onboarding.php
+msgid "Account login"
+msgstr "Connexion des comptes"
+
+#: functions/onboarding.php
+msgid "You set up your own account right after the wizard. Other accounts are offered the same at their next login."
+msgstr "Vous protégez votre propre compte juste après l'assistant. Les autres comptes se le voient proposer à leur prochaine connexion."
+
+#: functions/onboarding.php
+msgid "Settings applied"
+msgstr "Réglages appliqués"
+
+#: functions/onboarding.php
+msgid "One last minute for your own login. Your team will be offered the same at their next login."
+msgstr "Une dernière minute pour votre propre connexion. Votre équipe se le verra proposer à sa prochaine connexion."
+
+#: functions/security-welcome.php
+msgid "Hello %s! Your role requires a second step after the password. Set it up now: it only takes a minute."
+msgstr "Bonjour %s ! Votre rôle demande une seconde étape après le mot de passe. Mettez-la en place maintenant : c'est l'affaire d'une minute."
+
+#: functions/security-welcome.php
+msgid "Hello %s! Protect your account in less than a minute: even with your password, nobody else will be able to log in."
+msgstr "Bonjour %s ! Protégez votre compte en moins d'une minute : même avec votre mot de passe, personne d'autre ne pourra se connecter."
+
+#: functions/security-welcome.php
+msgid "You can also do it later from your profile."
+msgstr "Vous pourrez aussi le faire plus tard depuis votre profil."
