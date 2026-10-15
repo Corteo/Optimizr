@@ -4,11 +4,11 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.0.0
+Stable tag: 7.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Cookie consent (GDPR), SEO meta tags, login protection and maintenance tools in one settings page, enabled module by module.
+Cookie consent (GDPR), SEO meta tags, login protection with two-factor authentication and maintenance tools in one settings page, enabled module by module.
 
 == Description ==
 
@@ -29,6 +29,7 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 = Security =
 
 * Custom login URL, login attempt limiting (IP whitelist, trusted proxies and Cloudflare), neutral login error messages, email alert on administrator login from a new IP address.
+* Two-factor authentication with an authenticator app (TOTP codes computed by the plugin, no external service), backup codes, required for chosen roles.
 
 = Also included =
 
@@ -54,6 +55,12 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.1.0 =
+* New: two-factor authentication. After the password, a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…). Set up from each user's profile with a QR code, with 10 single-use backup codes. Can be required for chosen roles.
+* Codes are computed by the plugin itself (TOTP, RFC 6238): no external service. The QR code is drawn in the browser by the bundled qrcode-generator library (MIT).
+* Recovery: backup codes, reset by an administrator from the user's profile, or the `OPTIMIZR_DISABLE_2FA` constant in wp-config.php.
+* XML-RPC logins with the password of a protected account are refused (application passwords still work).
 
 = 7.0.0 =
 * Removed: the Content types module (ready-made "Events" type and custom post types). It is now part of Optimizr Pro 1.3.0, without ACF Pro.

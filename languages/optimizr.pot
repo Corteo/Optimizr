@@ -1458,3 +1458,201 @@ msgstr ""
 #: functions/admin-ui.php
 msgid "Content types and redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to use them again: your content types, their content and your redirects are kept in the meantime."
 msgstr ""
+
+#: functions/security-2fa.php
+msgid "The time to enter the code has run out. Log in again."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Too many wrong codes. Log in again."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Account %s: too many wrong codes"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Invalid code. Check that your phone is set to the right time, then try again."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Two-factor authentication"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Enter the 6-digit code shown by your authentication app."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Authentication code"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Lost your phone? Enter one of your backup codes instead."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Verify"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "Back to login"
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "You have logged in successfully."
+msgstr ""
+
+#: functions/security-2fa.php
+msgid "This account uses two-factor authentication: use an application password."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Authentication app"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Enabled"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "since %s"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "%s backup code left."
+msgid_plural "%s backup codes left."
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/security-2fa-profile.php
+msgid "Generate new backup codes"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "To disable it, enter a code from the app or a backup code:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Disable"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Required for your role: it cannot be disabled."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Reset"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "If this person has lost their phone and their backup codes: they will log in with their password only, then set it up again."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Not enabled"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "After your password, a 6-digit code from an app on your phone will be asked (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Someone who finds your password still cannot log in."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Set up"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "1. In your authentication app, add an account and scan this QR code:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Or enter this key manually:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "2. Enter the code shown by the app:"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Enable"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Only the account holder can set it up, from their own profile."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Required for this role: until it is set up, the dashboard is limited to the profile."
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "The request failed. Reload the page and try again."
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone. They will not be shown again."
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Download"
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Done"
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Reset two-factor authentication for this account?"
+msgstr ""
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "The current backup codes will stop working. Continue?"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Two-factor authentication is required for your account. <a href=\"%s\">Set it up</a> to access the rest of the dashboard."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Account %s: disabled"
+msgstr ""
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: reset by %2$s"
+msgstr ""
+
+#: functions/security-admin.php
+msgid "After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…). Computed by the site itself, without any external service."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Each user can enable it from their profile."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Required for"
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Users with these roles must set it up: until they do, the dashboard is limited to their profile."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Disabled by the %s constant in wp-config.php: logging in only asks for the password."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Enabled on your account."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Not enabled on your account yet: <a href=\"%s\">set it up in your profile</a>."
+msgstr ""
+
+#: functions/security-admin.php
+msgid "Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
+msgstr ""

@@ -6,6 +6,22 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.1.0] - 2026-10-14
+
+### Ajouté
+- **Double authentification** (onglet Sécurité, carte « Double authentification ») : après le mot de passe, un code à 6 chiffres donné par une application d'authentification (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Codes TOTP (RFC 6238) calculés par le plugin, sans service externe ; le QR code de mise en place est dessiné dans le navigateur par la bibliothèque qrcode-generator (MIT), fournie dans `assets/qrcode-generator/`.
+- Mise en place depuis le profil de chaque compte (`functions/security-2fa-profile.php`, `js/optimizr-2fa.js`) : QR code ou clé à saisir, vérification d'un premier code, 10 codes de secours à usage unique (affichés une fois, enregistrés hachés, régénérables). Désactivation avec un code ; réinitialisation par un administrateur depuis le profil d'un autre compte (téléphone perdu).
+- Réglage « Obligatoire pour » : les rôles choisis doivent la mettre en place ; en attendant, leur administration se limite à leur profil.
+- Page de saisie du code sur l'adresse de connexion (personnalisée ou `wp-login.php`), quel que soit le formulaire de connexion utilisé. Le jeton de la connexion en attente est dans un cookie, jamais dans l'adresse ; les sessions ouvertes par le mot de passe sont annulées tant que le code n'est pas validé. Un code n'est jamais accepté deux fois, 5 codes faux renvoient au mot de passe, et chaque code faux compte dans la limitation des tentatives.
+- XML-RPC avec le mot de passe d'un compte protégé : refusé (les mots de passe d'application restent acceptés).
+- Constante de secours `OPTIMIZR_DISABLE_2FA` (wp-config.php) pour se connecter avec le seul mot de passe.
+- Journal : trop de codes faux, désactivation, réinitialisation. Bilan : « Double authentification ».
+- Points d'extension : action `haptic_sec_login` (connexion terminée, après le code s'il y en a un), filtres `haptic_sec_two_factor_bypass` (connexion qui vaut déjà deux facteurs, comme une passkey d'Optimizr Pro 1.4.0) et `haptic_sec_log_labels` (libellés des évènements du journal).
+
+### Modifié
+- L'alerte de connexion d'un administrateur et la remise à zéro du compteur d'échecs ont lieu une fois la connexion terminée (action `haptic_sec_login`) : après le code de double authentification pour un compte protégé, et non plus dès le mot de passe.
+- Suppression du plugin avec ses réglages : la double authentification des comptes (`haptic_2fa*`) et les passkeys d'Optimizr Pro (`haptic_passkeys`, `haptic_passkey_handle`) sont aussi effacées.
+
 ## [7.0.0] - 2026-10-14
 
 ### Retiré

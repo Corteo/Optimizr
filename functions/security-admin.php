@@ -15,7 +15,7 @@ function haptic_sec_register_settings()
     $group = haptic_settings_group('security');
     $page = haptic_settings_page('security');
 
-    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert'];
+    $toggles = ['limit_login', 'proxy_cloudflare', 'generic_errors', 'login_alert', 'two_factor'];
     foreach ($toggles as $toggle) {
         register_setting($group, 'haptic_sec_' . $toggle, ['sanitize_callback' => 'absint']);
     }
@@ -36,6 +36,9 @@ function haptic_sec_register_settings()
         $ranges = array_filter(array_map('trim', preg_split('/\R/', (string) $v)), 'haptic_sec_is_ip_range');
         return implode("\n", array_unique($ranges));
     }]);
+    register_setting($group, 'haptic_sec_two_factor_roles', ['sanitize_callback' => function ($v) {
+        return array_values(array_intersect((array) $v, array_keys(wp_roles()->get_names())));
+    }]);
 
     /* Connexion */
     add_settings_section('haptic_sec_login_section', __('Login', 'optimizr'), function () {
@@ -54,6 +57,47 @@ function haptic_sec_register_settings()
     ]);
     haptic_sec_add_toggle('generic_errors', __('Neutral error messages', 'optimizr'), __('Shows "Incorrect username or password" without saying which one: a bot can no longer guess existing usernames.', 'optimizr'), 'haptic_sec_login_section');
     haptic_sec_add_toggle('login_alert', __('Login alert', 'optimizr'), __('Emails the administrator concerned when they log in from an unknown IP address.', 'optimizr'), 'haptic_sec_login_section');
+
+    /* Double authentification */
+    add_settings_section('haptic_sec_2fa_section', __('Two-factor authentication', 'optimizr'), function () {
+        echo '<p>' . esc_html__('After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…). Computed by the site itself, without any external service.', 'optimizr') . '</p>';
+    }, $page);
+    add_settings_field('haptic_sec_two_factor', __('Two-factor authentication', 'optimizr'), 'haptic_sec_two_factor_callback', $page, 'haptic_sec_2fa_section', [
+        'description' => __('Each user can enable it from their profile.', 'optimizr'),
+    ]);
+    add_settings_field('haptic_sec_two_factor_roles', __('Required for', 'optimizr'), 'haptic_sec_two_factor_roles_callback', $page, 'haptic_sec_2fa_section', [
+        'description' => __('Users with these roles must set it up: until they do, the dashboard is limited to their profile.', 'optimizr'),
+    ]);
+}
+
+function haptic_sec_two_factor_callback()
+{
+    echo wp_kses(haptic_switch_input('haptic_sec_two_factor', haptic_sec_option('two_factor'), __('Two-factor authentication', 'optimizr')), haptic_kses_ui());
+    ?>
+    <?php if (defined('OPTIMIZR_DISABLE_2FA') && OPTIMIZR_DISABLE_2FA) : ?>
+        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><?php /* translators: %s: OPTIMIZR_DISABLE_2FA constant name */ echo wp_kses_post(sprintf(__('Disabled by the %s constant in wp-config.php: logging in only asks for the password.', 'optimizr'), '<code>OPTIMIZR_DISABLE_2FA</code>')); ?></span></div>
+    <?php elseif (haptic_sec_option('two_factor')) : ?>
+        <div class="optimizr-notice optimizr-notice--<?php echo haptic_2fa_config(get_current_user_id()) ? 'ok' : 'warn'; ?>"><?php echo wp_kses(haptic_icon(haptic_2fa_config(get_current_user_id()) ? 'check' : 'alert', 18), haptic_kses_ui()); ?><span><?php
+            echo wp_kses_post(haptic_2fa_config(get_current_user_id())
+                ? __('Enabled on your account.', 'optimizr')
+                /* translators: %s: URL of the profile page */
+                : sprintf(__('Not enabled on your account yet: <a href="%s">set it up in your profile</a>.', 'optimizr'), esc_url(admin_url('profile.php#optimizr-2fa'))));
+        ?></span></div>
+    <?php endif; ?>
+    <p class="optimizr-field__help"><?php /* translators: %s: PHP line to add to wp-config.php */ echo wp_kses_post(sprintf(__('Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php.', 'optimizr'), '<code>define(\'OPTIMIZR_DISABLE_2FA\', true);</code>')); ?></p>
+    <?php
+}
+
+function haptic_sec_two_factor_roles_callback()
+{
+    $required = haptic_2fa_required_roles();
+    echo '<div class="optimizr-pills">';
+    foreach (wp_roles()->get_names() as $role => $name) {
+        echo '<label class="optimizr-pill"><input type="checkbox" name="haptic_sec_two_factor_roles[]" value="' . esc_attr($role) . '" ' . checked(in_array($role, $required, true), true, false) . ' /> ' . esc_html(translate_user_role($name)) . '</label>';
+    }
+    echo '</div>';
+    // Aucune case cochée : le champ doit tout de même partir pour vider le réglage
+    echo '<input type="hidden" name="haptic_sec_two_factor_roles[]" value="">';
 }
 
 function haptic_sec_add_toggle($name, $label, $description, $section)
@@ -136,12 +180,15 @@ add_action('haptic_admin_aside_security', function () {
         __('Login attempts limited', 'optimizr') => (bool) haptic_sec_option('limit_login'),
         __('Neutral error messages', 'optimizr') => (bool) haptic_sec_option('generic_errors'),
         __('Login alert', 'optimizr') => (bool) haptic_sec_option('login_alert'),
+        __('Two-factor authentication', 'optimizr') => haptic_2fa_available(),
     ]);
     // Types d'évènement enregistrés dans le journal (clés en base, inchangées) et leur libellé affiché
-    $event_labels = [
-        'Verrouillage'        => __('Lockout', 'optimizr'),
-        'Alerte de connexion' => __('Login alert', 'optimizr'),
-    ];
+    // Optimizr Pro ajoute les siens (filtre haptic_sec_log_labels)
+    $event_labels = apply_filters('haptic_sec_log_labels', [
+        'Verrouillage'            => __('Lockout', 'optimizr'),
+        'Alerte de connexion'     => __('Login alert', 'optimizr'),
+        'Double authentification' => __('Two-factor authentication', 'optimizr'),
+    ]);
     $active = count(array_filter($protections));
     $log = array_slice(haptic_sec_get_log(), 0, 8);
     ?>

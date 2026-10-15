@@ -1473,3 +1473,201 @@ msgstr "Cookies et RGPD (Tarteaucitron), balises meta SEO, protection de la conn
 #. translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version
 msgid "Content types and redirects are now part of Optimizr Pro %1$s (version %2$s installed). Update Optimizr Pro to use them again: your content types, their content and your redirects are kept in the meantime."
 msgstr "Les types de contenu et les redirections font désormais partie d'Optimizr Pro %1$s (version %2$s installée). Mettez à jour Optimizr Pro pour les utiliser de nouveau : vos types de contenu, leurs contenus et vos redirections sont conservés en attendant."
+
+#: functions/security-2fa.php
+msgid "The time to enter the code has run out. Log in again."
+msgstr "Le délai pour saisir le code est dépassé. Connectez-vous à nouveau."
+
+#: functions/security-2fa.php
+msgid "Too many wrong codes. Log in again."
+msgstr "Trop de codes erronés. Connectez-vous à nouveau."
+
+#: functions/security-2fa.php
+msgid "Account %s: too many wrong codes"
+msgstr "Compte %s : trop de codes erronés"
+
+#: functions/security-2fa.php
+msgid "Invalid code. Check that your phone is set to the right time, then try again."
+msgstr "Code invalide. Vérifiez que votre téléphone est à l'heure, puis réessayez."
+
+#: functions/security-2fa.php
+msgid "Two-factor authentication"
+msgstr "Double authentification"
+
+#: functions/security-2fa.php
+msgid "Enter the 6-digit code shown by your authentication app."
+msgstr "Saisissez le code à 6 chiffres affiché par votre application d'authentification."
+
+#: functions/security-2fa.php
+msgid "Authentication code"
+msgstr "Code d'authentification"
+
+#: functions/security-2fa.php
+msgid "Lost your phone? Enter one of your backup codes instead."
+msgstr "Téléphone perdu ? Saisissez plutôt l'un de vos codes de secours."
+
+#: functions/security-2fa.php
+msgid "Verify"
+msgstr "Vérifier"
+
+#: functions/security-2fa.php
+msgid "Back to login"
+msgstr "Retour à la connexion"
+
+#: functions/security-2fa.php
+msgid "You have logged in successfully."
+msgstr "Vous êtes bien connecté."
+
+#: functions/security-2fa.php
+msgid "This account uses two-factor authentication: use an application password."
+msgstr "Ce compte utilise la double authentification : utilisez un mot de passe d'application."
+
+#: functions/security-2fa-profile.php
+msgid "Authentication app"
+msgstr "Application d'authentification"
+
+#: functions/security-2fa-profile.php
+msgid "Enabled"
+msgstr "Activée"
+
+#: functions/security-2fa-profile.php
+msgid "since %s"
+msgstr "depuis le %s"
+
+#: functions/security-2fa-profile.php
+msgid "%s backup code left."
+msgid_plural "%s backup codes left."
+msgstr[0] "%s code de secours restant."
+msgstr[1] "%s codes de secours restants."
+
+#: functions/security-2fa-profile.php
+msgid "Generate new backup codes"
+msgstr "Générer de nouveaux codes de secours"
+
+#: functions/security-2fa-profile.php
+msgid "To disable it, enter a code from the app or a backup code:"
+msgstr "Pour la désactiver, saisissez un code de l'application ou un code de secours :"
+
+#: functions/security-2fa-profile.php
+msgid "Disable"
+msgstr "Désactiver"
+
+#: functions/security-2fa-profile.php
+msgid "Required for your role: it cannot be disabled."
+msgstr "Obligatoire pour votre rôle : elle ne peut pas être désactivée."
+
+#: functions/security-2fa-profile.php
+msgid "Reset"
+msgstr "Réinitialiser"
+
+#: functions/security-2fa-profile.php
+msgid "If this person has lost their phone and their backup codes: they will log in with their password only, then set it up again."
+msgstr "Si cette personne a perdu son téléphone et ses codes de secours : elle se connectera avec son seul mot de passe, puis la remettra en place."
+
+#: functions/security-2fa-profile.php
+msgid "Not enabled"
+msgstr "Non activée"
+
+#: functions/security-2fa-profile.php
+msgid "After your password, a 6-digit code from an app on your phone will be asked (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Someone who finds your password still cannot log in."
+msgstr "Après votre mot de passe, un code à 6 chiffres donné par une application de votre téléphone sera demandé (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden…). Quelqu'un qui découvre votre mot de passe ne peut toujours pas se connecter."
+
+#: functions/security-2fa-profile.php
+msgid "Set up"
+msgstr "Mettre en place"
+
+#: functions/security-2fa-profile.php
+msgid "1. In your authentication app, add an account and scan this QR code:"
+msgstr "1. Dans votre application d'authentification, ajoutez un compte et scannez ce QR code :"
+
+#: functions/security-2fa-profile.php
+msgid "Or enter this key manually:"
+msgstr "Ou saisissez cette clé à la main :"
+
+#: functions/security-2fa-profile.php
+msgid "2. Enter the code shown by the app:"
+msgstr "2. Saisissez le code affiché par l'application :"
+
+#: functions/security-2fa-profile.php
+msgid "Enable"
+msgstr "Activer"
+
+#: functions/security-2fa-profile.php
+msgid "Only the account holder can set it up, from their own profile."
+msgstr "Seul le titulaire du compte peut la mettre en place, depuis son propre profil."
+
+#: functions/security-2fa-profile.php
+msgid "Required for this role: until it is set up, the dashboard is limited to the profile."
+msgstr "Obligatoire pour ce rôle : tant qu'elle n'est pas en place, l'administration se limite au profil."
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "The request failed. Reload the page and try again."
+msgstr "La demande a échoué. Rechargez la page et réessayez."
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone. They will not be shown again."
+msgstr "Vos codes de secours. Gardez-les en lieu sûr (gestionnaire de mots de passe, version imprimée) : chacun permet de se connecter une fois sans votre téléphone. Ils ne seront plus affichés."
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Download"
+msgstr "Télécharger"
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Done"
+msgstr "Terminé"
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "Reset two-factor authentication for this account?"
+msgstr "Réinitialiser la double authentification de ce compte ?"
+
+#: functions/security-2fa-profile.php js/optimizr-2fa.js
+msgid "The current backup codes will stop working. Continue?"
+msgstr "Les codes de secours actuels ne fonctionneront plus. Continuer ?"
+
+#: functions/security-2fa-profile.php
+msgid "Two-factor authentication is required for your account. <a href=\"%s\">Set it up</a> to access the rest of the dashboard."
+msgstr "La double authentification est obligatoire pour votre compte. <a href=\"%s\">Mettez-la en place</a> pour accéder au reste de l'administration."
+
+#: functions/security-2fa-profile.php
+msgid "You are not allowed to do this."
+msgstr "Vous n'êtes pas autorisé à faire cela."
+
+#: functions/security-2fa-profile.php
+msgid "Account %s: disabled"
+msgstr "Compte %s : désactivée"
+
+#: functions/security-2fa-profile.php
+msgid "Account %1$s: reset by %2$s"
+msgstr "Compte %1$s : réinitialisée par %2$s"
+
+#: functions/security-admin.php
+msgid "After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…). Computed by the site itself, without any external service."
+msgstr "Après le mot de passe, un code à 6 chiffres donné par une application du téléphone (Google Authenticator, Microsoft Authenticator, 1Password…). Calculé par le site lui-même, sans aucun service externe."
+
+#: functions/security-admin.php
+msgid "Each user can enable it from their profile."
+msgstr "Chaque utilisateur peut l'activer depuis son profil."
+
+#: functions/security-admin.php
+msgid "Required for"
+msgstr "Obligatoire pour"
+
+#: functions/security-admin.php
+msgid "Users with these roles must set it up: until they do, the dashboard is limited to their profile."
+msgstr "Les utilisateurs de ces rôles doivent la mettre en place : en attendant, l'administration se limite à leur profil."
+
+#: functions/security-admin.php
+msgid "Disabled by the %s constant in wp-config.php: logging in only asks for the password."
+msgstr "Désactivée par la constante %s dans wp-config.php : la connexion ne demande que le mot de passe."
+
+#: functions/security-admin.php
+msgid "Enabled on your account."
+msgstr "Activée sur votre compte."
+
+#: functions/security-admin.php
+msgid "Not enabled on your account yet: <a href=\"%s\">set it up in your profile</a>."
+msgstr "Pas encore activée sur votre compte : <a href=\"%s\">mettez-la en place dans votre profil</a>."
+
+#: functions/security-admin.php
+msgid "Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
+msgstr "Téléphone perdu : un code de secours remplace le code de l'application, et un administrateur peut réinitialiser le compte depuis son profil. Si plus aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
