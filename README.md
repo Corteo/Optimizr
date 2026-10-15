@@ -1,12 +1,12 @@
 # Haptic Optimizr
 
-Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images à la une et quelques outils de maintenance.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images (images à la une, conversion en WebP ou AVIF) et quelques outils de maintenance.
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.3.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.4.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -33,8 +33,11 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - Les types créés avec Optimizr 6.x et leurs contenus restent dans la base (options `haptic_custom_cpts` et `haptic_options_settings`, articles) : Optimizr Pro 1.3.0 ou plus récent les reprend tels quels, avec les mêmes adresses. Sans Optimizr Pro, ces types ne sont plus enregistrés : leurs contenus ne sont plus visibles mais ne sont pas effacés.
 - Optimizr Pro antérieur à 1.3.0 : un avertissement demande sa mise à jour.
 
-### Images à la une
+### Images
 - Choix des types de contenu qui proposent une image de couverture.
+- **Formats d'image** (désactivé par défaut) : les images JPEG et PNG importées sont enregistrées en WebP ou en AVIF, taille « full » et tailles intermédiaires comprises, par l'éditeur d'images de WordPress (GD ou Imagick), sans service externe. Qualité réglable (82 par défaut) et choix des formats d'origine à convertir. Le fichier d'origine reste dans le dossier de la médiathèque, référencé comme image originale. Les GIF ne sont jamais convertis.
+  - AVIF n'est proposé que si le serveur sait l'écrire (WordPress 6.5+, GD ou Imagick compilés avec AVIF) ; sinon, ou si l'hébergement change, les images passent en WebP.
+  - Seules les images importées après l'activation sont converties. *Optimizr Pro :* conversion de la médiathèque existante.
 
 ### Emails
 - Désactivation des emails envoyés après les mises à jour automatiques des extensions et de WordPress.
@@ -143,7 +146,8 @@ functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
-functions/thumbnails.php Module Images à la une
+functions/thumbnails.php Module Images : images à la une
+functions/images.php     Module Images : conversion des images importées en WebP ou AVIF
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
 functions/security-2fa*.php  Double authentification : connexion (security-2fa.php), profil (security-2fa-profile.php, js/optimizr-2fa.js)

@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 7.3.0\n"
+"Project-Id-Version: Haptic Optimizr 7.4.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,12 +20,16 @@ msgstr ""
 msgid "Content types"
 msgstr ""
 
-#: functions/admin-ui.php functions/thumbnails.php
+#: functions/thumbnails.php
 msgid "Featured images"
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Choose which content types accept a cover image."
+msgid "Images"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Content types that accept a cover image, and conversion of uploaded images to WebP or AVIF."
 msgstr ""
 
 #: functions/admin-ui.php functions/mails.php
@@ -88,7 +92,7 @@ msgid "Visitor consent, with third-party services loaded only once allowed."
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Content types that accept a cover image."
+msgid "Content types that accept a cover image, and the format of uploaded images."
 msgstr ""
 
 #: functions/admin-ui.php
@@ -1909,4 +1913,56 @@ msgstr ""
 
 #: functions/security-welcome.php
 msgid "You can also do it later from your profile."
+msgstr ""
+
+#: functions/images.php
+msgid "Image formats"
+msgstr ""
+
+#: functions/images.php
+msgid "Convert uploaded images"
+msgstr ""
+
+#: functions/images.php
+msgid "Format"
+msgstr ""
+
+#: functions/images.php
+msgid "WebP is read by every current browser. AVIF is lighter still, but slower to create."
+msgstr ""
+
+#: functions/images.php
+msgid "Quality"
+msgstr ""
+
+#: functions/images.php
+msgid "From 1 to 100. Around 80 keeps images sharp while making them much lighter."
+msgstr ""
+
+#: functions/images.php
+msgid "Images to convert"
+msgstr ""
+
+#: functions/images.php
+msgid "GIF images are never converted, so they keep their animation."
+msgstr ""
+
+#: functions/images.php
+msgid "New JPEG and PNG images are saved as WebP or AVIF, which are much lighter, by your server: no external service. The original file is kept in the media library folder."
+msgstr ""
+
+#: functions/images.php
+msgid "Your server cannot create WebP or AVIF images (GD or Imagick library without these formats). Ask your host to enable them: images are uploaded unchanged in the meantime."
+msgstr ""
+
+#: functions/images.php
+msgid "AVIF requires WordPress 6.5 or later."
+msgstr ""
+
+#: functions/images.php
+msgid "AVIF is not available on this server (GD or Imagick library without AVIF)."
+msgstr ""
+
+#: functions/images.php
+msgid "Images are converted to WebP instead."
 msgstr ""

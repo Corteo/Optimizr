@@ -22,13 +22,17 @@ msgstr "SEO"
 msgid "Content types"
 msgstr "Types de contenu"
 
-#: functions/admin-ui.php functions/thumbnails.php
+#: functions/thumbnails.php
 msgid "Featured images"
 msgstr "Images à la une"
 
 #: functions/admin-ui.php
-msgid "Choose which content types accept a cover image."
-msgstr "Choisissez les types de contenu qui acceptent une image de couverture."
+msgid "Images"
+msgstr "Images"
+
+#: functions/admin-ui.php
+msgid "Content types that accept a cover image, and conversion of uploaded images to WebP or AVIF."
+msgstr "Types de contenu qui acceptent une image de couverture, et conversion des images importées en WebP ou AVIF."
 
 #: functions/admin-ui.php functions/mails.php
 msgid "Emails"
@@ -90,8 +94,8 @@ msgid "Visitor consent, with third-party services loaded only once allowed."
 msgstr "Consentement des visiteurs et services tiers chargés uniquement après autorisation."
 
 #: functions/admin-ui.php
-msgid "Content types that accept a cover image."
-msgstr "Types de contenu qui acceptent une image de couverture."
+msgid "Content types that accept a cover image, and the format of uploaded images."
+msgstr "Types de contenu qui acceptent une image de couverture, et format des images importées."
 
 #: functions/admin-ui.php
 msgid "Protections you can enable one by one. None is active until you turn it on."
@@ -1915,3 +1919,55 @@ msgstr "Bonjour %s ! Protégez votre compte en moins d'une minute : même avec v
 #: functions/security-welcome.php
 msgid "You can also do it later from your profile."
 msgstr "Vous pourrez aussi le faire plus tard depuis votre profil."
+
+#: functions/images.php
+msgid "Image formats"
+msgstr "Formats d'image"
+
+#: functions/images.php
+msgid "Convert uploaded images"
+msgstr "Convertir les images importées"
+
+#: functions/images.php
+msgid "Format"
+msgstr "Format"
+
+#: functions/images.php
+msgid "WebP is read by every current browser. AVIF is lighter still, but slower to create."
+msgstr "WebP est lu par tous les navigateurs actuels. AVIF est encore plus léger, mais plus long à créer."
+
+#: functions/images.php
+msgid "Quality"
+msgstr "Qualité"
+
+#: functions/images.php
+msgid "From 1 to 100. Around 80 keeps images sharp while making them much lighter."
+msgstr "De 1 à 100. Autour de 80, les images restent nettes tout en étant bien plus légères."
+
+#: functions/images.php
+msgid "Images to convert"
+msgstr "Images à convertir"
+
+#: functions/images.php
+msgid "GIF images are never converted, so they keep their animation."
+msgstr "Les images GIF ne sont jamais converties : elles gardent leur animation."
+
+#: functions/images.php
+msgid "New JPEG and PNG images are saved as WebP or AVIF, which are much lighter, by your server: no external service. The original file is kept in the media library folder."
+msgstr "Les nouvelles images JPEG et PNG sont enregistrées en WebP ou en AVIF, bien plus légers, par votre serveur : aucun service externe. Le fichier d'origine est conservé dans le dossier de la médiathèque."
+
+#: functions/images.php
+msgid "Your server cannot create WebP or AVIF images (GD or Imagick library without these formats). Ask your host to enable them: images are uploaded unchanged in the meantime."
+msgstr "Votre serveur ne sait pas créer d'images WebP ou AVIF (bibliothèque GD ou Imagick sans ces formats). Demandez à votre hébergeur de les activer : d'ici là, les images sont importées telles quelles."
+
+#: functions/images.php
+msgid "AVIF requires WordPress 6.5 or later."
+msgstr "AVIF demande WordPress 6.5 ou plus récent."
+
+#: functions/images.php
+msgid "AVIF is not available on this server (GD or Imagick library without AVIF)."
+msgstr "AVIF n'est pas disponible sur ce serveur (bibliothèque GD ou Imagick sans AVIF)."
+
+#: functions/images.php
+msgid "Images are converted to WebP instead."
+msgstr "Les images sont converties en WebP à la place."
