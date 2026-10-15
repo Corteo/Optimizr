@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.4.0
+Stable tag: 7.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,9 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.4.1 =
+* Fixed: CMYK JPEG images (prepared for print) converted to WebP or AVIF had very different colors, because their color profile was ignored. With Imagick they are now converted to sRGB with their profile; with GD, which cannot do it faithfully, they stay in JPEG.
 
 = 7.4.0 =
 * New: uploaded JPEG and PNG images can be converted to WebP or AVIF (Content tab, "Image formats" card). Conversion is done by your server, with no external service; the original file is kept. AVIF is offered only when the server supports it.

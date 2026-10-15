@@ -6,6 +6,12 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.4.1] - 2026-10-15
+
+### Corrigé
+- **Formats d'image** : une image JPEG en CMJN (préparée pour l'impression, avec son profil ICC) convertie en WebP ou AVIF avait des couleurs très différentes de l'original (verts saturés, jaunes délavés). WebP et AVIF n'acceptent que le RVB, et ImageMagick y passait l'image sans tenir compte de son profil. Avec Imagick, l'image est maintenant convertie en sRGB avec son profil, comme le fait le navigateur pour afficher le JPEG (profil sRGB compact sous licence CC0 dans `assets/icc/`) ; avec GD, qui ignore les profils ICC, une image CMJN garde son format JPEG. Éditeurs `Haptic_Image_Editor_Imagick` et `Haptic_Image_Editor_GD` (`functions/class-haptic-image-editors.php`), utilisés à la place de ceux de WordPress tant que la conversion est active.
+- Les images déjà converties avec ce défaut ne sont pas refaites : supprimez-les et importez-les de nouveau.
+
 ## [7.4.0] - 2026-10-15
 
 ### Ajouté
