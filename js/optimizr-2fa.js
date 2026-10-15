@@ -1,5 +1,6 @@
 /*
- * Profil : mise en place de la double authentification (functions/security-2fa-profile.php).
+ * Double authentification : mise en place et réglages du compte (functions/security-2fa-profile.php),
+ * dans le profil et sur l'écran proposé à la connexion (functions/security-welcome.php).
  * Le QR code est dessiné ici, dans le navigateur (assets/qrcode-generator) : la clé secrète ne quitte pas le site.
  * Les champs n'ont pas d'attribut name : ils ne partent pas avec le formulaire du profil.
  */
@@ -49,12 +50,30 @@
         target.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 16, scalable: true, alt: 'QR code' });
     }
 
+    function each(selector, callback) {
+        Array.prototype.forEach.call(box.querySelectorAll(selector), callback);
+    }
+
+    // Mise en place terminée : le profil se recharge, l'écran d'accueil passe à la suite
+    function finish() {
+        if (data.context === 'welcome') {
+            box.textContent = '';
+            var done = document.createElement('p');
+            done.className = 'optimizr-2fa__done';
+            done.textContent = __('Two-factor authentication is enabled.', 'optimizr');
+            box.appendChild(done);
+            document.dispatchEvent(new CustomEvent('optimizr:secured', { detail: { step: 'two_factor' } }));
+        } else {
+            window.location.reload();
+        }
+    }
+
     function showCodes(codes) {
         var target = box.querySelector('.optimizr-2fa__codes');
         target.textContent = '';
 
         var intro = document.createElement('p');
-        intro.textContent = __('Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone. They will not be shown again.', 'optimizr');
+        intro.textContent = __('Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone or your email. They will not be shown again.', 'optimizr');
         var list = document.createElement('ul');
         codes.forEach(function (code) {
             var item = document.createElement('li');
@@ -72,45 +91,77 @@
         done.type = 'button';
         done.className = 'button button-primary';
         done.textContent = __('Done', 'optimizr');
-        done.addEventListener('click', function () {
-            window.location.reload();
-        });
+        done.addEventListener('click', finish);
 
         var actions = document.createElement('p');
         actions.appendChild(download);
         actions.appendChild(document.createTextNode(' '));
         actions.appendChild(done);
 
+        each('.optimizr-2fa__choices, .optimizr-2fa__setup, .optimizr-2fa__confirm', function (element) {
+            element.hidden = true;
+        });
         target.appendChild(intro);
         target.appendChild(list);
         target.appendChild(actions);
         target.hidden = false;
+        done.focus();
     }
 
+    // Code saisi à côté du bouton (mise en place), ou dans le champ de confirmation du compte
     function codeOf(button) {
-        var input = button.parentNode.querySelector('.optimizr-2fa__code');
+        var group = button.closest('.optimizr-2fa__setup, .optimizr-2fa__confirm') || box;
+        var input = group.querySelector('.optimizr-2fa__code');
         return input ? input.value : '';
     }
 
     var handlers = {
-        start: function (button) {
-            box.querySelector('.optimizr-2fa__setup').hidden = false;
-            button.hidden = true;
-            drawQr();
-            box.querySelector('#optimizr-2fa-setup-code').focus();
+        choose: function (button) {
+            var method = button.getAttribute('data-method');
+            box.querySelector('.optimizr-2fa__choices').hidden = true;
+            each('.optimizr-2fa__setup', function (panel) {
+                panel.hidden = panel.getAttribute('data-method') !== method;
+            });
+            var panel = box.querySelector('.optimizr-2fa__setup[data-method="' + method + '"]');
+            if (method === 'app') {
+                drawQr();
+                panel.querySelector('.optimizr-2fa__code').focus();
+            } else {
+                panel.querySelector('[data-2fa-action="send"]').focus();
+            }
+        },
+        back: function () {
+            each('.optimizr-2fa__setup', function (panel) {
+                panel.hidden = true;
+            });
+            box.querySelector('.optimizr-2fa__choices').hidden = false;
+        },
+        send: function (button) {
+            return request('send', { purpose: button.getAttribute('data-purpose') }).then(function (result) {
+                say(result.message);
+                var group = button.closest('.optimizr-2fa__setup, .optimizr-2fa__confirm');
+                if (group) {
+                    group.querySelector('.optimizr-2fa__code').focus();
+                }
+            });
         },
         activate: function (button) {
-            return request('activate', { code: codeOf(button) }).then(function (result) {
-                box.querySelector('.optimizr-2fa__setup').hidden = true;
+            return request('activate', { method: button.getAttribute('data-method'), code: codeOf(button) }).then(function (result) {
                 showCodes(result.codes);
             });
         },
-        backup: function () {
+        backup: function (button) {
             if (!window.confirm(__('The current backup codes will stop working. Continue?', 'optimizr'))) {
                 return;
             }
-            return request('backup').then(function (result) {
+            return request('backup', { code: codeOf(button) }).then(function (result) {
                 showCodes(result.codes);
+            });
+        },
+        change: function (button) {
+            return request('change', { code: codeOf(button) }).then(function () {
+                window.location.hash = 'optimizr-2fa';
+                window.location.reload();
             });
         },
         disable: function (button) {
@@ -146,13 +197,14 @@
         }
     });
 
-    // Entrée dans un champ de code : valide ce code au lieu d'enregistrer tout le profil
+    // Entrée dans un champ de code : active la méthode (mise en place), sans jamais enregistrer tout le profil
     box.addEventListener('keydown', function (event) {
         if (event.key !== 'Enter' || !event.target.classList.contains('optimizr-2fa__code')) {
             return;
         }
         event.preventDefault();
-        var button = event.target.parentNode.querySelector('[data-2fa-action]');
+        var group = event.target.closest('.optimizr-2fa__setup');
+        var button = group && group.querySelector('[data-2fa-action="activate"]');
         if (button) {
             button.click();
         }

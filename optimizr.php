@@ -4,7 +4,7 @@
  * Plugin Name: Haptic Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.1.0
+ * Version: 7.2.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.1.0');
+define('HAPTIC_OPTIMIZR_VERSION', '7.2.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -61,6 +61,7 @@ if (haptic_is_module_active('security')) {
     require_once(__DIR__ . '/functions/security.php');
     require_once(__DIR__ . '/functions/security-2fa.php');
     require_once(__DIR__ . '/functions/security-2fa-profile.php');
+    require_once(__DIR__ . '/functions/security-welcome.php');
     require_once(__DIR__ . '/functions/security-admin.php');
 }
 if (haptic_is_module_active('seo')) {

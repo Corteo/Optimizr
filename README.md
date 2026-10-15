@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.1.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.2.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -43,7 +43,12 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 Toutes les protections sont désactivées par défaut et s'activent une à une.
 - **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent une page introuvable aux visiteurs ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php.
 - **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche, proxys de confiance et Cloudflare), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
-- **Double authentification** : après le mot de passe, un code à 6 chiffres donné par une application d'authentification (Google Authenticator, Microsoft Authenticator, 1Password…). Codes TOTP calculés par le plugin, sans service externe ; QR code dessiné dans le navigateur (bibliothèque qrcode-generator, MIT, dans `assets/qrcode-generator/`). Chacun l'active depuis son profil, avec 10 codes de secours à usage unique ; elle peut être imposée à certains rôles (leur administration se limite au profil tant qu'elle n'est pas en place). Un administrateur peut la réinitialiser depuis le profil d'un compte. La saisie du code se fait sur l'adresse de connexion, personnalisée ou non ; les codes faux comptent dans la limitation des tentatives ; XML-RPC avec le mot de passe d'un compte protégé est refusé. En cas de blocage : `define('OPTIMIZR_DISABLE_2FA', true);` dans wp-config.php.
+- **Double authentification** : après le mot de passe, un code à 6 chiffres, au choix du compte :
+  - donné par une application d'authentification (Google Authenticator, Microsoft Authenticator, 1Password…) : codes TOTP calculés par le plugin, sans service externe, QR code dessiné dans le navigateur (bibliothèque qrcode-generator, MIT, dans `assets/qrcode-generator/`) ;
+  - ou envoyé par e-mail (réglage « Code par e-mail », activé par défaut) : code valable 10 minutes, 3 envois au plus par connexion, toujours envoyé à l'adresse vérifiée à la mise en place. Moins sûr que l'application ; le réglage « Application pour les rôles obligatoires » l'écarte pour ces rôles.
+
+  Chacun la met en place depuis son profil ou depuis l'écran proposé à la connexion, avec 10 codes de secours à usage unique ; elle peut être imposée à certains rôles (leur administration se limite au profil tant qu'elle n'est pas en place). Nouveaux codes de secours, changement de méthode et désactivation demandent un code. 5 codes faux au plus par quart d'heure et par compte (connexion et profil confondus), 10 e-mails de code au plus par heure. Un administrateur peut la réinitialiser depuis le profil d'un autre compte. La saisie du code se fait sur l'adresse de connexion, personnalisée ou non ; les codes faux comptent dans la limitation des tentatives ; XML-RPC avec le mot de passe d'un compte protégé est refusé, et un mot de passe d'application (profil ou écran « Autoriser l'application ») ne peut être créé que dans les 10 minutes qui suivent la connexion. En cas de blocage : `define('OPTIMIZR_DISABLE_2FA', true);` dans wp-config.php.
+- **Écran « Sécurisez votre compte »** : à la première connexion qui suit l'activation de la double authentification (ou des passkeys d'Optimizr Pro), un écran court, dans le style de la page de connexion, propose de la mettre en place avant d'arriver sur la page demandée. « Plus tard » le repousse d'une semaine ; pour un rôle obligatoire, il n'y a que la mise en place. Proposé aux comptes qui peuvent écrire des contenus (filtre `haptic_sec_welcome_user`).
 - Journal des verrouillages, alertes et évènements de double authentification (30 jours).
 - *Optimizr Pro :* passkeys (connexion sans mot de passe, qui dispense du code), discrétion, fonctions inutilisées désactivées, en-têtes de sécurité, bilan de l'environnement.
 
@@ -110,6 +115,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_sec_login` | action | Connexion terminée (après le code de double authentification s'il y en a un), à la place de `wp_login`. |
 | `haptic_sec_two_factor_bypass` | filtre | Renvoyer `true` pour une connexion qui vaut déjà deux facteurs (passkey d'Optimizr Pro) : pas de code demandé. |
 | `haptic_sec_log_labels` | filtre | Libellés des types d'évènement du journal de sécurité. |
+| `haptic_sec_welcome_user` | filtre | Proposer l'écran « Sécurisez votre compte » à ce compte (par défaut : ceux qui peuvent écrire des contenus). |
+| `haptic_sec_welcome_steps` | filtre | Étapes de cet écran (clé => obligatoire), comme la passkey d'Optimizr Pro. |
+| `haptic_sec_welcome_enqueue` / `haptic_sec_welcome_content` | action | Scripts et contenu d'une étape de cet écran. |
 | `haptic_onboarding_steps` | filtre | Étapes de l'assistant (une étape peut fournir sa fonction `render`). |
 | `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement. |
 | `haptic_onboarding_seo_fields`, `haptic_onboarding_step_after`, `haptic_onboarding_print_scripts`, `haptic_onboarding_illustration` | action | Contenu ajouté aux étapes de l'assistant. |
@@ -118,6 +126,8 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
 | `haptic_before_enqueue_admin_scripts` / `haptic_after_…` | action | Charger des scripts côté administration. |
+
+`haptic_sec_recent_auth()` indique si la session a été ouverte ou confirmée (mot de passe, ou code de l'application) il y a moins de 10 minutes : condition pour ajouter un moyen de connexion, comme une passkey d'Optimizr Pro. La confirmation passe par la requête `haptic_sec_confirm` (nonce `haptic_sec_confirm`).
 
 `haptic_is_pro()` indique si Optimizr Pro est actif, `haptic_pro_is_outdated()` s'il est antérieur à la version minimale `HAPTIC_OPTIMIZR_PRO_MIN_VERSION` (1.3.0). Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
 
@@ -137,6 +147,7 @@ functions/thumbnails.php Module Images à la une
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
 functions/security-2fa*.php  Double authentification : connexion (security-2fa.php), profil (security-2fa-profile.php, js/optimizr-2fa.js)
+functions/security-welcome.php  Écran « Sécurisez votre compte » proposé après la connexion
 assets/qrcode-generator/ Bibliothèque de QR code (MIT) pour la mise en place de la double authentification
 css/, js/                Interface de la page d'options
 ```

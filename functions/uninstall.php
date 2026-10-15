@@ -146,7 +146,7 @@ function haptic_uninstall_site()
         }
         // Double authentification et passkeys d'Optimizr Pro (métadonnées des comptes, partagées sur un multisite)
         if (!is_multisite() || is_main_site()) {
-            foreach (['haptic_2fa', 'haptic_2fa_pending', 'haptic_2fa_login', 'haptic_passkeys', 'haptic_passkey_handle'] as $meta_key) {
+            foreach (['haptic_2fa', 'haptic_2fa_pending', 'haptic_2fa_email', 'haptic_2fa_change', 'haptic_2fa_fails', 'haptic_2fa_mails', 'haptic_2fa_login', 'haptic_sec_welcome_until', 'haptic_passkeys', 'haptic_passkey_handle'] as $meta_key) {
                 delete_metadata('user', 0, $meta_key, '', true);
             }
         }

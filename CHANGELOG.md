@@ -6,6 +6,26 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.2.0] - 2026-10-15
+
+### Ajouté
+- **Code par e-mail** : deuxième méthode de double authentification, au choix du compte à côté de l'application. Code à 6 chiffres envoyé avec `wp_mail`, valable 10 minutes, enregistré haché ; à la connexion, 3 envois au plus (30 secondes entre deux) et seul le dernier code est valable. Le code part toujours à l'adresse vérifiée à la mise en place, même si l'e-mail du compte change ensuite. Si l'envoi échoue, la page du code le dit et propose les codes de secours.
+- Réglages « Code par e-mail » (activé par défaut) et « Application pour les rôles obligatoires » : un compte dont l'e-mail n'est plus permis est invité à choisir une autre méthode à sa prochaine connexion.
+- **Écran « Sécurisez votre compte »** (`functions/security-welcome.php`, `wp-login.php?action=haptic_secure`) : juste après la connexion qui suit l'activation, la mise en place en quelques secondes (choix de la méthode, QR code ou code reçu, codes de secours), dans le style de la page de connexion, puis la page demandée. « Plus tard » le repousse d'une semaine ; un rôle obligatoire ne peut que la mettre en place, et son administration le ramène sur cet écran. Proposé aux comptes qui peuvent écrire des contenus. Optimizr Pro 1.5.0 y ajoute la passkey.
+- Changement de méthode depuis le profil (l'actuelle reste valable jusqu'à l'activation de la nouvelle).
+- Points d'extension : filtres `haptic_sec_welcome_user` et `haptic_sec_welcome_steps`, actions `haptic_sec_welcome_enqueue` et `haptic_sec_welcome_content`, fonction `haptic_sec_recent_auth()` et requête `haptic_sec_confirm` (session récente ou confirmée).
+- Journal : activation et changement de méthode.
+
+### Sécurité
+- Nouveaux codes de secours : un code est désormais demandé. Avant, une session volée suffisait à en générer, puis à désactiver la double authentification avec l'un d'eux.
+- Codes faux : 5 au plus par quart d'heure et par compte, toutes saisies confondues (connexion et profil), même sans la limitation des tentatives. Avant, se reconnecter avec le mot de passe redonnait 5 essais à chaque fois.
+- Codes par e-mail : 10 envois au plus par heure et par compte, pour qu'un mot de passe connu ne permette pas d'inonder la boîte mail.
+- Un administrateur ne peut plus réinitialiser sa propre double authentification sans code (la réinitialisation reste possible pour les autres comptes).
+- Mot de passe d'application d'un compte protégé : création possible seulement dans les 10 minutes qui suivent la connexion (ou une confirmation), depuis le profil comme depuis l'écran « Autoriser l'application », pour qu'une session volée ne permette pas d'obtenir un accès à l'API sans code.
+
+### Modifié
+- Compte d'un rôle obligatoire sans double authentification : l'administration redirige vers l'écran « Sécurisez votre compte » (et non plus vers le profil), avec retour à la page demandée.
+
 ## [7.1.0] - 2026-10-14
 
 ### Ajouté
