@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.3.0
+Stable tag: 7.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,9 +32,14 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 * Two-factor authentication with an authenticator app (TOTP codes computed by the plugin, no external service) or a code sent by email, backup codes, required for chosen roles.
 * "Secure your account" screen right after login: users set up two-factor authentication in a few seconds.
 
+= Images =
+
+* Uploaded JPEG and PNG images saved as WebP or AVIF (when the server supports it) by WordPress's own image editor, with a quality setting. No external service; the original file is kept.
+* Choice of the content types that accept a featured image.
+
 = Also included =
 
-* Featured image tools, email settings.
+* Email settings.
 * Settings export and import, setup wizard, choice of what is deleted when the plugin is uninstalled.
 
 == External services ==
@@ -56,6 +61,9 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.4.0 =
+* New: uploaded JPEG and PNG images can be converted to WebP or AVIF (Content tab, "Image formats" card). Conversion is done by your server, with no external service; the original file is kept. AVIF is offered only when the server supports it.
 
 = 7.3.0 =
 * New: the setup wizard turns on two-factor authentication (and the passkeys of Optimizr Pro) in its Security step, then lets the administrator secure their own account right away, before the final screen.

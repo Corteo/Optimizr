@@ -6,6 +6,17 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.4.0] - 2026-10-15
+
+### Ajouté
+- **Formats d'image** (onglet Contenu, `functions/images.php`) : les images JPEG et PNG importées sont enregistrées en WebP ou en AVIF, taille « full » et tailles intermédiaires comprises, par l'éditeur d'images de WordPress (GD ou Imagick), sans service externe. Réglages : interrupteur « Convertir les images importées » (désactivé par défaut), format, qualité (82 par défaut) et formats d'origine à convertir. Le fichier d'origine est conservé et référencé comme image originale (`original_image`). Les GIF ne sont jamais convertis (animations) ; les photos HEIC, que WordPress convertit en JPEG, passent directement au format choisi.
+- AVIF proposé seulement si le serveur sait l'écrire (WordPress 6.5+, GD ou Imagick compilés avec AVIF) ; s'il ne le peut plus, les images passent en WebP. Sans WebP ni AVIF, la carte le signale et les images sont importées telles quelles.
+- Avant WordPress 6.7, qui ne convertit que les images redimensionnées ou pivotées, Optimizr enregistre lui-même la copie convertie de la taille « full ».
+- Fonctions `haptic_image_target_mime()`, `haptic_image_source_mimes()`, `haptic_image_format_supported()` et `haptic_image_convert_attachment_file()`, utilisées par Optimizr Pro 1.7.0 pour convertir la médiathèque existante.
+
+### Modifié
+- Le module « Images à la une » devient « Images » : il regroupe les images à la une et les formats d'image. Son état (activé ou non) est conservé.
+
 ## [7.3.0] - 2026-10-15
 
 ### Ajouté

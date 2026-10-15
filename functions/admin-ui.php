@@ -24,8 +24,8 @@ function haptic_modules()
             'tab'   => 'seo',
         ],
         'thumbnails' => [
-            'label' => __('Featured images', 'optimizr'),
-            'desc'  => __('Choose which content types accept a cover image.', 'optimizr'),
+            'label' => __('Images', 'optimizr'),
+            'desc'  => __('Content types that accept a cover image, and conversion of uploaded images to WebP or AVIF.', 'optimizr'),
             'icon'  => 'image',
             'tab'   => 'content',
         ],
@@ -78,7 +78,7 @@ function haptic_admin_tabs()
             'intro' => __('Default titles and descriptions, used for any content that has none.', 'optimizr')],
         // Optimizr Pro y ajoute le module Types de contenu (retiré d'Optimizr 7.0)
         'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['thumbnails'],
-            'intro' => __('Content types that accept a cover image.', 'optimizr')],
+            'intro' => __('Content types that accept a cover image, and the format of uploaded images.', 'optimizr')],
         'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security'],
             'intro' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr')],
         'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails'],
