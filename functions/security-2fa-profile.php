@@ -123,13 +123,19 @@ function haptic_2fa_setup_markup($user)
     ?>
     <div class="optimizr-2fa__choices">
         <button type="button" class="optimizr-2fa__choice" data-2fa-action="choose" data-method="app">
-            <strong><?php esc_html_e('Authentication app', 'optimizr'); ?></strong>
-            <span><?php esc_html_e('A code from an app on your phone: Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden… The most secure.', 'optimizr'); ?></span>
+            <?php echo wp_kses(haptic_icon('phone', 20), haptic_kses_ui()); ?>
+            <span class="optimizr-2fa__choice-text">
+                <strong><?php esc_html_e('Authentication app', 'optimizr'); ?></strong>
+                <span><?php esc_html_e('A code from an app on your phone: Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden… The most secure.', 'optimizr'); ?></span>
+            </span>
         </button>
         <?php if ($email) : ?>
             <button type="button" class="optimizr-2fa__choice" data-2fa-action="choose" data-method="email">
-                <strong><?php esc_html_e('Email', 'optimizr'); ?></strong>
-                <span><?php esc_html_e('A code sent to your email address at each login. Nothing to install, but only as safe as your mailbox.', 'optimizr'); ?></span>
+                <?php echo wp_kses(haptic_icon('mail', 20), haptic_kses_ui()); ?>
+                <span class="optimizr-2fa__choice-text">
+                    <strong><?php esc_html_e('Email', 'optimizr'); ?></strong>
+                    <span><?php esc_html_e('A code sent to your email address at each login. Nothing to install, but only as safe as your mailbox.', 'optimizr'); ?></span>
+                </span>
             </button>
         <?php endif; ?>
     </div>
@@ -186,10 +192,11 @@ function haptic_2fa_enqueue_assets($user_id, $context = 'profile')
         .optimizr-2fa__status--on{background:#d1f0d9;color:#0a5c25}
         .optimizr-2fa [hidden]{display:none!important}
         .optimizr-2fa__choices{display:grid;gap:8px;max-width:480px;margin:12px 0}
-        .optimizr-2fa__choice{display:block;width:100%;text-align:left;padding:12px 14px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;cursor:pointer;font:inherit;color:inherit}
+        .optimizr-2fa__choice{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;cursor:pointer;font:inherit;color:inherit}
         .optimizr-2fa__choice:hover,.optimizr-2fa__choice:focus{border-color:#2271b1;box-shadow:0 0 0 1px #2271b1;outline:0}
+        .optimizr-2fa__choice .optimizr-icon{margin-top:1px;color:#2271b1}
         .optimizr-2fa__choice strong{display:block;margin-bottom:2px}
-        .optimizr-2fa__choice span{color:#50575e}
+        .optimizr-2fa__choice-text span{color:#50575e}
         .optimizr-2fa__qr{display:inline-block;background:#fff;border:1px solid #dcdcde;line-height:0}
         .optimizr-2fa__qr svg{width:200px;height:200px}
         .optimizr-2fa__secret{letter-spacing:.05em;user-select:all;word-break:break-all}

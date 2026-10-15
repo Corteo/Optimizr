@@ -245,6 +245,8 @@ function haptic_icon($name, $size = 20)
         'chevron-left'  => '<path d="m15 18-6-6 6-6"/>',
         'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
         'pin'      => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+        'phone'    => '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+        'key'      => '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
     ];
 
     if (!isset($paths[$name])) {

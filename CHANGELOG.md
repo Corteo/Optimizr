@@ -6,6 +6,21 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.3.0] - 2026-10-15
+
+### Ajouté
+- **Assistant de configuration, étape Sécurité** : nouvelle section « Connexion des comptes » avec la double authentification (recommandée, cochée par défaut tant que le réglage n'a jamais été enregistré). Optimizr Pro 1.6.0 y ajoute les passkeys. Filtre `haptic_onboarding_account_toggles`, enregistré comme les protections (`haptic_sec_<clé>`).
+- **Assistant de configuration, compte de l'administrateur** : après « Appliquer les réglages », avec le module Sécurité, un écran (`step=account`) fait mettre en place la double authentification (et la passkey d'Optimizr Pro) de son propre compte, avec les mêmes étapes que l'écran proposé à la connexion, puis mène à l'écran final. « Plus tard » y passe directement ; rien à proposer (déjà en place, protections désactivées) : l'écran final s'affiche aussitôt.
+- Fonctions `haptic_sec_account_steps()` (étapes d'un compte, sans la condition « Plus tard »), `haptic_sec_account_enqueue()` et `haptic_sec_account_cards()` : les étapes de l'écran « Sécurisez votre compte » réutilisables ailleurs.
+- Icônes `phone` et `key` dans `haptic_icon()`.
+
+### Corrigé
+- Écran « Sécurisez votre compte » (`wp-login.php?action=haptic_secure`) : la feuille de la page de connexion de WordPress, chargée après les styles de l'écran, en annulait les marges et les espacements (`.login *`) et faisait flotter les boutons principaux ; cartes collées, bouton « Ajouter une passkey » à côté du titre suivant, « Plus tard » décalé. Les styles passent dans `css/optimizr-welcome.css`, chargée après celle de la page de connexion et entièrement préfixée par `.optimizr-welcome`.
+
+### Modifié
+- Écran « Sécurisez votre compte » repensé : en-tête avec le prénom du compte, une carte par étape avec son icône et son badge (« Obligatoire »), choix de la méthode sous forme de cartes avec icône, QR code centré et clé lisible, champ du code et bouton « Activer » sur une ligne, codes de secours en grille, étape cochée en vert une fois faite, « Continuer » mis en avant quand tout est fait. Mise en page adaptée aux petits écrans.
+- Choix de la méthode dans le profil : même icône par méthode.
+
 ## [7.2.0] - 2026-10-15
 
 ### Ajouté

@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.2.0
+Stable tag: 7.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,10 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.3.0 =
+* New: the setup wizard turns on two-factor authentication (and the passkeys of Optimizr Pro) in its Security step, then lets the administrator secure their own account right away, before the final screen.
+* Improved: the "Secure your account" screen shown after login was redesigned. It is no longer broken by the styles of the login page (missing spacing, floating buttons): clear cards with an icon per step, method choice, code fields on one line, backup codes in a grid, a checked state once a step is done, and a layout that fits small screens.
 
 = 7.2.0 =
 * New: the code can be sent by email instead of an authenticator app (setting "Code by email", on by default). Valid for 10 minutes, up to 3 emails per login, always sent to the address verified at setup. A setting can require the app for the roles where two-factor authentication is mandatory.

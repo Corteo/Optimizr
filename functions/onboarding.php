@@ -9,7 +9,9 @@ if (!defined('ABSPATH')) {
  *
  * Ouvert automatiquement à la première activation du plugin, puis à la demande
  * (bouton « Assistant » de la page d'options, lien dans la liste des extensions).
- * Les réglages ne sont enregistrés qu'à la dernière étape, par admin-post.php.
+ * Les réglages ne sont enregistrés qu'à la dernière étape, par admin-post.php. Avec le module Sécurité, l'administrateur
+ * met ensuite en place la double authentification (et la passkey d'Optimizr Pro) de son compte (écran step=account),
+ * avant l'écran final (step=done).
  * Mise en forme : css/optimizr-onboarding.css, navigation : js/optimizr-onboarding.js.
  */
 
@@ -111,6 +113,20 @@ function haptic_onboarding_security_toggles()
     ]);
 }
 
+/**
+ * Connexion des comptes, à l'étape Sécurité (options haptic_sec_*) : double authentification, et passkeys d'Optimizr Pro.
+ * Même format que haptic_onboarding_security_toggles(). L'administrateur met en place la sienne juste après l'assistant,
+ * les autres comptes à leur prochaine connexion (functions/security-welcome.php).
+ */
+function haptic_onboarding_account_toggles()
+{
+    $toggles = [];
+    if (!(defined('OPTIMIZR_DISABLE_2FA') && OPTIMIZR_DISABLE_2FA)) {
+        $toggles['two_factor'] = [__('Two-factor authentication', 'optimizr'), __('After the password, a 6-digit code from an app or sent by email. Each account sets it up in a minute, right after logging in.', 'optimizr'), true];
+    }
+    return apply_filters('haptic_onboarding_account_toggles', $toggles);
+}
+
 /** Réglages proposés par l'étape Référencement : option => [titre, description, valeur par défaut]. */
 function haptic_onboarding_seo_toggles()
 {
@@ -178,7 +194,7 @@ function haptic_onboarding_save()
     $notices = [];
 
     if (!empty($modules['security'])) {
-        foreach (array_keys(haptic_onboarding_security_toggles()) as $key) {
+        foreach (array_keys(haptic_onboarding_account_toggles() + haptic_onboarding_security_toggles()) as $key) {
             update_option('haptic_sec_' . $key, $flag('haptic_sec_' . $key));
         }
 
@@ -255,7 +271,8 @@ function haptic_onboarding_save()
         set_transient('haptic_onboarding_notices_' . get_current_user_id(), $notices, 10 * MINUTE_IN_SECONDS);
     }
 
-    wp_safe_redirect(haptic_onboarding_url(['step' => 'done']));
+    // Module Sécurité : mise en place du compte d'abord (l'écran passe à la fin s'il n'y a rien à proposer)
+    wp_safe_redirect(haptic_onboarding_url(['step' => empty($modules['security']) ? 'done' : 'account']));
     exit;
 }
 
@@ -305,8 +322,22 @@ function haptic_onboarding_render()
     wp_set_script_translations('optimizr-onboarding', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- étape affichée, lecture seule
-    $done = sanitize_key(wp_unslash($_GET['step'] ?? '')) === 'done';
+    $screen = sanitize_key(wp_unslash($_GET['step'] ?? ''));
+    $done = $screen === 'done';
     $steps = haptic_onboarding_steps();
+
+    // Écran du compte, après l'enregistrement : rien à mettre en place (déjà fait, protections désactivées), écran final
+    $account = $screen === 'account';
+    $assets = [[], []];
+    if ($account) {
+        $user = wp_get_current_user();
+        $account_steps = function_exists('haptic_sec_account_steps') ? haptic_sec_account_steps($user) : [];
+        if (!$account_steps) {
+            wp_safe_redirect(haptic_onboarding_url(['step' => 'done']));
+            exit;
+        }
+        $assets = haptic_sec_account_enqueue($user, $account_steps, ['optimizr-onboarding']);
+    }
 
     nocache_headers();
     header('Content-Type: text/html; charset=' . get_option('blog_charset'));
@@ -316,21 +347,21 @@ function haptic_onboarding_render()
     <meta charset="<?php echo esc_attr(get_option('blog_charset')); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title><?php echo $done ? esc_html__('Setup complete', 'optimizr') : esc_html__('Setup wizard', 'optimizr'); ?> - Optimizr</title>
+    <title><?php echo $done ? esc_html__('Setup complete', 'optimizr') : ($account ? esc_html__('Secure your account', 'optimizr') : esc_html__('Setup wizard', 'optimizr')); ?> - Optimizr</title>
     <?php wp_print_inline_script_tag("document.documentElement.className = 'js';"); ?>
-    <?php wp_print_styles('optimizr-onboarding'); ?>
+    <?php wp_print_styles(array_merge(['optimizr-onboarding'], $assets[0])); ?>
 </head>
 <body class="ob-body">
     <?php haptic_onboarding_svg_defs(); ?>
-    <div class="ob<?php echo $done ? ' ob--done' : ''; ?>">
+    <div class="ob<?php echo $done || $account ? ' ob--done' : ''; ?><?php echo $account ? ' ob--account' : ''; ?>">
         <aside class="ob-visual" aria-hidden="true">
             <div class="ob-brand">
                 <img class="ob-brand__logo" src="<?php echo esc_url(HAPTIC_OPTIMIZR_URL . 'images/optimizr-icon.svg'); ?>" width="34" height="34" alt="" />
                 <span class="ob-brand__name">Optimizr</span>
             </div>
             <div class="ob-stage">
-                <?php if ($done) : ?>
-                    <div class="ob-illu is-active"><?php haptic_onboarding_illustration('done'); ?></div>
+                <?php if ($done || $account) : ?>
+                    <div class="ob-illu is-active"><?php haptic_onboarding_illustration($account ? 'security' : 'done'); ?></div>
                 <?php else : ?>
                     <?php foreach (array_keys($steps) as $i => $slug) : ?>
                         <div class="ob-illu<?php echo $i === 0 ? ' is-active' : ''; ?>" data-illu="<?php echo esc_attr($slug); ?>"><?php haptic_onboarding_illustration($slug); ?></div>
@@ -341,6 +372,9 @@ function haptic_onboarding_render()
                 <?php if ($done) : ?>
                     <p class="ob-caption__kicker"><?php esc_html_e('Here we go', 'optimizr'); ?></p>
                     <p class="ob-caption__text"><?php esc_html_e('Your site is protected, visible and ready to be optimized.', 'optimizr'); ?></p>
+                <?php elseif ($account) : ?>
+                    <p class="ob-caption__kicker"><?php esc_html_e('Your account', 'optimizr'); ?></p>
+                    <p class="ob-caption__text"><?php esc_html_e('A leaked password is no longer enough: without the second step, nobody gets in.', 'optimizr'); ?></p>
                 <?php else : ?>
                     <?php foreach ($steps as $slug => $step) : ?>
                         <div class="ob-caption__item<?php echo $slug === 'welcome' ? ' is-active' : ''; ?>" data-caption="<?php echo esc_attr($slug); ?>" data-pillar="<?php echo esc_attr($step['pillar']); ?>">
@@ -350,7 +384,7 @@ function haptic_onboarding_render()
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            <ul class="ob-pillars" data-pillar="all">
+            <ul class="ob-pillars" data-pillar="<?php echo $account ? 'security' : 'all'; ?>">
                 <li class="ob-pillars__item" data-pillar-item="security"><?php echo wp_kses(haptic_icon('shield', 16), haptic_kses_ui()); ?><?php esc_html_e('Security', 'optimizr'); ?></li>
                 <li class="ob-pillars__item" data-pillar-item="performance"><?php echo wp_kses(haptic_onboarding_icon('gauge'), haptic_kses_ui()); ?><?php esc_html_e('Performance', 'optimizr'); ?></li>
                 <li class="ob-pillars__item" data-pillar-item="optimization"><?php echo wp_kses(haptic_icon('sparkles', 16), haptic_kses_ui()); ?><?php esc_html_e('Optimization', 'optimizr'); ?></li>
@@ -358,10 +392,16 @@ function haptic_onboarding_render()
         </aside>
 
         <main class="ob-panel">
-            <?php $done ? haptic_onboarding_render_done() : haptic_onboarding_render_form($steps); ?>
+            <?php
+            if ($account) {
+                haptic_onboarding_render_account($user, $account_steps);
+            } else {
+                $done ? haptic_onboarding_render_done() : haptic_onboarding_render_form($steps);
+            }
+            ?>
         </main>
     </div>
-    <?php wp_print_scripts('optimizr-onboarding'); ?>
+    <?php wp_print_scripts(array_merge(['optimizr-onboarding'], $assets[1])); ?>
     <?php do_action('haptic_onboarding_print_scripts'); ?>
 </body>
 </html>
@@ -540,6 +580,16 @@ function haptic_onboarding_step_security($modules)
             <span class="ob-field__help"><?php esc_html_e('Add yours if it is static (office, fiber) so you never lock yourself out.', 'optimizr'); ?></span>
         </div>
     </div>
+    <?php $account_toggles = haptic_onboarding_account_toggles(); ?>
+    <?php if ($account_toggles) : ?>
+        <h2 class="ob-subtitle"><?php esc_html_e('Account login', 'optimizr'); ?></h2>
+        <div class="ob-options">
+            <?php foreach ($account_toggles as $key => $toggle) {
+                haptic_onboarding_switch('haptic_sec_' . $key, get_option('haptic_sec_' . $key, $toggle[2] ? 1 : 0), $toggle[0], $toggle[1], $toggle[2] ? __('Recommended', 'optimizr') : '');
+            } ?>
+        </div>
+        <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('You set up your own account right after the wizard. Other accounts are offered the same at their next login.', 'optimizr'); ?></p>
+    <?php endif; ?>
     <h2 class="ob-subtitle"><?php esc_html_e('Protections', 'optimizr'); ?></h2>
     <div class="ob-options">
         <?php foreach (haptic_onboarding_security_toggles() as $key => $toggle) {
@@ -639,6 +689,28 @@ function haptic_onboarding_step_summary($modules)
     ?>
     <div class="ob-summary" data-ob-summary></div>
     <noscript><p class="ob-note"><?php esc_html_e('Check the choices above before applying the settings.', 'optimizr'); ?></p></noscript>
+    <?php
+}
+
+/**
+ * Après l'enregistrement, avec le module Sécurité : l'administrateur protège son propre compte
+ * (mêmes étapes que l'écran proposé à la connexion, functions/security-welcome.php).
+ */
+function haptic_onboarding_render_account($user, $steps)
+{
+    $required = !empty($steps['two_factor']);
+    ?>
+    <div class="ob-done ob-account">
+        <p class="ob-step__eyebrow"><?php esc_html_e('Settings applied', 'optimizr'); ?></p>
+        <h1 class="ob-step__title" tabindex="-1"><?php esc_html_e('Secure your account', 'optimizr'); ?></h1>
+        <p class="ob-step__intro"><?php esc_html_e('One last minute for your own login. Your team will be offered the same at their next login.', 'optimizr'); ?></p>
+        <div class="optimizr-welcome" data-required="<?php echo $required ? 'two_factor' : ''; ?>">
+            <?php haptic_sec_account_cards($user, $steps); ?>
+        </div>
+        <div class="ob-nav ob-nav--done ob-nav--account">
+            <a class="ob-btn ob-btn--ghost" href="<?php echo esc_url(haptic_onboarding_url(['step' => 'done'])); ?>" data-welcome-continue data-done="<?php esc_attr_e('Continue', 'optimizr'); ?>" data-later-class="ob-btn--ghost" data-done-class="ob-btn--primary" <?php echo $required ? 'hidden' : ''; ?>><?php esc_html_e('Later', 'optimizr'); ?></a>
+        </div>
+    </div>
     <?php
 }
 

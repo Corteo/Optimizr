@@ -1238,6 +1238,22 @@ button.ob-field__link:disabled {
     justify-content: flex-start;
 }
 
+/* Compte de l'administrateur, après l'enregistrement (étapes : css/optimizr-welcome.css) */
+
+.ob--account .ob-panel {
+    justify-content: flex-start;
+}
+
+.ob-account .optimizr-welcome {
+    margin: 4px 0 0;
+}
+
+.ob-nav--account {
+    position: sticky;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
 /* ---------- Animations des illustrations ---------- */
 
 .ob-svg * {
