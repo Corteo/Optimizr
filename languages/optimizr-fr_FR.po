@@ -1971,3 +1971,265 @@ msgstr "AVIF n'est pas disponible sur ce serveur (bibliothèque GD ou Imagick sa
 #: functions/images.php
 msgid "Images are converted to WebP instead."
 msgstr "Les images sont converties en WebP à la place."
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Audit"
+msgstr "Audit"
+
+#: functions/audit.php
+msgctxt "short for Performance"
+msgid "Perf."
+msgstr "Perf."
+
+#: functions/audit.php
+msgctxt "short for Accessibility"
+msgid "Access."
+msgstr "Access."
+
+#: functions/audit.php
+msgctxt "short for Best practices"
+msgid "Pract."
+msgstr "Prat."
+
+#: functions/audit.php
+msgid "The audit is run by Google's servers: they cannot open a site on a local or private address. Run it once the site is online."
+msgstr "L'audit est exécuté par les serveurs de Google : ils ne peuvent pas ouvrir un site à une adresse locale ou privée. Lancez-le une fois le site en ligne."
+
+#: functions/audit.php
+msgid "%1$s · %2$s · %3$s"
+msgstr "%1$s · %2$s · %3$s"
+
+#: functions/audit.php
+msgid "%s ms"
+msgstr "%s ms"
+
+#: functions/audit.php
+msgid "%s s"
+msgstr "%s s"
+
+#: functions/audit.php
+msgid "(the %s most important are shown)"
+msgstr "(les %s plus importants sont affichés)"
+
+#: functions/audit.php
+msgid "Accessibility"
+msgstr "Accessibilité"
+
+#: functions/audit.php
+msgid "Add a Google API key (free) to run audits."
+msgstr "Ajoutez une clé API Google (gratuite) pour lancer des audits."
+
+#: functions/audit.php
+msgid "Add a Google API key first."
+msgstr "Ajoutez d'abord une clé API Google."
+
+#: functions/audit.php
+msgid "An audit is already running. Wait for it to finish."
+msgstr "Un audit est déjà en cours. Attendez qu'il se termine."
+
+#: functions/audit.php
+msgid "Audit in progress… %d s (usually 15 to 60 seconds)"
+msgstr "Audit en cours… %d s (en général 15 à 60 secondes)"
+
+#: functions/audit.php
+msgid "Best practices"
+msgstr "Bonnes pratiques"
+
+#: functions/audit.php
+msgid "Check that the page opens for visitors who are not logged in (maintenance mode, password, firewall)."
+msgstr "Vérifiez que la page s'ouvre pour les visiteurs non connectés (mode maintenance, mot de passe, pare-feu)."
+
+#: functions/audit.php
+msgid "Click \"Enable\" (create a project if asked)."
+msgstr "Cliquez sur « Activer » (créez un projet si on vous le demande)."
+
+#: functions/audit.php
+msgid "Core Web Vitals assessment: failed"
+msgstr "Signaux Web essentiels : échec"
+
+#: functions/audit.php
+msgid "Core Web Vitals assessment: passed"
+msgstr "Signaux Web essentiels : réussite"
+
+#: functions/audit.php
+msgid "Cumulative Layout Shift (CLS)"
+msgstr "Cumulative Layout Shift (CLS)"
+
+#: functions/audit.php
+msgid "Date"
+msgstr "Date"
+
+#: functions/audit.php
+msgid "Desktop"
+msgstr "Ordinateur"
+
+#: functions/audit.php
+msgid "Device"
+msgstr "Appareil"
+
+#: functions/audit.php
+msgid "Mobile"
+msgstr "Mobile"
+
+#: functions/audit.php
+msgid "Enter the address of a page of this site."
+msgstr "Saisissez l'adresse d'une page de ce site."
+
+#: functions/audit.php
+msgid "Experience of Chrome users over the last 28 days, for the whole site (not enough visits on this page alone). 75% of visits do at least as well."
+msgstr "Expérience des utilisateurs de Chrome sur les 28 derniers jours, pour tout le site (pas assez de visites sur cette seule page). 75 % des visites font au moins aussi bien."
+
+#: functions/audit.php
+msgid "Experience of Chrome users over the last 28 days, on this page. 75% of visits do at least as well."
+msgstr "Expérience des utilisateurs de Chrome sur les 28 derniers jours, sur cette page. 75 % des visites font au moins aussi bien."
+
+#: functions/audit.php
+msgid "First Contentful Paint (FCP)"
+msgstr "First Contentful Paint (FCP)"
+
+#: functions/audit.php
+msgid "Full report on PageSpeed Insights"
+msgstr "Rapport complet sur PageSpeed Insights"
+
+#: functions/audit.php
+msgid "Google API key"
+msgstr "Clé API Google"
+
+#: functions/audit.php
+msgid "Google PageSpeed Insights did not respond: %s"
+msgstr "Google PageSpeed Insights n'a pas répondu : %s"
+
+#: functions/audit.php
+msgid "Google PageSpeed Insights returned an error (%1$d): %2$s"
+msgstr "Google PageSpeed Insights a renvoyé une erreur (%1$d) : %2$s"
+
+#: functions/audit.php
+msgid "Google could not analyze the page (%1$s). %2$s"
+msgstr "Google n'a pas pu analyser la page (%1$s). %2$s"
+
+#: functions/audit.php
+msgid "Google loads the page like a first-time visitor, on a mid-range phone with a 4G connection, or on a computer."
+msgstr "Google charge la page comme un nouveau visiteur, sur un téléphone de milieu de gamme en 4G, ou sur un ordinateur."
+
+#: functions/audit.php
+msgid "Google rejects this API key. Check it, then save it again."
+msgstr "Google refuse cette clé API. Vérifiez-la, puis enregistrez-la de nouveau."
+
+#: functions/audit.php
+msgid "Google requires a key to use PageSpeed Insights. It is free, with up to 25,000 audits per day."
+msgstr "Google demande une clé pour utiliser PageSpeed Insights. Elle est gratuite, jusqu'à 25 000 audits par jour."
+
+#: functions/audit.php
+msgid "History"
+msgstr "Historique"
+
+#: functions/audit.php
+msgid "In \"Credentials\", create an API key, then paste it here."
+msgstr "Dans « Identifiants », créez une clé API, puis collez-la ici."
+
+#: functions/audit.php
+msgid "Interaction to Next Paint (INP)"
+msgstr "Interaction to Next Paint (INP)"
+
+#: functions/audit.php
+msgid "Largest Contentful Paint (LCP)"
+msgstr "Largest Contentful Paint (LCP)"
+
+#: functions/audit.php
+msgid "Lighthouse audit"
+msgstr "Audit Lighthouse"
+
+#: functions/audit.php
+msgid "Local site."
+msgstr "Site local."
+
+#: functions/audit.php
+msgid "Measured by Lighthouse during this audit, on a simulated device and connection."
+msgstr "Mesuré par Lighthouse pendant cet audit, sur un appareil et une connexion simulés."
+
+#: functions/audit.php
+msgid "Measurements"
+msgstr "Mesures"
+
+#: functions/audit.php
+msgid "No audit yet."
+msgstr "Aucun audit pour l'instant."
+
+#: functions/audit.php
+msgid "No desktop audit yet."
+msgstr "Aucun audit sur ordinateur pour l'instant."
+
+#: functions/audit.php
+msgid "No mobile audit yet."
+msgstr "Aucun audit sur mobile pour l'instant."
+
+#: functions/audit.php
+msgid "Not enough Chrome visits on this page and this site for Google to publish real-world data (Chrome UX Report, last 28 days). Lighthouse measurements above remain valid."
+msgstr "Pas assez de visites Chrome sur cette page ni sur ce site pour que Google publie des données réelles (Chrome UX Report, 28 derniers jours). Les mesures Lighthouse ci-dessus restent valables."
+
+#: functions/audit.php
+msgid "Nothing to improve."
+msgstr "Rien à améliorer."
+
+#: functions/audit.php
+msgid "Open %s and sign in with a Google account."
+msgstr "Ouvrez %s et connectez-vous avec un compte Google."
+
+#: functions/audit.php
+msgid "Page"
+msgstr "Page"
+
+#: functions/audit.php
+msgid "PageSpeed Insights API in the Google Cloud console"
+msgstr "l'API PageSpeed Insights dans la console Google Cloud"
+
+#: functions/audit.php
+msgid "Performance, accessibility, best practices and SEO scores of a page, measured by Google with Lighthouse."
+msgstr "Scores de performance, d'accessibilité, de bonnes pratiques et de SEO d'une page, mesurés par Google avec Lighthouse."
+
+#: functions/audit.php
+msgid "Real visitors"
+msgstr "Visiteurs réels"
+
+#: functions/audit.php
+msgid "Run an audit"
+msgstr "Lancer un audit"
+
+#: functions/audit.php
+msgid "Run the audit"
+msgstr "Lancer l'audit"
+
+#: functions/audit.php
+msgid "The audit could not be completed. Reload the page and try again."
+msgstr "L'audit n'a pas pu aboutir. Rechargez la page et réessayez."
+
+#: functions/audit.php
+msgid "The last %d audits."
+msgstr "Les %d derniers audits."
+
+#: functions/audit.php
+msgid "The quota of this API key is used up. Try again later, or check its quotas in the Google Cloud console."
+msgstr "Le quota de cette clé API est épuisé. Réessayez plus tard, ou vérifiez ses quotas dans la console Google Cloud."
+
+#: functions/audit.php
+msgid "This API key cannot use PageSpeed Insights. In the Google Cloud console, enable the \"PageSpeed Insights API\" for its project and check its restrictions."
+msgstr "Cette clé API ne peut pas utiliser PageSpeed Insights. Dans la console Google Cloud, activez « PageSpeed Insights API » pour son projet et vérifiez ses restrictions."
+
+#: functions/audit.php
+msgid "This site seems to be on a local or private address: Google cannot open it."
+msgstr "Ce site semble être à une adresse locale ou privée : Google ne peut pas l'ouvrir."
+
+#: functions/audit.php
+msgid "Time to First Byte (TTFB)"
+msgstr "Time to First Byte (TTFB)"
+
+#: functions/audit.php
+msgid "unknown error"
+msgstr "erreur inconnue"
+
+#: functions/audit.php
+msgid "%s point to improve"
+msgid_plural "%s points to improve"
+msgstr[0] "%s point à améliorer"
+msgstr[1] "%s points à améliorer"

@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.4.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.5.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -56,6 +56,12 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 - Journal des verrouillages, alertes et évènements de double authentification (30 jours).
 - *Optimizr Pro :* passkeys (connexion sans mot de passe, qui dispense du code), discrétion, fonctions inutilisées désactivées, en-têtes de sécurité, bilan de l'environnement.
 
+### Audit Lighthouse
+- Onglet **Audit** : scores de performance, d'accessibilité, de bonnes pratiques et de SEO d'une page du site (accueil par défaut), sur mobile ou sur ordinateur, mesurés par Google avec Lighthouse ([API PageSpeed Insights](https://developers.google.com/speed/docs/insights/v5/get-started)).
+- Mesures de laboratoire (FCP, LCP, TBT, CLS, Speed Index), données réelles des visiteurs de Chrome (Chrome UX Report) quand le site a assez de trafic, et les principaux points à améliorer de chaque catégorie, avec leur explication. Historique des 30 derniers audits et lien vers le rapport complet.
+- Demande une **clé API Google**, gratuite (jusqu'à 25 000 audits par jour) : console Google Cloud › activer « PageSpeed Insights API » › Identifiants › créer une clé API, puis la coller dans l'onglet. Google ne répond plus aux requêtes sans clé.
+- L'audit est lancé par Google depuis ses serveurs : un site local (MAMP, `.local`, `.test`, adresse privée) ne peut pas être audité. Rien n'est envoyé à Google sans clic sur « Lancer l'audit ».
+
 ### Outils
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
 - **Suppression du plugin** : à la désactivation (ou dans l'onglet Outils), on choisit ce qui sera effacé si le plugin est ensuite supprimé : réglages, redirections et SEO des contenus, journaux. Par défaut, tout est conservé ; les tâches planifiées, caches et fichiers générés sont toujours supprimés.
@@ -86,6 +92,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 - **Assistant de configuration :** s'ouvre en plein écran à la première activation du plugin, puis à la demande (menu **Optimizr › Assistant**, bouton « Assistant de configuration » de la page d'options, lien dans la liste des extensions). En quelques étapes, il fait choisir les modules puis renseigner l'essentiel de chacun : adresse de connexion et verrouillage, connexion des comptes (double authentification, et passkeys d'Optimizr Pro), nom du site et motifs SEO, outils de mesure (Optimizr Pro y ajoute ses propres étapes). Rien n'est enregistré avant la dernière étape ; les étapes des modules non choisis sont sautées. Avec le module Sécurité, l'administrateur met ensuite en place la double authentification (ou sa passkey) de son propre compte, avant l'écran final ; les autres comptes se la voient proposer à leur prochaine connexion.
 - **Tableau de bord :** activez les modules utiles et consultez l'état du site (bandeau cookies, indexation).
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
+- **Audit :** audit Lighthouse d'une page, sur mobile ou sur ordinateur, et historique des scores.
 - **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
 
 ## Pour les développeurs
@@ -147,6 +154,7 @@ functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
+functions/audit.php      Onglet Audit : audit Lighthouse avec l'API PageSpeed Insights (+ js/optimizr-audit.js)
 functions/thumbnails.php Module Images : images à la une
 functions/images.php     Module Images : conversion des images importées en WebP ou AVIF
                          (+ class-haptic-image-editors.php : images CMJN ; assets/icc/ : profil sRGB, CC0)

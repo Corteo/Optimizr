@@ -71,6 +71,8 @@ function haptic_uninstall_log_options()
         'haptic_links_report',
         'haptic_links_queue',
         'haptic_indexnow_last',
+        'haptic_audit_results',
+        'haptic_audit_history',
     ];
 }
 

@@ -83,7 +83,8 @@ function haptic_admin_tabs()
             'intro' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr')],
         'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails'],
             'intro' => __('Notifications sent by WordPress after automatic updates.', 'optimizr')],
-        // Onglet sans réglages : ses propres formulaires, pas de barre d'enregistrement
+        // Onglets sans barre d'enregistrement : leurs propres formulaires
+        'audit'     => ['label' => _x('Audit', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_audit_tab'],
         'tools'     => ['label' => _x('Tools', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_tools_tab'],
     ];
 

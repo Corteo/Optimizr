@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 7.4.0\n"
+"Project-Id-Version: Haptic Optimizr 7.5.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1966,3 +1966,265 @@ msgstr ""
 #: functions/images.php
 msgid "Images are converted to WebP instead."
 msgstr ""
+
+#: functions/admin-ui.php
+msgctxt "admin tab"
+msgid "Audit"
+msgstr ""
+
+#: functions/audit.php
+msgctxt "short for Performance"
+msgid "Perf."
+msgstr ""
+
+#: functions/audit.php
+msgctxt "short for Accessibility"
+msgid "Access."
+msgstr ""
+
+#: functions/audit.php
+msgctxt "short for Best practices"
+msgid "Pract."
+msgstr ""
+
+#: functions/audit.php
+msgid "The audit is run by Google's servers: they cannot open a site on a local or private address. Run it once the site is online."
+msgstr ""
+
+#: functions/audit.php
+msgid "%1$s · %2$s · %3$s"
+msgstr ""
+
+#: functions/audit.php
+msgid "%s ms"
+msgstr ""
+
+#: functions/audit.php
+msgid "%s s"
+msgstr ""
+
+#: functions/audit.php
+msgid "(the %s most important are shown)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Accessibility"
+msgstr ""
+
+#: functions/audit.php
+msgid "Add a Google API key (free) to run audits."
+msgstr ""
+
+#: functions/audit.php
+msgid "Add a Google API key first."
+msgstr ""
+
+#: functions/audit.php
+msgid "An audit is already running. Wait for it to finish."
+msgstr ""
+
+#: functions/audit.php
+msgid "Audit in progress… %d s (usually 15 to 60 seconds)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Best practices"
+msgstr ""
+
+#: functions/audit.php
+msgid "Check that the page opens for visitors who are not logged in (maintenance mode, password, firewall)."
+msgstr ""
+
+#: functions/audit.php
+msgid "Click \"Enable\" (create a project if asked)."
+msgstr ""
+
+#: functions/audit.php
+msgid "Core Web Vitals assessment: failed"
+msgstr ""
+
+#: functions/audit.php
+msgid "Core Web Vitals assessment: passed"
+msgstr ""
+
+#: functions/audit.php
+msgid "Cumulative Layout Shift (CLS)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Date"
+msgstr ""
+
+#: functions/audit.php
+msgid "Desktop"
+msgstr ""
+
+#: functions/audit.php
+msgid "Device"
+msgstr ""
+
+#: functions/audit.php
+msgid "Mobile"
+msgstr ""
+
+#: functions/audit.php
+msgid "Enter the address of a page of this site."
+msgstr ""
+
+#: functions/audit.php
+msgid "Experience of Chrome users over the last 28 days, for the whole site (not enough visits on this page alone). 75% of visits do at least as well."
+msgstr ""
+
+#: functions/audit.php
+msgid "Experience of Chrome users over the last 28 days, on this page. 75% of visits do at least as well."
+msgstr ""
+
+#: functions/audit.php
+msgid "First Contentful Paint (FCP)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Full report on PageSpeed Insights"
+msgstr ""
+
+#: functions/audit.php
+msgid "Google API key"
+msgstr ""
+
+#: functions/audit.php
+msgid "Google PageSpeed Insights did not respond: %s"
+msgstr ""
+
+#: functions/audit.php
+msgid "Google PageSpeed Insights returned an error (%1$d): %2$s"
+msgstr ""
+
+#: functions/audit.php
+msgid "Google could not analyze the page (%1$s). %2$s"
+msgstr ""
+
+#: functions/audit.php
+msgid "Google loads the page like a first-time visitor, on a mid-range phone with a 4G connection, or on a computer."
+msgstr ""
+
+#: functions/audit.php
+msgid "Google rejects this API key. Check it, then save it again."
+msgstr ""
+
+#: functions/audit.php
+msgid "Google requires a key to use PageSpeed Insights. It is free, with up to 25,000 audits per day."
+msgstr ""
+
+#: functions/audit.php
+msgid "History"
+msgstr ""
+
+#: functions/audit.php
+msgid "In \"Credentials\", create an API key, then paste it here."
+msgstr ""
+
+#: functions/audit.php
+msgid "Interaction to Next Paint (INP)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Largest Contentful Paint (LCP)"
+msgstr ""
+
+#: functions/audit.php
+msgid "Lighthouse audit"
+msgstr ""
+
+#: functions/audit.php
+msgid "Local site."
+msgstr ""
+
+#: functions/audit.php
+msgid "Measured by Lighthouse during this audit, on a simulated device and connection."
+msgstr ""
+
+#: functions/audit.php
+msgid "Measurements"
+msgstr ""
+
+#: functions/audit.php
+msgid "No audit yet."
+msgstr ""
+
+#: functions/audit.php
+msgid "No desktop audit yet."
+msgstr ""
+
+#: functions/audit.php
+msgid "No mobile audit yet."
+msgstr ""
+
+#: functions/audit.php
+msgid "Not enough Chrome visits on this page and this site for Google to publish real-world data (Chrome UX Report, last 28 days). Lighthouse measurements above remain valid."
+msgstr ""
+
+#: functions/audit.php
+msgid "Nothing to improve."
+msgstr ""
+
+#: functions/audit.php
+msgid "Open %s and sign in with a Google account."
+msgstr ""
+
+#: functions/audit.php
+msgid "Page"
+msgstr ""
+
+#: functions/audit.php
+msgid "PageSpeed Insights API in the Google Cloud console"
+msgstr ""
+
+#: functions/audit.php
+msgid "Performance, accessibility, best practices and SEO scores of a page, measured by Google with Lighthouse."
+msgstr ""
+
+#: functions/audit.php
+msgid "Real visitors"
+msgstr ""
+
+#: functions/audit.php
+msgid "Run an audit"
+msgstr ""
+
+#: functions/audit.php
+msgid "Run the audit"
+msgstr ""
+
+#: functions/audit.php
+msgid "The audit could not be completed. Reload the page and try again."
+msgstr ""
+
+#: functions/audit.php
+msgid "The last %d audits."
+msgstr ""
+
+#: functions/audit.php
+msgid "The quota of this API key is used up. Try again later, or check its quotas in the Google Cloud console."
+msgstr ""
+
+#: functions/audit.php
+msgid "This API key cannot use PageSpeed Insights. In the Google Cloud console, enable the \"PageSpeed Insights API\" for its project and check its restrictions."
+msgstr ""
+
+#: functions/audit.php
+msgid "This site seems to be on a local or private address: Google cannot open it."
+msgstr ""
+
+#: functions/audit.php
+msgid "Time to First Byte (TTFB)"
+msgstr ""
+
+#: functions/audit.php
+msgid "unknown error"
+msgstr ""
+
+#: functions/audit.php
+msgid "%s point to improve"
+msgid_plural "%s points to improve"
+msgstr[0] ""
+msgstr[1] ""

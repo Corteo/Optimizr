@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.4.1
+Stable tag: 7.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,11 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 * Uploaded JPEG and PNG images saved as WebP or AVIF (when the server supports it) by WordPress's own image editor, with a quality setting. No external service; the original file is kept.
 * Choice of the content types that accept a featured image.
 
+= Lighthouse audit =
+
+* Performance, accessibility, best practices and SEO scores of any page of the site, on mobile or desktop, run on demand by Google PageSpeed Insights (free Google API key required).
+* Lab measurements (LCP, CLS, TBT…), real-visitor data from the Chrome UX Report when available, the main points to improve and a history of the last 30 audits.
+
 = Also included =
 
 * Email settings.
@@ -47,6 +52,10 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 = Third-party services of the cookie banner =
 
 The cookie module loads the services you configure (Google Analytics, Google Tag Manager) in your visitors' browsers, and only after they consent to each service. Embeds from YouTube, Dailymotion, X, Facebook and Google Maps are also blocked until the visitor consents. Each service then receives the data described in its own terms and privacy policy, which visitors can read from the consent panel.
+
+= Google PageSpeed Insights (Lighthouse audit) =
+
+The Audit tab uses the Google PageSpeed Insights API to run Lighthouse on a page of your site. Nothing is sent until an administrator clicks "Run the audit"; the plugin then sends the address of the page, the device (mobile or desktop), the admin language and the Google API key entered in the tab to `https://www.googleapis.com/pagespeedonline/v5/runPagespeed`. Google loads the page from its servers, like any visitor, and returns the report. Service provided by Google: [Terms of Service](https://developers.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
 
 == Installation ==
 
@@ -61,6 +70,9 @@ The cookie module loads the services you configure (Google Analytics, Google Tag
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
 == Changelog ==
+
+= 7.5.0 =
+* New: Lighthouse audit (Audit tab). Performance, accessibility, best practices and SEO scores of any page of the site, on mobile or desktop, with lab measurements, real-visitor data (Chrome UX Report), the main points to improve and a history of the last 30 audits. Run by Google PageSpeed Insights, on demand, with a free Google API key.
 
 = 7.4.1 =
 * Fixed: CMYK JPEG images (prepared for print) converted to WebP or AVIF had very different colors, because their color profile was ignored. With Imagick they are now converted to sRGB with their profile; with GD, which cannot do it faithfully, they stay in JPEG.
