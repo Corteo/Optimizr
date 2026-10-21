@@ -11,6 +11,8 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 require_once __DIR__ . '/functions/activation.php';
+// Cache : advanced-cache.php, ligne de wp-config.php, règles du .htaccess et pages (action haptic_deactivate)
+require_once __DIR__ . '/functions/cache-files.php';
 require_once __DIR__ . '/functions/uninstall.php';
 
 if (is_multisite()) {

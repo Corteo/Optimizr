@@ -1,12 +1,12 @@
 # Haptic Optimizr
 
-Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images (images à la une, conversion en WebP ou AVIF) et quelques outils de maintenance.
+Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images (images à la une, conversion en WebP ou AVIF), cache et quelques outils de maintenance.
 
 Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le tableau de bord du plugin. Un module désactivé ne charge aucun code et son onglet disparaît.
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.5.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.6.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -39,6 +39,16 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
   - Images CMJN (JPEG préparé pour l'impression) : avec Imagick, converties en sRGB avec leur profil ICC, pour garder leurs couleurs ; avec GD, qui ignore les profils, elles restent en JPEG.
   - AVIF n'est proposé que si le serveur sait l'écrire (WordPress 6.5+, GD ou Imagick compilés avec AVIF) ; sinon, ou si l'hébergement change, les images passent en WebP.
   - Seules les images importées après l'activation sont converties. *Optimizr Pro :* conversion de la médiathèque existante.
+
+### Cache
+Tout est désactivé par défaut. Sur un site existant, le module s'active depuis le tableau de bord.
+- **Cache des pages** : les pages vues par les visiteurs non connectés sont enregistrées en fichiers HTML (`wp-content/cache/optimizr/pages/`) et renvoyées avant le chargement de WordPress, par le fichier `wp-content/advanced-cache.php` et la constante `WP_CACHE`, qu'Optimizr ajoute en haut de `wp-config.php` (sinon, il indique la ligne à ajouter). Durée de vie réglable (10 heures par défaut, ce qui laisse les formulaires fonctionner), adresses exclues (`/contact/`, `/boutique/*`), cache séparé pour les téléphones en option. Jamais en cache : personnes connectées, commentateurs, contenus protégés par mot de passe, recherches, pages introuvables, paniers et commandes WooCommerce, adresses avec paramètres (sauf ceux de suivi comme `utm_*`, `gclid`, `fbclid`), pages qui posent un cookie. En-tête `X-Optimizr-Cache: HIT` sur une page servie depuis le cache.
+- **Vidage automatique** : un contenu modifié vide sa page, l'accueil et ses archives (type, catégories, auteur) ; un contenu publié, dépublié ou dont l'adresse change, un commentaire, un menu, un widget, le thème, une catégorie, une extension ou un réglage vide tout le cache.
+- **Vidage manuel** : bouton de l'onglet Cache et menu « Cache » de la barre d'administration (tout le site, ou la page affichée).
+- **Cache navigateur et compression** : règles `mod_expires`, `mod_headers` et `mod_deflate` dans un bloc « Optimizr Cache » du `.htaccess` (Apache, LiteSpeed) : images, polices et vidéos un an, styles et scripts un mois. Sur Nginx, l'onglet affiche les règles à transmettre à l'hébergeur.
+- **Conflits** : avec une autre extension de cache (WP Rocket, W3 Total Cache, WP Super Cache, LiteSpeed Cache, WP Fastest Cache…) ou un `advanced-cache.php` qui n'est pas d'Optimizr, le cache des pages reste désactivé. Le cache de l'hébergeur (WP Engine, Kinsta, Pantheon, GoDaddy, Pressable, Varnish) est signalé, et vidé en même temps quand c'est possible (WP Engine, Pantheon, extension Nginx Helper). Pas de cache des pages sur un multisite.
+- Désactiver le cache, le module ou le plugin retire `advanced-cache.php`, la ligne de `wp-config.php`, les règles du `.htaccess` et les pages en cache.
+- *Optimizr Pro :* préchargement du cache et vidage de Cloudflare.
 
 ### Emails
 - Désactivation des emails envoyés après les mises à jour automatiques des extensions et de WordPress.
@@ -133,12 +143,21 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_onboarding_account_toggles`, `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement (`haptic_onboarding_account_toggles` : connexion des comptes, comme les passkeys d'Optimizr Pro). |
 | `haptic_onboarding_seo_fields`, `haptic_onboarding_step_after`, `haptic_onboarding_print_scripts`, `haptic_onboarding_illustration` | action | Contenu ajouté aux étapes de l'assistant. |
 | `haptic_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
+| `haptic_cache_purged` | action | Cache vidé : tableau des adresses vidées, vide pour tout le site (Optimizr Pro : préchargement, Cloudflare). |
+| `haptic_cache_skip_request` | filtre | Renvoyer `true` pour ne pas mettre la page demandée en cache. |
+| `haptic_cache_post_urls` | filtre | Pages vidées quand un contenu publié est modifié (`urls`, et `tree` avec les pages en dessous). |
+| `haptic_cache_bypass_cookies`, `haptic_cache_ignored_query_args` | filtre | Cookies qui excluent du cache, paramètres d'adresse ignorés. |
+| `haptic_cache_conflicting_plugins`, `haptic_cache_host_caches` | filtre | Extensions de cache et caches d'hébergeur détectés. |
+| `haptic_cache_purge_capability` | filtre | Droit nécessaire pour vider le cache (`manage_options` par défaut). |
+| `haptic_cache_aside` | action | Carte ajoutée au panneau latéral de l'onglet Cache. |
 | `haptic_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
 | `haptic_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
 | `haptic_before_enqueue_admin_scripts` / `haptic_after_…` | action | Charger des scripts côté administration. |
 
 `haptic_sec_recent_auth()` indique si la session a été ouverte ou confirmée (mot de passe, ou code de l'application) il y a moins de 10 minutes : condition pour ajouter un moyen de connexion, comme une passkey d'Optimizr Pro. La confirmation passe par la requête `haptic_sec_confirm` (nonce `haptic_sec_confirm`).
+
+`haptic_cache_purge_all()` vide tout le cache des pages, `haptic_cache_purge_urls($urls)` celui de quelques adresses du site ; `haptic_cache_page_active()` indique si le cache des pages est en service.
 
 `haptic_is_pro()` indique si Optimizr Pro est actif, `haptic_pro_is_outdated()` s'il est antérieur à la version minimale `HAPTIC_OPTIMIZR_PRO_MIN_VERSION` (1.3.0). Les réglages d'Optimizr Pro sont des options `haptic_*` : Optimizr les exporte, les importe et les supprime avec les siens.
 
@@ -155,6 +174,9 @@ functions/cookies.php    Module Cookies & RGPD
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/audit.php      Onglet Audit : audit Lighthouse avec l'API PageSpeed Insights (+ js/optimizr-audit.js)
+functions/cache.php      Module Cache : écriture des pages, vidage, onglet Cache
+functions/cache-files.php Cache : advanced-cache.php, wp-config.php, .htaccess (toujours chargé, pour tout retirer)
+functions/cache-serve.php Cache : service des pages avant WordPress (PHP natif, chargé par advanced-cache.php)
 functions/thumbnails.php Module Images : images à la une
 functions/images.php     Module Images : conversion des images importées en WebP ou AVIF
                          (+ class-haptic-image-editors.php : images CMJN ; assets/icc/ : profil sRGB, CC0)

@@ -29,6 +29,12 @@ function haptic_modules()
             'icon'  => 'image',
             'tab'   => 'content',
         ],
+        'cache' => [
+            'label' => __('Cache', 'optimizr'),
+            'desc'  => __('Page cache, browser cache and compression, cleared automatically when content changes.', 'optimizr'),
+            'icon'  => 'zap',
+            'tab'   => 'cache',
+        ],
         'emails' => [
             'label' => __('Emails', 'optimizr'),
             'desc'  => __('Turn off the emails sent after automatic updates.', 'optimizr'),
@@ -79,6 +85,8 @@ function haptic_admin_tabs()
         // Optimizr Pro y ajoute le module Types de contenu (retiré d'Optimizr 7.0)
         'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['thumbnails'],
             'intro' => __('Content types that accept a cover image, and the format of uploaded images.', 'optimizr')],
+        'cache'     => ['label' => __('Cache', 'optimizr'), 'modules' => ['cache'],
+            'intro' => __('Faster pages for visitors, without changing anything for logged-in users.', 'optimizr')],
         'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security'],
             'intro' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr')],
         'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails'],
@@ -247,6 +255,7 @@ function haptic_icon($name, $size = 20)
         'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
         'pin'      => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
         'phone'    => '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+        'zap'      => '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
         'key'      => '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
     ];
 
@@ -599,5 +608,6 @@ function haptic_pro_features()
         __('Content types: ready-made Events type and custom post types', 'optimizr'),
         __('AI assistant for meta descriptions and ALT text', 'optimizr'),
         __('Full security: discretion, unused features, headers', 'optimizr'),
+        __('Cache: preloading and Cloudflare purge', 'optimizr'),
     ];
 }
