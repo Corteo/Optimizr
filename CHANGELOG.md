@@ -6,6 +6,14 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.5.0] - 2026-10-21
+
+### Ajouté
+- **Audit Lighthouse** (nouvel onglet Audit, `functions/audit.php`, `js/optimizr-audit.js`) : scores de performance, d'accessibilité, de bonnes pratiques et de SEO d'une page du site, sur mobile ou sur ordinateur, mesurés par Google avec l'API PageSpeed Insights. Affiche les mesures de laboratoire (FCP, LCP, TBT, CLS, Speed Index), les données réelles des visiteurs de Chrome (Chrome UX Report, LCP, INP, CLS) quand Google en a, et les 10 principaux points à améliorer de chaque catégorie avec leur explication, dans la langue de l'administration. Lien vers le rapport complet sur PageSpeed Insights.
+- Le dernier audit de chaque appareil (`haptic_audit_results`) et l'historique des 30 derniers (`haptic_audit_history`) sont conservés : ni exportés, ni importés, effacés avec les journaux à la suppression du plugin.
+- Clé API Google (`haptic_audit_api_key`), gratuite, réglée dans l'onglet : Google ne sert plus les requêtes sans clé. Exportée seulement avec « Inclure les clés API », comme les autres clés.
+- Rien n'est envoyé à Google sans clic sur « Lancer l'audit » ; un seul audit à la fois. Un site à une adresse locale ou privée est signalé, puisque Google ne peut pas l'ouvrir. Service externe déclaré dans le readme.txt.
+
 ## [7.4.1] - 2026-10-15
 
 ### Corrigé
