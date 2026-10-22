@@ -3,8 +3,8 @@
 /**
  * Plugin Name: Haptic Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
- * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.5.0
+ * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
+ * Version: 7.6.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.5.0');
+define('HAPTIC_OPTIMIZR_VERSION', '7.6.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -40,6 +40,8 @@ add_action('init', function () {
 require_once(__DIR__ . '/functions/activation.php');
 require_once(__DIR__ . '/functions/admin-ui.php');
 require_once(__DIR__ . '/functions/assets.php');
+// Fichiers du cache (advanced-cache.php, .htaccess) : retirés à la désactivation du module comme du plugin
+require_once(__DIR__ . '/functions/cache-files.php');
 
 require_once(__DIR__ . '/functions/tabs.php');
 require_once(__DIR__ . '/functions/tools.php');
@@ -68,6 +70,9 @@ if (haptic_is_module_active('security')) {
 }
 if (haptic_is_module_active('seo')) {
     require_once(__DIR__ . '/functions/seo/seo.php');
+}
+if (haptic_is_module_active('cache')) {
+    require_once(__DIR__ . '/functions/cache.php');
 }
 
 /*

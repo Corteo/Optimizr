@@ -1,14 +1,14 @@
 === Haptic Optimizr ===
 Contributors: alexandrevergnaud
-Tags: seo, cookies, gdpr, security
+Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.5.0
+Stable tag: 7.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Cookie consent (GDPR), SEO meta tags, login protection with two-factor authentication and maintenance tools in one settings page, enabled module by module.
+Cookie consent (GDPR), SEO tags, login protection with two-factor authentication, page cache and maintenance tools in one settings page, by module.
 
 == Description ==
 
@@ -42,6 +42,13 @@ Haptic Optimizr gathers in a single admin page the settings a brochure website n
 * Performance, accessibility, best practices and SEO scores of any page of the site, on mobile or desktop, run on demand by Google PageSpeed Insights (free Google API key required).
 * Lab measurements (LCP, CLS, TBT…), real-visitor data from the Chrome UX Report when available, the main points to improve and a history of the last 30 audits.
 
+= Cache =
+
+* Page cache: pages are saved as HTML files and sent to visitors without loading WordPress (advanced-cache.php drop-in), with a lifespan, excluded addresses and an optional separate cache for phones. Logged-in users, searches, password-protected content and shopping carts are never cached.
+* Cleared automatically when content, comments, menus, the theme or settings change, and on demand from the Cache tab or the admin bar (whole site or current page).
+* Browser cache and gzip compression rules written to .htaccess on Apache and LiteSpeed; rules to copy for Nginx.
+* Detects other cache plugins and the host's own cache to avoid conflicts, and clears the host's cache (WP Engine, Pantheon, Nginx Helper) along with its own.
+
 = Also included =
 
 * Email settings.
@@ -69,7 +76,14 @@ The Audit tab uses the Google PageSpeed Insights API to run Lighthouse on a page
 
 You choose when deactivating the plugin, or in the Tools tab. By default, settings, redirects (created with version 4.x) and logs are kept; scheduled tasks, caches and generated files are always removed.
 
+= Which files does the page cache change? =
+
+When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
+
 == Changelog ==
+
+= 7.6.0 =
+* New: Cache module and tab. Page cache served before WordPress loads, browser cache and compression rules (.htaccess), automatic clearing when content changes, manual clearing from the tab and the admin bar, and detection of other cache plugins and host caches. Off by default.
 
 = 7.5.0 =
 * New: Lighthouse audit (Audit tab). Performance, accessibility, best practices and SEO scores of any page of the site, on mobile or desktop, with lab measurements, real-visitor data (Chrome UX Report), the main points to improve and a history of the last 30 audits. Run by Google PageSpeed Insights, on demand, with a free Google API key.

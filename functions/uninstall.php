@@ -97,6 +97,8 @@ function haptic_uninstall_site()
     wp_clear_scheduled_hook('haptic_sitemap_regenerate');
     // ALT automatique en attente : une tâche par image (identifiant en argument), que wp_clear_scheduled_hook() sans argument ne retire pas
     wp_unschedule_hook('haptic_ai_alt_on_upload');
+    // Préchargement du cache d'Optimizr Pro en attente
+    wp_clear_scheduled_hook('haptic_cache_preload_run');
     // Empreinte du robots.txt écrit par Optimizr : gardée si le fichier n'a pas pu être supprimé, inutile désormais
     delete_option('haptic_robots_txt_hash');
 

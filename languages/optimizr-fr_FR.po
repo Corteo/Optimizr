@@ -2233,3 +2233,177 @@ msgid "%s point to improve"
 msgid_plural "%s points to improve"
 msgstr[0] "%s point à améliorer"
 msgstr[1] "%s points à améliorer"
+
+#: functions/admin-ui.php functions/cache.php
+msgid "Cache"
+msgstr "Cache"
+
+#: functions/admin-ui.php
+msgid "Page cache, browser cache and compression, cleared automatically when content changes."
+msgstr "Cache des pages, cache navigateur et compression, vidés automatiquement quand un contenu change."
+
+#: functions/admin-ui.php
+msgid "Faster pages for visitors, without changing anything for logged-in users."
+msgstr "Des pages plus rapides pour les visiteurs, sans rien changer pour les personnes connectées."
+
+#: functions/admin-ui.php
+msgid "Cache: preloading and Cloudflare purge"
+msgstr "Cache : préchargement et vidage de Cloudflare"
+
+#: functions/cache.php
+msgid "Cache cleared."
+msgstr "Cache vidé."
+
+#: functions/cache.php
+msgid "Clear all cache"
+msgstr "Vider tout le cache"
+
+#: functions/cache.php
+msgid "Clear this page"
+msgstr "Vider le cache de cette page"
+
+#: functions/cache.php
+msgid "Page cache"
+msgstr "Cache des pages"
+
+#: functions/cache.php
+msgid "Enable the page cache"
+msgstr "Activer le cache des pages"
+
+#: functions/cache.php
+msgid "Lifespan"
+msgstr "Durée de vie"
+
+#: functions/cache.php
+msgid "A page is rebuilt after this delay, even if nothing changed. 10 hours keeps forms working."
+msgstr "Une page est régénérée après ce délai, même si rien n'a changé. 10 heures laissent les formulaires fonctionner."
+
+#: functions/cache.php
+msgid "Only if your theme shows different HTML on phones (not just a responsive layout)."
+msgstr "Seulement si votre thème affiche un HTML différent sur les téléphones (pas une simple mise en page adaptative)."
+
+#: functions/cache.php
+msgid "Never cache"
+msgstr "Jamais en cache"
+
+#: functions/cache.php
+msgid "One address per line, such as /contact/ or /shop/*. Logged-in users, searches and shopping carts are never cached."
+msgstr "Une adresse par ligne, comme /contact/ ou /boutique/*. Les personnes connectées, les recherches et les paniers ne sont jamais mis en cache."
+
+#: functions/cache.php
+msgid "Browser cache"
+msgstr "Cache navigateur"
+
+#: functions/cache.php
+msgid "Enable the browser cache rules"
+msgstr "Activer les règles de cache navigateur"
+
+#: functions/cache.php
+msgid "Compression"
+msgstr "Compression"
+
+#: functions/cache.php
+msgid "Pages are saved as HTML files and sent to visitors without loading WordPress: much faster. The cache is cleared automatically when content, comments, menus, the theme or settings change."
+msgstr "Les pages sont enregistrées en fichiers HTML et envoyées aux visiteurs sans charger WordPress : bien plus rapide. Le cache se vide automatiquement quand un contenu, un commentaire, un menu, le thème ou un réglage change."
+
+#: functions/cache.php
+msgid "The page cache is not available on a multisite network."
+msgstr "Le cache des pages n'est pas disponible sur un réseau multisite."
+
+#. %s: names of the active cache plugins
+#: functions/cache.php
+msgid "%s already caches pages: two caches would conflict. Keep it, or deactivate it to use this one."
+msgstr "%s met déjà les pages en cache : deux caches entreraient en conflit. Gardez-le, ou désactivez-le pour utiliser celui-ci."
+
+#. %s: file name
+#: functions/cache.php
+msgid "Another cache plugin left its %s file. Deactivate that plugin, or delete the file if it is no longer installed."
+msgstr "Une autre extension de cache a laissé son fichier %s. Désactivez cette extension, ou supprimez le fichier si elle n'est plus installée."
+
+#. %s: hosting company or caching proxy
+#: functions/cache.php
+msgid "%s already caches your pages: this cache is usually not needed. Optimizr also clears it when it clears its own."
+msgstr "%s met déjà vos pages en cache : ce cache est en général inutile. Optimizr le vide aussi en même temps que le sien."
+
+#. 1: PHP line to add, 2: file name
+#: functions/cache.php
+msgid "Add %1$s at the top of %2$s (Optimizr cannot write to it) to turn the cache on."
+msgstr "Ajoutez %1$s en haut de %2$s (Optimizr ne peut pas y écrire) pour mettre le cache en service."
+
+#: functions/cache.php
+msgid "Optimizr cannot write to the wp-content folder: the page cache is off. Ask your host to make it writable."
+msgstr "Optimizr ne peut pas écrire dans le dossier wp-content : le cache des pages est arrêté. Demandez à votre hébergeur de le rendre accessible en écriture."
+
+#: functions/cache.php
+msgid "hours"
+msgstr "heures"
+
+#: functions/cache.php
+msgid "Separate cache for phones and tablets"
+msgstr "Cache séparé pour les téléphones et tablettes"
+
+#: functions/cache.php
+msgid "Visitors' browsers keep images and fonts for a year, styles and scripts for a month, instead of downloading them on every page."
+msgstr "Les navigateurs des visiteurs gardent les images et les polices un an, les styles et les scripts un mois, au lieu de les télécharger à chaque page."
+
+#: functions/cache.php
+msgid "Your server (Nginx or another) does not read the .htaccess file, where Optimizr writes these rules. Ask your host to add them to its configuration:"
+msgstr "Votre serveur (Nginx ou autre) ne lit pas le fichier .htaccess, où Optimizr écrit ces règles. Demandez à votre hébergeur de les ajouter à sa configuration :"
+
+#: functions/cache.php
+msgid "Optimizr cannot write to the .htaccess file at the root of the site: the rules are not in place."
+msgstr "Optimizr ne peut pas écrire dans le fichier .htaccess à la racine du site : les règles ne sont pas en place."
+
+#: functions/cache.php
+msgid "If your cache plugin already sets these rules, leave this off."
+msgstr "Si votre extension de cache pose déjà ces règles, laissez ceci désactivé."
+
+#: functions/cache.php
+msgid "Compress pages, styles and scripts (gzip)"
+msgstr "Compresser les pages, les styles et les scripts (gzip)"
+
+#: functions/cache.php
+msgid "Cache status"
+msgstr "État du cache"
+
+#: functions/cache.php
+msgid "The page cache is off."
+msgstr "Le cache des pages est arrêté."
+
+#. %s: cache plugin name
+#: functions/cache.php
+msgid "%s is active"
+msgstr "%s est active"
+
+#. %s: hosting company or caching proxy
+#: functions/cache.php
+msgid "Server cache: %s"
+msgstr "Cache du serveur : %s"
+
+#. %s: date and time
+#: functions/cache.php
+msgid "Last cleared: %s"
+msgstr "Dernier vidage : %s"
+
+#: functions/cache.php
+msgid "Another cache plugin"
+msgstr "Autre extension de cache"
+
+#: functions/cache.php
+msgid "Page cache off"
+msgstr "Cache des pages arrêté"
+
+#: functions/cache.php
+msgid "Page cache active"
+msgstr "Cache des pages actif"
+
+#: functions/cache.php
+msgid "Pages cached by another plugin"
+msgstr "Pages mises en cache par une autre extension"
+
+#. 1: number of cached pages, 2: size such as "2 MB"
+#: functions/cache.php
+msgid "%1$s page cached (%2$s)."
+msgid_plural "%1$s pages cached (%2$s)."
+msgstr[0] "%1$s page en cache (%2$s)."
+msgstr[1] "%1$s pages en cache (%2$s)."

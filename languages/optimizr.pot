@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Haptic Optimizr 7.5.0\n"
+"Project-Id-Version: Haptic Optimizr 7.6.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2226,5 +2226,179 @@ msgstr ""
 #: functions/audit.php
 msgid "%s point to improve"
 msgid_plural "%s points to improve"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/admin-ui.php functions/cache.php
+msgid "Cache"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Page cache, browser cache and compression, cleared automatically when content changes."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Faster pages for visitors, without changing anything for logged-in users."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Cache: preloading and Cloudflare purge"
+msgstr ""
+
+#: functions/cache.php
+msgid "Cache cleared."
+msgstr ""
+
+#: functions/cache.php
+msgid "Clear all cache"
+msgstr ""
+
+#: functions/cache.php
+msgid "Clear this page"
+msgstr ""
+
+#: functions/cache.php
+msgid "Page cache"
+msgstr ""
+
+#: functions/cache.php
+msgid "Enable the page cache"
+msgstr ""
+
+#: functions/cache.php
+msgid "Lifespan"
+msgstr ""
+
+#: functions/cache.php
+msgid "A page is rebuilt after this delay, even if nothing changed. 10 hours keeps forms working."
+msgstr ""
+
+#: functions/cache.php
+msgid "Only if your theme shows different HTML on phones (not just a responsive layout)."
+msgstr ""
+
+#: functions/cache.php
+msgid "Never cache"
+msgstr ""
+
+#: functions/cache.php
+msgid "One address per line, such as /contact/ or /shop/*. Logged-in users, searches and shopping carts are never cached."
+msgstr ""
+
+#: functions/cache.php
+msgid "Browser cache"
+msgstr ""
+
+#: functions/cache.php
+msgid "Enable the browser cache rules"
+msgstr ""
+
+#: functions/cache.php
+msgid "Compression"
+msgstr ""
+
+#: functions/cache.php
+msgid "Pages are saved as HTML files and sent to visitors without loading WordPress: much faster. The cache is cleared automatically when content, comments, menus, the theme or settings change."
+msgstr ""
+
+#: functions/cache.php
+msgid "The page cache is not available on a multisite network."
+msgstr ""
+
+#. %s: names of the active cache plugins
+#: functions/cache.php
+msgid "%s already caches pages: two caches would conflict. Keep it, or deactivate it to use this one."
+msgstr ""
+
+#. %s: file name
+#: functions/cache.php
+msgid "Another cache plugin left its %s file. Deactivate that plugin, or delete the file if it is no longer installed."
+msgstr ""
+
+#. %s: hosting company or caching proxy
+#: functions/cache.php
+msgid "%s already caches your pages: this cache is usually not needed. Optimizr also clears it when it clears its own."
+msgstr ""
+
+#. 1: PHP line to add, 2: file name
+#: functions/cache.php
+msgid "Add %1$s at the top of %2$s (Optimizr cannot write to it) to turn the cache on."
+msgstr ""
+
+#: functions/cache.php
+msgid "Optimizr cannot write to the wp-content folder: the page cache is off. Ask your host to make it writable."
+msgstr ""
+
+#: functions/cache.php
+msgid "hours"
+msgstr ""
+
+#: functions/cache.php
+msgid "Separate cache for phones and tablets"
+msgstr ""
+
+#: functions/cache.php
+msgid "Visitors' browsers keep images and fonts for a year, styles and scripts for a month, instead of downloading them on every page."
+msgstr ""
+
+#: functions/cache.php
+msgid "Your server (Nginx or another) does not read the .htaccess file, where Optimizr writes these rules. Ask your host to add them to its configuration:"
+msgstr ""
+
+#: functions/cache.php
+msgid "Optimizr cannot write to the .htaccess file at the root of the site: the rules are not in place."
+msgstr ""
+
+#: functions/cache.php
+msgid "If your cache plugin already sets these rules, leave this off."
+msgstr ""
+
+#: functions/cache.php
+msgid "Compress pages, styles and scripts (gzip)"
+msgstr ""
+
+#: functions/cache.php
+msgid "Cache status"
+msgstr ""
+
+#: functions/cache.php
+msgid "The page cache is off."
+msgstr ""
+
+#. %s: cache plugin name
+#: functions/cache.php
+msgid "%s is active"
+msgstr ""
+
+#. %s: hosting company or caching proxy
+#: functions/cache.php
+msgid "Server cache: %s"
+msgstr ""
+
+#. %s: date and time
+#: functions/cache.php
+msgid "Last cleared: %s"
+msgstr ""
+
+#: functions/cache.php
+msgid "Another cache plugin"
+msgstr ""
+
+#: functions/cache.php
+msgid "Page cache off"
+msgstr ""
+
+#: functions/cache.php
+msgid "Page cache active"
+msgstr ""
+
+#: functions/cache.php
+msgid "Pages cached by another plugin"
+msgstr ""
+
+#. 1: number of cached pages, 2: size such as "2 MB"
+#: functions/cache.php
+msgid "%1$s page cached (%2$s)."
+msgid_plural "%1$s pages cached (%2$s)."
 msgstr[0] ""
 msgstr[1] ""

@@ -94,7 +94,7 @@ function haptic_onboarding_module_groups()
 {
     return [
         'security'     => ['label' => __('Security & compliance', 'optimizr'), 'modules' => ['security', 'cookies']],
-        'performance'  => ['label' => __('Performance & visibility', 'optimizr'), 'modules' => ['seo', 'redirects', 'local', 'pages']],
+        'performance'  => ['label' => __('Performance & visibility', 'optimizr'), 'modules' => ['seo', 'cache', 'redirects', 'local', 'pages']],
         'optimization' => ['label' => __('Optimization & content', 'optimizr'), 'modules' => ['ai', 'cpts', 'thumbnails', 'emails']],
     ];
 }
