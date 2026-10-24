@@ -114,7 +114,7 @@ function haptic_audit_run($url, $strategy)
 
     // Lighthouse met de 10 à 60 secondes à analyser une page
     if (function_exists('set_time_limit')) {
-        set_time_limit(180);
+        set_time_limit(180); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- requête AJAX d'un administrateur, plus longue que le délai PHP habituel (30 s)
     }
     $response = wp_remote_get(HAPTIC_AUDIT_ENDPOINT . '?' . $query, ['timeout' => 120]);
 

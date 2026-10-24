@@ -169,7 +169,7 @@ def write_pot(path, version, entries):
         seen.setdefault(key_of(e), e)
     out = ['# Copyright (C) Haptic', '# This file is distributed under the GPLv2 or later.',
            'msgid ""', 'msgstr ""',
-           '"Project-Id-Version: Haptic Optimizr %s\\n"' % version,
+           '"Project-Id-Version: Optimizr %s\\n"' % version,
            '"MIME-Version: 1.0\\n"', '"Content-Type: text/plain; charset=UTF-8\\n"',
            '"Content-Transfer-Encoding: 8bit\\n"', '"X-Domain: %s\\n"' % DOMAIN, '']
     for e in seen.values():

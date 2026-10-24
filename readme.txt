@@ -1,10 +1,10 @@
-=== Haptic Optimizr ===
+=== Optimizr ===
 Contributors: alexandrevergnaud
 Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.6.0
+Stable tag: 7.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Cookie consent (GDPR), SEO tags, login protection with two-factor authentication
 
 == Description ==
 
-Haptic Optimizr gathers in a single admin page the settings a brochure website needs every day. Each feature is a **module** you can turn on or off from the plugin dashboard; a disabled module loads no code and its tab disappears.
+Optimizr gathers in a single admin page the settings a brochure website needs every day. Each feature is a **module** you can turn on or off from the plugin dashboard; a disabled module loads no code and its tab disappears.
 
 = Cookies & GDPR =
 
@@ -67,7 +67,7 @@ The Audit tab uses the Google PageSpeed Insights API to run Lighthouse on a page
 == Installation ==
 
 1. Install the plugin from Plugins > Add New, or upload the zip file.
-2. Activate Haptic Optimizr. The setup wizard opens on first activation; you can run it again from Optimizr > Assistant.
+2. Activate Optimizr. The setup wizard opens on first activation; you can run it again from Optimizr > Wizard.
 3. Turn on the modules you need from the Optimizr dashboard.
 
 == Frequently Asked Questions ==
@@ -81,6 +81,11 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.6.1 =
+* The plugin is now named "Optimizr" (formerly "Haptic Optimizr"). Settings, slug and folder are unchanged.
+* Code cleanup following Plugin Check: page cache request data validated in a single place, script of the "Secure your account" screen moved to its own file, unique handle for the Tarteaucitron script.
+* Fixed: pages whose address contains an apostrophe were never saved in the page cache.
 
 = 7.6.0 =
 * New: Cache module and tab. Page cache served before WordPress loads, browser cache and compression rules (.htaccess), automatic clearing when content changes, manual clearing from the tab and the admin bar, and detection of other cache plugins and host caches. Off by default.

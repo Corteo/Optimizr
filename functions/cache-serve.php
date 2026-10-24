@@ -21,6 +21,25 @@ if (!function_exists('haptic_cache_config')) {
     }
 
     /**
+     * Valeur de $_SERVER en chaîne, ou '' si elle est absente ou contient des caractères de contrôle.
+     * Ce fichier tourne aussi avant WordPress, sans sanitize_text_field() : rien n'est réécrit (deux adresses
+     * différentes ne doivent pas donner le même fichier de cache), une valeur douteuse est écartée et la requête
+     * n'est alors ni servie ni mise en cache. Les valeurs ne servent qu'à des comparaisons et au chemin du fichier,
+     * filtré par haptic_cache_request_file().
+     */
+    function haptic_cache_server_var($key)
+    {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- validée ci-dessous en PHP natif (WordPress pas encore chargé dans advanced-cache.php)
+        $value = isset($_SERVER[$key]) && is_scalar($_SERVER[$key]) ? (string) $_SERVER[$key] : '';
+        // Une fois WordPress chargé, $_SERVER est échappé (wp_magic_quotes(), juste avant cette action) :
+        // même valeur des deux côtés pour que la page écrite soit celle qui sera servie
+        if (function_exists('did_action') && did_action('sanitize_comment_cookies')) {
+            $value = wp_unslash($value);
+        }
+        return preg_match('/[\x00-\x1F\x7F]/', $value) ? '' : $value;
+    }
+
+    /**
      * Réglages écrits par le module (functions/cache-files.php) : hôte, durée de vie, exclusions…
      *
      * @return array|null null si le cache de pages n'est pas en place
@@ -42,21 +61,21 @@ if (!function_exists('haptic_cache_config')) {
 
     function haptic_cache_is_https()
     {
-        if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+        $https = strtolower(haptic_cache_server_var('HTTPS'));
+        if ($https !== '' && $https !== 'off') {
             return true;
         }
-        if (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443') {
+        if (haptic_cache_server_var('SERVER_PORT') === '443') {
             return true;
         }
         // Proxy ou répartiteur de charge qui termine le HTTPS
-        return isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https';
+        return strtolower(haptic_cache_server_var('HTTP_X_FORWARDED_PROTO')) === 'https';
     }
 
     /** Téléphone ou tablette, même détection que wp_is_mobile(). */
     function haptic_cache_is_mobile()
     {
-        $agent = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
-        return (bool) preg_match('/Mobile|Android|Silk\/|Kindle|BlackBerry|Opera Mini|Opera Mobi/', $agent);
+        return (bool) preg_match('/Mobile|Android|Silk\/|Kindle|BlackBerry|Opera Mini|Opera Mobi/', haptic_cache_server_var('HTTP_USER_AGENT'));
     }
 
     /** L'adresse correspond-elle à l'un des motifs exclus (« * » pour n'importe quelle suite de caractères) ? */
@@ -77,7 +96,7 @@ if (!function_exists('haptic_cache_config')) {
      */
     function haptic_cache_request_file(array $config)
     {
-        $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : '';
+        $method = strtoupper(haptic_cache_server_var('REQUEST_METHOD'));
         if ($method !== 'GET' && $method !== 'HEAD') {
             return '';
         }
@@ -85,7 +104,7 @@ if (!function_exists('haptic_cache_config')) {
             return '';
         }
 
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower((string) $_SERVER['HTTP_HOST']) : '';
+        $host = strtolower(haptic_cache_server_var('HTTP_HOST'));
         if ($host !== $config['host']) {
             return '';
         }
@@ -99,7 +118,7 @@ if (!function_exists('haptic_cache_config')) {
             }
         }
 
-        $uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+        $uri = haptic_cache_server_var('REQUEST_URI');
         $parts = explode('?', $uri, 2);
         $path = $parts[0];
 
@@ -159,12 +178,13 @@ if (!function_exists('haptic_cache_config')) {
             header('Vary: User-Agent');
         }
 
-        $since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime((string) $_SERVER['HTTP_IF_MODIFIED_SINCE']) : false;
+        $since = strtotime(haptic_cache_server_var('HTTP_IF_MODIFIED_SINCE'));
         if ($since && $since >= $mtime) {
             http_response_code(304);
             exit;
         }
-        if (strtoupper((string) $_SERVER['REQUEST_METHOD']) !== 'HEAD') {
+        if (strtoupper(haptic_cache_server_var('REQUEST_METHOD')) !== 'HEAD') {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- servi par advanced-cache.php avant le chargement de WordPress (pas de WP_Filesystem), fichier de wp-content/cache/optimizr
             readfile($file);
         }
         exit;

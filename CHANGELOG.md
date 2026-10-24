@@ -1,10 +1,22 @@
 # Historique des versions
 
-Toutes les évolutions notables de Haptic Optimizr sont consignées ici.
+Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Non publié]
+
+## [7.6.1] - 2026-10-24
+
+### Modifié
+- Le plugin s'appelle désormais **Optimizr** (en-tête `Plugin Name` et titre de `readme.txt`), au lieu de « Haptic Optimizr » : WordPress.org déduit le slug du nom, et `optimizr` doit rester égal au domaine de traduction et au dossier des sites déjà installés. Réglages, préfixe `haptic_`, dossier et slug inchangés.
+- Script de l'écran « Sécuriser votre compte » (carte cochée, « Plus tard » qui devient « Continuer ») sorti du code PHP, où il tenait sur une ligne, dans `js/optimizr-welcome.js`.
+- Script de Tarteaucitron enregistré sous le nom `optimizr-tarteaucitron` au lieu de `tarteaucitron`, pour ne pas entrer en conflit avec une autre extension qui le charge.
+
+### Corrigé
+- Plugin Check ne signale plus d'erreur : les valeurs de `$_SERVER` du cache des pages (`functions/cache-serve.php`, qui tourne avant WordPress) sont lues par une seule fonction, `haptic_cache_server_var()`, qui écarte celles contenant des caractères de contrôle ; lecture de la page en cache et appels volontaires de hooks de WordPress (`wp_login_failed`, `login_footer`, `login_redirect`, `set_time_limit()` de l'audit) justifiés dans le code.
+- Cache des pages : une page dont l'adresse contient une apostrophe n'était jamais mise en cache, car WordPress échappe `$_SERVER` après le passage d'`advanced-cache.php` : l'adresse lue à l'écriture (`/l\'ete/`) ne correspondait plus à celle lue pour servir la page. La même valeur est désormais utilisée des deux côtés.
+- `readme.txt` : l'assistant se relance depuis **Optimizr › Wizard** (et non « Assistant »).
 
 ## [7.6.0] - 2026-10-21
 

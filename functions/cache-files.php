@@ -320,7 +320,7 @@ function haptic_cache_write_config()
         'host'         => haptic_cache_site_host(),
         'ttl'          => haptic_cache_ttl_hours() * HOUR_IN_SECONDS,
         'mobile'       => (bool) get_option('haptic_cache_mobile'),
-        'exclude'      => haptic_cache_exclusions(),
+        'exclude'      => haptic_cache_exclusions(), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- adresses exclues du cache, pas une requête get_posts()
         'cookies'      => array_values(haptic_cache_bypass_cookies()),
         'ignore_query' => array_values(apply_filters('haptic_cache_ignored_query_args', ['gclid', 'fbclid', 'msclkid', 'dclid', 'gbraid', 'wbraid', '_ga', '_gl', 'mc_cid', 'mc_eid', 'ref'])),
     ];
