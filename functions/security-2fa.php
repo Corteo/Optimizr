@@ -586,7 +586,7 @@ function haptic_2fa_login_page()
             $challenge['attempts'] = (int) $challenge['attempts'] + 1;
             haptic_2fa_add_fail($user->ID);
             // Compte comme un mot de passe faux pour la limitation des tentatives
-            do_action('wp_login_failed', $user->user_login, new WP_Error('haptic_2fa_invalid'));
+            do_action('wp_login_failed', $user->user_login, new WP_Error('haptic_2fa_invalid')); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- action de WordPress
 
             if ($challenge['attempts'] >= HAPTIC_2FA_MAX_ATTEMPTS || haptic_2fa_too_many_fails($user->ID)) {
                 haptic_2fa_end_pending_login($user->ID);
@@ -651,14 +651,14 @@ function haptic_2fa_finish_login($user, $requested)
         $interim_login = 'success';
         login_header('', '<p class="message">' . esc_html__('You have logged in successfully.', 'optimizr') . '</p>');
         echo '</div>';
-        do_action('login_footer');
+        do_action('login_footer'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- action de WordPress, comme wp-login.php
         echo '</body></html>';
         exit;
     }
 
     $redirect = $requested !== '' ? $requested : admin_url();
     // Filtre de WordPress : même redirection qu'une connexion par mot de passe
-    $redirect = apply_filters('login_redirect', $redirect, $requested, $user);
+    $redirect = apply_filters('login_redirect', $redirect, $requested, $user); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- filtre de WordPress
     if (($redirect === '' || $redirect === admin_url()) && !$user->has_cap('edit_posts')) {
         $redirect = $user->has_cap('read') ? admin_url('profile.php') : home_url();
     }

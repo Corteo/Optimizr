@@ -89,10 +89,9 @@ function haptic_sec_account_enqueue($user, $steps, $deps = [])
     }
     do_action('haptic_sec_welcome_enqueue', $user, $steps);
 
-    wp_register_script('optimizr-welcome', false, [], HAPTIC_OPTIMIZR_VERSION, true);
-    wp_enqueue_script('optimizr-welcome');
     // Une étape terminée (évènement des scripts de mise en place) : carte cochée, « Plus tard » devient « Continuer »
-    wp_add_inline_script('optimizr-welcome', '(function(){var root=document.querySelector(".optimizr-welcome");if(!root){return;}var link=document.querySelector("[data-welcome-continue]");var required=root.getAttribute("data-required");document.addEventListener("optimizr:secured",function(event){var step=event.detail&&event.detail.step;var card=step&&root.querySelector("[data-welcome-step=\""+step+"\"]"+(step==="passkey"?",[data-passkey-welcome]":""));if(card){card.classList.add("is-done");}if(step===required){required="";}if(!required&&link){link.hidden=false;link.textContent=link.getAttribute("data-done");(link.getAttribute("data-later-class")||"").split(" ").forEach(function(name){if(name){link.classList.remove(name);}});(link.getAttribute("data-done-class")||"").split(" ").forEach(function(name){if(name){link.classList.add(name);}});if(!root.querySelector(".optimizr-welcome__step:not(.is-done):not([hidden])")){var hint=root.querySelector(".optimizr-welcome__hint");if(hint){hint.hidden=true;}link.focus();}}});})();');
+    $js = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-welcome.js';
+    wp_enqueue_script('optimizr-welcome', HAPTIC_OPTIMIZR_URL . 'js/optimizr-welcome.js', [], filemtime($js), true);
 
     return [array_values(array_diff(wp_styles()->queue, $styles)), array_values(array_diff(wp_scripts()->queue, $scripts))];
 }

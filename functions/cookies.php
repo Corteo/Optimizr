@@ -223,9 +223,9 @@ add_action('haptic_before_enqueue_scripts', function () {
         return;
     }
 
-    wp_enqueue_script('tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
+    wp_enqueue_script('optimizr-tarteaucitron', dirname(plugin_dir_url(__FILE__)) . '/assets/tarteaucitron/tarteaucitron.min.js', [], '1.21.0', true);
     // Imprimé juste après la librairie : tarteaucitron.init() en a besoin
-    wp_add_inline_script('tarteaucitron', haptic_tarteaucitron_inline_script());
+    wp_add_inline_script('optimizr-tarteaucitron', haptic_tarteaucitron_inline_script());
 
     // Couleurs de la bannière et des boutons
     wp_register_style('optimizr-tarteaucitron', false, [], HAPTIC_OPTIMIZR_VERSION);

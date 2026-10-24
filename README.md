@@ -1,4 +1,4 @@
-# Haptic Optimizr
+# Optimizr
 
 Plugin WordPress qui regroupe, dans une seule page d'administration, les réglages dont un site vitrine a besoin au quotidien : consentement aux cookies (RGPD), balises SEO, protection de la connexion, images (images à la une, conversion en WebP ou AVIF), cache et quelques outils de maintenance.
 
@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.6.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.6.1 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -85,7 +85,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 1. Récupérez l'archive ZIP du plugin (branche `stable` du dépôt GitHub).
 2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
-3. Activez **Haptic Optimizr**.
+3. Activez **Optimizr**.
 
 Le dossier du plugin doit s'appeler `optimizr`. Les mises à jour viennent de WordPress.org : une fois Optimizr publié sous le slug `optimizr`, elles sont proposées dans **Tableau de bord › Mises à jour** et dans **Extensions**, comme pour toute extension. Avant cela, une nouvelle version s'installe à la main de la même façon (« Remplacer la version installée »). Les éventuelles migrations de la base s'exécutent au chargement suivant.
 
@@ -216,6 +216,8 @@ Le plugin existe en deux distributions construites à partir du même code :
 - **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il trouve un système de mise à jour hors WordPress.org ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
 Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).
+
+WordPress.org déduit le slug du nom du plugin (`Plugin Name` de `optimizr.php` et titre de `readme.txt`) : « Optimizr » donne `optimizr`, qui doit rester égal au domaine de traduction et au nom du dossier. Le slug ne change plus après l'approbation.
 
 `readme.txt` (en anglais, au format WordPress.org) déclare les services externes contactés ; à tenir à jour quand un module en ajoute un.
 
