@@ -6,6 +6,11 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.6.2] - 2026-10-25
+
+### Corrigé
+- Adresse de connexion personnalisée : un visiteur non connecté qui ouvrait une adresse de l'administration (`/wp-admin/…`) voyait une page « Page introuvable » sans mise en forme, et non la page 404 du thème comme pour `wp-login.php` ou une adresse inexistante. `haptic_sec_not_found()` affiche désormais le modèle 404 du thème dans tous les cas (thèmes classiques et thèmes blocs, styles des blocs compris, `index.php` si le thème n'a pas de `404.php`, filtre `template_include` appliqué pour la page 404 d'Optimizr Pro). La page minimale ne sert plus qu'en dernier recours.
+
 ## [7.6.1] - 2026-10-24
 
 ### Modifié
