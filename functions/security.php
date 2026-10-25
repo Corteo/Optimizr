@@ -216,26 +216,45 @@ function haptic_sec_is_wp_login_request()
     return basename(haptic_sec_request_path()) === 'wp-login.php';
 }
 
-/** Page introuvable : modèle 404 du thème côté site, page minimale côté administration. */
+/**
+ * Page introuvable : modèle 404 du thème, y compris pour l'administration masquée, pour qu'elle ne se distingue pas
+ * d'une adresse qui n'existe pas. Page minimale seulement si aucun modèle n'est trouvé.
+ */
 function haptic_sec_not_found()
 {
+    global $wp_query;
+
     status_header(404);
     nocache_headers();
 
-    if (!is_admin()) {
-        global $wp_query;
-        if ($wp_query) {
-            $wp_query->set_404();
+    if ($wp_query) {
+        $wp_query->set_404();
+    }
+    // Même choix de modèle que sur le site (wp-includes/template-loader.php) ; la page 404 d'Optimizr Pro passe par template_include
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- hook de WordPress
+    $template = $wp_query ? apply_filters('template_include', get_404_template() ?: get_index_template()) : '';
+    if ($template) {
+        if (is_admin()) {
+            // Dans l'administration, WordPress ne charge pas les styles des blocs du site (cf. wp_common_block_scripts_and_styles())
+            add_action('wp_enqueue_scripts', 'haptic_sec_not_found_block_assets', 9);
         }
-        $template = get_404_template();
-        if ($template) {
-            include $template;
-            exit;
-        }
+        include $template;
+        exit;
     }
 
     echo '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><meta charset="utf-8"><title>' . esc_html__('Page not found', 'optimizr') . '</title><p>' . esc_html__('Page not found.', 'optimizr') . '</p><p><a href="' . esc_url(home_url('/')) . '">' . esc_html__('Back to the home page', 'optimizr') . '</a></p></html>';
     exit;
+}
+
+/** Styles des blocs de la page introuvable affichée à la place de l'administration, comme sur le site. */
+function haptic_sec_not_found_block_assets()
+{
+    wp_enqueue_style('wp-block-library');
+    if (current_theme_supports('wp-block-styles')) {
+        wp_enqueue_style('wp-block-library-theme');
+    }
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- hook de WordPress, déclenché comme sur le site
+    do_action('enqueue_block_assets');
 }
 
 /** Remplace wp-login.php par la nouvelle adresse dans une URL (paramètres conservés). */
