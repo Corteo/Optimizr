@@ -16,7 +16,7 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 
 = Cookies & GDPR =
 
-* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Modern, accessible design: texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
+* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Blends in with your theme (background, text, fonts, buttons) or uses its own colors; texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
 * Google Analytics 4 and Google Tag Manager, loaded only after the visitor's consent.
 * Google Consent Mode v2.
 * YouTube, Dailymotion, X, Facebook and Google Maps embeds always offered in the consent panel.
@@ -83,6 +83,7 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 == Changelog ==
 
 = 7.7.0 =
+* New: "Site theme" appearance for the cookie banner (default). The banner and the "Customize" panel use your theme's background, text color, fonts and button style, with block themes as well as classic themes. Sites whose banner colors were saved with Optimizr Pro keep them.
 * New look for the cookie banner and the "Customize" panel: rounded card on a dimmed background (center) or floating bar (top, bottom), clearer buttons, one card per service with Allow / Deny choices, Close and Save at the bottom of the panel. The theme's font is used.
 * Fixed: unreadable texts (white on a light background) in the banner and the panel, and the color of the "Customize" button, which was not applied. Text color is now computed for each background so that it always reaches 4.5:1 (WCAG AA).
 * New default colors: white banner and panel, dark "Deny all" button, light "Customize" button. Colors saved with Optimizr Pro are kept.

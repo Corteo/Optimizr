@@ -38,6 +38,25 @@ function haptic_tac_colors()
     ];
 }
 
+/**
+ * Apparence du bandeau : 'theme' (reprend le style du thème, js/optimizr-cookies-theme.js)
+ * ou 'custom' (couleurs ci-dessus). Par défaut 'theme', sauf si des couleurs ont déjà été
+ * enregistrées avec Optimizr Pro : le site garde alors son bandeau.
+ */
+function haptic_tac_appearance()
+{
+    $default = 'theme';
+    foreach (array_keys(haptic_tac_colors()) as $option) {
+        if (get_option($option) !== false) {
+            $default = 'custom';
+            break;
+        }
+    }
+    $value = get_option('haptic_option_tarteaucitron_appearance', $default);
+
+    return in_array($value, ['theme', 'custom'], true) ? $value : $default;
+}
+
 function haptic_tac_color($option)
 {
     $colors = haptic_tac_colors();
@@ -89,6 +108,11 @@ function haptic_options_register_cookie_settings()
     $page  = haptic_settings_page('cookies');
 
     register_setting($group, 'haptic_option_enable_tarteaucitron', ['sanitize_callback' => 'absint']);
+    register_setting($group, 'haptic_option_tarteaucitron_appearance', [
+        'sanitize_callback' => function ($value) {
+            return in_array($value, ['theme', 'custom'], true) ? $value : 'theme';
+        },
+    ]);
     register_setting($group, 'haptic_option_tarteaucitron_banner_style', [
         'sanitize_callback' => function ($value) {
             return in_array($value, ['top', 'middle', 'bottom'], true) ? $value : 'middle';
@@ -115,6 +139,9 @@ function haptic_options_register_cookie_settings()
         ['toggle' => 'haptic_option_enable_tarteaucitron', 'toggle_label' => __('Show the consent banner', 'optimizr')]
     );
     add_settings_field('haptic-tac-position', __('Position', 'optimizr'), 'haptic_options_tarteaucitron_banner_style_callback', $page, 'haptic-cookies-banner');
+    add_settings_field('haptic-tac-appearance', __('Appearance', 'optimizr'), 'haptic_options_tarteaucitron_appearance_callback', $page, 'haptic-cookies-banner', [
+        'description' => __('With "Site theme", the banner uses the background, text, fonts and buttons of your theme.', 'optimizr'),
+    ]);
 
     add_settings_section(
         'haptic-cookies-services',
@@ -141,6 +168,26 @@ function haptic_options_tarteaucitron_banner_style_callback()
     foreach ($styles as $value => $label) {
         printf(
             '<label class="optimizr-segmented__option"><input type="radio" name="haptic_option_tarteaucitron_banner_style" value="%s" data-tac-position %s><span>%s</span></label>',
+            esc_attr($value),
+            checked($selected, $value, false),
+            esc_html($label)
+        );
+    }
+    echo '</div>';
+}
+
+function haptic_options_tarteaucitron_appearance_callback()
+{
+    $choices = [
+        'theme'  => __('Site theme', 'optimizr'),
+        'custom' => __('Banner colors', 'optimizr'),
+    ];
+    $selected = haptic_tac_appearance();
+
+    echo '<div class="optimizr-segmented" role="radiogroup" aria-label="' . esc_attr__('Banner appearance', 'optimizr') . '">';
+    foreach ($choices as $value => $label) {
+        printf(
+            '<label class="optimizr-segmented__option"><input type="radio" name="haptic_option_tarteaucitron_appearance" value="%s" data-tac-appearance %s><span>%s</span></label>',
             esc_attr($value),
             checked($selected, $value, false),
             esc_html($label)
@@ -212,9 +259,54 @@ function haptic_tac_preview_button_style($option)
     return 'background: ' . $color . '; color: ' . haptic_readable_text_color($color) . ';';
 }
 
+/**
+ * Style du thème pour l'aperçu de l'apparence « Thème du site » : fond, texte, bouton et arrondi
+ * des styles globaux (theme.json). Sans theme.json, valeurs neutres : le site lit le vrai style.
+ */
+function haptic_tac_theme_preview()
+{
+    $styles = function_exists('wp_get_global_styles') ? wp_get_global_styles() : [];
+    $palette = [];
+    if (function_exists('wp_get_global_settings')) {
+        foreach ((array) wp_get_global_settings(['color', 'palette']) as $origin) {
+            foreach ((array) $origin as $color) {
+                if (isset($color['slug'], $color['color'])) {
+                    $palette[$color['slug']] = $color['color'];
+                }
+            }
+        }
+    }
+    // « var:preset|color|base » ou « var(--wp--preset--color--base) » => couleur de la palette
+    $resolve = function ($value) use ($palette) {
+        $value = is_string($value) ? $value : '';
+        if (preg_match('/^var(?::preset\|color\||\(--wp--preset--color--)([a-z0-9-]+)/i', $value, $m)) {
+            $value = isset($palette[$m[1]]) ? $palette[$m[1]] : '';
+        }
+        return sanitize_hex_color($value) ?: null;
+    };
+
+    $bg = $resolve($styles['color']['background'] ?? '') ?: '#ffffff';
+    $text = $resolve($styles['color']['text'] ?? '');
+    $text = $text && haptic_contrast_ratio($text, $bg) >= 4.5 ? $text : haptic_readable_text_color($bg);
+    $button = $resolve($styles['elements']['button']['color']['background'] ?? '');
+    $button = $button && haptic_contrast_ratio($button, $bg) >= 1.2 ? $button : $text;
+    $button_text = $resolve($styles['elements']['button']['color']['text'] ?? '');
+    $button_text = $button_text && haptic_contrast_ratio($button_text, $button) >= 4.5 ? $button_text : haptic_readable_text_color($button);
+    $radius = $styles['elements']['button']['border']['radius'] ?? '';
+    $radius = is_string($radius) && preg_match('/^\d+(\.\d+)?(px|rem|em|%)$/', $radius) ? $radius : '7px';
+
+    return [
+        'banner'    => "background: {$bg}; color: {$text};",
+        'button'    => "background: {$button}; color: {$button_text}; border-radius: {$radius};",
+        'customize' => "background: transparent; color: {$text}; border-radius: {$radius}; box-shadow: inset 0 0 0 1px {$text};",
+    ];
+}
+
 // Panneau latéral : aperçu du bandeau, mis à jour en direct par js/optimizr-admin.js
 add_action('haptic_admin_aside_cookies', function () {
     $banner = haptic_tac_color('haptic_option_tarteaucitron_highlight_color');
+    $appearance = haptic_tac_appearance();
+    $theme = haptic_tac_theme_preview();
     ?>
     <section class="optimizr-card optimizr-sticky">
         <div class="optimizr-card__header">
@@ -224,7 +316,16 @@ add_action('haptic_admin_aside_cookies', function () {
             <div class="optimizr-tac-preview" data-tac-preview data-position="<?php echo esc_attr(get_option('haptic_option_tarteaucitron_banner_style', 'middle')); ?>">
                 <div class="optimizr-tac-preview__bar" aria-hidden="true"><span></span><span></span><span></span></div>
                 <div class="optimizr-tac-preview__page">
-                    <div class="optimizr-tac-preview__banner" data-tac-preview-banner style="background: <?php echo esc_attr($banner); ?>; color: <?php echo esc_attr(haptic_readable_text_color($banner)); ?>;">
+                    <div class="optimizr-tac-preview__banner" data-tac-preview-look="theme" style="<?php echo esc_attr($theme['banner']); ?>"<?php echo $appearance === 'theme' ? '' : ' hidden'; ?>>
+                        <strong><?php esc_html_e('This site uses cookies', 'optimizr'); ?></strong>
+                        <p><?php esc_html_e('You choose which services are allowed. You can change your choice at any time.', 'optimizr'); ?></p>
+                        <div class="optimizr-tac-preview__buttons">
+                            <span style="<?php echo esc_attr($theme['button']); ?>"><?php esc_html_e('Accept all', 'optimizr'); ?></span>
+                            <span style="<?php echo esc_attr($theme['button']); ?>"><?php esc_html_e('Deny all', 'optimizr'); ?></span>
+                            <span style="<?php echo esc_attr($theme['customize']); ?>"><?php esc_html_e('Customize', 'optimizr'); ?></span>
+                        </div>
+                    </div>
+                    <div class="optimizr-tac-preview__banner" data-tac-preview-banner data-tac-preview-look="custom" style="background: <?php echo esc_attr($banner); ?>; color: <?php echo esc_attr(haptic_readable_text_color($banner)); ?>;"<?php echo $appearance === 'custom' ? '' : ' hidden'; ?>>
                         <strong><?php esc_html_e('This site uses cookies', 'optimizr'); ?></strong>
                         <p><?php esc_html_e('You choose which services are allowed. You can change your choice at any time.', 'optimizr'); ?></p>
                         <div class="optimizr-tac-preview__buttons">
@@ -259,6 +360,11 @@ add_action('haptic_before_enqueue_scripts', function () {
     // Feuille de Tarteaucitron (useExternalCss), puis le thème d'Optimizr et ses couleurs
     wp_enqueue_style('optimizr-tarteaucitron-base', $assets . '/assets/tarteaucitron/css/tarteaucitron.min.css', [], '1.21.0');
     wp_enqueue_style('optimizr-tarteaucitron', $assets . '/css/optimizr-cookies.css', ['optimizr-tarteaucitron-base'], HAPTIC_OPTIMIZR_VERSION);
+
+    // Apparence « Thème du site » : couleurs, police et boutons lus sur la page
+    if (haptic_tac_appearance() === 'theme') {
+        wp_enqueue_script('optimizr-cookies-theme', $assets . '/js/optimizr-cookies-theme.js', [], HAPTIC_OPTIMIZR_VERSION, true);
+    }
     wp_add_inline_style('optimizr-tarteaucitron', haptic_tarteaucitron_inline_style());
 });
 
@@ -366,6 +472,8 @@ JS;
 /**
  * Couleurs de la bannière, du panneau et des boutons, choisies dans l'onglet Cookies,
  * en variables lues par css/optimizr-cookies.css. Chaque fond reçoit sa couleur de texte lisible.
+ * Posées sur :root : avec l'apparence « Thème du site », js/optimizr-cookies-theme.js les remplace
+ * par le style de <html>, et elles restent en secours.
  */
 function haptic_tarteaucitron_inline_style()
 {
@@ -394,7 +502,7 @@ function haptic_tarteaucitron_inline_style()
         }
     }
 
-    return '#tarteaucitronRoot{' . $vars . '}#tarteaucitronRoot #tarteaucitronIcon{display:none !important}';
+    return ':root{' . $vars . '}#tarteaucitronRoot #tarteaucitronIcon{display:none !important}';
 }
 
 // Bouton flottant pour rouvrir le panneau de préférences (remplace l'icône Tarteaucitron masquée)

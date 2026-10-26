@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.6.1\n"
+"Project-Id-Version: Optimizr 7.7.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2402,3 +2402,23 @@ msgid "%1$s page cached (%2$s)."
 msgid_plural "%1$s pages cached (%2$s)."
 msgstr[0] ""
 msgstr[1] ""
+
+#: functions/cookies.php
+msgid "Appearance"
+msgstr ""
+
+#: functions/cookies.php
+msgid "Site theme"
+msgstr ""
+
+#: functions/cookies.php
+msgid "Banner colors"
+msgstr ""
+
+#: functions/cookies.php
+msgid "Banner appearance"
+msgstr ""
+
+#: functions/cookies.php
+msgid "With \"Site theme\", the banner uses the background, text, fonts and buttons of your theme."
+msgstr ""

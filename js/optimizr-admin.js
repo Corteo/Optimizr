@@ -154,6 +154,15 @@
             update();
         });
 
+        document.querySelectorAll('[data-tac-appearance]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (!preview || !radio.checked) return;
+                preview.querySelectorAll('[data-tac-preview-look]').forEach(function (look) {
+                    look.hidden = look.dataset.tacPreviewLook !== radio.value;
+                });
+            });
+        });
+
         document.querySelectorAll('[data-tac-position]').forEach(function (radio) {
             radio.addEventListener('change', function () {
                 if (preview && radio.checked) preview.dataset.position = radio.value;
