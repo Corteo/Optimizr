@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Exclus des archives (git archive) des releases
+/.github export-ignore

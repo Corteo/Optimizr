@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.6.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.7.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -186,6 +186,8 @@ functions/security-2fa*.php  Double authentification : connexion (security-2fa.p
 functions/security-welcome.php  Écran « Sécurisez votre compte » proposé après la connexion et à la fin de l'assistant (+ css/optimizr-welcome.css)
 assets/qrcode-generator/ Bibliothèque de QR code (MIT) pour la mise en place de la double authentification
 css/, js/                Interface de la page d'options
+bin/                     Outils : build-wporg.sh (zip WordPress.org), check-version.sh, check-php.sh, build-translations.py
+.github/workflows/       Intégration continue (ci.yml) et archive des releases (release.yml)
 ```
 
 ### Traductions
@@ -204,9 +206,18 @@ Pour publier une version :
 
 1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
-3. Construisez le zip WordPress.org (`bin/build-wporg.sh`) et publiez-le dans le dépôt SVN de WordPress.org : c'est de là que les sites reçoivent la mise à jour.
+3. Vérifiez que le numéro concorde partout avec `bin/check-version.sh` (en-tête, constante, `Stable tag` et changelog de `readme.txt`, CHANGELOG.md et « Version actuelle » de ce README) ; l'intégration continue le refait sur chaque pull request.
+4. Construisez le zip WordPress.org (`bin/build-wporg.sh`) et publiez-le dans le dépôt SVN de WordPress.org : c'est de là que les sites reçoivent la mise à jour.
+5. Publiez la release GitHub avec le workflow « Release » (onglet Actions › Release › Run workflow, numéro `X.Y.Z`) : tag `vX.Y.Z`, titre `X.Y.Z` et archive `optimizr-X.Y.Z.zip`, dont le dossier racine est `optimizr`.
 
 Depuis 6.0.0, Optimizr ne se met plus à jour depuis GitHub (Plugin Update Checker retiré) : WordPress propose les versions publiées sur WordPress.org, y compris aux sites installés depuis GitHub, tant que le dossier du plugin s'appelle `optimizr` comme le slug. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
+
+### Intégration continue
+
+Deux workflows GitHub Actions, dans `.github/workflows/` (exclus du zip WordPress.org et des archives des releases) :
+
+- **CI** (`ci.yml`), à chaque pull request et à chaque push sur `main` : syntaxe de tous les fichiers PHP de PHP 7.4 à PHP 8.4 (`bin/check-php.sh`), numéro de version identique partout (`bin/check-version.sh`), et [Plugin Check](https://wordpress.org/plugins/plugin-check/) sur la version WordPress.org construite par `bin/build-wporg.sh`. Une erreur de Plugin Check fait échouer la CI ; ses avertissements sont affichés sans la bloquer.
+- **Release** (`release.yml`) : « Run workflow » (onglet Actions) avec le numéro `X.Y.Z` crée la release sur le dernier commit de `main` (tag `vX.Y.Z`, titre `X.Y.Z`, notes reprises de la section de la version dans CHANGELOG.md), puis y ajoute `optimizr-X.Y.Z.zip`, dont le dossier racine est `optimizr`. Une release publiée à la main passe par les mêmes vérifications : tag égal à `v` + la version du plugin, titre ramené à `X.Y.Z`, notes vides remplies, archive ajoutée. Relancé sur une release existante, il refait son archive. La branche `stable` n'est jamais modifiée.
 
 ### Version WordPress.org
 

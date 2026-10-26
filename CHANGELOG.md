@@ -6,6 +6,14 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+### Ajouté
+- **Intégration continue** (`.github/workflows/ci.yml`) : à chaque pull request et à chaque push sur `main`, syntaxe PHP de PHP 7.4 à 8.4 (`bin/check-php.sh`), numéro de version identique partout (`bin/check-version.sh`) et Plugin Check sur la version WordPress.org.
+- **Release automatisée** (`.github/workflows/release.yml`) : « Run workflow » avec le numéro `X.Y.Z` crée la release sur `main` (tag `vX.Y.Z`, titre `X.Y.Z`, notes reprises du CHANGELOG) et y ajoute `optimizr-X.Y.Z.zip` (dossier racine `optimizr`). Une release publiée à la main est vérifiée et complétée de la même façon. Branche `stable` jamais modifiée.
+- `.github/` exclu des archives (`export-ignore`).
+
+### Corrigé
+- README : « Version actuelle » indiquait 7.6.1 au lieu de 7.7.0.
+
 ## [7.7.0] - 2026-10-26
 
 ### Ajouté
