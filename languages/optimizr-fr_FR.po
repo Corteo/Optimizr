@@ -2407,3 +2407,23 @@ msgid "%1$s page cached (%2$s)."
 msgid_plural "%1$s pages cached (%2$s)."
 msgstr[0] "%1$s page en cache (%2$s)."
 msgstr[1] "%1$s pages en cache (%2$s)."
+
+#: functions/cookies.php
+msgid "Appearance"
+msgstr "Apparence"
+
+#: functions/cookies.php
+msgid "Site theme"
+msgstr "Thème du site"
+
+#: functions/cookies.php
+msgid "Banner colors"
+msgstr "Couleurs du bandeau"
+
+#: functions/cookies.php
+msgid "Banner appearance"
+msgstr "Apparence du bandeau"
+
+#: functions/cookies.php
+msgid "With \"Site theme\", the banner uses the background, text, fonts and buttons of your theme."
+msgstr "Avec « Thème du site », le bandeau reprend le fond, le texte, les polices et les boutons de votre thème."

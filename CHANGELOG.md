@@ -6,6 +6,23 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la nu
 
 ## [Non publié]
 
+## [7.7.0] - 2026-10-26
+
+### Ajouté
+- **Apparence « Thème du site »** du bandeau de cookies (nouveau réglage **Apparence** de l'onglet Cookies, option `haptic_option_tarteaucitron_appearance`, `theme` ou `custom`). Le bandeau et le panneau « Personnaliser » reprennent le fond de la page, la couleur du texte, la police du texte et des titres, et le style des boutons du thème (couleur, arrondi, graisse, capitales, espacement). Ces valeurs sont lues sur la page par `js/optimizr-cookies-theme.js`, avec des éléments témoins hors écran : bouton de l'éditeur de blocs (`.wp-element-button`), sinon `.button`, sinon la couleur des liens. Fonctionne avec les thèmes blocs comme avec les thèmes classiques. « Tout accepter » et « Tout refuser » prennent le même style (même poids pour les deux choix), « Personnaliser » est en contour. Chaque couleur lue reste contrôlée : si le texte du thème n'atteint pas 4,5:1 sur son fond, le texte lisible calculé le remplace. Les couleurs Optimizr restent en secours si une valeur ne peut pas être lue.
+- Apparence par défaut : « Thème du site », sauf sur un site où des couleurs ont déjà été enregistrées avec Optimizr Pro (il garde « Couleurs du bandeau »). L'aperçu de l'onglet suit le réglage, avec les couleurs des styles globaux du thème (`theme.json`).
+
+### Modifié
+- **Nouveau style du bandeau de cookies et du panneau « Personnaliser »**, dans une feuille dédiée (`css/optimizr-cookies.css`) chargée après celle de Tarteaucitron (`useExternalCss`, les deux feuilles sont désormais mises en file par WordPress). Bandeau : carte arrondie sur fond assombri et flouté (position centre), carte flottante sur toute la largeur (haut, bas), icône de cookie dessinée à la place des émojis ☝ 🍪, bouton × discret, lien vers la politique de confidentialité souligné. Panneau : fenêtre centrée (plein écran sur téléphone), en-tête avec « Tout accepter / Tout refuser », catégories dépliables avec chevron, une carte par service avec ses boutons Autoriser / Interdire (contour au repos, plein et coché quand c'est le choix enregistré, au lieu de l'opacité réduite), « Fermer » et « Enregistrer » dans une barre fixée en bas. Police du thème, zones cliquables de 44 px, focus visible, animations coupées si le visiteur les réduit.
+- La position choisie est posée sur `<html data-optimizr-tac="top|middle|bottom">` par le script de configuration : Tarteaucitron donne la même classe aux positions haut et milieu. Les couleurs sont des variables `--otac-*` posées sur `:root`.
+- Couleurs par défaut de l'apparence « Couleurs du bandeau » : bandeau et panneau blancs, bouton « Tout refuser » ardoise (`#1f2937`), bouton « Personnaliser » gris clair (`#eef0f3`). Les couleurs enregistrées avec Optimizr Pro sont conservées. Un bouton de la couleur du bandeau reçoit un contour.
+- Aperçu de l'onglet Cookies : texte des boutons calculé comme sur le site, coins et ombre du nouveau bandeau. Le ratio de contraste affiché par Optimizr Pro mesure le texte réellement affiché sur le bouton (sombre ou blanc).
+
+### Corrigé
+- Textes illisibles du bandeau et du panneau : la croix, le lien vers la politique de confidentialité, le titre et le texte du panneau, « Préférences pour tous les services » et les titres de catégorie restaient en blanc sur les fonds clairs choisis.
+- La couleur du bouton « Personnaliser » n'était jamais appliquée (le sélecteur visait une classe que Tarteaucitron ne pose pas sur ce bouton).
+- La couleur du texte de chaque fond (bandeau, panneau, boutons) est choisie par `haptic_readable_text_color()` entre sombre et blanc selon le meilleur contraste, et passe au noir quand aucun des deux n'atteint 4,5:1 : le niveau AA est atteint quelle que soit la couleur choisie. Nouvelles fonctions `haptic_relative_luminance()` et `haptic_contrast_ratio()`.
+
 ## [7.6.2] - 2026-10-25
 
 ### Corrigé
