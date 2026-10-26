@@ -1,0 +1,57 @@
+# Archive de chaque release : quand une release est publiée sur GitHub, ce workflow vérifie son numéro,
+# construit optimizr-X.Y.Z.zip (dossier racine « optimizr », sans numéro) et l'ajoute à la release.
+#
+# Il ne crée ni tag ni release et ne touche pas à la branche stable : la release (tag vX.Y.Z, titre X.Y.Z)
+# se crée à la main. Un titre autre que X.Y.Z est corrigé ; des notes vides sont remplies avec la section
+# de la version dans CHANGELOG.md. « Run workflow » (onglet Actions) refait l'archive d'une release existante.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag de la release existante (ex. v7.7.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    name: Archive optimizr-X.Y.Z.zip
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Vérification du numéro
+        run: |
+          bin/check-version.sh
+          version="$(sed -n 's/^ \* Version: *//p' optimizr.php)"
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Le tag $TAG ne correspond pas à la version $version du plugin (tag attendu : v$version)."
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Titre et notes de la release
+        run: |
+          if [ "$(gh release view "$TAG" --json name -q .name)" != "$VERSION" ]; then
+            gh release edit "$TAG" --title "$VERSION"
+          fi
+          if [ -z "$(gh release view "$TAG" --json body -q .body | tr -d '[:space:]')" ]; then
+            awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { f = 1; next } /^## \[/ { if (f) exit } f' CHANGELOG.md > notes.md
+            [ -s notes.md ] && gh release edit "$TAG" --notes-file notes.md
+          fi
+
+      - name: Archive
+        run: |
+          git archive --format=zip --prefix=optimizr/ -o "optimizr-$VERSION.zip" HEAD
+          unzip -l "optimizr-$VERSION.zip" | grep -q ' optimizr/optimizr.php$'
+          gh release upload "$TAG" "optimizr-$VERSION.zip" --clobber

@@ -1,0 +1,52 @@
+# Intégration continue : à chaque pull request et à chaque push sur main.
+# - syntaxe PHP de PHP 7.4 (minimum déclaré) à PHP 8.4 ;
+# - numéro de version identique partout (bin/check-version.sh) ;
+# - Plugin Check (contrôles de WordPress.org) sur la version WordPress.org (bin/build-wporg.sh).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-lint:
+    name: Syntaxe PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+      - run: bin/check-php.sh
+
+  version:
+    name: Numéro de version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bin/check-version.sh
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version WordPress.org (dist/optimizr)
+        run: bin/build-wporg.sh
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: dist/optimizr
