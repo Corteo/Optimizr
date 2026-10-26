@@ -1,9 +1,11 @@
-# Archive de chaque release : quand une release est publiée sur GitHub, ce workflow vérifie son numéro,
-# construit optimizr-X.Y.Z.zip (dossier racine « optimizr », sans numéro) et l'ajoute à la release.
+# Release d'Optimizr : tag vX.Y.Z, titre X.Y.Z, notes reprises de CHANGELOG.md et archive optimizr-X.Y.Z.zip
+# (dossier racine « optimizr », sans numéro).
 #
-# Il ne crée ni tag ni release et ne touche pas à la branche stable : la release (tag vX.Y.Z, titre X.Y.Z)
-# se crée à la main. Un titre autre que X.Y.Z est corrigé ; des notes vides sont remplies avec la section
-# de la version dans CHANGELOG.md. « Run workflow » (onglet Actions) refait l'archive d'une release existante.
+# - Release publiée à la main sur GitHub : le workflow vérifie son numéro, ramène le titre à X.Y.Z, remplit
+#   des notes vides et ajoute l'archive.
+# - « Run workflow » (onglet Actions) avec un numéro X.Y.Z : crée la release (et son tag vX.Y.Z) sur le dernier
+#   commit de main si elle n'existe pas, puis fait de même ; sur une release existante, refait son archive.
+# Le numéro doit être celui du plugin (bin/check-version.sh). La branche stable n'est jamais modifiée.
 name: Release
 
 on:
@@ -11,24 +13,34 @@ on:
     types: [published]
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Tag de la release existante (ex. v7.7.0)'
+      version:
+        description: 'Version à publier (X.Y.Z), égale à celle du plugin'
         required: true
 
 permissions:
   contents: write
 
 jobs:
-  zip:
-    name: Archive optimizr-X.Y.Z.zip
+  release:
+    name: Release et archive optimizr-X.Y.Z.zip
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      TAG: ${{ github.event.release.tag_name || format('v{0}', inputs.version) }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          fetch-depth: 0
+
+      - name: Commit de la release
+        run: |
+          if git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
+            git checkout -q "$TAG"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "::error::Tag $TAG introuvable."
+            exit 1
+          fi
+          git log --oneline -1
 
       - name: Vérification du numéro
         run: |
@@ -39,15 +51,19 @@ jobs:
             exit 1
           fi
           echo "VERSION=$version" >> "$GITHUB_ENV"
+          awk -v v="$version" 'index($0, "## [" v "]") == 1 { f = 1; next } /^## \[/ { if (f) exit } f' CHANGELOG.md > notes.md
 
-      - name: Titre et notes de la release
+      - name: Création, titre et notes de la release
         run: |
-          if [ "$(gh release view "$TAG" --json name -q .name)" != "$VERSION" ]; then
-            gh release edit "$TAG" --title "$VERSION"
-          fi
-          if [ -z "$(gh release view "$TAG" --json body -q .body | tr -d '[:space:]')" ]; then
-            awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { f = 1; next } /^## \[/ { if (f) exit } f' CHANGELOG.md > notes.md
-            [ -s notes.md ] && gh release edit "$TAG" --notes-file notes.md
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --target "$(git rev-parse HEAD)" --title "$VERSION" --notes-file notes.md
+          else
+            if [ "$(gh release view "$TAG" --json name -q .name)" != "$VERSION" ]; then
+              gh release edit "$TAG" --title "$VERSION"
+            fi
+            if [ -z "$(gh release view "$TAG" --json body -q .body | tr -d '[:space:]')" ] && [ -s notes.md ]; then
+              gh release edit "$TAG" --notes-file notes.md
+            fi
           fi
 
       - name: Archive
