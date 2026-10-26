@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.6.2
+Stable tag: 7.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 
 = Cookies & GDPR =
 
-* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview.
+* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Modern, accessible design: texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
 * Google Analytics 4 and Google Tag Manager, loaded only after the visitor's consent.
 * Google Consent Mode v2.
 * YouTube, Dailymotion, X, Facebook and Google Maps embeds always offered in the consent panel.
@@ -81,6 +81,11 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.7.0 =
+* New look for the cookie banner and the "Customize" panel: rounded card on a dimmed background (center) or floating bar (top, bottom), clearer buttons, one card per service with Allow / Deny choices, Close and Save at the bottom of the panel. The theme's font is used.
+* Fixed: unreadable texts (white on a light background) in the banner and the panel, and the color of the "Customize" button, which was not applied. Text color is now computed for each background so that it always reaches 4.5:1 (WCAG AA).
+* New default colors: white banner and panel, dark "Deny all" button, light "Customize" button. Colors saved with Optimizr Pro are kept.
 
 = 7.6.2 =
 * Fixed: with a custom login address, admin addresses (/wp-admin/) now show the theme's 404 page to logged-out visitors, like any address that does not exist, instead of a plain "Page not found" page.

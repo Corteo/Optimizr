@@ -11,7 +11,7 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 ## Modules
 
 ### Cookies & RGPD
-- Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas), avec aperçu en direct.
+- Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas), avec aperçu en direct. Thème d'Optimizr (`css/optimizr-cookies.css`) pour le bandeau et le panneau « Personnaliser » : textes toujours lisibles (contraste WCAG AA calculé pour chaque fond), panneau plein écran sur téléphone.
 - Google Analytics 4 et Google Tag Manager, chargés uniquement après accord du visiteur.
 - Google Consent Mode v2 transmis automatiquement.
 - Toujours proposés, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé.
@@ -170,7 +170,7 @@ optimizr.php             Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
 functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
 functions/tabs.php       Affichage des sections en cartes
-functions/cookies.php    Module Cookies & RGPD
+functions/cookies.php    Module Cookies & RGPD (+ css/optimizr-cookies.css, thème du bandeau)
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
 functions/audit.php      Onglet Audit : audit Lighthouse avec l'API PageSpeed Insights (+ js/optimizr-audit.js)

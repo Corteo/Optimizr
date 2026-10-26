@@ -32,13 +32,16 @@
         return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
     }
 
-    // Même règle que haptic_readable_text_color() côté PHP
-    function readableText(hex) {
-        return luminance(hex) > 0.179 ? '#1e1e1e' : '#ffffff';
+    function contrast(a, b) {
+        var la = luminance(a), lb = luminance(b);
+        return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
     }
 
-    function contrastWithWhite(hex) {
-        return 1.05 / (luminance(hex) + 0.05);
+    // Même règle que haptic_readable_text_color() côté PHP
+    function readableText(hex) {
+        var dark = contrast(hex, '#1e1e1e'), light = contrast(hex, '#ffffff');
+        if (Math.max(dark, light) < 4.5) return '#000000';
+        return dark >= light ? '#1e1e1e' : '#ffffff';
     }
 
     /* ---------- Barre d'enregistrement ---------- */
@@ -122,7 +125,8 @@
                 hex.textContent = value;
 
                 if (contrast) {
-                    var ratio = contrastWithWhite(value);
+                    // Texte réellement affiché sur le bouton (sombre ou blanc, cf. readableText)
+                    var ratio = contrast(value, readableText(value));
                     var ok = ratio >= 4.5;
                     if (ok) {
                         /* translators: %s: contrast ratio, e.g. 4.5 */
@@ -140,7 +144,10 @@
                     banner.style.color = readableText(value);
                 }
                 var btn = preview.querySelector('[data-tac-preview-btn="' + input.dataset.tacColor + '"]');
-                if (btn) btn.style.background = value;
+                if (btn) {
+                    btn.style.background = value;
+                    btn.style.color = readableText(value);
+                }
             }
 
             input.addEventListener('input', update);
