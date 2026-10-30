@@ -15,7 +15,7 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - Google Tag Manager, chargé uniquement après accord du visiteur.
 - Google Analytics 4 avec Google Consent Mode v2 (mode avancé de Tarteaucitron, `softConsentMode` à `false`) : avant l'accord du visiteur, la balise Google est chargée avec tous les consentements refusés, sans cookie (mesures anonymes) ; après, mesure complète.
 - Toujours proposés, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé.
-- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha (définitions Tarteaucitron fournies par Optimizr Pro 1.14.0 et suivants).
+- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha (définitions Tarteaucitron fournies par Optimizr Pro 1.15.0 et suivants).
 - Tarteaucitron est fourni avec ses seuls services utilisés par Optimizr (`bin/tarteaucitron-services.js`) et ne contacte jamais tarteaucitron.io (statistiques `proPing` et cas `cdn.jsdelivr.net` retirés de `tarteaucitron.js`, à refaire à chaque mise à jour de la librairie).
 
 ### SEO
