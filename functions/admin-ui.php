@@ -159,7 +159,7 @@ add_action('admin_notices', function () {
 });
 
 /** Première version d'Optimizr Pro qui fournit elle-même ses services du bandeau de cookies (retirés d'Optimizr 7.9.0). */
-define('HAPTIC_OPTIMIZR_PRO_COOKIES_VERSION', '1.15.0');
+define('HAPTIC_OPTIMIZR_PRO_COOKIES_VERSION', '1.16.0');
 
 // Optimizr Pro antérieur : ses services du bandeau (Clarity, Matomo, Google Ads…) ne se chargent plus jusqu'à sa mise à jour.
 // Rappel sur la page d'Optimizr et la liste des extensions seulement.
