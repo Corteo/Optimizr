@@ -6,6 +6,7 @@
 
     var __ = wp.i18n.__;
     var _x = wp.i18n._x;
+    var _n = wp.i18n._n;
     var sprintf = wp.i18n.sprintf;
 
     // Nombre au format de la langue de l'admin (attribut lang de la page), repli sur le format du navigateur
@@ -101,12 +102,166 @@
 
     /* ---------- Tableau de bord ---------- */
 
-    function initModules() {
-        document.querySelectorAll('.optimizr-module .optimizr-switch input').forEach(function (input) {
-            input.addEventListener('change', function () {
-                input.closest('.optimizr-module').classList.toggle('is-off', !input.checked);
+    var ICON_CHECK = '<path d="M20 6 9 17l-5-5"/>';
+    var ICON_ALERT = '<path d="M12 8v5"/><path d="M12 17h.01"/>';
+    var toastTimer;
+
+    function svgIcon(paths, size) {
+        return '<svg class="optimizr-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + paths + '</svg>';
+    }
+
+    // Message de confirmation en bas de page ; action : { label, href } (lien) ou { label, onClick } (bouton)
+    function showToast(message, action, isError) {
+        var old = document.querySelector('.optimizr-toast');
+        if (old) old.remove();
+        clearTimeout(toastTimer);
+
+        var toast = document.createElement('div');
+        toast.className = 'optimizr-toast' + (isError ? ' is-error' : '');
+        toast.setAttribute('role', 'status');
+
+        var text = document.createElement('span');
+        text.className = 'optimizr-toast__text';
+        text.innerHTML = svgIcon(isError ? ICON_ALERT : ICON_CHECK, 16);
+        text.appendChild(document.createTextNode(message));
+        toast.appendChild(text);
+
+        if (action) {
+            var button = document.createElement(action.href ? 'a' : 'button');
+            button.className = 'optimizr-toast__action';
+            button.textContent = action.label;
+            if (action.href) {
+                button.href = action.href;
+            } else {
+                button.type = 'button';
+                button.addEventListener('click', function () {
+                    toast.remove();
+                    action.onClick();
+                });
+            }
+            toast.appendChild(button);
+        }
+
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'optimizr-toast__close';
+        close.setAttribute('aria-label', __('Close', 'optimizr'));
+        close.innerHTML = svgIcon('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', 14);
+        close.addEventListener('click', function () { toast.remove(); });
+        toast.appendChild(close);
+
+        (document.querySelector('.optimizr') || document.body).appendChild(toast);
+        toastTimer = setTimeout(function () { toast.remove(); }, 6000);
+    }
+
+    function post(dashboard, data) {
+        var body = new FormData();
+        body.append('_ajax_nonce', dashboard.dataset.nonce);
+        Object.keys(data).forEach(function (key) { body.append(key, data[key]); });
+        return fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
+            .then(function (response) { return response.json(); })
+            .then(function (json) {
+                if (!json || !json.success) {
+                    throw new Error(json && json.data && json.data.message ? json.data.message : '');
+                }
+                return json.data;
+            });
+    }
+
+    function updateGroupCount(group) {
+        var count = group.querySelector('[data-optimizr-group-count]');
+        if (!count) return;
+        var active = group.querySelectorAll('[data-module-toggle][aria-checked="true"]').length;
+        var total = parseInt(count.dataset.total, 10);
+        /* translators: 1: number of active modules, 2: number of modules in the theme */
+        count.textContent = sprintf(_n('%1$s active out of %2$s', '%1$s active out of %2$s', active, 'optimizr'), active, total);
+    }
+
+    // Activation d'un module : enregistrée aussitôt, onglets mis à jour, confirmation avec « Configurer » ou « Annuler »
+    function setModule(dashboard, row, active) {
+        var toggle = row.querySelector('[data-module-toggle]');
+        var status = row.querySelector('[data-module-status]');
+        var configure = row.querySelector('[data-module-configure]');
+        var label = row.dataset.label;
+
+        toggle.setAttribute('aria-busy', 'true');
+        toggle.setAttribute('aria-checked', active ? 'true' : 'false');
+        row.classList.toggle('is-off', !active);
+
+        post(dashboard, { action: 'haptic_module_toggle', module: row.dataset.module, active: active ? 1 : 0 })
+            .then(function (data) {
+                toggle.setAttribute('aria-checked', data.active ? 'true' : 'false');
+                row.classList.toggle('is-off', !data.active);
+                status.className = 'optimizr-status optimizr-status--' + data.status;
+                status.textContent = data.label;
+                configure.hidden = !data.active;
+
+                var nav = document.querySelector('[data-optimizr-tabs-nav]');
+                if (nav && data.tabs) {
+                    nav.innerHTML = data.tabs;
+                    window.dispatchEvent(new Event('resize'));
+                }
+
+                row.classList.add('is-changed');
+                setTimeout(function () { row.classList.remove('is-changed'); }, 1200);
+                updateGroupCount(row.closest('.optimizr-group'));
+
+                if (data.active) {
+                    /* translators: %s: module name */
+                    showToast(sprintf(__('%s enabled.', 'optimizr'), label), { label: __('Configure →', 'optimizr'), href: configure.href });
+                } else {
+                    /* translators: %s: module name */
+                    showToast(sprintf(__('%s disabled. Its settings are kept.', 'optimizr'), label), {
+                        label: __('Undo', 'optimizr'),
+                        onClick: function () { setModule(dashboard, row, true); }
+                    });
+                }
+            })
+            .catch(function (error) {
+                toggle.setAttribute('aria-checked', active ? 'false' : 'true');
+                row.classList.toggle('is-off', active);
+                showToast(error.message || __('The change could not be saved. Try again.', 'optimizr'), null, true);
+            })
+            .then(function () {
+                toggle.removeAttribute('aria-busy');
+            });
+    }
+
+    function initDashboard() {
+        var dashboard = document.querySelector('[data-optimizr-dashboard]');
+        if (!dashboard) return;
+
+        dashboard.querySelectorAll('[data-module-toggle]').forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                if (toggle.getAttribute('aria-busy') === 'true') return;
+                setModule(dashboard, toggle.closest('[data-module]'), toggle.getAttribute('aria-checked') !== 'true');
             });
         });
+
+        // « Plus tard » (assistant) et « Masquer » (présentation d'Optimizr Pro) : retenus pour ce compte
+        dashboard.querySelectorAll('[data-optimizr-hide]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var key = button.dataset.optimizrHide;
+                var block = dashboard.querySelector('[data-optimizr-hideable="' + key + '"]');
+                if (block) block.hidden = true;
+                post(dashboard, { action: 'haptic_dashboard_hide', key: key }).catch(function () {});
+            });
+        });
+
+        // Dernier audit : mobile ou ordinateur
+        var audit = dashboard.querySelector('[data-optimizr-audit-card]');
+        if (audit) {
+            audit.querySelectorAll('[data-audit-show]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    audit.querySelectorAll('[data-audit-show]').forEach(function (other) {
+                        other.setAttribute('aria-pressed', other === button ? 'true' : 'false');
+                    });
+                    audit.querySelectorAll('[data-audit-panel]').forEach(function (panel) {
+                        panel.hidden = panel.dataset.auditPanel !== button.dataset.auditShow;
+                    });
+                });
+            });
+        }
     }
 
     /* ---------- Cookies : couleurs, position, aperçu ---------- */
@@ -300,7 +455,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         initTabsScroll();
         initSaveBar();
-        initModules();
+        initDashboard();
         initCookieBanner();
         initServices();
         initSeoPreview();

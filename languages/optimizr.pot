@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.7.0\n"
+"Project-Id-Version: Optimizr 7.8.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Launch the wizard"
 msgstr ""
 
-#: functions/admin-ui.php
+#: functions/admin-ui.php js/optimizr-admin.js
 msgid "Configure →"
 msgstr ""
 
@@ -2421,4 +2421,198 @@ msgstr ""
 
 #: functions/cookies.php
 msgid "With \"Site theme\", the banner uses the background, text, fonts and buttons of your theme."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Visibility"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Content & tools"
+msgstr ""
+
+#: functions/dashboard.php
+msgctxt "dashboard group"
+msgid "Content"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Unknown module."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Local SEO: business profile, opening hours and Google reviews"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Custom 404 page and maintenance mode"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Clear the cache"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "The state of your site, its indicators and the Optimizr modules."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Quick actions"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Go further with Optimizr Pro"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "A separate add-on that adds its own modules. Your current settings stay as they are."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Hide"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Everything is in order"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Your site is protected, fast and easy to find."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "%s item to fix"
+msgid_plural "%s items to fix"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/dashboard.php
+msgid "%s other check passed."
+msgid_plural "%s other checks passed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/dashboard.php
+msgid "Fix"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Status by theme"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/dashboard.php
+msgctxt "dashboard theme status"
+msgid "OK"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Show the passed check (%s)"
+msgid_plural "Show the passed checks (%s)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/dashboard.php js/optimizr-admin.js
+msgid "%1$s active out of %2$s"
+msgid_plural "%1$s active out of %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/dashboard.php
+msgid "Latest audit"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Google measures the speed, accessibility and SEO of a page of your site."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Set up audits"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Home page"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "See the details →"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Run again"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Performance scores, oldest first: %s"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "%s pts"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Performance, last %s audits"
+msgstr ""
+
+#: functions/dashboard.php
+msgctxt "cache status"
+msgid "Active"
+msgstr ""
+
+#: functions/dashboard.php
+msgctxt "cache status"
+msgid "Off"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Never cleared."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Clear"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Versions and licence"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Up to date"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "%1$s · %2$s available"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Update"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Update available"
+msgstr ""
+
+#: js/optimizr-admin.js
+msgid "Close"
+msgstr ""
+
+#: js/optimizr-admin.js
+msgid "%s enabled."
+msgstr ""
+
+#: js/optimizr-admin.js
+msgid "%s disabled. Its settings are kept."
+msgstr ""
+
+#: js/optimizr-admin.js
+msgid "Undo"
+msgstr ""
+
+#: js/optimizr-admin.js
+msgid "The change could not be saved. Try again."
 msgstr ""

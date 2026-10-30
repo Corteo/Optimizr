@@ -161,7 +161,7 @@ msgstr "L'assistant active les modules utiles et les réglages recommandés de s
 msgid "Launch the wizard"
 msgstr "Lancer l'assistant"
 
-#: functions/admin-ui.php
+#: functions/admin-ui.php js/optimizr-admin.js
 msgid "Configure →"
 msgstr "Configurer →"
 
@@ -2427,3 +2427,197 @@ msgstr "Apparence du bandeau"
 #: functions/cookies.php
 msgid "With \"Site theme\", the banner uses the background, text, fonts and buttons of your theme."
 msgstr "Avec « Thème du site », le bandeau reprend le fond, le texte, les polices et les boutons de votre thème."
+
+#: functions/dashboard.php
+msgid "Visibility"
+msgstr "Visibilité"
+
+#: functions/dashboard.php
+msgid "Content & tools"
+msgstr "Contenu et outils"
+
+#: functions/dashboard.php
+msgctxt "dashboard group"
+msgid "Content"
+msgstr "Contenu"
+
+#: functions/dashboard.php
+msgid "Unknown module."
+msgstr "Module inconnu."
+
+#: functions/dashboard.php
+msgid "Local SEO: business profile, opening hours and Google reviews"
+msgstr "SEO local : fiche établissement, horaires et avis Google"
+
+#: functions/dashboard.php
+msgid "Custom 404 page and maintenance mode"
+msgstr "Page 404 personnalisée et mode maintenance"
+
+#: functions/dashboard.php
+msgid "Clear the cache"
+msgstr "Vider le cache"
+
+#: functions/dashboard.php
+msgid "The state of your site, its indicators and the Optimizr modules."
+msgstr "L'état de votre site, ses indicateurs et les modules d'Optimizr."
+
+#: functions/dashboard.php
+msgid "Quick actions"
+msgstr "Actions rapides"
+
+#: functions/dashboard.php
+msgid "Go further with Optimizr Pro"
+msgstr "Aller plus loin avec Optimizr Pro"
+
+#: functions/dashboard.php
+msgid "A separate add-on that adds its own modules. Your current settings stay as they are."
+msgstr "Une extension séparée, qui ajoute ses propres modules. Vos réglages actuels restent tels quels."
+
+#: functions/dashboard.php
+msgid "Hide"
+msgstr "Masquer"
+
+#: functions/dashboard.php
+msgid "Everything is in order"
+msgstr "Tout est en ordre"
+
+#: functions/dashboard.php
+msgid "Your site is protected, fast and easy to find."
+msgstr "Votre site est protégé, rapide et bien référencé."
+
+#: functions/dashboard.php
+msgid "%s item to fix"
+msgid_plural "%s items to fix"
+msgstr[0] "%s point à régler"
+msgstr[1] "%s points à régler"
+
+#: functions/dashboard.php
+msgid "%s other check passed."
+msgid_plural "%s other checks passed."
+msgstr[0] "%s autre vérification réussie."
+msgstr[1] "%s autres vérifications réussies."
+
+#: functions/dashboard.php
+msgid "Fix"
+msgstr "Corriger"
+
+#: functions/dashboard.php
+msgid "Status by theme"
+msgstr "État par thème"
+
+#: functions/dashboard.php
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s point"
+msgstr[1] "%s points"
+
+#: functions/dashboard.php
+msgctxt "dashboard theme status"
+msgid "OK"
+msgstr "OK"
+
+#: functions/dashboard.php
+msgid "Show the passed check (%s)"
+msgid_plural "Show the passed checks (%s)"
+msgstr[0] "Voir la vérification réussie (%s)"
+msgstr[1] "Voir les vérifications réussies (%s)"
+
+#: functions/dashboard.php js/optimizr-admin.js
+msgid "%1$s active out of %2$s"
+msgid_plural "%1$s active out of %2$s"
+msgstr[0] "%1$s actif sur %2$s"
+msgstr[1] "%1$s actifs sur %2$s"
+
+#: functions/dashboard.php
+msgid "Latest audit"
+msgstr "Dernier audit"
+
+#: functions/dashboard.php
+msgid "Google measures the speed, accessibility and SEO of a page of your site."
+msgstr "Google mesure la vitesse, l'accessibilité et le référencement d'une page de votre site."
+
+#: functions/dashboard.php
+msgid "Set up audits"
+msgstr "Configurer l'audit"
+
+#: functions/dashboard.php
+msgid "Home page"
+msgstr "Page d'accueil"
+
+#: functions/dashboard.php
+msgid "See the details →"
+msgstr "Voir le détail →"
+
+#: functions/dashboard.php
+msgid "Run again"
+msgstr "Relancer"
+
+#: functions/dashboard.php
+msgid "Performance scores, oldest first: %s"
+msgstr "Scores de performance, du plus ancien au plus récent : %s"
+
+#: functions/dashboard.php
+msgid "%s pts"
+msgstr "%s pts"
+
+#: functions/dashboard.php
+msgid "Performance, last %s audits"
+msgstr "Performance, %s derniers audits"
+
+#: functions/dashboard.php
+msgctxt "cache status"
+msgid "Active"
+msgstr "Actif"
+
+#: functions/dashboard.php
+msgctxt "cache status"
+msgid "Off"
+msgstr "Inactif"
+
+#: functions/dashboard.php
+msgid "Never cleared."
+msgstr "Jamais vidé."
+
+#: functions/dashboard.php
+msgid "Clear"
+msgstr "Vider"
+
+#: functions/dashboard.php
+msgid "Versions and licence"
+msgstr "Versions et licence"
+
+#: functions/dashboard.php
+msgid "Up to date"
+msgstr "À jour"
+
+#: functions/dashboard.php
+msgid "%1$s · %2$s available"
+msgstr "%1$s · %2$s disponible"
+
+#: functions/dashboard.php
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: functions/dashboard.php
+msgid "Update available"
+msgstr "Mise à jour disponible"
+
+#: js/optimizr-admin.js
+msgid "Close"
+msgstr "Fermer"
+
+#: js/optimizr-admin.js
+msgid "%s enabled."
+msgstr "%s activé."
+
+#: js/optimizr-admin.js
+msgid "%s disabled. Its settings are kept."
+msgstr "%s désactivé. Ses réglages sont conservés."
+
+#: js/optimizr-admin.js
+msgid "Undo"
+msgstr "Annuler"
+
+#: js/optimizr-admin.js
+msgid "The change could not be saved. Try again."
+msgstr "La modification n'a pas pu être enregistrée. Réessayez."
