@@ -622,6 +622,7 @@ add_filter('haptic_module_status', function ($status, $slug) {
 add_filter('haptic_site_health_checks', function ($checks) {
     $active = haptic_cache_page_active();
     $checks[] = [
+        'module'     => 'cache',
         'status'     => $active || haptic_cache_blocker() === 'plugin' ? 'ok' : 'warn',
         'label'      => $active ? __('Page cache active', 'optimizr') : (haptic_cache_blocker() === 'plugin' ? __('Pages cached by another plugin', 'optimizr') : __('Page cache off', 'optimizr')),
         'link'       => $active ? '' : haptic_admin_tab_url('cache'),

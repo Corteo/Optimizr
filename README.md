@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.7.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.8.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -100,7 +100,7 @@ Après la mise à jour, tous les modules sont actifs. Les nouveaux (SEO local, P
 Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 - **Assistant de configuration :** s'ouvre en plein écran à la première activation du plugin, puis à la demande (menu **Optimizr › Assistant**, bouton « Assistant de configuration » de la page d'options, lien dans la liste des extensions). En quelques étapes, il fait choisir les modules puis renseigner l'essentiel de chacun : adresse de connexion et verrouillage, connexion des comptes (double authentification, et passkeys d'Optimizr Pro), nom du site et motifs SEO, outils de mesure (Optimizr Pro y ajoute ses propres étapes). Rien n'est enregistré avant la dernière étape ; les étapes des modules non choisis sont sautées. Avec le module Sécurité, l'administrateur met ensuite en place la double authentification (ou sa passkey) de son propre compte, avant l'écran final ; les autres comptes se la voient proposer à leur prochaine connexion.
-- **Tableau de bord :** activez les modules utiles et consultez l'état du site (bandeau cookies, indexation).
+- **Tableau de bord :** un en-tête illustré donne l'état du site (points à régler, état par thème : sécurité, visibilité, performance, contenu), avec le dernier audit, l'état du cache, les versions et des actions rapides (vider le cache, lancer un audit). Les modules sont rangés par thème ; leur interrupteur les active ou les désactive aussitôt, sans enregistrement, et leur onglet apparaît ou disparaît.
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 - **Audit :** audit Lighthouse d'une page, sur mobile ou sur ordinateur, et historique des scores.
 - **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
@@ -120,9 +120,12 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_modules` | filtre | Ajouter ou modifier un module du tableau de bord. |
 | `haptic_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
 | `haptic_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
-| `haptic_site_health_checks` | filtre | Ajouter une vérification au bloc « État du site ». |
-| `haptic_module_status` | filtre | Pastille d'état d'un module sur le tableau de bord. |
-| `haptic_dashboard_aside` | action | Carte du tableau de bord, quand Optimizr Pro est actif (sinon carte de présentation d'Optimizr Pro). |
+| `haptic_site_health_checks` | filtre | Ajouter une vérification à l'état du site (en-tête du tableau de bord). Clés `module` ou `group` facultatives : thème auquel rattacher un point à régler (sinon déduit de l'onglet du lien). |
+| `haptic_dashboard_groups` | filtre | Thèmes du tableau de bord : libellé, icône, couleurs et modules de chacun. |
+| `haptic_dashboard_actions` | filtre | Actions rapides de l'en-tête du tableau de bord (`label`, `url`, `icon`). |
+| `haptic_dashboard_versions` | action | Lignes de la carte « Versions et licence » ; `haptic_dashboard_version_row()` affiche une ligne. |
+| `haptic_module_status` | filtre | État d'un module sur le tableau de bord. |
+| `haptic_dashboard_aside` | action | Carte supplémentaire sous « Versions et licence » (Optimizr Pro antérieur à 1.13.0). |
 | `haptic_loaded` | action | Optimizr est chargé : point d'entrée des extensions. |
 | `haptic_activate` / `haptic_deactivate` | action | Activation et désactivation d'Optimizr. |
 | `haptic_settings_imported` | action | Réglages importés depuis l'onglet Outils. |
@@ -167,7 +170,8 @@ Un onglet déclare ses réglages avec la Settings API de WordPress, en utilisant
 
 ```
 optimizr.php             Fichier principal : constantes, chargement des modules
-functions/admin-ui.php   Page d'options : modules, onglets, tableau de bord
+functions/admin-ui.php   Page d'options : modules, onglets, icônes
+functions/dashboard.php  Tableau de bord : état du site, thèmes de modules, activation sans enregistrement
 functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD (+ css/optimizr-cookies.css, thème du bandeau)

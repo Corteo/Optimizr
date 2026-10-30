@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.7.0
+Stable tag: 7.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,13 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.8.0 =
+* New dashboard. An illustrated header greets you and lists what needs your attention, with one status per theme (security, visibility, performance, content); passed checks can be shown below.
+* Modules are grouped by theme in a compact list. A switch now enables or disables a module right away, without the Save button, with a confirmation offering "Configure" or "Undo". The module's tab appears or disappears at once.
+* The latest PageSpeed audit (scores on mobile and desktop, trend of the Performance score) and the cache status are shown on the dashboard, with quick actions: clear the cache, run an audit.
+* One "Versions and licence" card, which says when WordPress offers an update. The setup wizard invitation can be postponed ("Later").
+* Without Optimizr Pro, it is presented in a single card that can be hidden.
 
 = 7.7.0 =
 * New: "Site theme" appearance for the cookie banner (default). The banner and the "Customize" panel use your theme's background, text color, fonts and button style, with block themes as well as classic themes. Sites whose banner colors were saved with Optimizr Pro keep them.

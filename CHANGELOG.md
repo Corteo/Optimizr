@@ -4,12 +4,25 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [7.8.0] - 2026-10-30
 
 ### Ajouté
+- **Nouveau tableau de bord** (`functions/dashboard.php`). En-tête illustré, dans le style de l'assistant de configuration (fond nuit, trame, dégradés) : salutation, nombre de points à régler avec leur bouton d'action, état par thème en pastilles, et illustration où chaque thème porte un point vert ou orange. Les vérifications réussies se déplient en dessous. Points à régler et pastilles viennent de `haptic_site_health_checks()`, dont chaque vérification peut indiquer son `module` ou son `group` (sinon déduit de l'onglet de son lien).
+- **Modules rangés par thème** (filtre `haptic_dashboard_groups` : Sécurité et conformité, Visibilité, Performance, Contenu et outils, avec les modules d'Optimizr Pro), en liste compacte : icône teintée de la couleur du thème, description, état, lien « Configurer », modules actifs en tête. Un thème sans module n'est pas affiché.
+- **Activation sans enregistrement** : l'interrupteur d'un module l'active ou le désactive aussitôt (AJAX `haptic_module_toggle`), met à jour les onglets et affiche une confirmation avec « Configurer → » ou « Annuler ». Le tableau de bord n'a plus de barre d'enregistrement.
+- **Indicateurs** : dernier audit PageSpeed (scores mobile et ordinateur, courbe du score Performance sur les 7 derniers audits de l'historique), état du cache (pages en cache, protections, dernier vidage, bouton « Vider »).
+- **Actions rapides** dans l'en-tête de la page (filtre `haptic_dashboard_actions`) : vider le cache, lancer un audit.
+- **Carte « Versions et licence »** : version installée et mise à jour proposée par WordPress, lignes ajoutées par Optimizr Pro (action `haptic_dashboard_versions`, fonction `haptic_dashboard_version_row()`).
+- « Plus tard » sur l'invitation à lancer l'assistant, et « Masquer » sur la présentation d'Optimizr Pro : retenus pour chaque compte (métadonnée `haptic_dashboard_hidden`).
 - **Intégration continue** (`.github/workflows/ci.yml`) : à chaque pull request et à chaque push sur `main`, syntaxe PHP de PHP 7.4 à 8.4 (`bin/check-php.sh`), numéro de version identique partout (`bin/check-version.sh`) et Plugin Check sur la version WordPress.org.
 - **Release automatisée** (`.github/workflows/release.yml`) : « Run workflow » avec le numéro `X.Y.Z` crée la release sur `main` (tag `vX.Y.Z`, titre `X.Y.Z`, notes reprises du CHANGELOG) et y ajoute `optimizr-X.Y.Z.zip` (dossier racine `optimizr`). Une release publiée à la main est vérifiée et complétée de la même façon. Branche `stable` jamais modifiée.
 - `.github/` exclu des archives (`export-ignore`).
+
+### Modifié
+- Sans Optimizr Pro, ses fonctions sont présentées dans une seule carte, en fin de liste et sur la page d'Optimizr uniquement (aucun module verrouillé ni interrupteur désactivé), conformément aux règles 5, 9 et 11 du répertoire WordPress.org.
+- Invitation à lancer l'assistant sur fond clair, avec les trois piliers en illustration.
+- Icônes `gauge`, `plus` et `close` ; `haptic_icon_paths()` renvoie les tracés seuls.
+- Cartes de modules (`.optimizr-module`) et bandeau `.optimizr-onboarding-cta` retirés au profit des nouveaux composants.
 
 ### Corrigé
 - README : « Version actuelle » indiquait 7.6.1 au lieu de 7.7.0.
