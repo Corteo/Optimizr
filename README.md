@@ -244,7 +244,7 @@ Une migration à exécuter une seule fois se place dans `haptic_options_maybe_up
 
 ## Auteur
 
-Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/) · Site du plugin : [optimizr.hapticstudio.fr](https://optimizr.hapticstudio.fr/)
+Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/) · Site du plugin : [optimizr.fr](https://optimizr.fr/)
 
 ## Licence
 

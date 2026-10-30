@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Optimizr
- * Plugin URI: https://optimizr.hapticstudio.fr/
+ * Plugin URI: https://optimizr.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
  * Version: 7.9.0
  * Requires at least: 6.2
