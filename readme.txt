@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.8.0
+Stable tag: 7.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,9 +16,9 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 
 = Cookies & GDPR =
 
-* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Blends in with your theme (background, text, fonts, buttons) or uses its own colors; texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
-* Google Analytics 4 and Google Tag Manager, loaded only after the visitor's consent.
-* Google Consent Mode v2.
+* Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Blends in with your theme (background, text, fonts, buttons) or uses the colors you choose; texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
+* Google Tag Manager, loaded only after the visitor's consent.
+* Google Analytics 4 with Google Consent Mode v2: until the visitor accepts, the Google tag runs with every consent type denied and sets no cookie.
 * YouTube, Dailymotion, X, Facebook and Google Maps embeds always offered in the consent panel.
 
 = SEO =
@@ -56,13 +56,23 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 
 == External services ==
 
-= Third-party services of the cookie banner =
+Optimizr contacts no external service when it is activated. The services below are only reached in the cases described.
 
-The cookie module loads the services you configure (Google Analytics, Google Tag Manager) in your visitors' browsers, and only after they consent to each service. Embeds from YouTube, Dailymotion, X, Facebook and Google Maps are also blocked until the visitor consents. Each service then receives the data described in its own terms and privacy policy, which visitors can read from the consent panel.
+= Cookie banner: services loaded after the visitor's consent =
+
+The Cookies module bundles Tarteaucitron.js 1.21.0 (MIT license), served from the plugin folder; it never contacts the Tarteaucitron website. Except for Google Analytics 4 (see below), a service is only loaded once the visitor has accepted it in the banner or the preferences panel; until then, nothing is requested from it. After consent, the visitor's browser loads the service's script or content directly from the service, which receives what any browser sends (IP address, browser and device details, address of the page) and sets its own cookies. Visitors can withdraw their consent at any time from the panel.
+
+* **Google Analytics 4**, audience measurement, only if a measurement ID is entered in the Cookies tab. Loads `https://www.googletagmanager.com/gtag/js` on each page view, before consent too: until the visitor accepts Google Analytics, Google Consent Mode v2 tells the tag that every consent type (analytics storage, ad storage, ad user data, ad personalization) is denied, so it sets no cookie and only sends cookieless measurements (address of the page, browser details, consent state). Once accepted, it sends page views and visit data with Google Analytics cookies. Provided by Google: [Terms of Service](https://marketingplatform.google.com/about/analytics/terms/us/), [Privacy Policy](https://policies.google.com/privacy).
+* **Google Tag Manager**, only if a container ID is entered in the Cookies tab. Loads `https://www.googletagmanager.com/gtm.js` and the tags of that container, with the consent state. Provided by Google: [Terms of Service](https://marketingplatform.google.com/about/analytics/tag-manager/use-policy/), [Privacy Policy](https://policies.google.com/privacy).
+* **YouTube**, offered in the panel on every page. Once accepted, the player script `https://www.youtube.com/player_api` is loaded on each page, and videos added with Tarteaucitron's YouTube markup are loaded from `https://www.youtube-nocookie.com`. Provided by Google: [Terms of Service](https://www.youtube.com/t/terms), [Privacy Policy](https://policies.google.com/privacy).
+* **Dailymotion**, offered in the panel on every page. Once accepted, videos added with Tarteaucitron's Dailymotion markup are loaded from `https://www.dailymotion.com`. Provided by Dailymotion: [Terms of Use](https://legal.dailymotion.com/en/terms-of-use/), [Privacy Policy](https://legal.dailymotion.com/en/privacy-policy/).
+* **X (Twitter)**, offered in the panel on every page. Once accepted, `https://platform.twitter.com/widgets.js` is loaded on each page to display posts added with Tarteaucitron's X markup. Provided by X Corp.: [Terms of Service](https://x.com/en/tos), [Privacy Policy](https://x.com/en/privacy).
+* **Facebook**, offered in the panel on every page. Once accepted, the Facebook SDK is loaded from `https://connect.facebook.net` on each page to display buttons and posts added with Facebook's markup. Provided by Meta: [Terms of Service](https://www.facebook.com/terms.php), [Privacy Policy](https://www.facebook.com/privacy/policy/).
+* **Google Maps**, offered in the panel on every page. Once accepted, maps added with Tarteaucitron's Google Maps markup (embed without API key) are loaded from `https://www.google.com/maps/embed`. Provided by Google: [Terms of Service](https://maps.google.com/help/terms_maps/), [Privacy Policy](https://policies.google.com/privacy).
 
 = Google PageSpeed Insights (Lighthouse audit) =
 
-The Audit tab uses the Google PageSpeed Insights API to run Lighthouse on a page of your site. Nothing is sent until an administrator clicks "Run the audit"; the plugin then sends the address of the page, the device (mobile or desktop), the admin language and the Google API key entered in the tab to `https://www.googleapis.com/pagespeedonline/v5/runPagespeed`. Google loads the page from its servers, like any visitor, and returns the report. Service provided by Google: [Terms of Service](https://developers.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
+The Audit tab uses the Google PageSpeed Insights API to run Lighthouse on a page of your site. Nothing is sent until an administrator clicks "Run the audit"; the plugin then sends the address of the page, the device (mobile or desktop), the admin language and the Google API key entered in the tab to `https://www.googleapis.com/pagespeedonline/v5/runPagespeed`. Google loads the page from its servers, like any visitor, and returns the report. Provided by Google: [Terms of Service](https://developers.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
 
 == Installation ==
 
@@ -81,6 +91,13 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.9.0 =
+* Banner colors (background, preferences panel, Accept, Deny and Customize buttons) can now be chosen in the Cookies tab, with the readability ratio of each button. They apply with the "Banner colors" appearance.
+* The bundled Tarteaucitron.js now only contains the services the Cookies module can turn on (Google Analytics 4, Google Tag Manager, YouTube, Dailymotion, X, Facebook, Google Maps, Google Consent Mode), and never contacts the Tarteaucitron website. Each of these services is described in the "External services" section of this readme.
+* Form data of the setup wizard and request data read by the page cache are sanitized as soon as they are received.
+* Fixed: PHP warnings on the first load after a new installation (cleanup of files from old versions).
+* The dashboard card is now called "Versions". The plugin package from WordPress.org no longer includes translation files: translations come from translate.wordpress.org.
 
 = 7.8.0 =
 * New dashboard. An illustrated header greets you and lists what needs your attention, with one status per theme (security, visibility, performance, content); passed checks can be shown below.

@@ -687,14 +687,14 @@ function haptic_render_dashboard_cache()
     <?php
 }
 
-/** Carte « Versions et licence » : Optimizr, puis les lignes d'Optimizr Pro (action haptic_dashboard_versions). */
+/** Carte « Versions » : Optimizr, puis les lignes d'une extension (action haptic_dashboard_versions, titre : filtre haptic_dashboard_versions_title). */
 function haptic_render_dashboard_versions()
 {
     $update = haptic_dashboard_available_update(HAPTIC_OPTIMIZR_FILE);
     ?>
     <section class="optimizr-card optimizr-versions">
         <div class="optimizr-card__header">
-            <h2 class="optimizr-card__title"><?php esc_html_e('Versions and licence', 'optimizr'); ?></h2>
+            <h2 class="optimizr-card__title"><?php echo esc_html(apply_filters('haptic_dashboard_versions_title', __('Versions', 'optimizr'))); ?></h2>
         </div>
         <?php
         haptic_dashboard_version_row(haptic_dashboard_update_row('Optimizr', HAPTIC_OPTIMIZR_VERSION, $update));

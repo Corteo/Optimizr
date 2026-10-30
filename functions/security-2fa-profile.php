@@ -347,7 +347,7 @@ function haptic_2fa_ajax_confirm($user)
 add_action('wp_ajax_haptic_2fa_send', function () {
     $user = haptic_2fa_ajax_user();
     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce vérifié par haptic_2fa_ajax_user()
-    $purpose = isset($_POST['purpose']) && sanitize_key($_POST['purpose']) === 'confirm' ? 'confirm' : 'setup';
+    $purpose = isset($_POST['purpose']) && sanitize_key(wp_unslash($_POST['purpose'])) === 'confirm' ? 'confirm' : 'setup';
     $sent = haptic_2fa_send_profile_code($user, $purpose);
     if (is_wp_error($sent)) {
         wp_send_json_error(['message' => $sent->get_error_message()]);
@@ -363,7 +363,7 @@ add_action('wp_ajax_haptic_2fa_activate', function () {
         wp_send_json_error(['message' => __('You are not allowed to do this.', 'optimizr')], 403);
     }
     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce vérifié par haptic_2fa_ajax_user()
-    $method = isset($_POST['method']) && sanitize_key($_POST['method']) === 'email' ? 'email' : 'app';
+    $method = isset($_POST['method']) && sanitize_key(wp_unslash($_POST['method'])) === 'email' ? 'email' : 'app';
 
     if ($method === 'email') {
         $address = haptic_2fa_email_allowed_for($user) ? haptic_2fa_check_setup_code($user->ID, haptic_2fa_ajax_code()) : null;

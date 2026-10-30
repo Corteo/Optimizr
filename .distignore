@@ -22,3 +22,6 @@ functions/seo/sitemap.log
 assets/tarteaucitron/package.json
 assets/tarteaucitron/SECURITY.md
 assets/tarteaucitron/.github
+
+# README de Tarteaucitron (développement de la librairie ; sa licence reste dans LICENSE)
+assets/tarteaucitron/README.md

@@ -203,7 +203,7 @@ var tarteaucitron = {
 
         var cdn = tarteaucitron.cdn,
             language = tarteaucitron.getLanguage(),
-            useMinifiedJS = ((new URL(cdn,tarteaucitronPath).host == 'cdn.jsdelivr.net') || (tarteaucitronPath.indexOf('.min.') >= 0) || (tarteaucitronUseMin !== '')),
+            useMinifiedJS = ((tarteaucitronPath.indexOf('.min.') >= 0) || (tarteaucitronUseMin !== '')), // Optimizr : fichiers toujours servis par le plugin, sans cas particulier de CDN
             pathToLang = cdn + 'lang/tarteaucitron.' + language + (useMinifiedJS ? '.min' : '') + '.js',
             pathToServices = cdn + 'tarteaucitron.services' + (useMinifiedJS ? '.min' : '') + '.js',
             linkElement = document.createElement('link'),
@@ -2403,24 +2403,8 @@ var tarteaucitron = {
     },
     "proPing": function () {
         "use strict";
-        if (tarteaucitron.uuid !== '' && tarteaucitron.uuid !== undefined && tarteaucitron.proTemp !== '' && tarteaucitronStatsEnabled) {
-            var div = document.getElementById('tarteaucitronPremium'),
-                timestamp = new Date().getTime(),
-                url = 'https://tarteaucitron.io/log/?';
-
-            if (div === null) {
-                return;
-            }
-
-            url += 'account=' + tarteaucitron.uuid + '&';
-            url += 'domain=' + tarteaucitron.domain + '&';
-            url += 'status=' + encodeURIComponent(tarteaucitron.proTemp) + '&';
-            url += '_time=' + timestamp;
-
-            div.innerHTML = '<img src="' + url + '" class="tarteaucitron-display-none" alt="" />';
-
-            tarteaucitron.proTemp = '';
-        }
+        // Optimizr : statistiques de tarteaucitron.io (compte uuid) retirées, aucun appel au site de Tarteaucitron
+        tarteaucitron.proTemp = '';
 
         tarteaucitron.cookie.number();
     },

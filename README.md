@@ -6,16 +6,17 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.8.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.9.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
 ### Cookies & RGPD
-- Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas), avec aperçu en direct. Apparence **Thème du site** (par défaut) : le bandeau et le panneau « Personnaliser » reprennent le fond, le texte, les polices et les boutons du thème (`js/optimizr-cookies-theme.js`), ou **Couleurs du bandeau**. Styles dans `css/optimizr-cookies.css` : textes toujours lisibles (contraste WCAG AA vérifié pour chaque fond), panneau plein écran sur téléphone.
-- Google Analytics 4 et Google Tag Manager, chargés uniquement après accord du visiteur.
-- Google Consent Mode v2 transmis automatiquement.
+- Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas), avec aperçu en direct. Apparence **Thème du site** (par défaut) : le bandeau et le panneau « Personnaliser » reprennent le fond, le texte, les polices et les boutons du thème (`js/optimizr-cookies-theme.js`), ou **Couleurs du bandeau** (fond du bandeau et du panneau, trois boutons, choisis dans l'onglet). Styles dans `css/optimizr-cookies.css` : textes toujours lisibles (contraste WCAG AA vérifié pour chaque fond), panneau plein écran sur téléphone.
+- Google Tag Manager, chargé uniquement après accord du visiteur.
+- Google Analytics 4 avec Google Consent Mode v2 (mode avancé de Tarteaucitron, `softConsentMode` à `false`) : avant l'accord du visiteur, la balise Google est chargée avec tous les consentements refusés, sans cookie (mesures anonymes) ; après, mesure complète.
 - Toujours proposés, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé.
-- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha, couleurs du bandeau.
+- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha (définitions Tarteaucitron fournies par Optimizr Pro 1.16.0 et suivants).
+- Tarteaucitron est fourni avec ses seuls services utilisés par Optimizr (`bin/tarteaucitron-services.js`) et ne contacte jamais tarteaucitron.io (statistiques `proPing` et cas `cdn.jsdelivr.net` retirés de `tarteaucitron.js`, à refaire à chaque mise à jour de la librairie).
 
 ### SEO
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
@@ -125,13 +126,14 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_dashboard_actions` | filtre | Actions rapides de l'en-tête du tableau de bord (`label`, `url`, `icon`). |
 | `haptic_dashboard_versions` | action | Lignes de la carte « Versions et licence » ; `haptic_dashboard_version_row()` affiche une ligne. |
 | `haptic_module_status` | filtre | État d'un module sur le tableau de bord. |
-| `haptic_dashboard_aside` | action | Carte supplémentaire sous « Versions et licence » (Optimizr Pro antérieur à 1.13.0). |
+| `haptic_dashboard_aside` | action | Carte supplémentaire sous « Versions » (Optimizr Pro antérieur à 1.13.0). |
+| `haptic_dashboard_versions_title` | filtre | Titre de la carte « Versions » (Optimizr Pro : « Versions et licence »). |
 | `haptic_loaded` | action | Optimizr est chargé : point d'entrée des extensions. |
 | `haptic_activate` / `haptic_deactivate` | action | Activation et désactivation d'Optimizr. |
 | `haptic_settings_imported` | action | Réglages importés depuis l'onglet Outils. |
 | `haptic_cookie_services` | filtre | Services proposés dans l'onglet Cookies, par catégorie. |
 | `haptic_tarteaucitron_service` | filtre | Variables et services Tarteaucitron d'un service ajouté. |
-| `haptic_tac_color` | filtre | Couleur du bandeau (valeur par défaut d'Optimizr). |
+| `haptic_tac_color` | filtre | Couleur du bandeau (choisie dans l'onglet Cookies, sinon valeur par défaut). |
 | `haptic_cookies_consent_note` | filtre | Texte de l'encadré sur les modes de consentement (onglet Cookies). |
 | `haptic_seo_post_types` | filtre | Types de contenu qui ont la metabox SEO. |
 | `haptic_seo_metabox_after_description` | action | Contenu ajouté sous le champ description de la metabox SEO. |
@@ -143,7 +145,8 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_sec_welcome_steps` | filtre | Étapes de cet écran (clé => obligatoire), comme la passkey d'Optimizr Pro. |
 | `haptic_sec_welcome_enqueue` / `haptic_sec_welcome_content` | action | Scripts et contenu d'une étape de cet écran. |
 | `haptic_onboarding_steps` | filtre | Étapes de l'assistant (une étape peut fournir sa fonction `render`). |
-| `haptic_onboarding_account_toggles`, `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement (`haptic_onboarding_account_toggles` : connexion des comptes, comme les passkeys d'Optimizr Pro). |
+| `haptic_onboarding_account_toggles`, `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement (`haptic_onboarding_account_toggles` : connexion des comptes, comme les passkeys d'Optimizr Pro ; `haptic_onboarding_save` reçoit les champs déjà nettoyés). |
+| `haptic_onboarding_textarea_fields` | filtre | Champs de l'assistant sur plusieurs lignes, nettoyés par `sanitize_textarea_field()` (les autres par `sanitize_text_field()`). |
 | `haptic_onboarding_seo_fields`, `haptic_onboarding_step_after`, `haptic_onboarding_print_scripts`, `haptic_onboarding_illustration` | action | Contenu ajouté aux étapes de l'assistant. |
 | `haptic_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
 | `haptic_cache_purged` | action | Cache vidé : tableau des adresses vidées, vide pour tout le site (Optimizr Pro : préchargement, Cloudflare). |
@@ -190,7 +193,8 @@ functions/security-2fa*.php  Double authentification : connexion (security-2fa.p
 functions/security-welcome.php  Écran « Sécurisez votre compte » proposé après la connexion et à la fin de l'assistant (+ css/optimizr-welcome.css)
 assets/qrcode-generator/ Bibliothèque de QR code (MIT) pour la mise en place de la double authentification
 css/, js/                Interface de la page d'options
-bin/                     Outils : build-wporg.sh (zip WordPress.org), check-version.sh, check-php.sh, build-translations.py
+bin/                     Outils : build-wporg.sh (zip WordPress.org), check-version.sh, check-php.sh, build-translations.py,
+                         tarteaucitron-services.js (services Tarteaucitron fournis)
 .github/workflows/       Intégration continue (ci.yml) et archive des releases (release.yml)
 ```
 
@@ -228,7 +232,7 @@ Deux workflows GitHub Actions, dans `.github/workflows/` (exclus du zip WordPres
 Le plugin existe en deux distributions construites à partir du même code :
 
 - **GitHub** (ce dépôt tel quel) : sans mise à jour automatique propre ; WordPress lui propose celles de WordPress.org.
-- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il trouve un système de mise à jour hors WordPress.org ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
+- **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans les fichiers de développement (liste dans `.distignore`), retire les traductions (seul le `.pot` reste : WordPress.org les fournit par translate.wordpress.org) et retire des fichiers PHP les lignes marquées `build:github-only` (dont le chargement des traductions fournies). Le script échoue s'il trouve un système de mise à jour hors WordPress.org ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
 Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).
 
@@ -240,7 +244,7 @@ Une migration à exécuter une seule fois se place dans `haptic_options_maybe_up
 
 ## Auteur
 
-Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/) · Site du plugin : [optimizr.hapticstudio.fr](https://optimizr.hapticstudio.fr/)
+Alexandre Vergnaud · [alexandrevergnaud.fr](https://alexandrevergnaud.fr/) · Site du plugin : [optimizr.fr](https://optimizr.fr/)
 
 ## Licence
 

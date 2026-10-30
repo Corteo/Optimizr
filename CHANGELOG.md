@@ -4,6 +4,29 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.9.0] - 2026-10-30
+
+Corrections demandées par la revue de WordPress.org.
+
+### Ajouté
+- **Couleurs du bandeau dans Optimizr** (onglet Cookies, champ « Couleurs ») : fond du bandeau, fond du panneau, boutons « Tout accepter », « Tout refuser » et « Personnaliser », avec le rapport de contraste du texte de chaque bouton. Elles s'appliquent avec l'apparence « Couleurs du bandeau ». Mêmes options qu'avant (`haptic_option_tarteaucitron_*`) : les couleurs enregistrées avec Optimizr Pro sont reprises. Optimizr Pro 1.16.0 ne les règle plus lui-même.
+- Filtres `haptic_onboarding_textarea_fields` (champs de l'assistant sur plusieurs lignes) et `haptic_dashboard_versions_title` (titre de la carte des versions).
+- `bin/tarteaucitron-services.js` : extrait des fichiers de Tarteaucitron les services fournis avec Optimizr (ou une autre liste, pour Optimizr Pro).
+
+### Modifié
+- **Tarteaucitron réduit aux services d'Optimizr** : `assets/tarteaucitron/tarteaucitron.services.js` (et `.min.js`) ne contient plus que Google Analytics 4 (`gtag`), Google Tag Manager, Facebook, Google Maps sans clé (`maps_noapi`), X (`twitterwidgetsapi`), Dailymotion, YouTube (`youtube`, `youtubeapi`) et les six services de Google Consent Mode v2, au lieu de ses 238 services (chacun chargeant le script d'un tiers). Optimizr Pro 1.16.0 fournit les siens ; avec un Optimizr Pro antérieur, un avertissement (page d'Optimizr et liste des extensions) demande sa mise à jour, ses services du bandeau ne se chargeant plus.
+- `tarteaucitron.js` et `tarteaucitron.min.js` : plus de cas particulier pour `cdn.jsdelivr.net` (fichiers toujours servis par le plugin), et `proPing` n'envoie plus rien à `tarteaucitron.io` (statistiques d'un compte Tarteaucitron, jamais configuré par Optimizr).
+- `readme.txt` : chaque service externe du bandeau décrit (ce qui est chargé, quand, conditions d'utilisation et politique de confidentialité). Google Analytics 4 y est décrit tel qu'il fonctionne avec Google Consent Mode v2 : balise chargée avant l'accord, consentements refusés et sans cookie (le readme et le README disaient « chargé uniquement après accord »).
+- Assistant de configuration : les champs envoyés sont nettoyés dès leur réception (`sanitize_text_field()`, ou `sanitize_textarea_field()` pour les champs sur plusieurs lignes), avant d'être validés réglage par réglage et transmis au filtre `haptic_onboarding_save`.
+- Cache des pages : chaque valeur de `$_SERVER` est nettoyée selon son type par `haptic_cache_server_var()` (jeton, nombre, hôte, adresse avec `FILTER_SANITIZE_URL`, texte), en PHP natif ; une valeur que le nettoyage modifierait est écartée, pour que deux adresses ne partagent jamais un fichier. Noms des cookies nettoyés de même (`haptic_cache_cookie_names()`).
+- En-tête `Plugin URI` : https://optimizr.fr/, domaine du plugin (au lieu de https://optimizr.hapticstudio.fr/).
+- Carte « Versions et licence » du tableau de bord renommée « Versions » (Optimizr Pro y remet « Versions et licence »).
+- Version WordPress.org (`bin/build-wporg.sh`) : sans fichiers de traduction (seul `optimizr.pot` reste), ni appel à `load_plugin_textdomain()` (lignes `build:github-only`) ; les traductions viennent de translate.wordpress.org. La version GitHub garde la traduction française. README de Tarteaucitron exclu du zip.
+
+### Corrigé
+- Premier chargement après une nouvelle installation : les migrations des anciennes versions supprimaient des fichiers absents (`functions/seo/sitemap.log`, `logs/debug.log`), d'où des avertissements PHP avec `WP_DEBUG`, et vidaient une table `optimizr_404` inexistante. Fichiers et table sont maintenant vérifiés avant.
+- Double authentification : `wp_unslash()` avant `sanitize_key()` pour les paramètres `purpose` et `method`.
+
 ## [7.8.0] - 2026-10-30
 
 ### Ajouté

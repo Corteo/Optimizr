@@ -221,7 +221,9 @@ function haptic_options_maybe_upgrade()
 
     if (version_compare($installed, '2.0.0-beta.4', '<')) {
         // Ancien journal public du sitemap, remplacé par un historique en base
-        wp_delete_file(HAPTIC_OPTIMIZR_PATH . 'functions/seo/sitemap.log');
+        if (is_file(HAPTIC_OPTIMIZR_PATH . 'functions/seo/sitemap.log')) {
+            wp_delete_file(HAPTIC_OPTIMIZR_PATH . 'functions/seo/sitemap.log');
+        }
 
         // Ancien plan du site HTML statique, remplacé par le shortcode [optimizr_plan_du_site]
         $html = ABSPATH . 'sitemap.html';
@@ -241,14 +243,23 @@ function haptic_options_maybe_upgrade()
     if (version_compare($installed, '2.4.1', '<')) {
         // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
         global $wpdb;
-        // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier
+        // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier.
+        // Absente sur une nouvelle installation : rien à nettoyer.
+        $table = $wpdb->prefix . 'optimizr_404';
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
-        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table))) === $table) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
+            $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $table, '%?%'));
+        }
 
         // Ancien journal de debug public (logs/ du plugin), supprimé depuis :
         // une mise à jour manuelle (FTP, git) le laisse en place
-        wp_delete_file(HAPTIC_OPTIMIZR_PATH . 'logs/debug.log');
-        haptic_filesystem()->rmdir(HAPTIC_OPTIMIZR_PATH . 'logs');
+        if (is_file(HAPTIC_OPTIMIZR_PATH . 'logs/debug.log')) {
+            wp_delete_file(HAPTIC_OPTIMIZR_PATH . 'logs/debug.log');
+        }
+        if (is_dir(HAPTIC_OPTIMIZR_PATH . 'logs')) {
+            haptic_filesystem()->rmdir(HAPTIC_OPTIMIZR_PATH . 'logs');
+        }
     }
 
     if (version_compare($installed, '2.4.1', '<') && is_multisite()) {

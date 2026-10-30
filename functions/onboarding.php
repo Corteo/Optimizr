@@ -178,7 +178,16 @@ function haptic_onboarding_save()
     }
     check_admin_referer('haptic_onboarding');
 
-    $post = wp_unslash($_POST);
+    // Champs nettoyés dès la réception : texte sur une ligne, ou sur plusieurs pour les champs du filtre
+    // haptic_onboarding_textarea_fields (Optimizr Pro y ajoute les siens). Chaque réglage est ensuite validé
+    // (nombre, adresse IP, choix possibles) avant d'être enregistré.
+    $multiline = (array) apply_filters('haptic_onboarding_textarea_fields', ['haptic_sec_login_whitelist']);
+    $post = map_deep(wp_unslash($_POST), 'sanitize_textarea_field');
+    foreach ($post as $name => $value) {
+        if (!in_array($name, $multiline, true)) {
+            $post[$name] = map_deep($value, 'sanitize_text_field');
+        }
+    }
 
     $modules = haptic_sanitize_modules(isset($post['haptic_modules']) ? $post['haptic_modules'] : []);
     update_option('haptic_modules', $modules);
@@ -263,7 +272,7 @@ function haptic_onboarding_save()
         }
     }
 
-    // Étapes d'une extension (Optimizr Pro) : leurs réglages, et les messages à afficher sur l'écran final
+    // Étapes d'une extension (Optimizr Pro) : leurs réglages, à partir des champs nettoyés, et les messages de l'écran final
     $notices = (array) apply_filters('haptic_onboarding_save', $notices, $post, $modules);
 
     update_option('haptic_onboarding_done', time());
