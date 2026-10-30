@@ -3,7 +3,8 @@
 #
 # Différences avec la version GitHub :
 #   - fichiers listés dans .distignore retirés (fichiers de développement) ;
-#   - lignes marquées « build:github-only » retirées des fichiers PHP.
+#   - traductions retirées (languages/ ne garde que le .pot) : translate.wordpress.org les fournit ;
+#   - lignes marquées « build:github-only » retirées des fichiers PHP (chargement des traductions fournies).
 #
 # Usage : bin/build-wporg.sh [slug]   (slug par défaut : optimizr)
 set -euo pipefail
@@ -34,6 +35,9 @@ git ls-files -z | while IFS= read -r -d '' file; do
     mkdir -p "$out/$(dirname "$file")"
     cp "$file" "$out/$file"
 done
+
+# Traductions : WordPress.org les fournit par translate.wordpress.org. Seul le modèle (.pot) reste dans le zip.
+find "$out/languages" -type f ! -name '*.pot' -delete
 
 # Retrait des lignes propres à la version GitHub
 { grep -rl 'build:github-only' "$out" --include='*.php' || true; } | while IFS= read -r file; do

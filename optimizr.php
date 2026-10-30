@@ -4,7 +4,7 @@
  * Plugin Name: Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.8.0
+ * Version: 7.9.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.8.0');
+define('HAPTIC_OPTIMIZR_VERSION', '7.9.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -30,11 +30,11 @@ define('HAPTIC_OPTIMIZR_PRO_INFO_URL', 'https://optimizr.hapticstudio.fr/tarifs/
 define('HAPTIC_OPTIMIZR_ADMIN_HOOK', 'toplevel_page_haptic-options');
 
 // Traductions fournies avec le plugin (languages/) : français pour les sites installés depuis GitHub.
-// Sur WordPress.org, les traductions de translate.wordpress.org (wp-content/languages/plugins) passent avant.
-add_action('init', function () {
-    // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- traduction française fournie dans languages/, utilisée tant que translate.wordpress.org n'en propose pas
-    load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages');
-}, 0);
+// La version WordPress.org n'en contient pas et ne charge rien elle-même (lignes retirées par bin/build-wporg.sh) :
+// WordPress y charge les traductions de translate.wordpress.org.
+add_action('init', function () { // build:github-only
+    load_plugin_textdomain('optimizr', false, dirname(plugin_basename(HAPTIC_OPTIMIZR_FILE)) . '/languages'); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- version GitHub seulement (build:github-only)
+}, 0); // build:github-only
 
 // Plugin core includes (activation, admin UI, assets)
 require_once(__DIR__ . '/functions/activation.php');

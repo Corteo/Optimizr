@@ -23,9 +23,9 @@ function haptic_cookie_services()
 }
 
 /**
- * Couleurs du bandeau : option => [libellé, valeur par défaut].
- * Optimizr Pro permet de les modifier (filtre haptic_tac_color) ; le texte posé sur chaque fond
- * est calculé par haptic_readable_text_color(), quelle que soit la couleur choisie.
+ * Couleurs du bandeau (apparence « Couleurs du bandeau ») : option => [libellé, valeur par défaut].
+ * Choisies dans l'onglet Cookies ; le texte posé sur chaque fond est calculé par haptic_readable_text_color(),
+ * quelle que soit la couleur choisie.
  */
 function haptic_tac_colors()
 {
@@ -41,7 +41,7 @@ function haptic_tac_colors()
 /**
  * Apparence du bandeau : 'theme' (reprend le style du thème, js/optimizr-cookies-theme.js)
  * ou 'custom' (couleurs ci-dessus). Par défaut 'theme', sauf si des couleurs ont déjà été
- * enregistrées avec Optimizr Pro : le site garde alors son bandeau.
+ * enregistrées (avant 7.9.0, avec Optimizr Pro) : le site garde alors son bandeau.
  */
 function haptic_tac_appearance()
 {
@@ -57,10 +57,12 @@ function haptic_tac_appearance()
     return in_array($value, ['theme', 'custom'], true) ? $value : $default;
 }
 
+/** Couleur enregistrée (ou par défaut) d'une option de haptic_tac_colors(), modifiable par le filtre haptic_tac_color. */
 function haptic_tac_color($option)
 {
     $colors = haptic_tac_colors();
-    $value = sanitize_hex_color((string) apply_filters('haptic_tac_color', $colors[$option][1], $option));
+    $value = sanitize_hex_color((string) get_option($option, '')) ?: $colors[$option][1];
+    $value = sanitize_hex_color((string) apply_filters('haptic_tac_color', $value, $option));
     return $value ?: $colors[$option][1];
 }
 
@@ -118,6 +120,9 @@ function haptic_options_register_cookie_settings()
             return in_array($value, ['top', 'middle', 'bottom'], true) ? $value : 'middle';
         },
     ]);
+    foreach (array_keys(haptic_tac_colors()) as $option) {
+        register_setting($group, $option, ['sanitize_callback' => 'sanitize_hex_color']);
+    }
     foreach (haptic_cookie_services() as $category) {
         foreach (array_keys($category['services']) as $service_key) {
             register_setting($group, "haptic_option_service_{$service_key}", [
@@ -141,6 +146,9 @@ function haptic_options_register_cookie_settings()
     add_settings_field('haptic-tac-position', __('Position', 'optimizr'), 'haptic_options_tarteaucitron_banner_style_callback', $page, 'haptic-cookies-banner');
     add_settings_field('haptic-tac-appearance', __('Appearance', 'optimizr'), 'haptic_options_tarteaucitron_appearance_callback', $page, 'haptic-cookies-banner', [
         'description' => __('With "Site theme", the banner uses the background, text, fonts and buttons of your theme.', 'optimizr'),
+    ]);
+    add_settings_field('haptic-tac-colors', __('Colors', 'optimizr'), 'haptic_options_tarteaucitron_color_fields', $page, 'haptic-cookies-banner', [
+        'description' => __('Used with the "Banner colors" appearance. The ratio shown measures how readable the text is on each button (4.5:1 minimum).', 'optimizr'),
     ]);
 
     add_settings_section(
@@ -191,6 +199,23 @@ function haptic_options_tarteaucitron_appearance_callback()
             esc_attr($value),
             checked($selected, $value, false),
             esc_html($label)
+        );
+    }
+    echo '</div>';
+}
+
+/** Couleurs du bandeau, avec le contraste du texte de chaque bouton (calculé par js/optimizr-admin.js). */
+function haptic_options_tarteaucitron_color_fields()
+{
+    echo '<div class="optimizr-colors">';
+    foreach (haptic_tac_colors() as $option => $color) {
+        $value = haptic_tac_color($option);
+        printf(
+            '<label class="optimizr-color"><input type="color" name="%1$s" value="%2$s" data-tac-color="%1$s"><span class="optimizr-color__label">%3$s</span>%4$s<code class="optimizr-color__hex" data-tac-hex>%2$s</code></label>',
+            esc_attr($option),
+            esc_attr($value),
+            esc_html($color[0]),
+            strpos($option, '_btn_') !== false ? '<span class="optimizr-contrast" data-tac-contrast></span>' : ''
         );
     }
     echo '</div>';

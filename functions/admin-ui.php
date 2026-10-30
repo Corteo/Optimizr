@@ -158,6 +158,28 @@ add_action('admin_notices', function () {
     echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
 });
 
+/** Première version d'Optimizr Pro qui fournit elle-même ses services du bandeau de cookies (retirés d'Optimizr 7.9.0). */
+define('HAPTIC_OPTIMIZR_PRO_COOKIES_VERSION', '1.14.0');
+
+// Optimizr Pro antérieur : ses services du bandeau (Clarity, Matomo, Google Ads…) ne se chargent plus jusqu'à sa mise à jour.
+// Rappel sur la page d'Optimizr et la liste des extensions seulement.
+add_action('admin_notices', function () {
+    if (!haptic_is_pro() || haptic_pro_is_outdated() || version_compare(HAPTIC_OPTIMIZR_PRO_VERSION, HAPTIC_OPTIMIZR_PRO_COOKIES_VERSION, '>=') || !current_user_can('update_plugins')) {
+        return;
+    }
+    $screen = get_current_screen();
+    if (!$screen || !in_array($screen->id, [HAPTIC_OPTIMIZR_ADMIN_HOOK, 'plugins'], true)) {
+        return;
+    }
+    $message = sprintf(
+        /* translators: 1: required Optimizr Pro version, 2: installed Optimizr Pro version */
+        __('Update Optimizr Pro to version %1$s (version %2$s installed): until then, its cookie banner services (Microsoft Clarity, Matomo, Hotjar, Google Ads, Meta Pixel, Google Fonts, Google Maps with a key, reCAPTCHA, hCaptcha) are not loaded.', 'optimizr'),
+        HAPTIC_OPTIMIZR_PRO_COOKIES_VERSION,
+        HAPTIC_OPTIMIZR_PRO_VERSION
+    );
+    echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
+});
+
 function haptic_current_tab()
 {
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- onglet affiché, lecture seule
