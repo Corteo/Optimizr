@@ -116,7 +116,7 @@ add_action('wp_ajax_haptic_dashboard_hide', function () {
     }
 
     $key = sanitize_key(wp_unslash($_POST['key'] ?? ''));
-    if (!in_array($key, ['onboarding', 'pro'], true)) {
+    if (!in_array($key, ['onboarding', 'pro', 'search'], true)) {
         wp_send_json_error();
     }
 
@@ -175,6 +175,7 @@ function haptic_pro_features()
         __('Content types: ready-made Events type and custom post types', 'optimizr'),
         __('Custom 404 page and maintenance mode', 'optimizr'),
         __('SEO: XML sitemap, robots.txt, IndexNow, structured data', 'optimizr'),
+        __('Google Search Console: clicks, impressions, queries and pages in your dashboard', 'optimizr'),
     ];
 }
 
@@ -294,6 +295,7 @@ function haptic_render_dashboard()
 
             <div class="optimizr-dash__indicators">
                 <?php haptic_render_dashboard_audit(); ?>
+                <?php haptic_render_dashboard_search(); ?>
                 <?php haptic_render_dashboard_cache(); ?>
             </div>
 
@@ -629,6 +631,36 @@ function haptic_render_dashboard_sparkline($strategy)
             ?>
         </span>
     </div>
+    <?php
+}
+
+/**
+ * Carte « Google Search » : remplie par une extension (Optimizr Pro, action haptic_dashboard_search) avec les
+ * chiffres de la Search Console ; sans elle, une présentation de la Search Console, que l'on peut masquer.
+ */
+function haptic_render_dashboard_search()
+{
+    if (has_action('haptic_dashboard_search')) {
+        do_action('haptic_dashboard_search');
+        return;
+    }
+    if (haptic_is_pro() || haptic_dashboard_is_hidden('search')) {
+        return;
+    }
+    ?>
+    <section class="optimizr-card" data-optimizr-hideable="search">
+        <div class="optimizr-card__header">
+            <div>
+                <h2 class="optimizr-card__title"><?php esc_html_e('Google Search', 'optimizr'); ?></h2>
+                <p class="optimizr-card__desc"><?php esc_html_e('Google Search Console tells you how often your site appears in Google results, how many visitors click, and for which searches.', 'optimizr'); ?></p>
+            </div>
+            <button type="button" class="optimizr-btn optimizr-btn--ghost optimizr-btn--sm" data-optimizr-hide="search"><?php esc_html_e('Hide', 'optimizr'); ?></button>
+        </div>
+        <div class="optimizr-card__foot">
+            <a class="optimizr-link" href="<?php echo esc_url(HAPTIC_OPTIMIZR_PRO_INFO_URL); ?>" target="_blank" rel="noopener"><?php esc_html_e('See these figures here with Optimizr Pro →', 'optimizr'); ?></a>
+            <a class="optimizr-btn optimizr-btn--secondary optimizr-btn--sm" href="https://search.google.com/search-console" target="_blank" rel="noopener"><?php esc_html_e('Open Search Console', 'optimizr'); ?></a>
+        </div>
+    </section>
     <?php
 }
 

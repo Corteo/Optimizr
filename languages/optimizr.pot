@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.9.0\n"
+"Project-Id-Version: Optimizr 7.10.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2944,4 +2944,24 @@ msgstr ""
 
 #: functions/campaigns.php:82
 msgid "Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…)."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Google Search Console: clicks, impressions, queries and pages in your dashboard"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Google Search"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Google Search Console tells you how often your site appears in Google results, how many visitors click, and for which searches."
+msgstr ""
+
+#: functions/dashboard.php
+msgid "See these figures here with Optimizr Pro →"
+msgstr ""
+
+#: functions/dashboard.php
+msgid "Open Search Console"
 msgstr ""

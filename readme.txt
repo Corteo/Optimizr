@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.9.0
+Stable tag: 7.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,9 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.10.0 =
+* New "Google Search" card on the dashboard, with a link to Google Search Console. It can be hidden.
 
 = 7.9.0 =
 * New campaign tracking wizard (Optimizr › Campaign tracking): a guided path to set up Google Analytics 4 or Google Tag Manager for Google campaigns, with help to find each ID and a warning against counting visits twice.
