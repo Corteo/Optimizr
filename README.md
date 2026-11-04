@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.9.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.10.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -24,7 +24,7 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
 - Balises OpenGraph (titre, description, image).
 - Metabox « SEO & OpenGraph » dans l'éditeur : titre, description et image personnalisés, option « ne pas indexer ».
-- *Optimizr Pro :* sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow, données structurées.
+- *Optimizr Pro :* sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow, données structurées, chiffres de la Search Console (clics, impressions, requêtes, pages).
 
 ### Redirections
 - *Optimizr Pro uniquement* (depuis Optimizr 5.0.0) : redirections 301, 302, 307 et 410 illimitées, journal des pages introuvables (404), jokers, import/export CSV, redirection automatique des contenus déplacés, liens cassés.
@@ -103,7 +103,7 @@ Après la mise à jour, tous les modules sont actifs. Les nouveaux (SEO local, P
 Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 - **Assistant de configuration :** s'ouvre en plein écran à la première activation du plugin, puis à la demande (menu **Optimizr › Assistant**, bouton « Assistant de configuration » de la page d'options, lien dans la liste des extensions). En quelques étapes, il fait choisir les modules puis renseigner l'essentiel de chacun : adresse de connexion et verrouillage, connexion des comptes (double authentification, et passkeys d'Optimizr Pro), nom du site et motifs SEO, outils de mesure (Optimizr Pro y ajoute ses propres étapes). Rien n'est enregistré avant la dernière étape ; les étapes des modules non choisis sont sautées. Avec le module Sécurité, l'administrateur met ensuite en place la double authentification (ou sa passkey) de son propre compte, avant l'écran final ; les autres comptes se la voient proposer à leur prochaine connexion.
-- **Tableau de bord :** un en-tête illustré donne l'état du site (points à régler, état par thème : sécurité, visibilité, performance, contenu), avec le dernier audit, l'état du cache, les versions et des actions rapides (vider le cache, lancer un audit). Les modules sont rangés par thème ; leur interrupteur les active ou les désactive aussitôt, sans enregistrement, et leur onglet apparaît ou disparaît.
+- **Tableau de bord :** un en-tête illustré donne l'état du site (points à régler, état par thème : sécurité, visibilité, performance, contenu), avec le dernier audit, une carte « Google Search » (présentation de la Search Console ; avec Optimizr Pro, ses clics, impressions et positions), l'état du cache, les versions et des actions rapides (vider le cache, lancer un audit). Les modules sont rangés par thème ; leur interrupteur les active ou les désactive aussitôt, sans enregistrement, et leur onglet apparaît ou disparaît.
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 - **Audit :** audit Lighthouse d'une page, sur mobile ou sur ordinateur, et historique des scores.
 - **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
@@ -128,6 +128,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_dashboard_actions` | filtre | Actions rapides de l'en-tête du tableau de bord (`label`, `url`, `icon`). |
 | `haptic_dashboard_versions` | action | Lignes de la carte « Versions et licence » ; `haptic_dashboard_version_row()` affiche une ligne. |
 | `haptic_module_status` | filtre | État d'un module sur le tableau de bord. |
+| `haptic_dashboard_search` | action | Contenu de la carte « Google Search » du tableau de bord (Search Console d'Optimizr Pro) ; sans elle, la carte présente la Search Console. |
 | `haptic_dashboard_aside` | action | Carte supplémentaire sous « Versions et licence » (Optimizr Pro antérieur à 1.13.0). |
 | `haptic_loaded` | action | Optimizr est chargé : point d'entrée des extensions. |
 | `haptic_activate` / `haptic_deactivate` | action | Activation et désactivation d'Optimizr. |

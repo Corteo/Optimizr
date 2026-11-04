@@ -2950,3 +2950,23 @@ msgstr "Téléchargement d'un fichier"
 #: functions/campaigns.php:82
 msgid "Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…)."
 msgstr "Liens vers un fichier PDF, Word, Excel, PowerPoint ou ZIP (plaquette, tarifs, carte…)."
+
+#: functions/dashboard.php
+msgid "Google Search Console: clicks, impressions, queries and pages in your dashboard"
+msgstr "Google Search Console : clics, impressions, requêtes et pages dans votre tableau de bord"
+
+#: functions/dashboard.php
+msgid "Google Search"
+msgstr "Google Search"
+
+#: functions/dashboard.php
+msgid "Google Search Console tells you how often your site appears in Google results, how many visitors click, and for which searches."
+msgstr "La Search Console de Google indique combien de fois votre site apparaît dans les résultats de Google, combien de personnes cliquent, et pour quelles recherches."
+
+#: functions/dashboard.php
+msgid "See these figures here with Optimizr Pro →"
+msgstr "Voir ces chiffres ici avec Optimizr Pro →"
+
+#: functions/dashboard.php
+msgid "Open Search Console"
+msgstr "Ouvrir la Search Console"

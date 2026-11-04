@@ -4,6 +4,12 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.10.0] - 2026-11-04
+
+### Ajouté
+- **Carte « Google Search » du tableau de bord** (`haptic_render_dashboard_search()`, colonne des indicateurs) : remplie par une extension avec l'action `haptic_dashboard_search` (chiffres de la Search Console d'Optimizr Pro 1.17.0). Sans Optimizr Pro, elle présente la Search Console, avec un lien pour l'ouvrir ; « Masquer » la retire pour le compte (clé `search` de `haptic_dashboard_hidden`).
+- Search Console dans la liste des fonctions d'Optimizr Pro.
+
 ## [7.9.0] - 2026-11-04
 
 ### Ajouté
