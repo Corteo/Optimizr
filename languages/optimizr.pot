@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.8.0\n"
+"Project-Id-Version: Optimizr 7.9.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2615,4 +2615,325 @@ msgstr ""
 
 #: js/optimizr-admin.js
 msgid "The change could not be saved. Try again."
+msgstr ""
+
+#: functions/campaigns.php:27
+msgid "Campaign tracking - Optimizr"
+msgstr ""
+
+#: functions/campaigns.php:27 functions/campaigns.php:224 functions/campaigns.php:323 functions/conversions.php:122
+msgid "Campaign tracking"
+msgstr ""
+
+#: functions/campaigns.php:43 functions/campaigns.php:352
+msgid "Google"
+msgstr ""
+
+#: functions/campaigns.php:43
+msgid "Google Analytics 4 or Google Tag Manager: visits and conversions measured, with Google Consent Mode v2."
+msgstr ""
+
+#: functions/campaigns.php:54
+msgid "Goal"
+msgstr ""
+
+#: functions/campaigns.php:55
+msgid "Campaigns"
+msgstr ""
+
+#: functions/campaigns.php:55
+msgid "An ad that is measured is an ad you can improve."
+msgstr ""
+
+#: functions/campaigns.php:56
+msgid "Analytics"
+msgstr ""
+
+#: functions/campaigns.php:57
+msgid "Measurement"
+msgstr ""
+
+#: functions/campaigns.php:57
+msgid "Know where visitors come from and what they do."
+msgstr ""
+
+#: functions/campaigns.php:58 functions/campaigns.php:59 functions/campaigns.php:379 functions/conversions.php:136
+msgid "Conversions"
+msgstr ""
+
+#: functions/campaigns.php:59
+msgid "A form sent or a call is worth more than a thousand visits."
+msgstr ""
+
+#: functions/campaigns.php:60 functions/campaigns.php:412
+msgid "Consent"
+msgstr ""
+
+#: functions/campaigns.php:63
+msgid "Review, then apply. Everything can still be changed later."
+msgstr ""
+
+#: functions/campaigns.php:75
+msgid "Contact form sent"
+msgstr ""
+
+#: functions/campaigns.php:76
+msgid "Contact Form 7: counted when the message is actually sent, not on each click."
+msgstr ""
+
+#: functions/campaigns.php:77
+msgid "Contact Form 7 is not active on this site: counted as soon as it is."
+msgstr ""
+
+#: functions/campaigns.php:78
+msgid "Click on a phone number"
+msgstr ""
+
+#: functions/campaigns.php:78
+msgid "Every tel: link, on a computer or a phone."
+msgstr ""
+
+#: functions/campaigns.php:79
+msgid "Click on an email address"
+msgstr ""
+
+#: functions/campaigns.php:79
+msgid "Every mailto: link."
+msgstr ""
+
+#: functions/campaigns.php:80
+msgid "Click to WhatsApp"
+msgstr ""
+
+#: functions/campaigns.php:80
+msgid "Links to wa.me and api.whatsapp.com."
+msgstr ""
+
+#: functions/campaigns.php:81
+msgid "Click to book an appointment"
+msgstr ""
+
+#: functions/campaigns.php:81
+msgid "Links to the booking services listed below (Doctolib, Calendly…)."
+msgstr ""
+
+#: functions/campaigns.php:139
+msgid "The consent banner is off: analytics, advertising tags and conversions are not loaded."
+msgstr ""
+
+#: functions/campaigns.php:162
+msgid "%s: the ID does not have the expected format and was not saved."
+msgstr ""
+
+#: functions/campaigns.php:181
+msgid "Appointment booking: no valid address entered, these clicks are not tracked."
+msgstr ""
+
+#: functions/campaigns.php:224
+msgid "Tracking in place"
+msgstr ""
+
+#: functions/campaigns.php:247
+msgid "Last check"
+msgstr ""
+
+#: functions/campaigns.php:248
+msgid "Five minutes of testing now saves weeks of blind campaigns."
+msgstr ""
+
+#: functions/campaigns.php:314 functions/campaigns.php:465
+msgid "Open"
+msgstr ""
+
+#: functions/campaigns.php:324
+msgid "Which campaigns do you run?"
+msgstr ""
+
+#: functions/campaigns.php:325
+msgid "Choose the platforms: the wizard only shows what they need, then the actions to count as conversions."
+msgstr ""
+
+#: functions/campaigns.php:342
+msgid "Google Ads conversions, enhanced conversions and Meta (Pixel, Lead and Contact events, domain verification) are set up in the same wizard with Optimizr Pro."
+msgstr ""
+
+#: functions/campaigns.php:342
+msgid "Learn more"
+msgstr ""
+
+#: functions/campaigns.php:344
+msgid "About 5 minutes. Keep your Google (and Meta) accounts open in another tab to copy the IDs."
+msgstr ""
+
+#: functions/campaigns.php:353
+msgid "Connect Google Analytics"
+msgstr ""
+
+#: functions/campaigns.php:354
+msgid "Google Analytics 4 measures visits and conversions, and shares them with Google Ads once the accounts are linked."
+msgstr ""
+
+#: functions/campaigns.php:361
+msgid "Google Analytics 4 measurement ID"
+msgstr ""
+
+#: functions/campaigns.php:362
+msgid "Starts with G-, e.g. G-AB12CD34EF."
+msgstr ""
+
+#: functions/campaigns.php:363
+msgid "Google Analytics › Admin › Data streams › your website: “Measurement ID”. No account yet? Create a property, then a Web stream with the site address."
+msgstr ""
+
+#: functions/campaigns.php:363
+msgid "Open Google Analytics"
+msgstr ""
+
+#: functions/campaigns.php:366
+msgid "Google Tag Manager container"
+msgstr ""
+
+#: functions/campaigns.php:367
+msgid "Starts with GTM-, e.g. GTM-AB12CD3."
+msgstr ""
+
+#: functions/campaigns.php:368
+msgid "Only if an agency or you already manage tags in Tag Manager. The ID is shown next to the container name."
+msgstr ""
+
+#: functions/campaigns.php:368
+msgid "Open Tag Manager"
+msgstr ""
+
+#: functions/campaigns.php:371
+msgid "Fill in one or the other: if Google Analytics is already set up inside your Tag Manager container, leave the measurement ID empty, otherwise every visit is counted twice."
+msgstr ""
+
+#: functions/campaigns.php:380
+msgid "What counts as a result?"
+msgstr ""
+
+#: functions/campaigns.php:381
+msgid "Choose the visitor actions that matter. Each one is sent to the tools set up above, so campaigns can optimize for real contacts rather than clicks."
+msgstr ""
+
+#: functions/campaigns.php:399 functions/campaigns.php:400
+msgid "Booking services"
+msgstr ""
+
+#: functions/campaigns.php:401
+msgid "Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”."
+msgstr ""
+
+#: functions/campaigns.php:404
+msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp and click_booking. Mark them as key events in Google Analytics to use them in Google Ads."
+msgstr ""
+
+#: functions/campaigns.php:413
+msgid "Track with the visitor's consent"
+msgstr ""
+
+#: functions/campaigns.php:414
+msgid "Tags go through the Tarteaucitron banner. Google receives the visitor's choice through Consent Mode v2, which Google Ads requires in Europe."
+msgstr ""
+
+#: functions/campaigns.php:423
+msgid "Google Consent Mode v2 sent automatically (ad_storage, analytics_storage, ad_user_data, ad_personalization)."
+msgstr ""
+
+#: functions/campaigns.php:426
+msgid "Privacy policy published and linked from the banner."
+msgstr ""
+
+#: functions/campaigns.php:428
+msgid "No published privacy policy: the banner cannot link to it."
+msgstr ""
+
+#: functions/campaigns.php:429
+msgid "Choose the page"
+msgstr ""
+
+#: functions/campaigns.php:432
+msgid "Conversions only reach Meta once the visitor accepts its cookies."
+msgstr ""
+
+#: functions/campaigns.php:434
+msgid "List the tools used (Google Analytics, Google Ads, Meta) in your privacy policy, with what they collect."
+msgstr ""
+
+#: functions/campaigns.php:446
+msgid "Check the tags"
+msgstr ""
+
+#: functions/campaigns.php:446
+msgid "Open the site in a private window, accept the cookies, then check with Google Tag Assistant that your tags fire."
+msgstr ""
+
+#: functions/campaigns.php:447
+msgid "Test a conversion"
+msgstr ""
+
+#: functions/campaigns.php:447
+msgid "Send the contact form or click the phone number, then look for the event in Google Analytics › Reports › Realtime."
+msgstr ""
+
+#: functions/campaigns.php:448
+msgid "Mark the key events"
+msgstr ""
+
+#: functions/campaigns.php:448
+msgid "In Google Analytics › Admin › Events, mark generate_lead and the click events you track as key events (they show up after the first conversion)."
+msgstr ""
+
+#: functions/campaigns.php:449
+msgid "Link Google Analytics and Google Ads"
+msgstr ""
+
+#: functions/campaigns.php:449
+msgid "Google Analytics › Admin › Product links › Google Ads, then import the key events as conversions in Google Ads."
+msgstr ""
+
+#: functions/campaigns.php:454
+msgid "Tracking is in place"
+msgstr ""
+
+#: functions/campaigns.php:455
+msgid "Tags and conversions now load on the site after consent. A few minutes of checks before launching the campaigns:"
+msgstr ""
+
+#: functions/campaigns.php:470
+msgid "The Cookies & GDPR tab shows the tracking status and the last conversion seen on the site."
+msgstr ""
+
+#: functions/campaigns.php:473
+msgid "Back to the wizard"
+msgstr ""
+
+#: functions/campaigns.php:474
+msgid "See the tracking status"
+msgstr ""
+
+#: functions/conversions.php:110
+msgid "Not set"
+msgstr ""
+
+#: functions/conversions.php:126
+msgid "The banner is off: nothing is measured."
+msgstr ""
+
+#: functions/conversions.php:141
+msgctxt "conversion"
+msgid "Not tracked"
+msgstr ""
+
+#: functions/conversions.php:144
+msgid "Last: %s ago"
+msgstr ""
+
+#: functions/conversions.php:146
+msgid "Not seen yet"
+msgstr ""
+
+#: functions/conversions.php:155
+msgid "Campaign tracking wizard"
 msgstr ""

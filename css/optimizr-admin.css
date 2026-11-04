@@ -3123,3 +3123,58 @@
         padding-right: 16px;
     }
 }
+
+/* ---------- Suivi des campagnes (onglet Cookies & RGPD, functions/conversions.php) ---------- */
+
+.optimizr-campaigns .optimizr-card__body {
+    gap: 12px;
+}
+
+.optimizr-campaigns__list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+}
+
+.optimizr-campaigns__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.optimizr-campaigns__row dt {
+    color: var(--o-text);
+}
+
+.optimizr-campaigns__row dd {
+    margin: 0;
+    text-align: right;
+}
+
+.optimizr-campaigns__row dt {
+    flex: 1;
+    min-width: 0;
+}
+
+.optimizr-campaigns__subtitle {
+    margin: 4px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--o-border-soft);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.optimizr-campaigns__alert {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: var(--o-radius-sm);
+    background: var(--o-warn-soft);
+    color: var(--o-warn);
+    font-size: 13px;
+}
+
+.optimizr-campaigns__btn {
+    align-self: flex-start;
+}

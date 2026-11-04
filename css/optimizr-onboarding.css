@@ -1316,6 +1316,108 @@ button.ob-field__link:disabled {
 @keyframes ob-rise { from { opacity: 0; transform: translateY(10px); } }
 
 /* Sans animation : chaque élément est affiché dans son état final */
+/* Assistant campagnes (functions/campaigns.php) */
+
+.ob-modules--single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.ob-modules + .ob-fields {
+    margin-top: 20px;
+}
+
+.ob-field__help a {
+    color: var(--ob-accent-strong);
+    white-space: nowrap;
+}
+
+.ob-checks {
+    display: grid;
+    gap: 8px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ob-checks__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--ob-radius-sm);
+    background: var(--ob-surface);
+    font-size: 14px;
+}
+
+.ob-checks__item .optimizr-icon {
+    flex: none;
+    margin-top: 2px;
+}
+
+.ob-checks__item.is-ok .optimizr-icon {
+    color: var(--ob-ok);
+}
+
+.ob-checks__item.is-warn {
+    background: var(--ob-warn-soft);
+    color: var(--ob-warn);
+}
+
+.ob-checks__item a {
+    color: inherit;
+    font-weight: 600;
+}
+
+.ob-todo {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+    counter-reset: ob-todo;
+}
+
+.ob-todo__item {
+    position: relative;
+    padding: 14px 16px 14px 52px;
+    border: 1px solid var(--ob-border);
+    border-radius: var(--ob-radius-sm);
+    counter-increment: ob-todo;
+}
+
+.ob-todo__item::before {
+    content: counter(ob-todo);
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--ob-accent-soft);
+    color: var(--ob-accent-strong);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ob-todo__title {
+    margin: 0 0 2px;
+    font-weight: 600;
+}
+
+.ob-todo__text {
+    margin: 0;
+    color: var(--ob-muted);
+    font-size: 13.5px;
+}
+
+.ob-todo__text a {
+    color: var(--ob-accent-strong);
+    white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
