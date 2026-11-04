@@ -3,7 +3,7 @@
  *
  * Actions suivies (window.optimizrConversions.actions) : formulaire Contact Form 7 envoyé (form), clic sur un
  * numéro de téléphone (phone), une adresse e-mail (email), WhatsApp (whatsapp) ou un service de prise de
- * rendez-vous (booking). Chaque conversion part :
+ * rendez-vous (booking), téléchargement d'un fichier (download). Chaque conversion part :
  * - vers gtag() (Google Analytics 4, Google Ads), qui applique le Google Consent Mode v2 ;
  * - vers le dataLayer de Google Tag Manager : { event: 'optimizr_conversion', conversion_action, conversion_event } ;
  * - en évènement DOM « optimizr:conversion » sur document, pour les extensions (Optimizr Pro : Google Ads, Meta).
@@ -66,6 +66,8 @@
         if (enabled[action]) track(action, params);
     };
 
+    var DOWNLOAD = /\.(pdf|docx?|xlsx?|pptx?|odt|ods|odp|csv|zip|rar|7z|epub)$/i;
+
     function hostMatches(host, domains) {
         host = host.replace(/^www\./, '');
         for (var i = 0; i < domains.length; i++) {
@@ -81,6 +83,7 @@
         if (lower.indexOf('mailto:') === 0) return 'email';
         if (lower.indexOf('whatsapp:') === 0) return 'whatsapp';
         if (!/^https?:/i.test(link.href)) return '';
+        if (link.hasAttribute('download') || DOWNLOAD.test(link.pathname || '')) return 'download';
         var host = (link.hostname || '').toLowerCase();
         if (host === 'wa.me' || hostMatches(host, ['whatsapp.com'])) return 'whatsapp';
         if (config.booking && config.booking.length && hostMatches(host, config.booking)) return 'booking';
@@ -95,6 +98,12 @@
 
         var params = { link_location: link.closest('header, nav') ? 'header' : (link.closest('footer') ? 'footer' : 'content') };
         if (action === 'booking') params.link_domain = link.hostname.replace(/^www\./, '');
+        if (action === 'download') {
+            var file = (link.pathname || '').split('/').pop() || '';
+            try { file = decodeURIComponent(file); } catch (e) { /* nom tel quel */ }
+            params.file_name = file;
+            params.file_extension = file.indexOf('.') > -1 ? file.split('.').pop().toLowerCase() : '';
+        }
         track(action, params);
     }, true);
 

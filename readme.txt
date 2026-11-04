@@ -18,7 +18,7 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 
 * Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Blends in with your theme (background, text, fonts, buttons) or uses its own colors; texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
 * Google Analytics 4 and Google Tag Manager, loaded only after the visitor's consent.
-* Campaign tracking wizard: conversions (contact form, phone, email, WhatsApp, booking clicks) sent to Google Analytics 4 and Google Tag Manager.
+* Campaign tracking wizard: conversions (contact form, phone, email, WhatsApp, booking and download clicks) sent to Google Analytics 4 and Google Tag Manager.
 * Google Consent Mode v2.
 * YouTube, Dailymotion, X, Facebook and Google Maps embeds always offered in the consent panel.
 
@@ -85,7 +85,7 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 = 7.9.0 =
 * New campaign tracking wizard (Optimizr › Campaign tracking): a guided path to set up Google Analytics 4 or Google Tag Manager for Google campaigns, with help to find each ID and a warning against counting visits twice.
-* Conversions: contact form sent (Contact Form 7), clicks on a phone number, an email address, WhatsApp or a booking service (Doctolib, Calendly…) are sent to Google Analytics 4 as events (generate_lead, click_phone…) and to Google Tag Manager, through the consent banner and Google Consent Mode v2.
+* Conversions: contact form sent (Contact Form 7), clicks on a phone number, an email address, WhatsApp, a booking service (Doctolib, Calendly…) or a file to download (PDF, Word, Excel, ZIP…) are sent to Google Analytics 4 as events (generate_lead, click_phone…) and to Google Tag Manager, through the consent banner and Google Consent Mode v2.
 * The Cookies & GDPR tab shows the tracking status and when each conversion was last seen on the site. The final screen of the wizard lists the checks to do before launching the campaigns.
 
 = 7.8.0 =

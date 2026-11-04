@@ -2826,7 +2826,7 @@ msgid "Domain of the service, or the full address of your booking page. Used by 
 msgstr ""
 
 #: functions/campaigns.php:404
-msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp and click_booking. Mark them as key events in Google Analytics to use them in Google Ads."
+msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking and click_download. Mark them as key events in Google Analytics to use them in Google Ads."
 msgstr ""
 
 #: functions/campaigns.php:413
@@ -2936,4 +2936,12 @@ msgstr ""
 
 #: functions/conversions.php:155
 msgid "Campaign tracking wizard"
+msgstr ""
+
+#: functions/campaigns.php:82
+msgid "File download"
+msgstr ""
+
+#: functions/campaigns.php:82
+msgid "Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…)."
 msgstr ""

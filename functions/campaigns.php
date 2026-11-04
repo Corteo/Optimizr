@@ -79,6 +79,7 @@ function haptic_conversion_actions()
         'email'    => [__('Click on an email address', 'optimizr'), __('Every mailto: link.', 'optimizr'), 'mail', true],
         'whatsapp' => [__('Click to WhatsApp', 'optimizr'), __('Links to wa.me and api.whatsapp.com.', 'optimizr'), 'phone', true],
         'booking'  => [__('Click to book an appointment', 'optimizr'), __('Links to the booking services listed below (Doctolib, Calendly…).', 'optimizr'), 'check', false],
+        'download' => [__('File download', 'optimizr'), __('Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…).', 'optimizr'), 'file', false],
     ]);
 }
 
@@ -401,7 +402,7 @@ function haptic_campaigns_step_conversions()
             <?php haptic_campaigns_help(__('Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”.', 'optimizr')); ?>
         </label>
     </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp and click_booking. Mark them as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking and click_download. Mark them as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
     <?php
 }
 

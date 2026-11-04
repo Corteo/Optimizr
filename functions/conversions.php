@@ -25,6 +25,8 @@ function haptic_conversion_events()
         'email'    => ['ga4' => 'click_email', 'meta' => 'Contact'],
         'whatsapp' => ['ga4' => 'click_whatsapp', 'meta' => 'Contact'],
         'booking'  => ['ga4' => 'click_booking', 'meta' => 'Schedule'],
+        // Pas d'évènement standard Meta pour un téléchargement ; file_download est réservé à la mesure améliorée de GA4
+        'download' => ['ga4' => 'click_download', 'meta' => ''],
     ]);
 }
 
