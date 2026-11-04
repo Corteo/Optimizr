@@ -2621,3 +2621,332 @@ msgstr "Annuler"
 #: js/optimizr-admin.js
 msgid "The change could not be saved. Try again."
 msgstr "La modification n'a pas pu être enregistrée. Réessayez."
+
+#: functions/campaigns.php:27
+msgid "Campaign tracking - Optimizr"
+msgstr "Suivi des campagnes - Optimizr"
+
+#: functions/campaigns.php:27 functions/campaigns.php:224 functions/campaigns.php:323 functions/conversions.php:122
+msgid "Campaign tracking"
+msgstr "Suivi des campagnes"
+
+#: functions/campaigns.php:43 functions/campaigns.php:352
+msgid "Google"
+msgstr "Google"
+
+#: functions/campaigns.php:43
+msgid "Google Analytics 4 or Google Tag Manager: visits and conversions measured, with Google Consent Mode v2."
+msgstr "Google Analytics 4 ou Google Tag Manager : visites et conversions mesurées, avec le Google Consent Mode v2."
+
+#: functions/campaigns.php:54
+msgid "Goal"
+msgstr "Objectif"
+
+#: functions/campaigns.php:55
+msgid "Campaigns"
+msgstr "Campagnes"
+
+#: functions/campaigns.php:55
+msgid "An ad that is measured is an ad you can improve."
+msgstr "Une publicité mesurée est une publicité que l'on peut améliorer."
+
+#: functions/campaigns.php:56
+msgid "Analytics"
+msgstr "Mesure"
+
+#: functions/campaigns.php:57
+msgid "Measurement"
+msgstr "Mesure"
+
+#: functions/campaigns.php:57
+msgid "Know where visitors come from and what they do."
+msgstr "Savoir d'où viennent les visiteurs et ce qu'ils font."
+
+#: functions/campaigns.php:58 functions/campaigns.php:59 functions/campaigns.php:379 functions/conversions.php:136
+msgid "Conversions"
+msgstr "Conversions"
+
+#: functions/campaigns.php:59
+msgid "A form sent or a call is worth more than a thousand visits."
+msgstr "Un formulaire envoyé ou un appel vaut plus que mille visites."
+
+#: functions/campaigns.php:60 functions/campaigns.php:412
+msgid "Consent"
+msgstr "Consentement"
+
+#: functions/campaigns.php:63
+msgid "Review, then apply. Everything can still be changed later."
+msgstr "Vérifiez, puis appliquez. Tout reste modifiable ensuite."
+
+#: functions/campaigns.php:75
+msgid "Contact form sent"
+msgstr "Formulaire de contact envoyé"
+
+#: functions/campaigns.php:76
+msgid "Contact Form 7: counted when the message is actually sent, not on each click."
+msgstr "Contact Form 7 : comptée quand le message est réellement envoyé, pas à chaque clic."
+
+#: functions/campaigns.php:77
+msgid "Contact Form 7 is not active on this site: counted as soon as it is."
+msgstr "Contact Form 7 n'est pas actif sur ce site : comptée dès qu'il le sera."
+
+#: functions/campaigns.php:78
+msgid "Click on a phone number"
+msgstr "Clic sur un numéro de téléphone"
+
+#: functions/campaigns.php:78
+msgid "Every tel: link, on a computer or a phone."
+msgstr "Tous les liens tel:, sur ordinateur comme sur téléphone."
+
+#: functions/campaigns.php:79
+msgid "Click on an email address"
+msgstr "Clic sur une adresse e-mail"
+
+#: functions/campaigns.php:79
+msgid "Every mailto: link."
+msgstr "Tous les liens mailto:."
+
+#: functions/campaigns.php:80
+msgid "Click to WhatsApp"
+msgstr "Clic vers WhatsApp"
+
+#: functions/campaigns.php:80
+msgid "Links to wa.me and api.whatsapp.com."
+msgstr "Liens vers wa.me et api.whatsapp.com."
+
+#: functions/campaigns.php:81
+msgid "Click to book an appointment"
+msgstr "Clic vers la prise de rendez-vous"
+
+#: functions/campaigns.php:81
+msgid "Links to the booking services listed below (Doctolib, Calendly…)."
+msgstr "Liens vers les services de réservation indiqués ci-dessous (Doctolib, Calendly…)."
+
+#: functions/campaigns.php:139
+msgid "The consent banner is off: analytics, advertising tags and conversions are not loaded."
+msgstr "Le bandeau de consentement est désactivé : mesure d'audience, balises publicitaires et conversions ne sont pas chargées."
+
+#: functions/campaigns.php:162
+msgid "%s: the ID does not have the expected format and was not saved."
+msgstr "%s : l'identifiant n'a pas le format attendu et n'a pas été enregistré."
+
+#: functions/campaigns.php:181
+msgid "Appointment booking: no valid address entered, these clicks are not tracked."
+msgstr "Prise de rendez-vous : aucune adresse valide saisie, ces clics ne sont pas suivis."
+
+#: functions/campaigns.php:224
+msgid "Tracking in place"
+msgstr "Suivi en place"
+
+#: functions/campaigns.php:247
+msgid "Last check"
+msgstr "Dernière vérification"
+
+#: functions/campaigns.php:248
+msgid "Five minutes of testing now saves weeks of blind campaigns."
+msgstr "Cinq minutes de test maintenant évitent des semaines de campagnes à l'aveugle."
+
+#: functions/campaigns.php:314 functions/campaigns.php:465
+msgid "Open"
+msgstr "Ouvrir"
+
+#: functions/campaigns.php:324
+msgid "Which campaigns do you run?"
+msgstr "Quelles campagnes menez-vous ?"
+
+#: functions/campaigns.php:325
+msgid "Choose the platforms: the wizard only shows what they need, then the actions to count as conversions."
+msgstr "Choisissez les plateformes : l'assistant n'affiche que ce dont elles ont besoin, puis les actions à compter comme conversions."
+
+#: functions/campaigns.php:342
+msgid "Google Ads conversions, enhanced conversions and Meta (Pixel, Lead and Contact events, domain verification) are set up in the same wizard with Optimizr Pro."
+msgstr "Les conversions Google Ads, les conversions améliorées et Meta (Pixel, événements Lead et Contact, validation du domaine) se règlent dans ce même assistant avec Optimizr Pro."
+
+#: functions/campaigns.php:342
+msgid "Learn more"
+msgstr "En savoir plus"
+
+#: functions/campaigns.php:344
+msgid "About 5 minutes. Keep your Google (and Meta) accounts open in another tab to copy the IDs."
+msgstr "Environ 5 minutes. Gardez vos comptes Google (et Meta) ouverts dans un autre onglet pour copier les identifiants."
+
+#: functions/campaigns.php:353
+msgid "Connect Google Analytics"
+msgstr "Connectez Google Analytics"
+
+#: functions/campaigns.php:354
+msgid "Google Analytics 4 measures visits and conversions, and shares them with Google Ads once the accounts are linked."
+msgstr "Google Analytics 4 mesure les visites et les conversions, et les partage avec Google Ads une fois les comptes associés."
+
+#: functions/campaigns.php:361
+msgid "Google Analytics 4 measurement ID"
+msgstr "ID de mesure Google Analytics 4"
+
+#: functions/campaigns.php:362
+msgid "Starts with G-, e.g. G-AB12CD34EF."
+msgstr "Commence par G-, par exemple G-AB12CD34EF."
+
+#: functions/campaigns.php:363
+msgid "Google Analytics › Admin › Data streams › your website: “Measurement ID”. No account yet? Create a property, then a Web stream with the site address."
+msgstr "Google Analytics › Administration › Flux de données › votre site : « ID de mesure ». Pas encore de compte ? Créez une propriété, puis un flux Web avec l'adresse du site."
+
+#: functions/campaigns.php:363
+msgid "Open Google Analytics"
+msgstr "Ouvrir Google Analytics"
+
+#: functions/campaigns.php:366
+msgid "Google Tag Manager container"
+msgstr "Conteneur Google Tag Manager"
+
+#: functions/campaigns.php:367
+msgid "Starts with GTM-, e.g. GTM-AB12CD3."
+msgstr "Commence par GTM-, par exemple GTM-AB12CD3."
+
+#: functions/campaigns.php:368
+msgid "Only if an agency or you already manage tags in Tag Manager. The ID is shown next to the container name."
+msgstr "Seulement si une agence ou vous-même gérez déjà vos balises dans Tag Manager. L'identifiant figure à côté du nom du conteneur."
+
+#: functions/campaigns.php:368
+msgid "Open Tag Manager"
+msgstr "Ouvrir Tag Manager"
+
+#: functions/campaigns.php:371
+msgid "Fill in one or the other: if Google Analytics is already set up inside your Tag Manager container, leave the measurement ID empty, otherwise every visit is counted twice."
+msgstr "Renseignez l'un ou l'autre : si Google Analytics est déjà configuré dans votre conteneur Tag Manager, laissez l'ID de mesure vide, sinon chaque visite est comptée deux fois."
+
+#: functions/campaigns.php:380
+msgid "What counts as a result?"
+msgstr "Qu'est-ce qui compte comme résultat ?"
+
+#: functions/campaigns.php:381
+msgid "Choose the visitor actions that matter. Each one is sent to the tools set up above, so campaigns can optimize for real contacts rather than clicks."
+msgstr "Choisissez les actions des visiteurs qui comptent. Chacune est envoyée aux outils réglés plus haut : les campagnes s'optimisent sur de vrais contacts plutôt que sur des clics."
+
+#: functions/campaigns.php:399 functions/campaigns.php:400
+msgid "Booking services"
+msgstr "Services de réservation"
+
+#: functions/campaigns.php:401
+msgid "Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”."
+msgstr "Domaine du service, ou adresse complète de votre page de réservation. Utilisé par « Clic vers la prise de rendez-vous »."
+
+#: functions/campaigns.php:404
+msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking and click_download. Mark them as key events in Google Analytics to use them in Google Ads."
+msgstr "Événements envoyés à Google Analytics : generate_lead (formulaire), click_phone, click_email, click_whatsapp, click_booking et click_download. Marquez-les comme événements clés dans Google Analytics pour les utiliser dans Google Ads."
+
+#: functions/campaigns.php:413
+msgid "Track with the visitor's consent"
+msgstr "Mesurez avec l'accord du visiteur"
+
+#: functions/campaigns.php:414
+msgid "Tags go through the Tarteaucitron banner. Google receives the visitor's choice through Consent Mode v2, which Google Ads requires in Europe."
+msgstr "Les balises passent par le bandeau Tarteaucitron. Google reçoit le choix du visiteur par le Consent Mode v2, exigé par Google Ads en Europe."
+
+#: functions/campaigns.php:423
+msgid "Google Consent Mode v2 sent automatically (ad_storage, analytics_storage, ad_user_data, ad_personalization)."
+msgstr "Google Consent Mode v2 transmis automatiquement (ad_storage, analytics_storage, ad_user_data, ad_personalization)."
+
+#: functions/campaigns.php:426
+msgid "Privacy policy published and linked from the banner."
+msgstr "Politique de confidentialité publiée et liée depuis le bandeau."
+
+#: functions/campaigns.php:428
+msgid "No published privacy policy: the banner cannot link to it."
+msgstr "Aucune politique de confidentialité publiée : le bandeau ne peut pas y renvoyer."
+
+#: functions/campaigns.php:429
+msgid "Choose the page"
+msgstr "Choisir la page"
+
+#: functions/campaigns.php:432
+msgid "Conversions only reach Meta once the visitor accepts its cookies."
+msgstr "Les conversions ne parviennent à Meta qu'une fois ses cookies acceptés par le visiteur."
+
+#: functions/campaigns.php:434
+msgid "List the tools used (Google Analytics, Google Ads, Meta) in your privacy policy, with what they collect."
+msgstr "Citez les outils utilisés (Google Analytics, Google Ads, Meta) dans votre politique de confidentialité, avec ce qu'ils collectent."
+
+#: functions/campaigns.php:446
+msgid "Check the tags"
+msgstr "Vérifiez les balises"
+
+#: functions/campaigns.php:446
+msgid "Open the site in a private window, accept the cookies, then check with Google Tag Assistant that your tags fire."
+msgstr "Ouvrez le site en navigation privée, acceptez les cookies, puis vérifiez avec Google Tag Assistant que vos balises se déclenchent."
+
+#: functions/campaigns.php:447
+msgid "Test a conversion"
+msgstr "Testez une conversion"
+
+#: functions/campaigns.php:447
+msgid "Send the contact form or click the phone number, then look for the event in Google Analytics › Reports › Realtime."
+msgstr "Envoyez le formulaire de contact ou cliquez sur le numéro de téléphone, puis cherchez l'événement dans Google Analytics › Rapports › Temps réel."
+
+#: functions/campaigns.php:448
+msgid "Mark the key events"
+msgstr "Marquez les événements clés"
+
+#: functions/campaigns.php:448
+msgid "In Google Analytics › Admin › Events, mark generate_lead and the click events you track as key events (they show up after the first conversion)."
+msgstr "Dans Google Analytics › Administration › Événements, marquez generate_lead et les événements de clic suivis comme événements clés (ils apparaissent après la première conversion)."
+
+#: functions/campaigns.php:449
+msgid "Link Google Analytics and Google Ads"
+msgstr "Associez Google Analytics et Google Ads"
+
+#: functions/campaigns.php:449
+msgid "Google Analytics › Admin › Product links › Google Ads, then import the key events as conversions in Google Ads."
+msgstr "Google Analytics › Administration › Associations de produits › Google Ads, puis importez les événements clés comme conversions dans Google Ads."
+
+#: functions/campaigns.php:454
+msgid "Tracking is in place"
+msgstr "Le suivi est en place"
+
+#: functions/campaigns.php:455
+msgid "Tags and conversions now load on the site after consent. A few minutes of checks before launching the campaigns:"
+msgstr "Balises et conversions se chargent désormais sur le site après consentement. Quelques minutes de vérification avant de lancer les campagnes :"
+
+#: functions/campaigns.php:470
+msgid "The Cookies & GDPR tab shows the tracking status and the last conversion seen on the site."
+msgstr "L'onglet Cookies & RGPD affiche l'état du suivi et la dernière conversion vue sur le site."
+
+#: functions/campaigns.php:473
+msgid "Back to the wizard"
+msgstr "Revenir à l'assistant"
+
+#: functions/campaigns.php:474
+msgid "See the tracking status"
+msgstr "Voir l'état du suivi"
+
+#: functions/conversions.php:110
+msgid "Not set"
+msgstr "Non renseigné"
+
+#: functions/conversions.php:126
+msgid "The banner is off: nothing is measured."
+msgstr "Le bandeau est désactivé : rien n'est mesuré."
+
+#: functions/conversions.php:141
+msgctxt "conversion"
+msgid "Not tracked"
+msgstr "Non suivie"
+
+#: functions/conversions.php:144
+msgid "Last: %s ago"
+msgstr "Il y a %s"
+
+#: functions/conversions.php:146
+msgid "Not seen yet"
+msgstr "Pas encore vue"
+
+#: functions/conversions.php:155
+msgid "Campaign tracking wizard"
+msgstr "Assistant de suivi des campagnes"
+
+#: functions/campaigns.php:82
+msgid "File download"
+msgstr "Téléchargement d'un fichier"
+
+#: functions/campaigns.php:82
+msgid "Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…)."
+msgstr "Liens vers un fichier PDF, Word, Excel, PowerPoint ou ZIP (plaquette, tarifs, carte…)."

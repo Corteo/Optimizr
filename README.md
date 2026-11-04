@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.8.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.9.0 · [Historique des versions](CHANGELOG.md)
 
 ## Modules
 
@@ -14,8 +14,11 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 - Bandeau de consentement [Tarteaucitron.js](https://tarteaucitron.io/) : position (haut, centre, bas), avec aperçu en direct. Apparence **Thème du site** (par défaut) : le bandeau et le panneau « Personnaliser » reprennent le fond, le texte, les polices et les boutons du thème (`js/optimizr-cookies-theme.js`), ou **Couleurs du bandeau**. Styles dans `css/optimizr-cookies.css` : textes toujours lisibles (contraste WCAG AA vérifié pour chaque fond), panneau plein écran sur téléphone.
 - Google Analytics 4 et Google Tag Manager, chargés uniquement après accord du visiteur.
 - Google Consent Mode v2 transmis automatiquement.
+- **Suivi des campagnes** (menu **Optimizr › Suivi des campagnes**, et lien dans l'onglet Cookies & RGPD) : parcours guidé plein écran, dans le style de l'assistant de configuration, pour préparer des campagnes Google (et Meta avec Optimizr Pro). Étapes : objectif (Google, Meta), mesure d'audience (ID Google Analytics 4 ou conteneur Google Tag Manager, avec l'endroit où les trouver, format vérifié et mise en garde contre la double mesure), conversions, consentement (bandeau, politique de confidentialité, Consent Mode v2), récapitulatif. Il active le module Cookies & RGPD et le bandeau. L'écran final liste les vérifications à faire (Tag Assistant, temps réel, événements clés, association Google Ads).
+- **Conversions** (`functions/conversions.php`, `js/optimizr-conversions.js`) : formulaire Contact Form 7 envoyé (évènement `wpcf7mailsent`, donc seulement si le message part), clic sur un numéro de téléphone (`tel:`), une adresse e-mail (`mailto:`), WhatsApp (`wa.me`, `whatsapp.com`) un service de prise de rendez-vous (domaines saisis, Doctolib, Calendly et Planity proposés) ou un fichier à télécharger (PDF, Word, Excel, PowerPoint, ZIP… ou lien `download`). Chaque action choisie part vers Google Analytics 4 par `gtag()` (`generate_lead`, `click_phone`, `click_email`, `click_whatsapp`, `click_booking`, `click_download` avec `file_name` et `file_extension` ; nom distinct du `file_download` de la mesure améliorée de GA4, pour ne rien compter deux fois), qui applique le Consent Mode v2, et vers Google Tag Manager par le dataLayer (évènement `optimizr_conversion`, avec `conversion_action` et `conversion_event`). Autres formulaires ou boutons : `window.optimizrConversion('form', { form_id: 'devis' })`.
+- L'onglet Cookies & RGPD affiche l'état du suivi (outils renseignés, conversions suivies) et la date de la dernière conversion vue pour chaque action : le navigateur envoie au site le seul type d'action (requête `haptic_conversion_seen`, au plus une écriture toutes les 5 minutes), sans cookie ni donnée du visiteur.
 - Toujours proposés, sans réglage : YouTube, Dailymotion, X (Twitter), Facebook, Google Maps sans clé.
-- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha, couleurs du bandeau.
+- *Optimizr Pro :* Microsoft Clarity, Matomo, Hotjar, Google Ads, Pixel Meta, Google Fonts, Google Maps avec clé, reCAPTCHA, hCaptcha, couleurs du bandeau ; dans le suivi des campagnes, conversions Google Ads (et conversions améliorées), Pixel Meta avec évènements Lead, Contact et Schedule, validation du domaine Meta.
 
 ### SEO
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
@@ -145,6 +148,10 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_onboarding_steps` | filtre | Étapes de l'assistant (une étape peut fournir sa fonction `render`). |
 | `haptic_onboarding_account_toggles`, `haptic_onboarding_security_toggles`, `haptic_onboarding_seo_toggles`, `haptic_onboarding_cookie_fields`, `haptic_onboarding_save` | filtre | Champs de l'assistant et enregistrement (`haptic_onboarding_account_toggles` : connexion des comptes, comme les passkeys d'Optimizr Pro). |
 | `haptic_onboarding_seo_fields`, `haptic_onboarding_step_after`, `haptic_onboarding_print_scripts`, `haptic_onboarding_illustration` | action | Contenu ajouté aux étapes de l'assistant. |
+| `haptic_campaigns_goals`, `haptic_campaigns_steps`, `haptic_campaigns_save`, `haptic_campaigns_checks`, `haptic_campaigns_status_rows` | filtre | Suivi des campagnes : objectifs, étapes (même format que l'assistant, avec `illu`), enregistrement, vérifications de l'écran final, lignes de l'état du suivi. |
+| `haptic_conversion_actions`, `haptic_conversion_events`, `haptic_conversions_front_config` | filtre | Actions suivies comme conversions, évènements GA4 et Meta de chacune, configuration lue par `js/optimizr-conversions.js`. |
+| `haptic_campaigns_step_after`, `haptic_campaigns_print_scripts`, `haptic_campaigns_saved` | action | Contenu ajouté aux étapes du suivi des campagnes, réglages enregistrés. |
+| `optimizr:conversion` | évènement DOM | Déclenché sur `document` à chaque conversion (`detail` : `action`, `event`, `params`, `inputs` pour un formulaire). Optimizr Pro s'en sert pour Google Ads et Meta. |
 | `haptic_sec_cloudflare_ranges` | filtre | Plages d'adresses de Cloudflare reconnues par l'option « Cloudflare » des proxys de confiance. |
 | `haptic_cache_purged` | action | Cache vidé : tableau des adresses vidées, vide pour tout le site (Optimizr Pro : préchargement, Cloudflare). |
 | `haptic_cache_skip_request` | filtre | Renvoyer `true` pour ne pas mettre la page demandée en cache. |
@@ -173,6 +180,8 @@ optimizr.php             Fichier principal : constantes, chargement des modules
 functions/admin-ui.php   Page d'options : modules, onglets, icônes
 functions/dashboard.php  Tableau de bord : état du site, thèmes de modules, activation sans enregistrement
 functions/onboarding.php Assistant de configuration plein écran (+ css/optimizr-onboarding.css, js/optimizr-onboarding.js)
+functions/campaigns.php  Suivi des campagnes : parcours guidé (même présentation que l'assistant)
+functions/conversions.php Conversions sur le site (+ js/optimizr-conversions.js) et état du suivi (onglet Cookies)
 functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD (+ css/optimizr-cookies.css, thème du bandeau)
 functions/seo/           Module SEO (réglages, metabox, balises)

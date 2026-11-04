@@ -4,6 +4,14 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.9.0] - 2026-11-04
+
+### Ajouté
+- **Suivi des campagnes** (`functions/campaigns.php`, menu Optimizr › Suivi des campagnes) : parcours guidé plein écran pour mettre en place la mesure des campagnes Google (et Meta avec Optimizr Pro), avec la présentation et la navigation de l'assistant de configuration. Étapes : objectif, mesure d'audience (Google Analytics 4 ou Google Tag Manager, aide pour trouver chaque identifiant, format vérifié, mise en garde contre la double mesure), conversions, consentement (bandeau, politique de confidentialité, Google Consent Mode v2), récapitulatif. L'enregistrement active le module Cookies & RGPD et le bandeau ; l'écran final liste les vérifications à faire avant de lancer les campagnes.
+- **Conversions** (`functions/conversions.php`, `js/optimizr-conversions.js`) : formulaire Contact Form 7 envoyé, clic sur un numéro de téléphone, une adresse e-mail, WhatsApp un service de prise de rendez-vous (domaines au choix) ou un fichier à télécharger (PDF, Word, Excel, PowerPoint, ZIP…). Envoyées à Google Analytics 4 (`generate_lead`, `click_phone`, `click_email`, `click_whatsapp`, `click_booking`, `click_download`) par `gtag()`, qui applique le Consent Mode v2, et à Google Tag Manager (évènement `optimizr_conversion`). API `window.optimizrConversion()` pour d'autres formulaires, évènement DOM `optimizr:conversion` pour les extensions.
+- **État du suivi** dans le panneau latéral de l'onglet Cookies & RGPD : outils renseignés, conversions suivies et date de la dernière conversion vue sur le site (signal anonyme, option `haptic_conversions_seen`, exclue de l'export).
+- Points d'extension `haptic_campaigns_*` et `haptic_conversion_*` (étapes Google Ads et Meta d'Optimizr Pro 1.16.0).
+
 ## [7.8.0] - 2026-10-30
 
 ### Ajouté
