@@ -23,6 +23,7 @@ const HAPTIC_MIGRATION_BATCH = 100;
  * Sources d'import. Pour chacune :
  * - label : nom affiché ;
  * - plugins : fichiers principaux de l'extension (pour savoir si elle est active et la désactiver) ;
+ * Pour les extensions SEO seulement (sinon, les données viennent de haptic_migration_extras()) :
  * - stats : fonction qui renvoie ['title' => n, 'description' => n, 'image' => n, 'noindex' => n] ;
  * - posts : fonction ($after_id, $limit) qui renvoie les identifiants de contenus suivants qui ont des données ;
  * - values : fonction ($post_id) qui renvoie ['title', 'description', 'image', 'noindex'] au format d'Optimizr ;
@@ -73,6 +74,11 @@ function haptic_migration_sources()
             'values'   => 'haptic_migration_tsf_values',
             'patterns' => '__return_empty_array',
         ],
+        // Sans données SEO : réglages de sécurité seulement (haptic_migration_extras)
+        'solid' => [
+            'label'   => 'Solid Security',
+            'plugins' => ['better-wp-security/better-wp-security.php', 'ithemes-security-pro/ithemes-security-pro.php'],
+        ],
     ]);
 }
 
@@ -87,26 +93,56 @@ function haptic_migration_active_plugins($source)
 }
 
 /**
+ * Autres données importables, rattachées à une source (réglages de sécurité, redirections d'Optimizr Pro…). Pour chacune :
+ * - source : identifiant de la source (haptic_migration_sources) ;
+ * - summary : fonction qui décrit ce qui sera importé (« 42 redirections »), ou renvoie '' s'il n'y a rien ;
+ * - import : fonction qui importe et renvoie une phrase de résultat, ou un WP_Error.
+ *
+ * @return array identifiant => ['source', 'summary', 'import']
+ */
+function haptic_migration_extras()
+{
+    return apply_filters('haptic_migration_extras', [
+        'solid-settings' => [
+            'source'  => 'solid',
+            'summary' => 'haptic_migration_solid_summary',
+            'import'  => 'haptic_migration_solid_import',
+        ],
+    ]);
+}
+
+/**
  * Sources qui ont des données à importer sur ce site, avec leurs chiffres.
  *
- * @return array slug => ['label', 'active' => string[], 'stats' => array, 'total' => int, 'patterns' => array]
+ * @return array slug => ['label', 'active' => string[], 'seo' => bool, 'stats' => array, 'total' => int, 'patterns' => array, 'extras' => [id => résumé]]
  */
 function haptic_migration_detect()
 {
+    $extras = [];
+    foreach (haptic_migration_extras() as $id => $extra) {
+        $summary = is_callable($extra['summary'] ?? null) ? (string) call_user_func($extra['summary']) : '';
+        if ($summary !== '') {
+            $extras[$extra['source']][$id] = $summary;
+        }
+    }
+
     $found = [];
     foreach (haptic_migration_sources() as $slug => $source) {
-        $stats = array_merge(['title' => 0, 'description' => 0, 'image' => 0, 'noindex' => 0], (array) call_user_func($source['stats']));
-        $patterns = array_filter((array) call_user_func($source['patterns']));
+        $seo = !empty($source['stats']);
+        $stats = array_merge(['title' => 0, 'description' => 0, 'image' => 0, 'noindex' => 0], $seo ? (array) call_user_func($source['stats']) : []);
+        $patterns = $seo ? array_filter((array) call_user_func($source['patterns'])) : [];
         $active = haptic_migration_active_plugins($slug);
-        if (!array_sum($stats) && !$patterns && !$active) {
+        if (!array_sum($stats) && !$patterns && !$active && empty($extras[$slug])) {
             continue;
         }
         $found[$slug] = [
             'label'    => $source['label'],
             'active'   => $active,
+            'seo'      => $seo,
             'stats'    => $stats,
             'total'    => array_sum($stats),
             'patterns' => $patterns,
+            'extras'   => $extras[$slug] ?? [],
         ];
     }
     return $found;
@@ -553,6 +589,175 @@ function haptic_migration_tsf_values($post_id)
     ];
 }
 
+/* ---------- Solid Security (anciennement iThemes Security) ---------- */
+
+/**
+ * Réglages de Solid Security qui ont un équivalent dans Optimizr (option itsec-storage, modules actifs itsec_active_modules).
+ * La double authentification ne se transfère pas : chaque compte la refait à sa prochaine connexion.
+ *
+ * @return array option haptic_sec_* (sans préfixe) => valeur ; vide si Solid Security n'a jamais été configuré
+ */
+function haptic_migration_solid_settings()
+{
+    $storage = get_option('itsec-storage');
+    if (!is_array($storage) || empty($storage['global'])) {
+        return [];
+    }
+    $active = is_multisite() ? get_site_option('itsec_active_modules') : get_option('itsec_active_modules');
+    $active = is_array($active) ? $active : [];
+    $global = (array) $storage['global'];
+    $settings = [];
+
+    // Adresse de connexion masquée (« Hide Backend »)
+    $hide = (array) ($storage['hide-backend'] ?? []);
+    if (!empty($hide['enabled']) && !empty($hide['slug'])) {
+        $settings['login_slug'] = sanitize_title((string) $hide['slug']);
+    }
+
+    // Protection contre les attaques par force brute : active par défaut
+    if (!isset($active['brute-force']) || $active['brute-force']) {
+        $brute = (array) ($storage['brute-force'] ?? []);
+        $settings['limit_login'] = 1;
+        $settings['login_max'] = min(20, max(2, (int) ($brute['max_attempts_host'] ?? 5)));
+        $settings['login_lockout'] = min(1440, max(1, (int) ($global['lockout_period'] ?? 15)));
+    }
+
+    // Adresses jamais bloquées (Optimizr ne garde que les adresses IP, pas les plages)
+    $ips = array_filter(array_map('trim', (array) ($global['lockout_white_list'] ?? [])), function ($ip) {
+        return filter_var($ip, FILTER_VALIDATE_IP);
+    });
+    if ($ips) {
+        $settings['login_whitelist'] = array_values(array_unique($ips));
+    }
+
+    // Site derrière Cloudflare
+    if (($global['proxy'] ?? '') === 'manual' && ($global['proxy_header'] ?? '') === 'HTTP_CF_CONNECTING_IP') {
+        $settings['proxy_cloudflare'] = 1;
+    }
+
+    if (!empty($active['two-factor'])) {
+        $settings['two_factor'] = 1;
+    }
+
+    // Protections d'Optimizr Pro (réglages Solid Security « WordPress Tweaks » et « System Tweaks »)
+    $tweaks = (array) ($storage['wordpress-tweaks'] ?? []);
+    // Réglage absent : valeur par défaut de Solid Security (éditeur désactivé)
+    if ($tweaks['file_editor'] ?? true) {
+        $settings['disable_file_edit'] = 1;
+    }
+    if (($tweaks['disable_xmlrpc'] ?? '') === 'disable') {
+        $settings['disable_xmlrpc'] = 1;
+    }
+    if (!empty($tweaks['disable_unused_author_pages']) || ($tweaks['rest_api'] ?? '') === 'restrict-access') {
+        $settings['block_enumeration'] = 1;
+    }
+
+    return apply_filters('haptic_migration_solid_settings', $settings, $storage, $active);
+}
+
+/** Libellés des réglages de sécurité importés, pour les résumés. */
+function haptic_migration_solid_labels(array $settings)
+{
+    $labels = [];
+    if (!empty($settings['login_slug'])) {
+        /* translators: %s: custom login address, e.g. /my-access */
+        $labels[] = sprintf(__('login address /%s', 'optimizr'), $settings['login_slug']);
+    }
+    if (!empty($settings['limit_login'])) {
+        /* translators: 1: maximum number of attempts, 2: lockout duration in minutes */
+        $labels[] = sprintf(__('login attempts limit (%1$s attempts, %2$s min)', 'optimizr'), number_format_i18n($settings['login_max']), number_format_i18n($settings['login_lockout']));
+    }
+    if (!empty($settings['login_whitelist'])) {
+        $count = count($settings['login_whitelist']);
+        /* translators: %s: number of IP addresses */
+        $labels[] = sprintf(_n('%s allowed IP address', '%s allowed IP addresses', $count, 'optimizr'), number_format_i18n($count));
+    }
+    if (!empty($settings['proxy_cloudflare'])) {
+        $labels[] = __('Cloudflare', 'optimizr');
+    }
+    if (!empty($settings['two_factor'])) {
+        $labels[] = __('two-factor authentication', 'optimizr');
+    }
+    if (haptic_is_pro()) {
+        if (!empty($settings['disable_file_edit'])) {
+            $labels[] = __('file editor disabled', 'optimizr');
+        }
+        if (!empty($settings['disable_xmlrpc'])) {
+            $labels[] = __('XML-RPC disabled', 'optimizr');
+        }
+        if (!empty($settings['block_enumeration'])) {
+            $labels[] = __('user enumeration blocked', 'optimizr');
+        }
+    }
+    return $labels;
+}
+
+function haptic_migration_solid_summary()
+{
+    $labels = haptic_migration_solid_labels(haptic_migration_solid_settings());
+    /* translators: %s: list of security settings */
+    return $labels ? sprintf(__('Security settings: %s', 'optimizr'), implode(', ', $labels)) : '';
+}
+
+/**
+ * Applique les réglages de Solid Security. Une protection n'est jamais désactivée ; une adresse de connexion
+ * déjà choisie dans Optimizr est gardée ; les adresses IP autorisées s'ajoutent aux siennes.
+ *
+ * @return string|WP_Error
+ */
+function haptic_migration_solid_import()
+{
+    $settings = haptic_migration_solid_settings();
+    if (!$settings) {
+        return new WP_Error('haptic_migration_solid', __('No Solid Security setting to import.', 'optimizr'));
+    }
+    if (!function_exists('haptic_sec_sanitize_login_slug')) {
+        require_once HAPTIC_OPTIMIZR_PATH . 'functions/security.php';
+    }
+
+    foreach ($settings as $name => $value) {
+        $option = 'haptic_sec_' . $name;
+        switch ($name) {
+            case 'login_slug':
+                $slug = haptic_sec_sanitize_login_slug($value);
+                if (get_option($option) || $slug === '') {
+                    unset($settings[$name]);
+                    continue 2;
+                }
+                update_option($option, $slug);
+                break;
+            case 'login_max':
+            case 'login_lockout':
+                // Valeurs d'Optimizr déjà réglées : gardées
+                if (get_option($option, null) !== null) {
+                    continue 2;
+                }
+                update_option($option, (int) $value);
+                break;
+            case 'login_whitelist':
+                $current = array_filter(array_map('trim', preg_split('/\R/', (string) get_option($option, ''))));
+                update_option($option, implode("\n", array_unique(array_merge($current, $value))));
+                break;
+            default:
+                update_option($option, 1);
+        }
+    }
+
+    haptic_migration_enable_module('security');
+
+    $labels = haptic_migration_solid_labels($settings);
+    /* translators: %s: list of security settings */
+    $message = sprintf(__('Security settings imported: %s.', 'optimizr'), implode(', ', $labels));
+    if (!empty($settings['two_factor'])) {
+        $message .= ' ' . __('Each account sets up two-factor authentication again at its next login.', 'optimizr');
+    }
+    if (!empty($settings['login_slug'])) {
+        /* translators: %s: login URL */
+        $message .= ' ' . sprintf(__('Login address: %s', 'optimizr'), home_url('/' . $settings['login_slug']));
+    }
+    return $message;
+}
+
 /* ---------- Sources en métadonnées (Yoast, Rank Math, SEOPress, The SEO Framework, All in One SEO 3) ---------- */
 
 /**
@@ -686,17 +891,16 @@ function haptic_migration_import_batch($source, $after = 0, $limit = HAPTIC_MIGR
  * @param string[] $sources    Sources importées
  * @param string[] $deactivate Sources dont l'extension est à désactiver
  * @param array    $counts     Totaux de l'import
+ * @param string[] $messages   Résultats des autres données (haptic_migration_extras)
  * @return array ['deactivated' => string[] noms des extensions désactivées]
  */
-function haptic_migration_finish(array $sources, array $deactivate, array $counts)
+function haptic_migration_finish(array $sources, array $deactivate, array $counts, array $messages = [])
 {
-    $modules = get_option('haptic_modules');
-    if (is_array($modules) && empty($modules['seo'])) {
-        $modules['seo'] = 1;
-        update_option('haptic_modules', $modules);
-    }
-    if (!get_option('haptic_enable_seo')) {
-        update_option('haptic_enable_seo', 1);
+    if ($sources) {
+        haptic_migration_enable_module('seo');
+        if (!get_option('haptic_enable_seo')) {
+            update_option('haptic_enable_seo', 1);
+        }
     }
 
     $deactivated = [];
@@ -721,6 +925,7 @@ function haptic_migration_finish(array $sources, array $deactivate, array $count
         'date'        => time(),
         'sources'     => array_values($sources),
         'counts'      => $counts,
+        'messages'    => array_values($messages),
         'deactivated' => $deactivated,
     ], false);
 
@@ -730,7 +935,39 @@ function haptic_migration_finish(array $sources, array $deactivate, array $count
     return ['deactivated' => $deactivated];
 }
 
+/** Active un module d'Optimizr (sans effet si tous les modules sont actifs par défaut). */
+function haptic_migration_enable_module($slug)
+{
+    $modules = get_option('haptic_modules');
+    if (is_array($modules) && empty($modules[$slug])) {
+        $modules[$slug] = 1;
+        update_option('haptic_modules', $modules);
+    }
+}
+
 /* ---------- AJAX ---------- */
+
+add_action('wp_ajax_haptic_migration_extra', function () {
+    check_ajax_referer('haptic_migration');
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => __('Access denied', 'optimizr')], 403);
+    }
+
+    $id = sanitize_key(wp_unslash($_POST['extra'] ?? ''));
+    $extras = haptic_migration_extras();
+    if (!isset($extras[$id]) || !is_callable($extras[$id]['import'] ?? null)) {
+        wp_send_json_error(['message' => __('Unknown source.', 'optimizr')], 400);
+    }
+
+    if (function_exists('set_time_limit')) {
+        set_time_limit(120); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- import ponctuel d'un administrateur (milliers de redirections possibles)
+    }
+    $result = call_user_func($extras[$id]['import']);
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()]);
+    }
+    wp_send_json_success(['message' => (string) $result]);
+});
 
 add_action('wp_ajax_haptic_migration_batch', function () {
     check_ajax_referer('haptic_migration');
@@ -771,8 +1008,9 @@ add_action('wp_ajax_haptic_migration_finish', function () {
     foreach (['title', 'description', 'image', 'noindex', 'kept'] as $field) {
         $counts[$field] = absint($_POST['counts'][$field] ?? 0);
     }
+    $messages = isset($_POST['messages']) ? array_map('sanitize_text_field', (array) wp_unslash($_POST['messages'])) : [];
 
-    wp_send_json_success(haptic_migration_finish($list('sources'), $list('deactivate'), $counts));
+    wp_send_json_success(haptic_migration_finish($list('sources'), $list('deactivate'), $counts, $messages));
 });
 
 add_action('admin_enqueue_scripts', function ($hook) {
@@ -819,24 +1057,32 @@ function haptic_render_migration_card()
         data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_migration')); ?>">
         <div class="optimizr-card__header">
             <div>
-                <h2 class="optimizr-card__title"><?php esc_html_e('Import from another SEO plugin', 'optimizr'); ?></h2>
-                <p class="optimizr-card__desc"><?php esc_html_e('Titles, descriptions, share images and “noindex” of each content. Values already set in Optimizr are kept, and the other plugin\'s data stays in the database.', 'optimizr'); ?></p>
+                <h2 class="optimizr-card__title"><?php esc_html_e('Import from another plugin', 'optimizr'); ?></h2>
+                <p class="optimizr-card__desc"><?php
+                echo esc_html(haptic_is_pro()
+                    ? __('SEO of each content, security settings and redirects. Values already set in Optimizr are kept, and the other plugin\'s data stays in the database.', 'optimizr')
+                    : __('SEO of each content and security settings. Values already set in Optimizr are kept, and the other plugin\'s data stays in the database.', 'optimizr'));
+                ?></p>
             </div>
         </div>
         <div class="optimizr-card__body">
             <?php foreach ($found as $slug => $source) : ?>
                 <fieldset class="optimizr-migration__source" data-migration-source="<?php echo esc_attr($slug); ?>" data-label="<?php echo esc_attr($source['label']); ?>" data-estimate="<?php echo esc_attr(max($source['stats'])); ?>">
-                    <legend class="screen-reader-text"><?php echo esc_html($source['label']); ?></legend>
-                    <label class="optimizr-check">
-                        <input type="checkbox" name="sources[]" value="<?php echo esc_attr($slug); ?>" <?php checked($source['total'] > 0 || $source['patterns']); ?>>
-                        <span>
-                            <strong><?php echo esc_html($source['label']); ?></strong>
-                            <?php if ($source['active']) : ?>
-                                <span class="optimizr-badge"><?php echo esc_html_x('Active', 'plugin status', 'optimizr'); ?></span>
-                            <?php endif; ?>
-                            <br><span class="optimizr-muted"><?php echo esc_html(haptic_migration_stats_text($source['stats'])); ?></span>
-                        </span>
-                    </label>
+                    <legend class="optimizr-migration__name">
+                        <strong><?php echo esc_html($source['label']); ?></strong>
+                        <?php if ($source['active']) : ?>
+                            <span class="optimizr-badge"><?php echo esc_html_x('Active', 'plugin status', 'optimizr'); ?></span>
+                        <?php endif; ?>
+                    </legend>
+                    <?php if ($source['seo'] && ($source['total'] > 0 || $source['patterns'])) : ?>
+                        <label class="optimizr-check">
+                            <input type="checkbox" name="sources[]" value="<?php echo esc_attr($slug); ?>" checked>
+                            <span><?php
+                            /* translators: %s: summary of SEO values (12 titles, 8 descriptions…) */
+                            echo esc_html(sprintf(__('SEO of contents: %s', 'optimizr'), haptic_migration_stats_text($source['stats'])));
+                            ?></span>
+                        </label>
+                    <?php endif; ?>
                     <?php if ($source['patterns']) : ?>
                         <label class="optimizr-check optimizr-migration__option">
                             <input type="checkbox" name="patterns[]" value="<?php echo esc_attr($slug); ?>" data-migration-patterns <?php checked($untouched && !$patterns_checked); ?>>
@@ -853,19 +1099,25 @@ function haptic_render_migration_card()
                             </span>
                         </label>
                     <?php endif; ?>
+                    <?php foreach ($source['extras'] as $id => $summary) : ?>
+                        <label class="optimizr-check">
+                            <input type="checkbox" name="extras[]" value="<?php echo esc_attr($id); ?>" data-source="<?php echo esc_attr($slug); ?>" checked>
+                            <span><?php echo esc_html($summary); ?></span>
+                        </label>
+                    <?php endforeach; ?>
                     <?php if ($source['active'] && $can_deactivate) : ?>
                         <label class="optimizr-check optimizr-migration__option">
                             <input type="checkbox" name="deactivate[]" value="<?php echo esc_attr($slug); ?>" checked>
                             <span><?php
                             /* translators: %s: plugin name (Yoast SEO, Rank Math…) */
                             echo esc_html(sprintf(__('Deactivate %s after the import', 'optimizr'), $source['label']));
-                            ?> <span class="optimizr-muted"><?php esc_html_e('(avoids duplicate tags; it can be reactivated at any time)', 'optimizr'); ?></span></span>
+                            ?> <span class="optimizr-muted"><?php esc_html_e('(avoids conflicts; it can be reactivated at any time)', 'optimizr'); ?></span></span>
                         </label>
                     <?php endif; ?>
                 </fieldset>
             <?php endforeach; ?>
 
-            <?php if (count($found) > 1) : ?>
+            <?php if (count(array_filter(array_column($found, 'total'))) > 1) : ?>
                 <p class="optimizr-field__help"><?php esc_html_e('When several plugins have a value for the same content, the first one in the list wins.', 'optimizr'); ?></p>
             <?php endif; ?>
 

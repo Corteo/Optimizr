@@ -258,7 +258,7 @@ msgid "%1$s / %2$s characters"
 msgstr ""
 
 #. 1: setting label, 2: entered value
-#: functions/migration.php js/optimizr-onboarding.js
+#: functions/migration.php js/optimizr-migration.js js/optimizr-onboarding.js
 msgid "%1$s: %2$s"
 msgstr ""
 
@@ -3192,24 +3192,12 @@ msgid "No content setting to import"
 msgstr ""
 
 #: functions/migration.php
-msgid "Import from another SEO plugin"
-msgstr ""
-
-#: functions/migration.php
-msgid "Titles, descriptions, share images and “noindex” of each content. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
-msgstr ""
-
-#: functions/migration.php
 msgid "Also use its title and description patterns"
 msgstr ""
 
 #. %s: plugin name (Yoast SEO, All in One SEO)
 #: functions/migration.php
 msgid "Deactivate %s after the import"
-msgstr ""
-
-#: functions/migration.php
-msgid "(avoids duplicate tags; it can be reactivated at any time)"
 msgstr ""
 
 #: functions/migration.php
@@ -3253,4 +3241,89 @@ msgstr ""
 
 #: js/optimizr-migration.js
 msgid "The import was interrupted. Values already imported are kept: run it again to finish."
+msgstr ""
+
+#. %s: number of IP addresses
+#: functions/migration.php
+msgid "%s allowed IP address"
+msgid_plural "%s allowed IP addresses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/migration.php
+msgid "(avoids conflicts; it can be reactivated at any time)"
+msgstr ""
+
+#: functions/migration.php
+msgid "Cloudflare"
+msgstr ""
+
+#: functions/migration.php
+msgid "Each account sets up two-factor authentication again at its next login."
+msgstr ""
+
+#: js/optimizr-migration.js
+msgid "Import complete."
+msgstr ""
+
+#: functions/migration.php
+msgid "Import from another plugin"
+msgstr ""
+
+#. %s: login URL
+#: functions/migration.php
+msgid "Login address: %s"
+msgstr ""
+
+#: functions/migration.php
+msgid "No Solid Security setting to import."
+msgstr ""
+
+#. %s: summary of SEO values (12 titles, 8 descriptions…)
+#: functions/migration.php
+msgid "SEO of contents: %s"
+msgstr ""
+
+#: functions/migration.php
+msgid "SEO of each content and security settings. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr ""
+
+#: functions/migration.php
+msgid "SEO of each content, security settings and redirects. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr ""
+
+#. %s: list of security settings
+#: functions/migration.php
+msgid "Security settings imported: %s."
+msgstr ""
+
+#. %s: list of security settings
+#: functions/migration.php
+msgid "Security settings: %s"
+msgstr ""
+
+#: functions/migration.php
+msgid "XML-RPC disabled"
+msgstr ""
+
+#: functions/migration.php
+msgid "file editor disabled"
+msgstr ""
+
+#. %s: custom login address, e.g. /my-access
+#: functions/migration.php
+msgid "login address /%s"
+msgstr ""
+
+#. 1: maximum number of attempts, 2: lockout duration in minutes
+#: functions/migration.php
+msgid "login attempts limit (%1$s attempts, %2$s min)"
+msgstr ""
+
+#: functions/migration.php
+msgid "two-factor authentication"
+msgstr ""
+
+#: functions/migration.php
+msgid "user enumeration blocked"
 msgstr ""

@@ -3324,6 +3324,15 @@
     border-bottom: 1px solid var(--o-border-soft);
 }
 
+.optimizr-migration__name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 2px;
+    padding: 0;
+    font-size: 14px;
+}
+
 .optimizr-migration__option {
     margin-left: 26px;
     font-size: 13px;
@@ -3335,6 +3344,7 @@
 
 .optimizr-migration__status {
     margin: 0;
+    white-space: pre-line;
     color: var(--o-muted);
     font-size: 13px;
 }

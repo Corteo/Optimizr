@@ -93,12 +93,17 @@
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         var sources = checked('sources');
-        if (!sources.length || button.disabled) {
+        var extras = Array.prototype.filter.call(form.querySelectorAll('input[name="extras[]"]:checked'), function () { return true; });
+        if ((!sources.length && !extras.length) || button.disabled) {
             setStatus(__('Choose at least one plugin to import from.', 'optimizr'), true);
             return;
         }
         var patterns = checked('patterns');
-        var deactivate = checked('deactivate').filter(function (slug) { return sources.indexOf(slug) !== -1; });
+        // Une extension n'est désactivée que si quelque chose en a été importé
+        var deactivate = checked('deactivate').filter(function (slug) {
+            return sources.indexOf(slug) !== -1 || extras.some(function (input) { return input.getAttribute('data-source') === slug; });
+        });
+        var messages = [];
         var counts = { title: 0, description: 0, image: 0, noindex: 0, kept: 0 };
         var estimate = 0;
         var processed = 0;
@@ -106,6 +111,28 @@
             var fieldset = form.querySelector('[data-migration-source="' + slug + '"]');
             estimate += parseInt(fieldset.getAttribute('data-estimate'), 10) || 0;
         });
+        // Chaque autre donnée compte pour un lot dans la barre de progression
+        var unit = Math.max(1, Math.round(estimate / 20));
+        estimate += extras.length * unit;
+
+        function runExtras(index) {
+            if (index >= extras.length) {
+                return Promise.resolve();
+            }
+            var input = extras[index];
+            var label = form.querySelector('[data-migration-source="' + input.getAttribute('data-source') + '"]').getAttribute('data-label');
+            /* translators: %s: plugin name (Yoast SEO, Rank Math…) */
+            setStatus(sprintf(__('Importing from %s…', 'optimizr'), label));
+            return post('haptic_migration_extra', { extra: input.value }).then(function (data) {
+                if (data.message) {
+                    /* translators: 1: plugin name, 2: result of the import */
+                    messages.push(sprintf(__('%1$s: %2$s', 'optimizr'), label, data.message));
+                }
+                processed += unit;
+                bar.style.width = Math.min(95, Math.round(processed / estimate * 100)) + '%';
+                return runExtras(index + 1);
+            });
+        }
 
         button.disabled = true;
         button.setAttribute('aria-busy', 'true');
@@ -118,7 +145,7 @@
             }
             var slug = sources[index];
             var label = form.querySelector('[data-migration-source="' + slug + '"]').getAttribute('data-label');
-            /* translators: %s: plugin name (Yoast SEO, All in One SEO) */
+            /* translators: %s: plugin name (Yoast SEO, Rank Math…) */
             setStatus(sprintf(__('Importing from %s…', 'optimizr'), label));
             return post('haptic_migration_batch', {
                 source: slug,
@@ -135,19 +162,29 @@
 
         run(0, 0)
             .then(function () {
-                return post('haptic_migration_finish', { sources: sources, deactivate: deactivate, counts: counts });
+                return runExtras(0);
+            })
+            .then(function () {
+                return post('haptic_migration_finish', { sources: sources, deactivate: deactivate, counts: counts, messages: messages });
             })
             .then(function (data) {
                 bar.style.width = '100%';
-                /* translators: %s: summary of imported values (12 titles, 8 descriptions…) */
-                var text = sprintf(__('Import complete: %s.', 'optimizr'), summary(counts));
+                var text = __('Import complete.', 'optimizr');
+                if (sources.length) {
+                    /* translators: %s: summary of imported values (12 titles, 8 descriptions…) */
+                    text = sprintf(__('Import complete: %s.', 'optimizr'), summary(counts));
+                }
                 if (counts.kept) {
                     /* translators: %s: number of values kept */
                     text += ' ' + sprintf(_n('%s value already set in Optimizr was kept.', '%s values already set in Optimizr were kept.', counts.kept, 'optimizr'), counts.kept);
                 }
+                // Une ligne par autre donnée importée (réglages de sécurité, redirections)
+                if (messages.length) {
+                    text += '\n' + messages.join('\n');
+                }
                 if (data.deactivated && data.deactivated.length) {
                     /* translators: %s: plugin names */
-                    text += ' ' + sprintf(__('Deactivated: %s.', 'optimizr'), data.deactivated.join(', '));
+                    text += '\n' + sprintf(__('Deactivated: %s.', 'optimizr'), data.deactivated.join(', '));
                 }
                 setStatus(text);
                 button.removeAttribute('aria-busy');
