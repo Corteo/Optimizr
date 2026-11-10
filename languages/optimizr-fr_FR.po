@@ -2970,3 +2970,187 @@ msgstr "Voir ces chiffres ici avec Optimizr Pro →"
 #: functions/dashboard.php
 msgid "Open Search Console"
 msgstr "Ouvrir la Search Console"
+
+#: functions/toolbar.php
+msgid "(no title)"
+msgstr "(sans titre)"
+
+#: functions/toolbar.php
+msgid "A bar at the bottom center with the main actions in view."
+msgstr "Une capsule en bas au centre, avec les actions principales toujours visibles."
+
+#: functions/toolbar.php
+msgid "A round button in a corner that opens a compact menu."
+msgstr "Un bouton rond dans un coin, qui ouvre un menu compact."
+
+#: functions/toolbar.php
+msgid "A tab on the edge that opens a panel about the page: Google preview, SEO, cache."
+msgstr "Une languette sur le bord, qui ouvre une fiche de la page : aperçu Google, SEO, cache."
+
+#: functions/toolbar.php
+msgid "Administrators only"
+msgstr "Administrateurs seulement"
+
+#: functions/toolbar.php
+msgid "All"
+msgstr "Tout"
+
+#: functions/toolbar.php
+msgid "Archive"
+msgstr "Archive"
+
+#: functions/toolbar.php
+msgid "Audit this page"
+msgstr "Auditer cette page"
+
+#: functions/toolbar.php
+msgid "Bottom left"
+msgstr "En bas à gauche"
+
+#: functions/toolbar.php
+msgid "Bottom right"
+msgstr "En bas à droite"
+
+#: functions/toolbar.php
+msgid "Bubble"
+msgstr "Pastille"
+
+#: functions/toolbar.php
+msgid "Bubble and page panel. The dock stays centered."
+msgstr "Pour la pastille et la fiche. Le dock reste centré."
+
+#: functions/toolbar.php
+msgid "Comments"
+msgstr "Commentaires"
+
+#: functions/toolbar.php
+msgid "Design"
+msgstr "Design"
+
+#: functions/toolbar.php
+msgid "Dock"
+msgstr "Dock"
+
+#: functions/toolbar.php
+msgid "Edit page"
+msgstr "Modifier la page"
+
+#: functions/toolbar.php
+msgid "Edit template"
+msgstr "Modifier le modèle"
+
+#: functions/toolbar.php
+msgid "Edit user"
+msgstr "Modifier l'utilisateur"
+
+#: functions/toolbar.php
+msgid "Editors and administrators"
+msgstr "Éditeurs et administrateurs"
+
+#: functions/toolbar.php
+msgid "Enable the floating toolbar"
+msgstr "Activer la barre flottante"
+
+#: functions/toolbar.php
+msgid "Everyone who sees the toolbar"
+msgstr "Tous ceux qui voient la barre d'outils"
+
+#: functions/toolbar.php
+msgid "Floating toolbar"
+msgstr "Barre flottante"
+
+#: functions/toolbar.php
+msgid "Floating toolbar saved."
+msgstr "Barre flottante enregistrée."
+
+#: functions/toolbar.php
+msgid "Indexed"
+msgstr "Indexée"
+
+#: functions/toolbar.php
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: functions/toolbar.php
+msgid "Menu"
+msgstr "Menu"
+
+#: functions/toolbar.php
+msgid "New"
+msgstr "Créer"
+
+#: functions/toolbar.php
+msgid "Not indexed"
+msgstr "Non indexée"
+
+#: functions/toolbar.php
+msgid "On the site, replaces the WordPress toolbar with a small floating module: edit the page, create content, SEO and cache of the page. The administration keeps the WordPress toolbar."
+msgstr "Sur le site, remplace la barre d'outils de WordPress par un petit module flottant : modifier la page, créer un contenu, SEO et cache de la page. L'administration garde la barre de WordPress."
+
+#: functions/toolbar.php
+msgid "Open the Optimizr toolbar"
+msgstr "Ouvrir la barre Optimizr"
+
+#: functions/toolbar.php
+msgid "Open the page panel"
+msgstr "Ouvrir la fiche de la page"
+
+#: functions/toolbar.php
+msgid "Open the site to see it."
+msgstr "Ouvrez le site pour la voir."
+
+#: functions/toolbar.php
+msgid "Optimizr toolbar"
+msgstr "Barre Optimizr"
+
+#: functions/toolbar.php
+msgid "Other accounts keep the WordPress toolbar."
+msgstr "Les autres comptes gardent la barre de WordPress."
+
+#: functions/toolbar.php
+msgid "Other plugins"
+msgstr "Autres extensions"
+
+#: functions/toolbar.php
+msgid "Page panel"
+msgstr "Fiche de la page"
+
+#: functions/toolbar.php
+msgid "Posts page"
+msgstr "Page des articles"
+
+#: functions/toolbar.php
+msgid "Search engines"
+msgstr "Moteurs de recherche"
+
+#: functions/toolbar.php
+msgid "Search results"
+msgstr "Résultats de recherche"
+
+#: functions/toolbar.php
+msgid "Show to"
+msgstr "Afficher pour"
+
+#: functions/toolbar.php
+msgid "Site hidden"
+msgstr "Site masqué"
+
+#: functions/toolbar.php
+msgid "Site in maintenance"
+msgstr "Site en maintenance"
+
+#: functions/toolbar.php
+msgid "This page"
+msgstr "Cette page"
+
+#: functions/toolbar.php
+msgid "To do"
+msgstr "À traiter"
+
+#: functions/toolbar.php
+msgid "View as a visitor"
+msgstr "Voir comme un visiteur"
+
+#: functions/toolbar.php
+msgid "View as a visitor (Esc to bring it back)"
+msgstr "Voir comme un visiteur (Échap pour le faire revenir)"

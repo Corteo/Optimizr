@@ -318,6 +318,13 @@ function haptic_render_tools_tab()
         <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Choices saved.', 'optimizr'); ?></strong> <?php esc_html_e('They will be applied if the plugin is deleted.', 'optimizr'); ?></span></div>
     <?php endif; ?>
 
+    <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- message affiché après la redirection d'un formulaire déjà vérifié par nonce, sans action
+    if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'toolbar') : ?>
+        <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Floating toolbar saved.', 'optimizr'); ?></strong> <?php esc_html_e('Open the site to see it.', 'optimizr'); ?></span></div>
+    <?php endif; ?>
+
+    <?php haptic_render_toolbar_card(); ?>
+
     <div class="optimizr-tools">
         <form class="optimizr-card" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
             <input type="hidden" name="action" value="haptic_export_settings">

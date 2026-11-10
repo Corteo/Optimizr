@@ -6,9 +6,11 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.11.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.12.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
+
+En option (onglet **Outils**, désactivée par défaut), une **barre flottante** remplace sur le site la barre d'administration de WordPress : un petit module qui permet de modifier la page affichée, de créer un contenu, de voir son état SEO et son aperçu Google, de vider le cache, d'auditer la page et de voir les commentaires et mises à jour en attente. Trois designs au choix (pastille, dock, fiche de la page), à gauche ou à droite, pour tous les rôles ou seulement les éditeurs ou les administrateurs. L'administration garde la barre de WordPress.
 
 ## Modules
 
@@ -79,6 +81,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 ### Outils
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
+- **Barre flottante** : activation, design (pastille, dock ou fiche de la page), côté de l'écran et rôles concernés.
 - **Suppression du plugin** : à la désactivation (ou dans l'onglet Outils), on choisit ce qui sera effacé si le plugin est ensuite supprimé : réglages, redirections et SEO des contenus, journaux. Par défaut, tout est conservé ; les tâches planifiées, caches et fichiers générés sont toujours supprimés.
 
 ## Prérequis
@@ -163,6 +166,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_cache_conflicting_plugins`, `haptic_cache_host_caches` | filtre | Extensions de cache et caches d'hébergeur détectés. |
 | `haptic_cache_purge_capability` | filtre | Droit nécessaire pour vider le cache (`manage_options` par défaut). |
 | `haptic_cache_aside` | action | Carte ajoutée au panneau latéral de l'onglet Cache. |
+| `haptic_toolbar_show` | filtre | Renvoyer `false` pour garder la barre de WordPress sur la page affichée (barre flottante activée). |
+| `haptic_toolbar_context` | filtre | Contenu de la barre flottante pour la page affichée (titre, liens, SEO, cache, éléments à traiter…). |
+| `haptic_toolbar_collect_nodes`, `haptic_toolbar_other_nodes` | filtre | Raccourcis des autres extensions repris dans la barre flottante : `false` pour ne pas les recueillir, liste des liens. |
 | `haptic_settings_internal_options` | filtre | Options propres au site, exclues de l'export et de l'import. |
 | `haptic_seo_disable_theme_tags` | filtre | Renvoyer `false` pour conserver les balises SEO du thème Haptic. |
 | `haptic_before_enqueue_scripts` / `haptic_after_…` | action | Charger des scripts côté site. |
@@ -189,6 +195,8 @@ functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD (+ css/optimizr-cookies.css, thème du bandeau)
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
+functions/admin-bar.php  Menu Optimizr de la barre d'administration
+functions/toolbar.php    Barre flottante qui remplace la barre d'administration sur le site (+ css/optimizr-toolbar.css, js/optimizr-toolbar.js)
 functions/audit.php      Onglet Audit : audit Lighthouse avec l'API PageSpeed Insights (+ js/optimizr-audit.js)
 functions/cache.php      Module Cache : écriture des pages, vidage, onglet Cache
 functions/cache-files.php Cache : advanced-cache.php, wp-config.php, .htaccess (toujours chargé, pour tout retirer)

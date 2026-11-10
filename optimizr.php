@@ -4,7 +4,7 @@
  * Plugin Name: Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.11.0
+ * Version: 7.12.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.11.0');
+define('HAPTIC_OPTIMIZR_VERSION', '7.12.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -42,6 +42,8 @@ require_once(__DIR__ . '/functions/admin-ui.php');
 require_once(__DIR__ . '/functions/dashboard.php');
 // Menu « Optimizr » de la barre d'administration (front et administration)
 require_once(__DIR__ . '/functions/admin-bar.php');
+// Barre flottante qui remplace la barre d'administration sur le site (option de l'onglet Outils)
+require_once(__DIR__ . '/functions/toolbar.php');
 require_once(__DIR__ . '/functions/assets.php');
 // Fichiers du cache (advanced-cache.php, .htaccess) : retirés à la désactivation du module comme du plugin
 require_once(__DIR__ . '/functions/cache-files.php');

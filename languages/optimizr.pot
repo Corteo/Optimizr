@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.10.0\n"
+"Project-Id-Version: Optimizr 7.11.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2964,4 +2964,188 @@ msgstr ""
 
 #: functions/dashboard.php
 msgid "Open Search Console"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "(no title)"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "A bar at the bottom center with the main actions in view."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "A round button in a corner that opens a compact menu."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "A tab on the edge that opens a panel about the page: Google preview, SEO, cache."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Administrators only"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "All"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Archive"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Audit this page"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Bottom left"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Bottom right"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Bubble"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Bubble and page panel. The dock stays centered."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Comments"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Design"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Dock"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Edit page"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Edit template"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Edit user"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Editors and administrators"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Enable the floating toolbar"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Everyone who sees the toolbar"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Floating toolbar"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Floating toolbar saved."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Indexed"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Log out"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Menu"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "New"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Not indexed"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "On the site, replaces the WordPress toolbar with a small floating module: edit the page, create content, SEO and cache of the page. The administration keeps the WordPress toolbar."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Open the Optimizr toolbar"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Open the page panel"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Open the site to see it."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Optimizr toolbar"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Other accounts keep the WordPress toolbar."
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Other plugins"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Page panel"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Posts page"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Search engines"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Search results"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Show to"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Site hidden"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "Site in maintenance"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "This page"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "To do"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "View as a visitor"
+msgstr ""
+
+#: functions/toolbar.php
+msgid "View as a visitor (Esc to bring it back)"
 msgstr ""
