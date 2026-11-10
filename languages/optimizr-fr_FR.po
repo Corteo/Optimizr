@@ -3665,3 +3665,11 @@ msgstr "Panier moyen"
 #: functions/tracking.php
 msgid "%s stop before this step"
 msgstr "%s s’arrêtent avant cette étape"
+
+#: functions/admin-ui.php
+msgid "Ready-to-use Events type and custom post types."
+msgstr "Type Évènements prêt à l’emploi et types de contenu personnalisés."
+
+#: functions/admin-ui.php
+msgid "Section"
+msgstr "Rubrique"

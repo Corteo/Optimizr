@@ -4,6 +4,18 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.17.0] - 2026-11-10
+
+### Modifié
+- **Menu latéral à la place de la ligne d'onglets** (`haptic_render_tabs_nav()`, `haptic_admin_nav()`) : avec Optimizr Pro, la page comptait 16 onglets sur une ligne. Ils sont désormais rangés dans une colonne à gauche, par rubrique, dans l'ordre, avec les icônes et les couleurs des thèmes du tableau de bord : Tableau de bord et Suivi en tête, puis Sécurité et conformité, Visibilité, Performance, Contenu et outils. Dans une rubrique, les onglets suivent l'ordre des modules du thème. La rubrique d'un onglet est celle de son premier module, ou sa nouvelle clé `group` (`''` pour un lien en tête) : les onglets d'une extension trouvent leur place sans changement. Menu collant au défilement ; sur petit écran (960 px et moins), il devient une liste déroulante groupée par rubrique.
+- **Onglet Images** (`tab=images`, rubrique Performance) : images à la une et formats d'image quittent l'onglet Contenus, qui devient **Types de contenu** (module d'Optimizr Pro, affiché seulement avec lui). Les réglages passent dans le groupe `haptic_group_images` ; l'ancienne adresse `tab=content` ouvre l'onglet Images quand Types de contenu est absent (filtre `haptic_admin_tab_aliases`).
+- L'onglet Avancé s'appelle **Emails** (même adresse `tab=advanced`), dans la rubrique Sécurité et conformité.
+- Un onglet n'est plus affiché pour un module inconnu (extension désactivée) même si le tableau de bord n'a jamais été enregistré.
+- Cartes d'indicateurs du tableau de bord sur deux colonnes, et synthèse de l'onglet Suivi sur une colonne, plus tôt : la page est moins large à côté du menu.
+
+### Retiré
+- Flèches de défilement de la ligne d'onglets (`initTabsScroll`), devenues inutiles.
+
 ## [7.16.0] - 2026-11-10
 
 ### Ajouté

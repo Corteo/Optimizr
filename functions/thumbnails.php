@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 // Réglages : types de contenu qui acceptent une image à la une
 function haptic_options_thumbnail_init()
 {
-    register_setting(haptic_settings_group('content'), 'haptic_option_featured_image_post_types', [
+    register_setting(haptic_settings_group('images'), 'haptic_option_featured_image_post_types', [
         'type' => 'array',
         'sanitize_callback' => function ($input) {
             return is_array($input) ? array_values(array_map('sanitize_key', $input)) : [];
@@ -20,14 +20,14 @@ function haptic_options_thumbnail_init()
         function () {
             echo '<p>' . esc_html__('Content types that offer a cover image in the editor.', 'optimizr') . '</p>';
         },
-        haptic_settings_page('content')
+        haptic_settings_page('images')
     );
 
     add_settings_field(
         'haptic-options-featured-image-post-types',
         __('Content types', 'optimizr'),
         'haptic_options_featured_image_post_types_callback',
-        haptic_settings_page('content'),
+        haptic_settings_page('images'),
         'haptic-thumbnails-section',
         ['layout' => 'stacked']
     );

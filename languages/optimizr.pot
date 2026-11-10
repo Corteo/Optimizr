@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.15.0\n"
+"Project-Id-Version: Optimizr 7.16.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3657,4 +3657,12 @@ msgstr ""
 
 #: functions/tracking.php
 msgid "%s stop before this step"
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Ready-to-use Events type and custom post types."
+msgstr ""
+
+#: functions/admin-ui.php
+msgid "Section"
 msgstr ""

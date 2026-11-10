@@ -391,7 +391,7 @@ function haptic_tracking_alerts(array $report, array $history)
 
 add_filter('haptic_admin_tabs', function ($tabs) {
     return haptic_array_insert_after($tabs, 'dashboard', [
-        'tracking' => ['label' => _x('Tracking', 'admin tab', 'optimizr'), 'modules' => ['cookies'], 'render' => 'haptic_render_tracking_tab'],
+        'tracking' => ['label' => _x('Tracking', 'admin tab', 'optimizr'), 'modules' => ['cookies'], 'group' => '', 'render' => 'haptic_render_tracking_tab'],
     ]);
 }, 5);
 
