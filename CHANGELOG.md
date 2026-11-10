@@ -4,6 +4,11 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.13.1] - 2026-11-10
+
+### Corrigé
+- La barre flottante ne s'affichait pas quand le thème ou une extension masque la barre d'administration de WordPress (`add_filter('show_admin_bar', '__return_false')`, `show_admin_bar(false)`) : son affichage ne dépend plus que de l'option, du rôle et de la préférence « Afficher la barre d'outils » du profil (`haptic_toolbar_should_show()`). La barre de WordPress est masquée en dernier (filtre `show_admin_bar`, priorité maximale).
+
 ## [7.13.0] - 2026-11-10
 
 ### Ajouté

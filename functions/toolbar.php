@@ -61,40 +61,38 @@ function haptic_toolbar_user_matches($roles)
 }
 
 /**
- * Mémorise que la barre de WordPress a été remplacée sur la page affichée.
- * Sans argument : renvoie l'état.
+ * La barre flottante s'affiche-t-elle sur la page demandée ? Sur le site seulement, pour un compte connecté du rôle
+ * choisi qui n'a pas décoché « Afficher la barre d'outils » dans son profil.
+ *
+ * Ne dépend pas du filtre `show_admin_bar` : un thème ou une extension qui masque la barre de WordPress
+ * (add_filter('show_admin_bar', '__return_false'), show_admin_bar(false)) n'empêche pas la barre flottante.
  */
-function haptic_toolbar_replaced($set = null)
+function haptic_toolbar_should_show()
 {
-    static $replaced = false;
-    if ($set !== null) {
-        $replaced = (bool) $set;
+    if (is_admin() || !is_user_logged_in() || wp_doing_ajax() || wp_is_json_request() || is_customize_preview()) {
+        return false;
     }
-    return $replaced;
-}
-
-/*
- * Sur le site uniquement (dans l'administration, is_admin_bar_showing() répond avant ce filtre). Le filtre reçoit
- * la préférence du compte : la barre flottante ne s'affiche que là où la barre de WordPress se serait affichée.
- */
-add_filter('show_admin_bar', function ($show) {
-    if (!$show || is_admin() || !is_user_logged_in() || is_customize_preview() || is_embed()) {
-        return $show;
+    if (did_action('wp') && is_embed()) {
+        return false;
     }
     $settings = haptic_toolbar_settings();
     if (!$settings['enabled'] || !haptic_toolbar_user_matches($settings['roles'])) {
-        return $show;
+        return false;
     }
-    if (!apply_filters('haptic_toolbar_show', true)) {
-        return $show;
+    // Préférence du profil (la même que celle de la barre de WordPress)
+    if (get_user_option('show_admin_bar_front') === 'false') {
+        return false;
     }
-    haptic_toolbar_replaced(true);
-    return false;
-}, 999);
+    return (bool) apply_filters('haptic_toolbar_show', true);
+}
+
+// Barre de WordPress masquée sur le site quand la barre flottante la remplace (en dernier, après les autres filtres)
+add_filter('show_admin_bar', function ($show) {
+    return $show && haptic_toolbar_should_show() ? false : $show;
+}, PHP_INT_MAX);
 
 add_action('wp_enqueue_scripts', function () {
-    // is_admin_bar_showing() déclenche le filtre ci-dessus s'il n'a pas encore été appelé
-    if (is_admin_bar_showing() || !haptic_toolbar_replaced()) {
+    if (!haptic_toolbar_should_show()) {
         return;
     }
     wp_enqueue_style('optimizr-toolbar', HAPTIC_OPTIMIZR_URL . 'css/optimizr-toolbar.css', [], HAPTIC_OPTIMIZR_VERSION);
@@ -102,7 +100,7 @@ add_action('wp_enqueue_scripts', function () {
 });
 
 add_action('wp_footer', function () {
-    if (!haptic_toolbar_replaced() || is_admin_bar_showing()) {
+    if (!haptic_toolbar_should_show()) {
         return;
     }
     $settings = haptic_toolbar_settings();
