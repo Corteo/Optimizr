@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /*
- * Import depuis les extensions SEO concurrentes (Yoast SEO, All in One SEO) : titre, description,
+ * Import depuis les extensions SEO concurrentes (Yoast SEO, Rank Math…) : titre, description,
  * image de partage et « noindex » de chaque contenu, et modèles globaux de titre et de description.
  *
  * - Une valeur déjà saisie dans Optimizr n'est jamais remplacée.
@@ -48,6 +48,30 @@ function haptic_migration_sources()
             'posts'    => 'haptic_migration_aioseo_posts',
             'values'   => 'haptic_migration_aioseo_values',
             'patterns' => 'haptic_migration_aioseo_patterns',
+        ],
+        'rankmath' => [
+            'label'    => 'Rank Math',
+            'plugins'  => ['seo-by-rank-math/rank-math.php', 'seo-by-rank-math-pro/rank-math-pro.php'],
+            'stats'    => 'haptic_migration_rankmath_stats',
+            'posts'    => 'haptic_migration_rankmath_posts',
+            'values'   => 'haptic_migration_rankmath_values',
+            'patterns' => 'haptic_migration_rankmath_patterns',
+        ],
+        'seopress' => [
+            'label'    => 'SEOPress',
+            'plugins'  => ['wp-seopress/seopress.php', 'wp-seopress-pro/seopress-pro.php'],
+            'stats'    => 'haptic_migration_seopress_stats',
+            'posts'    => 'haptic_migration_seopress_posts',
+            'values'   => 'haptic_migration_seopress_values',
+            'patterns' => 'haptic_migration_seopress_patterns',
+        ],
+        'tsf' => [
+            'label'    => 'The SEO Framework',
+            'plugins'  => ['autodescription/autodescription.php'],
+            'stats'    => 'haptic_migration_tsf_stats',
+            'posts'    => 'haptic_migration_tsf_posts',
+            'values'   => 'haptic_migration_tsf_values',
+            'patterns' => '__return_empty_array',
         ],
     ]);
 }
@@ -339,11 +363,201 @@ function haptic_migration_aioseo_patterns()
     return ['title' => $pick('title'), 'description' => $pick('metaDescription')];
 }
 
-/* ---------- Sources en métadonnées (Yoast, All in One SEO 3) ---------- */
+/* ---------- Rank Math ---------- */
+
+/** Texte Rank Math (%title% %sep% %sitename%) au format d'Optimizr. */
+function haptic_migration_rankmath_translate($text)
+{
+    $titles = get_option('rank-math-options-titles');
+    $map = haptic_migration_common_variables();
+    $map['sep'] = is_array($titles) && !empty($titles['title_separator'])
+        ? html_entity_decode((string) $titles['title_separator'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
+        : '-';
+    $map['seo_title'] = '{titre_page}';
+    // %customfield(nom)% et autres variables à paramètre : sans équivalent
+    return haptic_migration_translate($text, '/%([a-z0-9_]+)(?:\([^)%]*\))?%/i', $map);
+}
+
+function haptic_migration_rankmath_meta_keys()
+{
+    return [
+        'title'       => 'rank_math_title',
+        'description' => 'rank_math_description',
+        'image'       => 'rank_math_facebook_image',
+        'noindex'     => 'rank_math_robots',
+    ];
+}
+
+function haptic_migration_rankmath_stats()
+{
+    // rank_math_robots : tableau sérialisé (['noindex', 'nofollow'])
+    return haptic_migration_meta_stats(haptic_migration_rankmath_meta_keys(), ['like' => '"noindex"']);
+}
+
+function haptic_migration_rankmath_posts($after, $limit)
+{
+    return haptic_migration_meta_posts(haptic_migration_rankmath_meta_keys(), $after, $limit);
+}
+
+function haptic_migration_rankmath_values($post_id)
+{
+    $keys = haptic_migration_rankmath_meta_keys();
+    return [
+        'title'       => haptic_migration_rankmath_translate(get_post_meta($post_id, $keys['title'], true)),
+        'description' => haptic_migration_rankmath_translate(get_post_meta($post_id, $keys['description'], true)),
+        'image'       => (string) get_post_meta($post_id, $keys['image'], true),
+        'noindex'     => in_array('noindex', (array) get_post_meta($post_id, $keys['noindex'], true), true),
+    ];
+}
+
+/** Modèles de Rank Math : ceux des pages, sinon ceux des articles. */
+function haptic_migration_rankmath_patterns()
+{
+    $titles = get_option('rank-math-options-titles');
+    if (!is_array($titles)) {
+        return [];
+    }
+    $pick = function ($suffix) use ($titles) {
+        foreach (['page', 'post'] as $type) {
+            if (!empty($titles['pt_' . $type . '_' . $suffix]) && is_string($titles['pt_' . $type . '_' . $suffix])) {
+                return haptic_migration_rankmath_translate($titles['pt_' . $type . '_' . $suffix]);
+            }
+        }
+        return '';
+    };
+    return ['title' => $pick('title'), 'description' => $pick('description')];
+}
+
+/* ---------- SEOPress ---------- */
+
+/** Texte SEOPress (%%post_title%% %%sep%% %%sitetitle%%) au format d'Optimizr. */
+function haptic_migration_seopress_translate($text)
+{
+    $options = get_option('seopress_titles_option_name');
+    $map = [
+        'post_title'        => '{titre_page}',
+        'sitetitle'         => '{nom_site}',
+        'sitename'          => '{nom_site}',
+        'tagline'           => '{slogan}',
+        'post_excerpt'      => '{resume}',
+        'post_content'      => '{resume}',
+        'post_category'     => '{categorie}',
+        'post_author'       => '{auteur}',
+        'post_date'         => '{date_publication}',
+        'sep'               => is_array($options) && !empty($options['seopress_titles_sep'])
+            ? html_entity_decode((string) $options['seopress_titles_sep'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
+            : '-',
+    ];
+    return haptic_migration_translate($text, '/%%([a-z0-9_-]+)%%/i', $map);
+}
+
+function haptic_migration_seopress_meta_keys()
+{
+    return [
+        'title'       => '_seopress_titles_title',
+        'description' => '_seopress_titles_desc',
+        'image'       => '_seopress_social_fb_img',
+        'noindex'     => '_seopress_robots_index',
+    ];
+}
+
+function haptic_migration_seopress_stats()
+{
+    // _seopress_robots_index : « yes » quand la case « noindex » est cochée
+    return haptic_migration_meta_stats(haptic_migration_seopress_meta_keys(), 'yes');
+}
+
+function haptic_migration_seopress_posts($after, $limit)
+{
+    return haptic_migration_meta_posts(haptic_migration_seopress_meta_keys(), $after, $limit);
+}
+
+function haptic_migration_seopress_values($post_id)
+{
+    $keys = haptic_migration_seopress_meta_keys();
+    return [
+        'title'       => haptic_migration_seopress_translate(get_post_meta($post_id, $keys['title'], true)),
+        'description' => haptic_migration_seopress_translate(get_post_meta($post_id, $keys['description'], true)),
+        'image'       => (string) get_post_meta($post_id, $keys['image'], true),
+        'noindex'     => get_post_meta($post_id, $keys['noindex'], true) === 'yes',
+    ];
+}
+
+/** Modèles de SEOPress : ceux des pages, sinon ceux des articles. */
+function haptic_migration_seopress_patterns()
+{
+    $options = get_option('seopress_titles_option_name');
+    $types = is_array($options) ? ($options['seopress_titles_single_titles'] ?? []) : [];
+    if (!is_array($types)) {
+        return [];
+    }
+    $pick = function ($key) use ($types) {
+        foreach (['page', 'post'] as $type) {
+            if (!empty($types[$type][$key]) && is_string($types[$type][$key])) {
+                return haptic_migration_seopress_translate($types[$type][$key]);
+            }
+        }
+        return '';
+    };
+    return ['title' => $pick('title'), 'description' => $pick('description')];
+}
+
+/* ---------- The SEO Framework ---------- */
+
+function haptic_migration_tsf_meta_keys()
+{
+    return [
+        'title'       => '_genesis_title',
+        'description' => '_genesis_description',
+        'image'       => '_social_image_url',
+        'noindex'     => '_genesis_noindex',
+    ];
+}
+
+function haptic_migration_tsf_stats()
+{
+    return haptic_migration_meta_stats(haptic_migration_tsf_meta_keys(), '1');
+}
+
+function haptic_migration_tsf_posts($after, $limit)
+{
+    return haptic_migration_meta_posts(haptic_migration_tsf_meta_keys(), $after, $limit);
+}
+
+/**
+ * The SEO Framework n'a pas de variables, mais ajoute le nom du site au titre saisi, sauf si
+ * « Retirer le nom du site » est coché (_tsf_title_no_blogname) : on l'ajoute de même, avec son séparateur.
+ */
+function haptic_migration_tsf_values($post_id)
+{
+    $keys = haptic_migration_tsf_meta_keys();
+    $title = (string) get_post_meta($post_id, $keys['title'], true);
+
+    if ($title !== '' && !get_post_meta($post_id, '_tsf_title_no_blogname', true)) {
+        $settings = get_option('autodescription-site-settings');
+        $settings = is_array($settings) ? $settings : [];
+        if (empty($settings['site_title_removal'])) {
+            $separators = ['hyphen' => '-', 'pipe' => '|', 'ndash' => '–', 'mdash' => '—', 'dot' => '·', 'bull' => '•', 'middot' => '·', 'colon' => ':'];
+            $sep = $separators[$settings['title_separator'] ?? 'hyphen'] ?? '-';
+            $title = ($settings['title_location'] ?? 'right') === 'left'
+                ? '{nom_site} ' . $sep . ' ' . $title
+                : $title . ' ' . $sep . ' {nom_site}';
+        }
+    }
+
+    return [
+        'title'       => $title,
+        'description' => (string) get_post_meta($post_id, $keys['description'], true),
+        'image'       => (string) get_post_meta($post_id, $keys['image'], true),
+        'noindex'     => (string) get_post_meta($post_id, $keys['noindex'], true) === '1',
+    ];
+}
+
+/* ---------- Sources en métadonnées (Yoast, Rank Math, SEOPress, The SEO Framework, All in One SEO 3) ---------- */
 
 /**
  * @param string[] $keys    title, description, image, noindex => clé de métadonnée
- * @param string   $noindex Valeur qui signifie « ne pas indexer »
+ * @param string|array $noindex Valeur qui signifie « ne pas indexer », ou ['like' => texte contenu dans la valeur sérialisée]
  */
 function haptic_migration_meta_stats(array $keys, $noindex)
 {
@@ -352,7 +566,9 @@ function haptic_migration_meta_stats(array $keys, $noindex)
     foreach ($keys as $field => $key) {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- comptage ponctuel sur toutes les publications (onglet Outils)
         $stats[$field] = (int) $wpdb->get_var($field === 'noindex'
-            ? $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", $key, $noindex)
+            ? (is_array($noindex)
+                ? $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s", $key, '%' . $wpdb->esc_like($noindex['like']) . '%')
+                : $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", $key, $noindex))
             : $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> ''", $key));
     }
     return $stats;
@@ -641,7 +857,7 @@ function haptic_render_migration_card()
                         <label class="optimizr-check optimizr-migration__option">
                             <input type="checkbox" name="deactivate[]" value="<?php echo esc_attr($slug); ?>" checked>
                             <span><?php
-                            /* translators: %s: plugin name (Yoast SEO, All in One SEO) */
+                            /* translators: %s: plugin name (Yoast SEO, Rank Math…) */
                             echo esc_html(sprintf(__('Deactivate %s after the import', 'optimizr'), $source['label']));
                             ?> <span class="optimizr-muted"><?php esc_html_e('(avoids duplicate tags; it can be reactivated at any time)', 'optimizr'); ?></span></span>
                         </label>
@@ -650,7 +866,7 @@ function haptic_render_migration_card()
             <?php endforeach; ?>
 
             <?php if (count($found) > 1) : ?>
-                <p class="optimizr-field__help"><?php esc_html_e('When both plugins have a value for the same content, the first one in the list wins.', 'optimizr'); ?></p>
+                <p class="optimizr-field__help"><?php esc_html_e('When several plugins have a value for the same content, the first one in the list wins.', 'optimizr'); ?></p>
             <?php endif; ?>
 
             <div class="optimizr-progress" data-migration-progress hidden><span></span></div>

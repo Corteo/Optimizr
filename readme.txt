@@ -86,7 +86,7 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 == Changelog ==
 
 = 7.13.0 =
-* New import from Yoast SEO and All in One SEO (Tools tab): SEO title, description, share image and "noindex" of each content, and optionally the title and description patterns. Values already set in Optimizr are kept, the other plugin's data stays in the database, and the plugin can be deactivated right after the import.
+* New import from Yoast SEO, All in One SEO, Rank Math, SEOPress and The SEO Framework (Tools tab): SEO title, description, share image and "noindex" of each content, and optionally the title and description patterns. Values already set in Optimizr are kept, the other plugin's data stays in the database, and the plugin can be deactivated right after the import.
 
 = 7.12.0 =
 * New floating toolbar, off by default (Tools tab): on the site, it replaces the WordPress admin bar with a small floating module to edit the page, create content, check the page SEO, clear the cache and see pending comments and updates. Three designs to choose from (bubble, dock, page panel), left or right side, and the roles that get it.

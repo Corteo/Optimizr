@@ -3213,7 +3213,7 @@ msgid "(avoids duplicate tags; it can be reactivated at any time)"
 msgstr ""
 
 #: functions/migration.php
-msgid "When both plugins have a value for the same content, the first one in the list wins."
+msgid "When several plugins have a value for the same content, the first one in the list wins."
 msgstr ""
 
 #. 1: date of the last import, 2: summary of imported values

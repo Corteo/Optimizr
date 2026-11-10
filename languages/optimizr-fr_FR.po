@@ -3218,8 +3218,8 @@ msgid "(avoids duplicate tags; it can be reactivated at any time)"
 msgstr "(évite les balises en double ; elle peut être réactivée à tout moment)"
 
 #: functions/migration.php
-msgid "When both plugins have a value for the same content, the first one in the list wins."
-msgstr "Quand les deux extensions ont une valeur pour le même contenu, la première de la liste l'emporte."
+msgid "When several plugins have a value for the same content, the first one in the list wins."
+msgstr "Quand plusieurs extensions ont une valeur pour le même contenu, la première de la liste l'emporte."
 
 #. 1: date of the last import, 2: summary of imported values
 #: functions/migration.php
