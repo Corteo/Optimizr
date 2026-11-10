@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
  * - à Google Analytics 4 / Google Ads par gtag(), qui applique le Google Consent Mode v2 (tarteaucitron.js) ;
  * - à Google Tag Manager par le dataLayer (évènement optimizr_conversion) ;
  * - aux extensions par l'évènement DOM « optimizr:conversion » (Optimizr Pro : conversions Google Ads, Pixel Meta).
- * Un signal anonyme (type d'action seulement, ni cookie ni donnée du visiteur) date la dernière conversion vue,
- * affichée dans l'onglet Cookies & RGPD.
+ * Un signal anonyme (action, chemin de la page, accord pour la mesure d'audience ; ni cookie ni donnée du visiteur)
+ * date la dernière conversion vue et la compte pour l'onglet Suivi (functions/tracking.php).
  */
 
 /** Évènements envoyés pour chaque action : nom GA4 et évènement standard Meta. */
@@ -170,6 +170,8 @@ function haptic_conversions_woo_config($actions)
                 'items'          => haptic_conversions_woo_items($lines),
                 // Pour les conversions améliorées d'Optimizr Pro (haché dans le navigateur, avec l'accord du visiteur)
                 'email'          => $order->get_billing_email(),
+                // Pour le compte de l'onglet Suivi : le serveur relit le montant sur la commande
+                'order'          => $order->get_id() . ':' . $order->get_order_key(),
             ];
             $order->update_meta_data('_haptic_conversion_sent', time());
             $order->save();
@@ -205,16 +207,38 @@ add_action('wp_ajax_haptic_conversion_seen', 'haptic_conversion_seen');
 add_action('wp_ajax_nopriv_haptic_conversion_seen', 'haptic_conversion_seen');
 
 /**
- * Signal envoyé par le navigateur à chaque conversion : seule la date est gardée, au plus une écriture
- * toutes les 5 minutes par action. Sans nonce : la page peut venir du cache, et l'information n'a pas d'enjeu.
+ * Signal envoyé par le navigateur à chaque conversion : date de la dernière conversion par action (au plus une
+ * écriture toutes les 5 minutes) et compte du jour pour l'onglet Suivi (functions/tracking.php). Sans nonce : la page
+ * peut venir du cache. Ni cookie ni donnée du visiteur ; au plus 30 signaux par minute et par adresse IP. Le montant
+ * d'une commande est relu sur la commande, comptée une seule fois.
  */
 function haptic_conversion_seen()
 {
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- signal public sans effet sensible, voir ci-dessus
+    // phpcs:disable WordPress.Security.NonceVerification.Missing -- signal public sans effet sensible, voir ci-dessus
     $action = isset($_POST['type']) ? sanitize_key(wp_unslash($_POST['type'])) : '';
     if (!isset(haptic_conversion_events()[$action])) {
         wp_die('', '', ['response' => 400]);
     }
+    if (haptic_tracking_throttled()) {
+        wp_die('', '', ['response' => 429]);
+    }
+    $page = haptic_tracking_clean_page(isset($_POST['page']) ? wp_unslash($_POST['page']) : '/'); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nettoyé par haptic_tracking_clean_page()
+    $consent = isset($_POST['consent']) ? absint($_POST['consent']) : 2;
+    $order_ref = isset($_POST['order']) ? explode(':', sanitize_text_field(wp_unslash($_POST['order'])), 2) : [];
+    // phpcs:enable WordPress.Security.NonceVerification.Missing
+
+    $value = 0.0;
+    if ($action === 'purchase') {
+        $order = count($order_ref) === 2 && function_exists('wc_get_order') ? wc_get_order(absint($order_ref[0])) : false;
+        if (!$order || !hash_equals($order->get_order_key(), $order_ref[1]) || $order->get_meta('_haptic_conversion_counted')) {
+            wp_die('', '', ['response' => 204]);
+        }
+        $order->update_meta_data('_haptic_conversion_counted', 1);
+        $order->save_meta_data();
+        $value = (float) $order->get_subtotal() - (float) $order->get_discount_total();
+    }
+    haptic_tracking_record($action, $page, $consent > 2 ? 2 : $consent, $value);
+
     $seen = get_option('haptic_conversions_seen');
     $seen = is_array($seen) ? $seen : [];
     if (empty($seen[$action]) || time() - (int) $seen[$action] > 5 * MINUTE_IN_SECONDS) {
