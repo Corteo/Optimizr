@@ -4,6 +4,19 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.13.0] - 2026-11-10
+
+### Ajouté
+- **Import depuis Yoast SEO, All in One SEO, Rank Math, SEOPress et The SEO Framework** (`functions/migration.php`, `js/optimizr-migration.js`), dans une carte de l'onglet Outils affichée seulement quand l'une de ces extensions est installée ou a laissé des données. Elle détaille ce qu'elle a trouvé, puis importe par lots (AJAX `haptic_migration_batch`, 100 contenus par lot) le titre SEO, la description, l'image de partage et le « noindex » de chaque contenu vers `_haptic_og_title`, `_haptic_og_desc`, `_haptic_og_image` et `_haptic_noindex`.
+- Traduction des variables : `%%title%%` (Yoast), `#post_title` (All in One SEO), `%title%` (Rank Math) et `%%post_title%%` (SEOPress) deviennent `{titre_page}`, `%%sitename%%`, `#site_title`, `%sitename%` et `%%sitetitle%%` `{nom_site}`, le séparateur prend la valeur choisie dans l'extension, etc. The SEO Framework n'a pas de variables : le nom du site est ajouté au titre importé comme il le faisait (côté et séparateur repris), sauf pour un contenu où il était retiré. Les variables sans équivalent (numéro de page, année, champs personnalisés) sont retirées.
+- Option « Reprendre ses modèles de titre et de description » (ceux des pages, sinon des articles), pour une seule source à la fois, cochée d'office pour la première seulement si ceux d'Optimizr n'ont jamais été modifiés.
+- Option « Désactiver l'extension après l'import » (`deactivate_plugins()`, jamais de suppression). À la fin (AJAX `haptic_migration_finish`), le module SEO et ses balises automatiques sont activés, le cache vidé, et le résumé enregistré (option `haptic_migration_log`, exclue de l'export).
+- **Réglages de Solid Security** (anciennement iThemes Security), dans la même carte : adresse de connexion masquée (`haptic_sec_login_slug`, si Optimizr n'en a pas déjà une), limite des tentatives (nombre d'essais et durée du blocage), adresses IP autorisées (ajoutées aux siennes ; les plages CIDR ne sont pas reprises), Cloudflare, double authentification (chaque compte la remet en place à sa prochaine connexion), et avec Optimizr Pro éditeur de fichiers, XML-RPC et énumération des comptes. Une protection n'est jamais désactivée. Le module Sécurité est activé.
+- **Autres données** : filtre `haptic_migration_extras` (donnée rattachée à une source, résumé et import, AJAX `haptic_migration_extra`), utilisé par Optimizr Pro 1.18.0 pour les redirections. Une source peut n'avoir aucune donnée SEO (Solid Security). La carte s'intitule désormais « Importer depuis une autre extension » et range les données par extension, chacune avec sa case.
+- Filtres `haptic_migration_sources` (autres extensions) et `haptic_migration_solid_settings`, action `haptic_migration_finished`.
+- Une valeur déjà saisie dans Optimizr n'est jamais remplacée ; une valeur égale au résultat du modèle d'Optimizr n'est pas enregistrée, pour que le modèle continue de s'appliquer.
+- Les données des autres extensions restent en base : les réactiver retrouve tout. Une extension n'est désactivée que si quelque chose en a été importé.
+
 ## [7.12.0] - 2026-11-10
 
 ### Ajouté

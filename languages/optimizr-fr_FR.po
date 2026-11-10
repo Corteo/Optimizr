@@ -260,7 +260,7 @@ msgid "%1$s / %2$s characters"
 msgstr "%1$s / %2$s caractères"
 
 #. 1: setting label, 2: entered value
-#: js/optimizr-onboarding.js
+#: functions/migration.php js/optimizr-migration.js js/optimizr-onboarding.js
 msgid "%1$s: %2$s"
 msgstr "%1$s : %2$s"
 
@@ -3154,3 +3154,181 @@ msgstr "Voir comme un visiteur"
 #: functions/toolbar.php
 msgid "View as a visitor (Esc to bring it back)"
 msgstr "Voir comme un visiteur (Échap pour le faire revenir)"
+
+#: functions/migration.php
+msgctxt "plugin status"
+msgid "Active"
+msgstr "Active"
+
+#: functions/migration.php
+msgid "Unknown source."
+msgstr "Source inconnue."
+
+#. %s: number of SEO titles
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s title"
+msgid_plural "%s titles"
+msgstr[0] "%s titre"
+msgstr[1] "%s titres"
+
+#. %s: number of meta descriptions
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s description"
+msgid_plural "%s descriptions"
+msgstr[0] "%s description"
+msgstr[1] "%s descriptions"
+
+#. %s: number of share images
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s share image"
+msgid_plural "%s share images"
+msgstr[0] "%s image de partage"
+msgstr[1] "%s images de partage"
+
+#. %s: number of contents hidden from search engines
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s hidden from search engines"
+msgid_plural "%s hidden from search engines"
+msgstr[0] "%s masqué aux moteurs de recherche"
+msgstr[1] "%s masqués aux moteurs de recherche"
+
+#: functions/migration.php
+msgid "No content setting to import"
+msgstr "Aucun réglage de contenu à importer"
+
+#: functions/migration.php
+msgid "Also use its title and description patterns"
+msgstr "Reprendre aussi ses modèles de titre et de description"
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: functions/migration.php
+msgid "Deactivate %s after the import"
+msgstr "Désactiver %s après l'import"
+
+#: functions/migration.php
+msgid "When several plugins have a value for the same content, the first one in the list wins."
+msgstr "Quand plusieurs extensions ont une valeur pour le même contenu, la première de la liste l'emporte."
+
+#. 1: date of the last import, 2: summary of imported values
+#: functions/migration.php
+msgid "Last import on %1$s: %2$s."
+msgstr "Dernier import le %1$s : %2$s."
+
+#: js/optimizr-migration.js
+msgid "nothing new"
+msgstr "rien de nouveau"
+
+#: js/optimizr-migration.js
+msgid "Choose at least one plugin to import from."
+msgstr "Choisissez au moins une extension à importer."
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: js/optimizr-migration.js
+msgid "Importing from %s…"
+msgstr "Import depuis %s…"
+
+#. %s: summary of imported values (12 titles, 8 descriptions…)
+#: js/optimizr-migration.js
+msgid "Import complete: %s."
+msgstr "Import terminé : %s."
+
+#. %s: number of values kept
+#: js/optimizr-migration.js
+msgid "%s value already set in Optimizr was kept."
+msgid_plural "%s values already set in Optimizr were kept."
+msgstr[0] "%s valeur déjà saisie dans Optimizr a été conservée."
+msgstr[1] "%s valeurs déjà saisies dans Optimizr ont été conservées."
+
+#. %s: plugin names
+#: js/optimizr-migration.js
+msgid "Deactivated: %s."
+msgstr "Désactivée(s) : %s."
+
+#: js/optimizr-migration.js
+msgid "The import was interrupted. Values already imported are kept: run it again to finish."
+msgstr "L'import a été interrompu. Les valeurs déjà importées sont conservées : relancez-le pour terminer."
+
+#. %s: number of IP addresses
+#: functions/migration.php
+msgid "%s allowed IP address"
+msgid_plural "%s allowed IP addresses"
+msgstr[0] "%s adresse IP autorisée"
+msgstr[1] "%s adresses IP autorisées"
+
+#: functions/migration.php
+msgid "(avoids conflicts; it can be reactivated at any time)"
+msgstr "(évite les conflits ; elle peut être réactivée à tout moment)"
+
+#: functions/migration.php
+msgid "Cloudflare"
+msgstr "Cloudflare"
+
+#: functions/migration.php
+msgid "Each account sets up two-factor authentication again at its next login."
+msgstr "Chaque compte remet en place la double authentification à sa prochaine connexion."
+
+#: js/optimizr-migration.js
+msgid "Import complete."
+msgstr "Import terminé."
+
+#: functions/migration.php
+msgid "Import from another plugin"
+msgstr "Importer depuis une autre extension"
+
+#. %s: login URL
+#: functions/migration.php
+msgid "Login address: %s"
+msgstr "Adresse de connexion : %s"
+
+#: functions/migration.php
+msgid "No Solid Security setting to import."
+msgstr "Aucun réglage de Solid Security à importer."
+
+#. %s: summary of SEO values (12 titles, 8 descriptions…)
+#: functions/migration.php
+msgid "SEO of contents: %s"
+msgstr "SEO des contenus : %s"
+
+#: functions/migration.php
+msgid "SEO of each content and security settings. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr "SEO de chaque contenu et réglages de sécurité. Les valeurs déjà saisies dans Optimizr sont conservées, et les données de l'autre extension restent en base."
+
+#: functions/migration.php
+msgid "SEO of each content, security settings and redirects. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr "SEO de chaque contenu, réglages de sécurité et redirections. Les valeurs déjà saisies dans Optimizr sont conservées, et les données de l'autre extension restent en base."
+
+#. %s: list of security settings
+#: functions/migration.php
+msgid "Security settings imported: %s."
+msgstr "Réglages de sécurité importés : %s."
+
+#. %s: list of security settings
+#: functions/migration.php
+msgid "Security settings: %s"
+msgstr "Réglages de sécurité : %s"
+
+#: functions/migration.php
+msgid "XML-RPC disabled"
+msgstr "XML-RPC désactivé"
+
+#: functions/migration.php
+msgid "file editor disabled"
+msgstr "éditeur de fichiers désactivé"
+
+#. %s: custom login address, e.g. /my-access
+#: functions/migration.php
+msgid "login address /%s"
+msgstr "adresse de connexion /%s"
+
+#. 1: maximum number of attempts, 2: lockout duration in minutes
+#: functions/migration.php
+msgid "login attempts limit (%1$s attempts, %2$s min)"
+msgstr "limite de tentatives de connexion (%1$s essais, %2$s min)"
+
+#: functions/migration.php
+msgid "two-factor authentication"
+msgstr "double authentification"
+
+#: functions/migration.php
+msgid "user enumeration blocked"
+msgstr "énumération des comptes bloquée"
