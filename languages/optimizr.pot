@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.13.1\n"
+"Project-Id-Version: Optimizr 7.14.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2838,10 +2838,6 @@ msgstr ""
 msgid "Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”."
 msgstr ""
 
-#: functions/campaigns.php:404
-msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking, click_download and sign_up (newsletter). Mark them as key events in Google Analytics to use them in Google Ads."
-msgstr ""
-
 #: functions/campaigns.php:413
 msgid "Track with the visitor's consent"
 msgstr ""
@@ -3339,4 +3335,93 @@ msgstr ""
 
 #: functions/migration.php
 msgid "user enumeration blocked"
+msgstr ""
+
+#. translators: %s: active form plugins, e.g. "Contact Form 7, WPForms"
+#: functions/campaigns.php
+msgid "%s: counted when the message is actually sent, not on each click."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Add to cart"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Address or path of the page shown after the request. Used by “Thank-you page viewed”."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Any link or button given the CSS class optimizr-conversion (block settings › Advanced › Additional CSS class)."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Checkout started"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Click for directions"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Click on a marked button"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Click to a social network"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Click to leave a Google review"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Events sent to Google Analytics: generate_lead (form, thank-you page), sign_up (newsletter), click_phone, click_email, click_whatsapp, click_booking, click_directions, click_cta, click_download, click_review, click_social, and for WooCommerce add_to_cart, begin_checkout and purchase. Mark the ones that matter as key events in Google Analytics to use them in Google Ads."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Links to Facebook, Instagram, LinkedIn, TikTok, YouTube, X or Pinterest."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Links to Google Maps, Waze or Apple Maps: the visitor is coming to see you."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Links to the Google review form (g.page/r/…/review, search.google.com/local/writereview)."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "No supported form plugin is active on this site (Contact Form 7, WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable): counted as soon as one is."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Order placed"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Pages listed below, shown after a form or a request (/thank-you…). Works with any form, even one Optimizr does not recognize."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Thank-you page viewed"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Thank-you page: no address entered, this conversion is not tracked."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "Thank-you pages"
+msgstr ""
+
+#: functions/campaigns.php
+msgid "WooCommerce: checkout page reached, with the cart amount."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "WooCommerce: order confirmation page, with the amount (excluding shipping and taxes), counted once per order."
+msgstr ""
+
+#: functions/campaigns.php
+msgid "WooCommerce: product added to the cart, from a product page or a list."
 msgstr ""

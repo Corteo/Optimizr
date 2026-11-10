@@ -70,30 +70,59 @@ function haptic_campaigns_steps()
  */
 function haptic_conversion_actions()
 {
-    $cf7 = defined('WPCF7_VERSION');
+    $forms = haptic_form_plugins();
     $newsletter = haptic_newsletter_plugins();
-    return apply_filters('haptic_conversion_actions', [
-        'form'     => [__('Contact form sent', 'optimizr'), $cf7
-            ? __('Contact Form 7: counted when the message is actually sent, not on each click.', 'optimizr')
-            : __('Contact Form 7 is not active on this site: counted as soon as it is.', 'optimizr'), 'mail', $cf7],
+    $actions = [
+        'form'       => [__('Contact form sent', 'optimizr'), $forms
+            /* translators: %s: active form plugins, e.g. "Contact Form 7, WPForms" */
+            ? sprintf(__('%s: counted when the message is actually sent, not on each click.', 'optimizr'), implode(', ', $forms))
+            : __('No supported form plugin is active on this site (Contact Form 7, WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable): counted as soon as one is.', 'optimizr'), 'mail', (bool) $forms],
         'newsletter' => [__('Newsletter sign-up', 'optimizr'), $newsletter
             /* translators: %s: active newsletter plugins, e.g. "MailPoet, Brevo" */
             ? sprintf(__('%s: counted when the plugin confirms the sign-up.', 'optimizr'), implode(', ', $newsletter))
             : __('MailPoet, Brevo or Mailchimp for WordPress is not active on this site: counted as soon as one is.', 'optimizr'), 'mail', (bool) $newsletter],
-        'phone'    => [__('Click on a phone number', 'optimizr'), __('Every tel: link, on a computer or a phone.', 'optimizr'), 'phone', true],
-        'email'    => [__('Click on an email address', 'optimizr'), __('Every mailto: link.', 'optimizr'), 'mail', true],
-        'whatsapp' => [__('Click to WhatsApp', 'optimizr'), __('Links to wa.me and api.whatsapp.com.', 'optimizr'), 'phone', true],
-        'booking'  => [__('Click to book an appointment', 'optimizr'), __('Links to the booking services listed below (Doctolib, Calendly…).', 'optimizr'), 'check', false],
-        'download' => [__('File download', 'optimizr'), __('Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…).', 'optimizr'), 'file', false],
-    ]);
+        'thankyou'   => [__('Thank-you page viewed', 'optimizr'), __('Pages listed below, shown after a form or a request (/thank-you…). Works with any form, even one Optimizr does not recognize.', 'optimizr'), 'check', false],
+        'phone'      => [__('Click on a phone number', 'optimizr'), __('Every tel: link, on a computer or a phone.', 'optimizr'), 'phone', true],
+        'email'      => [__('Click on an email address', 'optimizr'), __('Every mailto: link.', 'optimizr'), 'mail', true],
+        'whatsapp'   => [__('Click to WhatsApp', 'optimizr'), __('Links to wa.me and api.whatsapp.com.', 'optimizr'), 'phone', true],
+        'booking'    => [__('Click to book an appointment', 'optimizr'), __('Links to the booking services listed below (Doctolib, Calendly…).', 'optimizr'), 'check', false],
+        'directions' => [__('Click for directions', 'optimizr'), __('Links to Google Maps, Waze or Apple Maps: the visitor is coming to see you.', 'optimizr'), 'pin', true],
+        'cta'        => [__('Click on a marked button', 'optimizr'), __('Any link or button given the CSS class optimizr-conversion (block settings › Advanced › Additional CSS class).', 'optimizr'), 'zap', true],
+        'download'   => [__('File download', 'optimizr'), __('Links to a PDF, Word, Excel, PowerPoint or ZIP file (brochure, price list, menu…).', 'optimizr'), 'file', false],
+        'review'     => [__('Click to leave a Google review', 'optimizr'), __('Links to the Google review form (g.page/r/…/review, search.google.com/local/writereview).', 'optimizr'), 'star', false],
+        'social'     => [__('Click to a social network', 'optimizr'), __('Links to Facebook, Instagram, LinkedIn, TikTok, YouTube, X or Pinterest.', 'optimizr'), 'share', false],
+    ];
+    if (class_exists('WooCommerce')) {
+        $actions += [
+            'add_to_cart'    => [__('Add to cart', 'optimizr'), __('WooCommerce: product added to the cart, from a product page or a list.', 'optimizr'), 'cart', true],
+            'begin_checkout' => [__('Checkout started', 'optimizr'), __('WooCommerce: checkout page reached, with the cart amount.', 'optimizr'), 'cart', true],
+            'purchase'       => [__('Order placed', 'optimizr'), __('WooCommerce: order confirmation page, with the amount (excluding shipping and taxes), counted once per order.', 'optimizr'), 'check', true],
+        ];
+    }
+    return apply_filters('haptic_conversion_actions', $actions);
+}
+
+/** Extensions de formulaires actives dont les envois sont suivis (js/optimizr-conversions.js). */
+function haptic_form_plugins()
+{
+    $plugins = [
+        'Contact Form 7' => defined('WPCF7_VERSION'),
+        'WPForms'        => defined('WPFORMS_VERSION'),
+        'Gravity Forms'  => class_exists('GFForms'),
+        'Fluent Forms'   => defined('FLUENTFORM_VERSION'),
+        'Elementor Pro'  => defined('ELEMENTOR_PRO_VERSION'),
+        'Ninja Forms'    => class_exists('Ninja_Forms'),
+        'Formidable'     => class_exists('FrmAppHelper'),
+    ];
+    return array_keys(array_filter($plugins));
 }
 
 /** Extensions de lettre d'information actives dont les inscriptions sont suivies (js/optimizr-conversions.js). */
 function haptic_newsletter_plugins()
 {
     $plugins = [
-        'MailPoet'  => defined('MAILPOET_VERSION'),
-        'Brevo'     => class_exists('SIB_Manager'),
+        'MailPoet'                => defined('MAILPOET_VERSION'),
+        'Brevo'                   => class_exists('SIB_Manager'),
         'Mailchimp for WordPress' => defined('MC4WP_VERSION'),
     ];
     return array_keys(array_filter($plugins));
@@ -111,6 +140,7 @@ function haptic_conversions_settings()
     return [
         'actions' => $actions,
         'booking' => is_array($saved) && isset($saved['booking']) ? (array) $saved['booking'] : ['doctolib.fr', 'calendly.com', 'planity.com'],
+        'thankyou' => is_array($saved) && isset($saved['thankyou']) ? (array) $saved['thankyou'] : [],
     ];
 }
 
@@ -130,6 +160,24 @@ function haptic_conversions_sanitize_domains($text)
         }
     }
     return array_values(array_unique($domains));
+}
+
+/** Pages de remerciement saisies (une par ligne, adresse complète ou chemin) : chemins sans barre finale. */
+function haptic_conversions_sanitize_paths($text)
+{
+    $paths = [];
+    foreach (preg_split('/[\s,]+/', (string) $text) as $line) {
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $path = preg_match('#^[a-z]+://#i', $line) ? wp_parse_url($line, PHP_URL_PATH) : strtok($line, '?#');
+        $path = '/' . trim((string) $path, '/');
+        if ($path !== '/' && preg_match('#^/[^\s<>"]*$#', $path)) {
+            $paths[] = strtolower(sanitize_text_field($path));
+        }
+    }
+    return array_values(array_unique($paths));
 }
 
 /* ---------- Enregistrement ---------- */
@@ -198,7 +246,11 @@ function haptic_campaigns_save()
     if (!empty($actions['booking']) && !$booking) {
         $notices[] = __('Appointment booking: no valid address entered, these clicks are not tracked.', 'optimizr');
     }
-    update_option('haptic_conversions', ['actions' => $actions, 'booking' => $booking]);
+    $thankyou = haptic_conversions_sanitize_paths($post['haptic_conversions_thankyou'] ?? '');
+    if (!empty($actions['thankyou']) && !$thankyou) {
+        $notices[] = __('Thank-you page: no address entered, this conversion is not tracked.', 'optimizr');
+    }
+    update_option('haptic_conversions', ['actions' => $actions, 'booking' => $booking, 'thankyou' => $thankyou]);
 
     // Étapes d'une extension (Optimizr Pro) : leurs réglages, et les messages à afficher sur l'écran final
     $notices = (array) apply_filters('haptic_campaigns_save', $notices, $post, $goals);
@@ -418,8 +470,13 @@ function haptic_campaigns_step_conversions()
             <textarea name="haptic_conversions_booking" rows="3" spellcheck="false" placeholder="doctolib.fr" data-summary-value="<?php esc_attr_e('Booking services', 'optimizr'); ?>"><?php echo esc_textarea(implode("\n", $settings['booking'])); ?></textarea>
             <?php haptic_campaigns_help(__('Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”.', 'optimizr')); ?>
         </label>
+        <label class="ob-field ob-field--wide">
+            <span class="ob-field__label"><?php esc_html_e('Thank-you pages', 'optimizr'); ?> <span class="ob-field__opt"><?php esc_html_e('one per line', 'optimizr'); ?></span></span>
+            <textarea name="haptic_conversions_thankyou" rows="2" spellcheck="false" placeholder="/merci" data-summary-value="<?php esc_attr_e('Thank-you pages', 'optimizr'); ?>"><?php echo esc_textarea(implode("\n", $settings['thankyou'])); ?></textarea>
+            <?php haptic_campaigns_help(__('Address or path of the page shown after the request. Used by “Thank-you page viewed”.', 'optimizr')); ?>
+        </label>
     </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking, click_download and sign_up (newsletter). Mark them as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form, thank-you page), sign_up (newsletter), click_phone, click_email, click_whatsapp, click_booking, click_directions, click_cta, click_download, click_review, click_social, and for WooCommerce add_to_cart, begin_checkout and purchase. Mark the ones that matter as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
     <?php
 }
 

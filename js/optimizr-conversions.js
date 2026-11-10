@@ -1,10 +1,13 @@
 /**
  * Optimizr — suivi des conversions sur le site (functions/conversions.php).
  *
- * Actions suivies (window.optimizrConversions.actions) : formulaire Contact Form 7 envoyé (form), inscription à la
- * lettre d'information MailPoet, Brevo ou Mailchimp for WordPress (newsletter), clic sur un numéro de téléphone
- * (phone), une adresse e-mail (email), WhatsApp (whatsapp) ou un service de prise de rendez-vous (booking),
- * téléchargement d'un fichier (download). Chaque conversion part :
+ * Actions suivies (window.optimizrConversions.actions) : formulaire envoyé (form : Contact Form 7, WPForms, Gravity
+ * Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable), inscription à la lettre d'information MailPoet,
+ * Brevo ou Mailchimp for WordPress (newsletter), page de remerciement (thankyou), clic sur un numéro de téléphone
+ * (phone), une adresse e-mail (email), WhatsApp (whatsapp), un service de prise de rendez-vous (booking), un
+ * itinéraire (directions), un élément de classe optimizr-conversion (cta), un fichier (download), le formulaire
+ * d'avis Google (review), un réseau social (social) ; WooCommerce : add_to_cart, begin_checkout, purchase.
+ * Chaque conversion part :
  * - vers gtag() (Google Analytics 4, Google Ads), qui applique le Google Consent Mode v2 ;
  * - vers le dataLayer de Google Tag Manager : { event: 'optimizr_conversion', conversion_action, conversion_event } ;
  * - en évènement DOM « optimizr:conversion » sur document, pour les extensions (Optimizr Pro : Google Ads, Meta).
@@ -77,28 +80,55 @@
         return false;
     }
 
+    var SOCIAL = ['facebook.com', 'fb.com', 'instagram.com', 'linkedin.com', 'tiktok.com', 'youtube.com', 'youtu.be',
+        'x.com', 'twitter.com', 'pinterest.com', 'pinterest.fr', 'threads.net', 'snapchat.com'];
+
     function linkAction(link) {
         var href = (link.getAttribute('href') || '').trim();
         var lower = href.toLowerCase();
         if (lower.indexOf('tel:') === 0) return 'phone';
         if (lower.indexOf('mailto:') === 0) return 'email';
         if (lower.indexOf('whatsapp:') === 0) return 'whatsapp';
+        if (lower.indexOf('geo:') === 0 || lower.indexOf('maps:') === 0) return 'directions';
         if (!/^https?:/i.test(link.href)) return '';
         if (link.hasAttribute('download') || DOWNLOAD.test(link.pathname || '')) return 'download';
-        var host = (link.hostname || '').toLowerCase();
+        var host = (link.hostname || '').toLowerCase().replace(/^www\./, '');
+        var path = (link.pathname || '').toLowerCase();
         if (host === 'wa.me' || hostMatches(host, ['whatsapp.com'])) return 'whatsapp';
         if (config.booking && config.booking.length && hostMatches(host, config.booking)) return 'booking';
+        // Avis Google avant l'itinéraire : les deux passent par des adresses Google
+        if ((host === 'g.page' && /\/review\/?$/.test(path)) || path.indexOf('writereview') > -1) return 'review';
+        if (/^(maps\.)?google\.[a-z.]+$/.test(host) && (host.indexOf('maps.') === 0 || path.indexOf('/maps') === 0)) return 'directions';
+        if (host === 'maps.app.goo.gl' || (host === 'goo.gl' && path.indexOf('/maps') === 0)
+            || hostMatches(host, ['waze.com', 'maps.apple.com'])) return 'directions';
+        if (hostMatches(host, SOCIAL)) return 'social';
         return '';
     }
 
+    function linkLocation(el) {
+        return el.closest('header, nav') ? 'header' : (el.closest('footer') ? 'footer' : 'content');
+    }
+
     document.addEventListener('click', function (e) {
-        var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+        var target = e.target && e.target.closest ? e.target : null;
+        if (!target) return;
+
+        // Bouton ou lien marqué de la classe optimizr-conversion (en plus de l'action propre au lien)
+        var marked = enabled.cta ? target.closest('.optimizr-conversion') : null;
+        if (marked) {
+            track('cta', {
+                link_text: (marked.getAttribute('aria-label') || marked.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 100),
+                link_location: linkLocation(marked)
+            });
+        }
+
+        var link = target.closest('a[href]');
         if (!link) return;
         var action = linkAction(link);
         if (!action || !enabled[action]) return;
 
-        var params = { link_location: link.closest('header, nav') ? 'header' : (link.closest('footer') ? 'footer' : 'content') };
-        if (action === 'booking') params.link_domain = link.hostname.replace(/^www\./, '');
+        var params = { link_location: linkLocation(link) };
+        if (action === 'booking' || action === 'directions' || action === 'social') params.link_domain = (link.hostname || '').replace(/^www\./, '');
         if (action === 'download') {
             var file = (link.pathname || '').split('/').pop() || '';
             try { file = decodeURIComponent(file); } catch (e) { /* nom tel quel */ }
@@ -108,11 +138,116 @@
         track(action, params);
     }, true);
 
-    // Contact Form 7 : message réellement envoyé
+    function onReady(callback) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback);
+        } else {
+            callback();
+        }
+    }
+
+    // Page de remerciement : chemin de la page parmi ceux saisis (sans barre finale ni majuscules)
+    if (enabled.thankyou && config.thankyou && config.thankyou.length) {
+        var here = '/' + window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '');
+        try { here = decodeURI(here); } catch (e) { /* chemin tel quel */ }
+        if (config.thankyou.indexOf(here) > -1) track('thankyou', { page_path: here });
+    }
+
+    /*
+     * Formulaires : message réellement envoyé, jamais au simple clic. Les champs saisis sont relevés à l'envoi
+     * (l'extension vide souvent le formulaire avant d'annoncer le succès) et accompagnent la conversion (inputs).
+     */
     if (enabled.form) {
+        var submitted = window.WeakMap ? new WeakMap() : null;
+        var lastFields = [];
+        var formFields = function (form) {
+            var fields = [];
+            if (!form || !window.FormData) return fields;
+            try {
+                new FormData(form).forEach(function (value, name) {
+                    if (typeof value === 'string' && value !== '' && !/password|token|nonce|captcha|^_/i.test(name)) {
+                        fields.push({ name: name, value: value });
+                    }
+                });
+            } catch (e) { /* formulaire illisible */ }
+            return fields;
+        };
+        document.addEventListener('submit', function (e) {
+            if (!e.target || e.target.tagName !== 'FORM') return;
+            lastFields = formFields(e.target);
+            if (submitted) submitted.set(e.target, lastFields);
+        }, true);
+        var fieldsOf = function (form) {
+            return (form && submitted && submitted.get(form)) || lastFields;
+        };
+        var formSent = function (plugin, formId, form, inputs) {
+            track('form', { form_plugin: plugin, form_id: String(formId || '') }, { inputs: inputs || fieldsOf(form) });
+        };
+
+        // Contact Form 7
         document.addEventListener('wpcf7mailsent', function (e) {
             var detail = e.detail || {};
-            track('form', { form_id: String(detail.contactFormId || '') }, { inputs: detail.inputs || [] });
+            formSent('Contact Form 7', detail.contactFormId, e.target, detail.inputs || []);
+        });
+
+        // Fluent Forms : évènement DOM sur document
+        document.addEventListener('fluentform_submission_success', function (e) {
+            var form = e.detail && e.detail.form;
+            formSent('Fluent Forms', form && form.getAttribute ? (form.getAttribute('data-form_id') || form.id) : '', form);
+        });
+
+        onReady(function () {
+            var $ = window.jQuery;
+            if ($ && $.fn && $.fn.on) {
+                // WPForms (AJAX ; aussi avant une redirection)
+                $(document).on('wpformsAjaxSubmitSuccess', function (e) {
+                    var form = e.target;
+                    formSent('WPForms', form && form.getAttribute ? form.getAttribute('data-formid') : '', form);
+                });
+                // Gravity Forms (AJAX)
+                $(document).on('gform_confirmation_loaded', function (e, formId) {
+                    formSent('Gravity Forms', formId, document.getElementById('gform_' + formId));
+                });
+                // Elementor Pro
+                $(document).on('submit_success', function (e) {
+                    var form = e.target;
+                    if (!form || !form.closest || !form.closest('.elementor-form, .elementor-widget-form')) return;
+                    var id = form.querySelector('input[name="form_id"]');
+                    formSent('Elementor Pro', id ? id.value : '', form);
+                });
+                // Formidable (AJAX)
+                $(document).on('frmFormComplete', function (e, form) {
+                    var el = form && form.jquery ? form[0] : form;
+                    var id = el && el.querySelector ? el.querySelector('input[name="form_id"]') : null;
+                    formSent('Formidable', id ? id.value : '', el);
+                });
+            }
+
+            // Ninja Forms : canal « forms » de sa messagerie interne
+            if (window.nfRadio && typeof window.nfRadio.channel === 'function') {
+                window.nfRadio.channel('forms').on('submit:response', function (response) {
+                    response = response || {};
+                    var errors = response.errors;
+                    if (errors && (Array.isArray(errors) ? errors.length : Object.keys(errors).length)) return;
+                    var formId = response.data && response.data.form_id;
+                    formSent('Ninja Forms', formId, document.querySelector('#nf-form-' + formId + '-cont form'));
+                });
+            }
+
+            // Envoi sans AJAX : la page rechargée affiche le message de confirmation
+            var confirmations = [
+                ['WPForms', '[id^="wpforms-confirmation-"]', /(\d+)$/],
+                ['Gravity Forms', '[id^="gform_confirmation_message_"]', /(\d+)$/],
+                ['Formidable', '.frm_forms .frm_message', null]
+            ];
+            confirmations.forEach(function (c) {
+                var el = document.querySelector(c[1]);
+                if (!el) return;
+                var match = c[2] ? (el.id || '').match(c[2]) : null;
+                var container = c[2] ? null : el.closest('[id^="frm_form_"]');
+                var id = match ? match[1] : (container ? (container.id.match(/frm_form_(\d+)/) || [])[1] : '');
+                formSent(c[0], id, null, []);
+            });
         });
     }
 
@@ -226,11 +361,42 @@
             });
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function () { watchAjax(); watchBrevoEmbed(); });
-        } else {
-            watchAjax();
-            watchBrevoEmbed();
-        }
+        onReady(function () { watchAjax(); watchBrevoEmbed(); });
+    }
+
+    /*
+     * WooCommerce : ajout au panier (AJAX par les listes et les blocs ; formulaire classique préparé par le serveur),
+     * page de commande et confirmation de commande (montant, devise et articles préparés par le serveur).
+     */
+    var woo = config.woo || {};
+    var currency = woo.currency || '';
+    var shop = function (action, data, extra) {
+        if (!enabled[action] || !data) return;
+        var params = { currency: data.currency || currency, value: Number(data.value) || 0 };
+        if (data.items && data.items.length) params.items = data.items;
+        if (data.transaction_id) params.transaction_id = data.transaction_id;
+        track(action, params, extra);
+    };
+    if (woo.added) shop('add_to_cart', woo.added);
+    if (woo.checkout) shop('begin_checkout', woo.checkout);
+    if (woo.purchase) shop('purchase', woo.purchase, { inputs: woo.purchase.email ? [{ name: 'email', value: woo.purchase.email }] : [] });
+
+    if (enabled.add_to_cart) {
+        var addedToCart = function (button) {
+            var params = { currency: currency };
+            var id = button && button.getAttribute ? (button.getAttribute('data-product_sku') || button.getAttribute('data-product_id')) : '';
+            if (id) params.items = [{ item_id: String(id), quantity: Number(button.getAttribute('data-quantity')) || 1 }];
+            track('add_to_cart', params);
+        };
+        onReady(function () {
+            var $ = window.jQuery;
+            if ($ && $.fn && $.fn.on) {
+                $(document.body).on('added_to_cart', function (e, fragments, hash, $button) {
+                    addedToCart($button && $button.jquery ? $button[0] : $button);
+                });
+            }
+            // Blocs WooCommerce (le même ajout peut aussi passer par added_to_cart : une seule conversion)
+            document.body.addEventListener('wc-blocks_added_to_cart', function () { addedToCart(null); });
+        });
     }
 })();

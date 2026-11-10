@@ -2844,10 +2844,6 @@ msgstr "Services de réservation"
 msgid "Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”."
 msgstr "Domaine du service, ou adresse complète de votre page de réservation. Utilisé par « Clic vers la prise de rendez-vous »."
 
-#: functions/campaigns.php:404
-msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking, click_download and sign_up (newsletter). Mark them as key events in Google Analytics to use them in Google Ads."
-msgstr "Événements envoyés à Google Analytics : generate_lead (formulaire), click_phone, click_email, click_whatsapp, click_booking, click_download et sign_up (lettre d'information). Marquez-les comme événements clés dans Google Analytics pour les utiliser dans Google Ads."
-
 #: functions/campaigns.php:413
 msgid "Track with the visitor's consent"
 msgstr "Mesurez avec l'accord du visiteur"
@@ -3346,3 +3342,94 @@ msgstr "double authentification"
 #: functions/migration.php
 msgid "user enumeration blocked"
 msgstr "énumération des comptes bloquée"
+
+#: functions/campaigns.php
+#. translators: %s: active form plugins, e.g. "Contact Form 7, WPForms"
+#, php-format
+msgid "%s: counted when the message is actually sent, not on each click."
+msgstr "%s : comptée quand le message est réellement envoyé, pas à chaque clic."
+
+#: functions/campaigns.php
+msgid "Add to cart"
+msgstr "Ajout au panier"
+
+#: functions/campaigns.php
+msgid "Address or path of the page shown after the request. Used by “Thank-you page viewed”."
+msgstr "Adresse ou chemin de la page affichée après la demande. Utilisé par « Page de remerciement vue »."
+
+#: functions/campaigns.php
+msgid "Any link or button given the CSS class optimizr-conversion (block settings › Advanced › Additional CSS class)."
+msgstr "Tout lien ou bouton qui porte la classe CSS optimizr-conversion (réglages du bloc › Avancé › Classe CSS additionnelle)."
+
+#: functions/campaigns.php
+msgid "Checkout started"
+msgstr "Commande commencée"
+
+#: functions/campaigns.php
+msgid "Click for directions"
+msgstr "Clic pour l'itinéraire"
+
+#: functions/campaigns.php
+msgid "Click on a marked button"
+msgstr "Clic sur un bouton marqué"
+
+#: functions/campaigns.php
+msgid "Click to a social network"
+msgstr "Clic vers un réseau social"
+
+#: functions/campaigns.php
+msgid "Click to leave a Google review"
+msgstr "Clic pour laisser un avis Google"
+
+#: functions/campaigns.php
+msgid "Events sent to Google Analytics: generate_lead (form, thank-you page), sign_up (newsletter), click_phone, click_email, click_whatsapp, click_booking, click_directions, click_cta, click_download, click_review, click_social, and for WooCommerce add_to_cart, begin_checkout and purchase. Mark the ones that matter as key events in Google Analytics to use them in Google Ads."
+msgstr "Événements envoyés à Google Analytics : generate_lead (formulaire, page de remerciement), sign_up (lettre d'information), click_phone, click_email, click_whatsapp, click_booking, click_directions, click_cta, click_download, click_review, click_social, et pour WooCommerce add_to_cart, begin_checkout et purchase. Marquez ceux qui comptent comme événements clés dans Google Analytics pour les utiliser dans Google Ads."
+
+#: functions/campaigns.php
+msgid "Links to Facebook, Instagram, LinkedIn, TikTok, YouTube, X or Pinterest."
+msgstr "Liens vers Facebook, Instagram, LinkedIn, TikTok, YouTube, X ou Pinterest."
+
+#: functions/campaigns.php
+msgid "Links to Google Maps, Waze or Apple Maps: the visitor is coming to see you."
+msgstr "Liens vers Google Maps, Waze ou Plans d'Apple : le visiteur vient vous voir."
+
+#: functions/campaigns.php
+msgid "Links to the Google review form (g.page/r/…/review, search.google.com/local/writereview)."
+msgstr "Liens vers le formulaire d'avis Google (g.page/r/…/review, search.google.com/local/writereview)."
+
+#: functions/campaigns.php
+msgid "No supported form plugin is active on this site (Contact Form 7, WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable): counted as soon as one is."
+msgstr "Aucune extension de formulaires prise en charge n'est active sur ce site (Contact Form 7, WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable) : comptée dès que l'une d'elles le sera."
+
+#: functions/campaigns.php
+msgid "Order placed"
+msgstr "Commande passée"
+
+#: functions/campaigns.php
+msgid "Pages listed below, shown after a form or a request (/thank-you…). Works with any form, even one Optimizr does not recognize."
+msgstr "Pages indiquées ci-dessous, affichées après un formulaire ou une demande (/merci…). Fonctionne avec n'importe quel formulaire, même ceux qu'Optimizr ne reconnaît pas."
+
+#: functions/campaigns.php
+msgid "Thank-you page viewed"
+msgstr "Page de remerciement vue"
+
+#: functions/campaigns.php
+msgid "Thank-you page: no address entered, this conversion is not tracked."
+msgstr "Page de remerciement : aucune adresse saisie, cette conversion n'est pas suivie."
+
+#: functions/campaigns.php
+msgid "Thank-you pages"
+msgstr "Pages de remerciement"
+
+#: functions/campaigns.php
+msgid "WooCommerce: checkout page reached, with the cart amount."
+msgstr "WooCommerce : page de commande atteinte, avec le montant du panier."
+
+#: functions/campaigns.php
+msgid "WooCommerce: order confirmation page, with the amount (excluding shipping and taxes), counted once per order."
+msgstr "WooCommerce : page de confirmation de commande, avec le montant (hors livraison et taxes), comptée une fois par commande."
+
+#: functions/campaigns.php
+msgid "WooCommerce: product added to the cart, from a product page or a list."
+msgstr "WooCommerce : produit ajouté au panier, depuis sa page ou une liste."
+
