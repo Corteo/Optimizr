@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.16.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.17.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -111,6 +111,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 
 - **Assistant de configuration :** s'ouvre en plein écran à la première activation du plugin, puis à la demande (menu **Optimizr › Assistant**, bouton « Assistant de configuration » de la page d'options, lien dans la liste des extensions). En quelques étapes, il fait choisir les modules puis renseigner l'essentiel de chacun : adresse de connexion et verrouillage, connexion des comptes (double authentification, et passkeys d'Optimizr Pro), nom du site et motifs SEO, outils de mesure (Optimizr Pro y ajoute ses propres étapes). Rien n'est enregistré avant la dernière étape ; les étapes des modules non choisis sont sautées. Avec le module Sécurité, l'administrateur met ensuite en place la double authentification (ou sa passkey) de son propre compte, avant l'écran final ; les autres comptes se la voient proposer à leur prochaine connexion.
 - **Tableau de bord :** un en-tête illustré donne l'état du site (points à régler, état par thème : sécurité, visibilité, performance, contenu), avec le dernier audit, une carte « Google Search » (présentation de la Search Console ; avec Optimizr Pro, ses clics, impressions et positions), l'état du cache, les versions et des actions rapides (vider le cache, lancer un audit). Les modules sont rangés par thème ; leur interrupteur les active ou les désactive aussitôt, sans enregistrement, et leur onglet apparaît ou disparaît.
+- **Menu latéral :** les onglets sont rangés à gauche de la page, par rubrique, dans l'ordre et avec les couleurs des thèmes du tableau de bord : Tableau de bord et Suivi en tête, puis Sécurité et conformité (Cookies & RGPD, Sécurité, Emails), Visibilité (SEO, et avec Optimizr Pro Search Console, Redirections, SEO local, Assistant IA), Performance (Cache, Images, Audit), Contenu et outils (avec Optimizr Pro Types de contenu, Pages spéciales, Connecteur IA ; Outils). La rubrique d'un onglet est celle de son module (`haptic_dashboard_groups()`), ou sa clé `group`. Sur petit écran, le menu devient une liste déroulante.
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 - **Audit :** audit Lighthouse d'une page, sur mobile ou sur ordinateur, et historique des scores.
 - **Outils :** import depuis Yoast SEO, All in One SEO, Rank Math, SEOPress, The SEO Framework et Solid Security, export et import des réglages, choix de ce qu'efface la suppression du plugin.
@@ -128,7 +129,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | Hook | Type | Rôle |
 |---|---|---|
 | `haptic_modules` | filtre | Ajouter ou modifier un module du tableau de bord. |
-| `haptic_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. |
+| `haptic_admin_tabs` | filtre | Ajouter ou modifier un onglet de la page d'options. Clé `group` facultative : rubrique du menu latéral (thème de `haptic_dashboard_groups()`, `''` pour un lien en tête) ; sinon celle du premier module de l'onglet. |
+| `haptic_admin_tab_aliases` | filtre | Anciennes adresses d'onglets (`tab=`) redirigées vers leur nouvelle place quand l'onglet n'existe plus. |
+| `haptic_admin_nav_icons` | filtre | Icônes des liens de tête du menu latéral (tableau de bord, suivi). |
 | `haptic_admin_aside_{onglet}` | action | Afficher un panneau latéral dans un onglet. |
 | `haptic_site_health_checks` | filtre | Ajouter une vérification à l'état du site (en-tête du tableau de bord). Clés `module` ou `group` facultatives : thème auquel rattacher un point à régler (sinon déduit de l'onglet du lien). |
 | `haptic_dashboard_groups` | filtre | Thèmes du tableau de bord : libellé, icône, couleurs et modules de chacun. |

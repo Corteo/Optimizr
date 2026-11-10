@@ -218,12 +218,12 @@ function haptic_image_convert_attachment_file($metadata, $attachment_id)
     return $metadata;
 }
 
-// Réglages : carte « Formats d'image » de l'onglet Contenu, sous les images à la une
+// Réglages : carte « Formats d'image » de l'onglet Images, sous les images à la une
 add_action('admin_init', 'haptic_image_register_settings');
 function haptic_image_register_settings()
 {
-    $group = haptic_settings_group('content');
-    $page = haptic_settings_page('content');
+    $group = haptic_settings_group('images');
+    $page = haptic_settings_page('images');
 
     register_setting($group, 'haptic_image_convert', ['sanitize_callback' => 'absint']);
     register_setting($group, 'haptic_image_format', ['sanitize_callback' => function ($value) {

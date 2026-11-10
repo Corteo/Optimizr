@@ -27,7 +27,7 @@ function haptic_modules()
             'label' => __('Images', 'optimizr'),
             'desc'  => __('Content types that accept a cover image, and conversion of uploaded images to WebP or AVIF.', 'optimizr'),
             'icon'  => 'image',
-            'tab'   => 'content',
+            'tab'   => 'images',
         ],
         'cache' => [
             'label' => __('Cache', 'optimizr'),
@@ -71,46 +71,127 @@ function haptic_is_module_active($slug)
 
 /**
  * Onglets de la page d'options, filtrés selon les modules actifs.
- * 'modules' : modules dont l'un au moins doit être actif ; 'intro' : texte sous le titre ;
- * 'render' : fonction d'affichage propre (sinon les sections du Settings API).
+ * 'modules' : modules dont l'un au moins doit être actif (et exister) ; 'intro' : texte sous le titre ;
+ * 'render' : fonction d'affichage propre (sinon les sections du Settings API) ;
+ * 'group' : rubrique du menu latéral (thème de haptic_dashboard_groups(), '' pour un lien en tête du menu).
+ * Sans 'group', la rubrique est celle du premier module de l'onglet (haptic_admin_tab_group()).
  */
 function haptic_admin_tabs()
 {
     $tabs = [
         // Sans barre d'enregistrement : les modules s'activent directement (functions/dashboard.php)
-        'dashboard' => ['label' => __('Dashboard', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_dashboard'],
+        'dashboard' => ['label' => __('Dashboard', 'optimizr'), 'modules' => [], 'group' => '', 'render' => 'haptic_render_dashboard'],
         'cookies'   => ['label' => __('Cookies & GDPR', 'optimizr'), 'modules' => ['cookies'],
             'intro' => __('Visitor consent, with third-party services loaded only once allowed.', 'optimizr')],
         'seo'       => ['label' => __('SEO', 'optimizr'), 'modules' => ['seo'],
             'intro' => __('Default titles and descriptions, used for any content that has none.', 'optimizr')],
-        // Optimizr Pro y ajoute le module Types de contenu (retiré d'Optimizr 7.0)
-        'content'   => ['label' => _x('Content', 'admin tab', 'optimizr'), 'modules' => ['thumbnails'],
+        // Types de contenu d'Optimizr Pro (module retiré d'Optimizr 7.0) : affiché seulement avec lui
+        'content'   => ['label' => __('Content types', 'optimizr'), 'modules' => ['cpts'],
+            'intro' => __('Ready-to-use Events type and custom post types.', 'optimizr')],
+        'images'    => ['label' => __('Images', 'optimizr'), 'modules' => ['thumbnails'],
             'intro' => __('Content types that accept a cover image, and the format of uploaded images.', 'optimizr')],
         'cache'     => ['label' => __('Cache', 'optimizr'), 'modules' => ['cache'],
             'intro' => __('Faster pages for visitors, without changing anything for logged-in users.', 'optimizr')],
         'security'  => ['label' => __('Security', 'optimizr'), 'modules' => ['security'],
             'intro' => __('Protections you can enable one by one. None is active until you turn it on.', 'optimizr')],
-        'advanced'  => ['label' => _x('Advanced', 'admin tab', 'optimizr'), 'modules' => ['emails'],
+        'advanced'  => ['label' => __('Emails', 'optimizr'), 'modules' => ['emails'],
             'intro' => __('Notifications sent by WordPress after automatic updates.', 'optimizr')],
         // Onglets sans barre d'enregistrement : leurs propres formulaires
-        'audit'     => ['label' => _x('Audit', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_audit_tab'],
-        'tools'     => ['label' => _x('Tools', 'admin tab', 'optimizr'), 'modules' => [], 'render' => 'haptic_render_tools_tab'],
+        'audit'     => ['label' => _x('Audit', 'admin tab', 'optimizr'), 'modules' => [], 'group' => 'performance', 'render' => 'haptic_render_audit_tab'],
+        'tools'     => ['label' => _x('Tools', 'admin tab', 'optimizr'), 'modules' => [], 'group' => 'content', 'render' => 'haptic_render_tools_tab'],
     ];
 
     // Onglets ajoutés par une extension (Optimizr Pro) : masqués eux aussi quand leur module est désactivé
     $tabs = apply_filters('haptic_admin_tabs', $tabs);
+    $modules = haptic_modules();
 
-    return array_filter($tabs, function ($tab) {
+    return array_filter($tabs, function ($tab) use ($modules) {
         if (empty($tab['modules'])) {
             return true;
         }
         foreach ($tab['modules'] as $module) {
-            if (haptic_is_module_active($module)) {
+            if (isset($modules[$module]) && haptic_is_module_active($module)) {
                 return true;
             }
         }
         return false;
     });
+}
+
+/**
+ * Anciennes adresses d'onglets, redirigées vers leur nouvelle place quand l'onglet n'existe plus :
+ * avant 7.17.0, l'onglet « Contenus » portait les images à la une et les formats d'image.
+ */
+function haptic_admin_tab_aliases()
+{
+    return apply_filters('haptic_admin_tab_aliases', ['content' => 'images']);
+}
+
+/** Rubrique du menu latéral d'un onglet : 'group' s'il est donné, sinon le thème du tableau de bord de son premier module. */
+function haptic_admin_tab_group(array $tab, array $groups)
+{
+    if (isset($tab['group'])) {
+        return ($tab['group'] === '' || isset($groups[$tab['group']])) ? $tab['group'] : array_key_last($groups);
+    }
+    foreach ((array) ($tab['modules'] ?? []) as $module) {
+        foreach ($groups as $key => $group) {
+            if (in_array($module, (array) $group['modules'], true)) {
+                return $key;
+            }
+        }
+    }
+    return array_key_last($groups);
+}
+
+/**
+ * Menu latéral : liens de tête (tableau de bord, suivi) puis rubriques dans l'ordre du tableau de bord.
+ * Dans une rubrique, les onglets suivent l'ordre des modules du thème ; ceux sans module viennent ensuite.
+ *
+ * @return array[] Liste de ['key' => thème ou '', 'group' => définition du thème ou null, 'tabs' => [slug => onglet]]
+ */
+function haptic_admin_nav($tabs)
+{
+    $groups = haptic_dashboard_groups();
+    $head = [];
+    $by_group = array_fill_keys(array_keys($groups), []);
+
+    foreach ($tabs as $slug => $tab) {
+        $key = haptic_admin_tab_group($tab, $groups);
+        if ($key === '' || $key === null) {
+            $head[$slug] = $tab;
+        } else {
+            $by_group[$key][$slug] = $tab;
+        }
+    }
+
+    $sections = [];
+    foreach ($head as $slug => $tab) {
+        $sections[] = ['key' => '', 'group' => null, 'tabs' => [$slug => $tab]];
+    }
+
+    foreach ($by_group as $key => $group_tabs) {
+        if (empty($group_tabs)) {
+            continue;
+        }
+        $order = array_flip(array_values((array) $groups[$key]['modules']));
+        $position = 0;
+        $rank = [];
+        foreach ($group_tabs as $slug => $tab) {
+            $best = PHP_INT_MAX;
+            foreach ((array) ($tab['modules'] ?? []) as $module) {
+                if (isset($order[$module])) {
+                    $best = min($best, $order[$module]);
+                }
+            }
+            $rank[$slug] = [$best, $position++];
+        }
+        uksort($group_tabs, function ($a, $b) use ($rank) {
+            return $rank[$a] <=> $rank[$b];
+        });
+        $sections[] = ['key' => $key, 'group' => $groups[$key], 'tabs' => $group_tabs];
+    }
+
+    return $sections;
 }
 
 /**
@@ -162,7 +243,12 @@ function haptic_current_tab()
 {
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- onglet affiché, lecture seule
     $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'dashboard';
-    return array_key_exists($tab, haptic_admin_tabs()) ? $tab : 'dashboard';
+    $tabs = haptic_admin_tabs();
+    if (!array_key_exists($tab, $tabs)) {
+        $aliases = haptic_admin_tab_aliases();
+        $tab = isset($aliases[$tab]) ? $aliases[$tab] : 'dashboard';
+    }
+    return array_key_exists($tab, $tabs) ? $tab : 'dashboard';
 }
 
 /** Page Settings API d'un onglet (add_settings_section / add_settings_field). */
@@ -264,6 +350,8 @@ function haptic_icon_paths($name)
         'cart'     => '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
         'share'    => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/>',
         'star'     => '<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>',
+        'home'     => '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+        'chart'    => '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
     ];
 
     return $paths[$name] ?? '';
@@ -377,55 +465,86 @@ function haptic_options_settings_page()
                     <?php do_action('haptic_header_actions'); ?>
                 </div>
             </div>
-            <div class="optimizr-tabs-wrap" data-optimizr-tabs>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--prev" data-tabs-scroll="-1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(haptic_icon('chevron-left', 18), haptic_kses_ui()); ?></button>
-                <nav class="optimizr-tabs" aria-label="<?php esc_attr_e('Optimizr sections', 'optimizr'); ?>" data-optimizr-tabs-nav>
-                    <?php haptic_render_tabs_nav($tabs, $current); ?>
-                </nav>
-                <button type="button" class="optimizr-tabs__scroll optimizr-tabs__scroll--next" data-tabs-scroll="1" tabindex="-1" aria-hidden="true" hidden><?php echo wp_kses(haptic_icon('chevron-right', 18), haptic_kses_ui()); ?></button>
-            </div>
         </header>
 
         <hr class="wp-header-end">
 
         <?php settings_errors(); ?>
 
-        <?php if (!empty($tabs[$current]['render']) && is_callable($tabs[$current]['render'])) : ?>
-            <main class="optimizr-main">
-                <?php call_user_func($tabs[$current]['render']); ?>
-            </main>
-        <?php else : ?>
+        <div class="optimizr-shell">
+            <nav class="optimizr-nav" aria-label="<?php esc_attr_e('Optimizr sections', 'optimizr'); ?>" data-optimizr-tabs-nav>
+                <?php haptic_render_tabs_nav($tabs, $current); ?>
+            </nav>
 
-        <form method="post" action="options.php" class="optimizr-form" data-optimizr-form>
-            <?php settings_fields(haptic_settings_group($current)); ?>
+            <div class="optimizr-shell__content">
+            <?php if (!empty($tabs[$current]['render']) && is_callable($tabs[$current]['render'])) : ?>
+                <main class="optimizr-main">
+                    <?php call_user_func($tabs[$current]['render']); ?>
+                </main>
+            <?php else : ?>
 
-            <main class="optimizr-main">
-                <?php haptic_render_settings_tab($current, $tabs[$current]); ?>
-            </main>
+            <form method="post" action="options.php" class="optimizr-form" data-optimizr-form>
+                <?php settings_fields(haptic_settings_group($current)); ?>
 
-            <div class="optimizr-savebar" data-optimizr-savebar>
-                <span class="optimizr-savebar__dot" aria-hidden="true"></span>
-                <span class="optimizr-savebar__text" data-optimizr-savebar-text><?php esc_html_e('All changes saved', 'optimizr'); ?></span>
-                <button type="reset" class="optimizr-btn optimizr-btn--ghost" data-optimizr-reset><?php esc_html_e('Cancel', 'optimizr'); ?></button>
-                <button type="submit" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Save changes', 'optimizr'); ?></button>
+                <main class="optimizr-main">
+                    <?php haptic_render_settings_tab($current, $tabs[$current]); ?>
+                </main>
+
+                <div class="optimizr-savebar" data-optimizr-savebar>
+                    <span class="optimizr-savebar__dot" aria-hidden="true"></span>
+                    <span class="optimizr-savebar__text" data-optimizr-savebar-text><?php esc_html_e('All changes saved', 'optimizr'); ?></span>
+                    <button type="reset" class="optimizr-btn optimizr-btn--ghost" data-optimizr-reset><?php esc_html_e('Cancel', 'optimizr'); ?></button>
+                    <button type="submit" class="optimizr-btn optimizr-btn--primary"><?php esc_html_e('Save changes', 'optimizr'); ?></button>
+                </div>
+            </form>
+            <?php endif; ?>
             </div>
-        </form>
-        <?php endif; ?>
+        </div>
     </div>
     <?php
 }
 
-/** Liens des onglets (aussi renvoyés après l'activation d'un module depuis le tableau de bord). */
+/**
+ * Menu latéral des onglets (aussi renvoyé après l'activation d'un module depuis le tableau de bord) :
+ * liste déroulante sur petit écran, liens groupés par rubrique ailleurs.
+ */
 function haptic_render_tabs_nav($tabs, $current)
 {
-    foreach ($tabs as $slug => $tab) {
-        printf(
-            '<a href="%1$s" class="optimizr-tabs__link"%2$s>%3$s</a>',
-            esc_url(haptic_admin_tab_url($slug)),
-            $slug === $current ? ' aria-current="page"' : '',
-            esc_html($tab['label'])
-        );
-    }
+    $sections = haptic_admin_nav($tabs);
+    $head_icons = apply_filters('haptic_admin_nav_icons', ['dashboard' => 'home', 'tracking' => 'chart']);
+    ?>
+    <label class="screen-reader-text" for="optimizr-nav-select"><?php esc_html_e('Section', 'optimizr'); ?></label>
+    <select id="optimizr-nav-select" class="optimizr-nav__select" data-optimizr-nav-select>
+        <?php foreach ($sections as $section) : ?>
+            <?php if ($section['group']) : ?><optgroup label="<?php echo esc_attr($section['group']['label']); ?>"><?php endif; ?>
+            <?php foreach ($section['tabs'] as $slug => $tab) : ?>
+                <option value="<?php echo esc_url(haptic_admin_tab_url($slug)); ?>" <?php selected($slug, $current); ?>><?php echo esc_html(wp_strip_all_tags($tab['label'])); ?></option>
+            <?php endforeach; ?>
+            <?php if ($section['group']) : ?></optgroup><?php endif; ?>
+        <?php endforeach; ?>
+    </select>
+
+    <div class="optimizr-nav__sections">
+        <?php foreach ($sections as $section) :
+            $is_current = isset($section['tabs'][$current]);
+            ?>
+            <?php if ($section['group']) : ?>
+                <div class="optimizr-nav__group<?php echo $is_current ? ' is-current' : ''; ?>" style="<?php echo esc_attr(haptic_dashboard_group_style($section['group'])); ?>">
+                    <p class="optimizr-nav__heading"><span class="optimizr-nav__icon" aria-hidden="true"><?php echo wp_kses(haptic_icon($section['group']['icon'] ?? 'layers', 12), haptic_kses_ui()); ?></span><?php echo esc_html($section['group']['label']); ?></p>
+                    <ul class="optimizr-nav__list">
+                        <?php foreach ($section['tabs'] as $slug => $tab) : ?>
+                            <li><a class="optimizr-nav__link" href="<?php echo esc_url(haptic_admin_tab_url($slug)); ?>"<?php echo $slug === $current ? ' aria-current="page"' : ''; ?>><?php echo esc_html(wp_strip_all_tags($tab['label'])); ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php else : ?>
+                <?php foreach ($section['tabs'] as $slug => $tab) : ?>
+                    <a class="optimizr-nav__link optimizr-nav__link--top" href="<?php echo esc_url(haptic_admin_tab_url($slug)); ?>"<?php echo $slug === $current ? ' aria-current="page"' : ''; ?>><?php echo wp_kses(haptic_icon($head_icons[$slug] ?? 'layers', 16), haptic_kses_ui()); ?><?php echo esc_html(wp_strip_all_tags($tab['label'])); ?></a>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+    <?php
 }
 
 /**
