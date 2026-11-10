@@ -2690,6 +2690,20 @@ msgstr "Contact Form 7 : comptée quand le message est réellement envoyé, pas 
 msgid "Contact Form 7 is not active on this site: counted as soon as it is."
 msgstr "Contact Form 7 n'est pas actif sur ce site : comptée dès qu'il le sera."
 
+#: functions/campaigns.php:79
+msgid "Newsletter sign-up"
+msgstr "Inscription à la lettre d'information"
+
+#. translators: %s: active newsletter plugins, e.g. "MailPoet, Brevo"
+#: functions/campaigns.php:81
+#, php-format
+msgid "%s: counted when the plugin confirms the sign-up."
+msgstr "%s : comptée quand l'extension confirme l'inscription."
+
+#: functions/campaigns.php:82
+msgid "MailPoet, Brevo or Mailchimp for WordPress is not active on this site: counted as soon as one is."
+msgstr "Ni MailPoet, ni Brevo, ni Mailchimp for WordPress n'est actif sur ce site : comptée dès que l'un d'eux le sera."
+
 #: functions/campaigns.php:78
 msgid "Click on a phone number"
 msgstr "Clic sur un numéro de téléphone"
@@ -2831,8 +2845,8 @@ msgid "Domain of the service, or the full address of your booking page. Used by 
 msgstr "Domaine du service, ou adresse complète de votre page de réservation. Utilisé par « Clic vers la prise de rendez-vous »."
 
 #: functions/campaigns.php:404
-msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking and click_download. Mark them as key events in Google Analytics to use them in Google Ads."
-msgstr "Événements envoyés à Google Analytics : generate_lead (formulaire), click_phone, click_email, click_whatsapp, click_booking et click_download. Marquez-les comme événements clés dans Google Analytics pour les utiliser dans Google Ads."
+msgid "Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking, click_download and sign_up (newsletter). Mark them as key events in Google Analytics to use them in Google Ads."
+msgstr "Événements envoyés à Google Analytics : generate_lead (formulaire), click_phone, click_email, click_whatsapp, click_booking, click_download et sign_up (lettre d'information). Marquez-les comme événements clés dans Google Analytics pour les utiliser dans Google Ads."
 
 #: functions/campaigns.php:413
 msgid "Track with the visitor's consent"
@@ -2887,8 +2901,8 @@ msgid "Mark the key events"
 msgstr "Marquez les événements clés"
 
 #: functions/campaigns.php:448
-msgid "In Google Analytics › Admin › Events, mark generate_lead and the click events you track as key events (they show up after the first conversion)."
-msgstr "Dans Google Analytics › Administration › Événements, marquez generate_lead et les événements de clic suivis comme événements clés (ils apparaissent après la première conversion)."
+msgid "In Google Analytics › Admin › Events, mark generate_lead, sign_up and the click events you track as key events (they show up after the first conversion)."
+msgstr "Dans Google Analytics › Administration › Événements, marquez generate_lead, sign_up et les événements de clic suivis comme événements clés (ils apparaissent après la première conversion)."
 
 #: functions/campaigns.php:449
 msgid "Link Google Analytics and Google Ads"

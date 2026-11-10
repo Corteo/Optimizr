@@ -7,8 +7,9 @@ if (!defined('ABSPATH')) {
 /*
  * Suivi des conversions (module Cookies & RGPD), réglé par l'assistant campagnes (functions/campaigns.php).
  *
- * js/optimizr-conversions.js repère les actions choisies (formulaire Contact Form 7 envoyé, clic sur un numéro de
- * téléphone, une adresse e-mail, WhatsApp, un service de prise de rendez-vous) et les envoie :
+ * js/optimizr-conversions.js repère les actions choisies (formulaire Contact Form 7 envoyé, inscription à la lettre
+ * d'information MailPoet, Brevo ou Mailchimp for WordPress, clic sur un numéro de téléphone, une adresse e-mail,
+ * WhatsApp, un service de prise de rendez-vous, téléchargement) et les envoie :
  * - à Google Analytics 4 / Google Ads par gtag(), qui applique le Google Consent Mode v2 (tarteaucitron.js) ;
  * - à Google Tag Manager par le dataLayer (évènement optimizr_conversion) ;
  * - aux extensions par l'évènement DOM « optimizr:conversion » (Optimizr Pro : conversions Google Ads, Pixel Meta).
@@ -27,6 +28,8 @@ function haptic_conversion_events()
         'booking'  => ['ga4' => 'click_booking', 'meta' => 'Schedule'],
         // Pas d'évènement standard Meta pour un téléchargement ; file_download est réservé à la mesure améliorée de GA4
         'download' => ['ga4' => 'click_download', 'meta' => ''],
+        // Inscription à la lettre d'information (MailPoet, Brevo, Mailchimp for WordPress)
+        'newsletter' => ['ga4' => 'sign_up', 'meta' => 'CompleteRegistration'],
     ]);
 }
 
@@ -57,6 +60,8 @@ function haptic_conversions_front_config()
         'gtag'    => haptic_cookie_service_id('google_analytics') !== '',
         'gtm'     => haptic_cookie_service_id('google_tags') !== '',
         'ping'    => admin_url('admin-ajax.php'),
+        // Mailchimp for WordPress : écouté par son API window.mc4wp, créée d'avance seulement s'il est actif
+        'mc4wp'   => in_array('newsletter', $actions, true) && defined('MC4WP_VERSION'),
     ];
     return apply_filters('haptic_conversions_front_config', $config);
 }

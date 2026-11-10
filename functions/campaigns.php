@@ -71,10 +71,15 @@ function haptic_campaigns_steps()
 function haptic_conversion_actions()
 {
     $cf7 = defined('WPCF7_VERSION');
+    $newsletter = haptic_newsletter_plugins();
     return apply_filters('haptic_conversion_actions', [
         'form'     => [__('Contact form sent', 'optimizr'), $cf7
             ? __('Contact Form 7: counted when the message is actually sent, not on each click.', 'optimizr')
             : __('Contact Form 7 is not active on this site: counted as soon as it is.', 'optimizr'), 'mail', $cf7],
+        'newsletter' => [__('Newsletter sign-up', 'optimizr'), $newsletter
+            /* translators: %s: active newsletter plugins, e.g. "MailPoet, Brevo" */
+            ? sprintf(__('%s: counted when the plugin confirms the sign-up.', 'optimizr'), implode(', ', $newsletter))
+            : __('MailPoet, Brevo or Mailchimp for WordPress is not active on this site: counted as soon as one is.', 'optimizr'), 'mail', (bool) $newsletter],
         'phone'    => [__('Click on a phone number', 'optimizr'), __('Every tel: link, on a computer or a phone.', 'optimizr'), 'phone', true],
         'email'    => [__('Click on an email address', 'optimizr'), __('Every mailto: link.', 'optimizr'), 'mail', true],
         'whatsapp' => [__('Click to WhatsApp', 'optimizr'), __('Links to wa.me and api.whatsapp.com.', 'optimizr'), 'phone', true],
@@ -83,13 +88,25 @@ function haptic_conversion_actions()
     ]);
 }
 
+/** Extensions de lettre d'information actives dont les inscriptions sont suivies (js/optimizr-conversions.js). */
+function haptic_newsletter_plugins()
+{
+    $plugins = [
+        'MailPoet'  => defined('MAILPOET_VERSION'),
+        'Brevo'     => class_exists('SIB_Manager'),
+        'Mailchimp for WordPress' => defined('MC4WP_VERSION'),
+    ];
+    return array_keys(array_filter($plugins));
+}
+
 /** Réglages enregistrés du suivi des conversions, avec les valeurs par défaut. */
 function haptic_conversions_settings()
 {
     $saved = get_option('haptic_conversions');
     $actions = [];
     foreach (haptic_conversion_actions() as $key => $action) {
-        $actions[$key] = is_array($saved) ? (int) !empty($saved['actions'][$key]) : (int) $action[3];
+        // Action ajoutée après l'enregistrement des réglages (ex. newsletter, 7.14.0) : valeur par défaut
+        $actions[$key] = is_array($saved) && isset($saved['actions'][$key]) ? (int) !empty($saved['actions'][$key]) : (int) $action[3];
     }
     return [
         'actions' => $actions,
@@ -402,7 +419,7 @@ function haptic_campaigns_step_conversions()
             <?php haptic_campaigns_help(__('Domain of the service, or the full address of your booking page. Used by “Click to book an appointment”.', 'optimizr')); ?>
         </label>
     </div>
-    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking and click_download. Mark them as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
+    <p class="ob-note"><?php echo wp_kses(haptic_icon('info', 16), haptic_kses_ui()); ?><?php esc_html_e('Events sent to Google Analytics: generate_lead (form), click_phone, click_email, click_whatsapp, click_booking, click_download and sign_up (newsletter). Mark them as key events in Google Analytics to use them in Google Ads.', 'optimizr'); ?></p>
     <?php
 }
 
@@ -446,7 +463,7 @@ function haptic_campaigns_render_done()
     $checks = apply_filters('haptic_campaigns_checks', [
         [__('Check the tags', 'optimizr'), __('Open the site in a private window, accept the cookies, then check with Google Tag Assistant that your tags fire.', 'optimizr'), 'https://tagassistant.google.com/'],
         [__('Test a conversion', 'optimizr'), __('Send the contact form or click the phone number, then look for the event in Google Analytics › Reports › Realtime.', 'optimizr'), 'https://analytics.google.com/'],
-        [__('Mark the key events', 'optimizr'), __('In Google Analytics › Admin › Events, mark generate_lead and the click events you track as key events (they show up after the first conversion).', 'optimizr'), ''],
+        [__('Mark the key events', 'optimizr'), __('In Google Analytics › Admin › Events, mark generate_lead, sign_up and the click events you track as key events (they show up after the first conversion).', 'optimizr'), ''],
         [__('Link Google Analytics and Google Ads', 'optimizr'), __('Google Analytics › Admin › Product links › Google Ads, then import the key events as conversions in Google Ads.', 'optimizr'), ''],
     ]);
     ?>

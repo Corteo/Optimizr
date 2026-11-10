@@ -1,9 +1,10 @@
 /**
  * Optimizr — suivi des conversions sur le site (functions/conversions.php).
  *
- * Actions suivies (window.optimizrConversions.actions) : formulaire Contact Form 7 envoyé (form), clic sur un
- * numéro de téléphone (phone), une adresse e-mail (email), WhatsApp (whatsapp) ou un service de prise de
- * rendez-vous (booking), téléchargement d'un fichier (download). Chaque conversion part :
+ * Actions suivies (window.optimizrConversions.actions) : formulaire Contact Form 7 envoyé (form), inscription à la
+ * lettre d'information MailPoet, Brevo ou Mailchimp for WordPress (newsletter), clic sur un numéro de téléphone
+ * (phone), une adresse e-mail (email), WhatsApp (whatsapp) ou un service de prise de rendez-vous (booking),
+ * téléchargement d'un fichier (download). Chaque conversion part :
  * - vers gtag() (Google Analytics 4, Google Ads), qui applique le Google Consent Mode v2 ;
  * - vers le dataLayer de Google Tag Manager : { event: 'optimizr_conversion', conversion_action, conversion_event } ;
  * - en évènement DOM « optimizr:conversion » sur document, pour les extensions (Optimizr Pro : Google Ads, Meta).
@@ -113,5 +114,123 @@
             var detail = e.detail || {};
             track('form', { form_id: String(detail.contactFormId || '') }, { inputs: detail.inputs || [] });
         });
+    }
+
+    /*
+     * Lettre d'information : inscription confirmée par l'extension, jamais au simple clic.
+     * method : extension d'origine (paramètre recommandé de l'évènement GA4 sign_up). inputs : champs du formulaire
+     * [{ name, value }], comme pour Contact Form 7 (Optimizr Pro en tire l'e-mail des conversions améliorées).
+     */
+    if (enabled.newsletter) {
+        var signUp = function (method, formId, inputs) {
+            track('newsletter', { method: method, form_id: String(formId || '') }, { inputs: inputs || [] });
+        };
+
+        // Requête AJAX jQuery : données envoyées en chaîne (a=1&b=2) ou en tableau [{ name, value }]
+        var ajaxFields = function (data) {
+            var fields = [];
+            if (Array.isArray(data)) {
+                data.forEach(function (field) {
+                    if (field && field.name) fields.push({ name: String(field.name), value: String(field.value || '') });
+                });
+            } else if (typeof data === 'string' && window.URLSearchParams) {
+                new URLSearchParams(data).forEach(function (value, name) { fields.push({ name: name, value: value }); });
+            }
+            return fields;
+        };
+        var fieldValue = function (fields, name) {
+            for (var i = 0; i < fields.length; i++) {
+                if (fields[i].name === name) return fields[i].value;
+            }
+            return '';
+        };
+
+        // MailPoet (endpoint subscribers, méthode subscribe) et Brevo (sib_form_action=subscribe_form_submit) :
+        // envoi AJAX par jQuery, réponse lue dans l'évènement global ajaxSuccess
+        var watchAjax = function () {
+            var $ = window.jQuery;
+            if (!$ || !$.fn || !$.fn.on) return;
+            $(document).on('ajaxSuccess', function (e, xhr, settings, response) {
+                var fields = ajaxFields(settings && settings.data);
+                if (!fields.length) return;
+                response = response || (xhr && xhr.responseJSON) || {};
+
+                if (fieldValue(fields, 'action') === 'mailpoet' && fieldValue(fields, 'endpoint') === 'subscribers'
+                    && fieldValue(fields, 'method') === 'subscribe') {
+                    // Champs « data[form_field_…] » : seuls ceux du visiteur sont gardés
+                    var mailpoet = fields.filter(function (field) { return field.name.indexOf('data[form_field_') === 0; });
+                    if (!response.errors || !response.errors.length) signUp('MailPoet', fieldValue(fields, 'data[form_id]'), mailpoet);
+                    return;
+                }
+                if (fieldValue(fields, 'sib_form_action') === 'subscribe_form_submit') {
+                    // « already_exist » : déjà inscrit, pas de nouvelle conversion
+                    if (response.status === 'success' || response.status === 'update') {
+                        signUp('Brevo', fieldValue(fields, 'sib_form_id'), fields.filter(function (field) {
+                            return field.name !== 'security' && field.name.indexOf('sib_') !== 0;
+                        }));
+                    }
+                }
+            });
+        };
+
+        // Formulaire Brevo intégré (code HTML copié depuis Brevo, envoyé à sibforms.com) : le panneau
+        // #success-message s'affiche, ou la page de confirmation remplace le formulaire
+        var watchBrevoEmbed = function () {
+            var container = document.getElementById('sib-form-container');
+            var form = document.getElementById('sib-form');
+            if (!container || !form || !window.MutationObserver) return;
+            var type = form.getAttribute('data-type');
+            if (type && type !== 'subscription') return;
+
+            var pending = null;
+            form.addEventListener('submit', function () {
+                var fields = [];
+                if (window.FormData) {
+                    new FormData(form).forEach(function (value, name) {
+                        if (typeof value === 'string' && name !== 'g-recaptcha-response') fields.push({ name: name, value: value });
+                    });
+                }
+                pending = fields;
+            }, true);
+
+            new MutationObserver(function () {
+                if (!pending) return;
+                var success = container.querySelector('#success-message');
+                var error = container.querySelector('#error-message');
+                if ((success && success.classList.contains('sib-form-message-panel--active')) || !container.contains(form)) {
+                    signUp('Brevo', form.getAttribute('action') ? form.getAttribute('action').split('/').pop() : '', pending);
+                    pending = null;
+                } else if (error && error.classList.contains('sib-form-message-panel--active')) {
+                    pending = null;
+                }
+            }).observe(container, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+        };
+
+        // Mailchimp for WordPress : évènement « subscribed » de son API (formulaire envoyé en AJAX ou page rechargée).
+        // Si son script n'est pas encore chargé, la file d'attente qu'il lit au démarrage est créée comme il le fait.
+        if (config.mc4wp) {
+            window.mc4wp = window.mc4wp || {
+                listeners: [],
+                forms: {
+                    on: function (event, callback) { window.mc4wp.listeners.push({ event: event, callback: callback }); }
+                }
+            };
+        }
+        if (window.mc4wp && window.mc4wp.forms && typeof window.mc4wp.forms.on === 'function') {
+            window.mc4wp.forms.on('subscribed', function (form, data) {
+                var inputs = [];
+                Object.keys(data || {}).forEach(function (name) {
+                    if (typeof data[name] === 'string' && name.indexOf('_mc4wp') !== 0) inputs.push({ name: name, value: data[name] });
+                });
+                signUp('Mailchimp', form && form.id, inputs);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () { watchAjax(); watchBrevoEmbed(); });
+        } else {
+            watchAjax();
+            watchBrevoEmbed();
+        }
     }
 })();
