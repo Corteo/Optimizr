@@ -6,7 +6,9 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.10.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.11.0 · [Historique des versions](CHANGELOG.md)
+
+Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
 ## Modules
 
@@ -47,7 +49,7 @@ Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalit
 Tout est désactivé par défaut. Sur un site existant, le module s'active depuis le tableau de bord.
 - **Cache des pages** : les pages vues par les visiteurs non connectés sont enregistrées en fichiers HTML (`wp-content/cache/optimizr/pages/`) et renvoyées avant le chargement de WordPress, par le fichier `wp-content/advanced-cache.php` et la constante `WP_CACHE`, qu'Optimizr ajoute en haut de `wp-config.php` (sinon, il indique la ligne à ajouter). Durée de vie réglable (10 heures par défaut, ce qui laisse les formulaires fonctionner), adresses exclues (`/contact/`, `/boutique/*`), cache séparé pour les téléphones en option. Jamais en cache : personnes connectées, commentateurs, contenus protégés par mot de passe, recherches, pages introuvables, paniers et commandes WooCommerce, adresses avec paramètres (sauf ceux de suivi comme `utm_*`, `gclid`, `fbclid`), pages qui posent un cookie. En-tête `X-Optimizr-Cache: HIT` sur une page servie depuis le cache.
 - **Vidage automatique** : un contenu modifié vide sa page, l'accueil et ses archives (type, catégories, auteur) ; un contenu publié, dépublié ou dont l'adresse change, un commentaire, un menu, un widget, le thème, une catégorie, une extension ou un réglage vide tout le cache.
-- **Vidage manuel** : bouton de l'onglet Cache et menu « Cache » de la barre d'administration (tout le site, ou la page affichée).
+- **Vidage manuel** : bouton de l'onglet Cache et menu **Optimizr › Cache** de la barre d'administration (tout le site, ou la page affichée).
 - **Cache navigateur et compression** : règles `mod_expires`, `mod_headers` et `mod_deflate` dans un bloc « Optimizr Cache » du `.htaccess` (Apache, LiteSpeed) : images, polices et vidéos un an, styles et scripts un mois. Sur Nginx, l'onglet affiche les règles à transmettre à l'hébergeur.
 - **Conflits** : avec une autre extension de cache (WP Rocket, W3 Total Cache, WP Super Cache, LiteSpeed Cache, WP Fastest Cache…) ou un `advanced-cache.php` qui n'est pas d'Optimizr, le cache des pages reste désactivé. Le cache de l'hébergeur (WP Engine, Kinsta, Pantheon, GoDaddy, Pressable, Varnish) est signalé, et vidé en même temps quand c'est possible (WP Engine, Pantheon, extension Nginx Helper). Pas de cache des pages sur un multisite.
 - Désactiver le cache, le module ou le plugin retire `advanced-cache.php`, la ligne de `wp-config.php`, les règles du `.htaccess` et les pages en cache.

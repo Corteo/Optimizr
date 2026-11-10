@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.10.0
+Stable tag: 7.11.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,6 +13,8 @@ Cookie consent (GDPR), SEO tags, login protection with two-factor authentication
 == Description ==
 
 Optimizr gathers in a single admin page the settings a brochure website needs every day. Each feature is a **module** you can turn on or off from the plugin dashboard; a disabled module loads no code and its tab disappears.
+
+An "Optimizr" menu in the admin bar, on the site and in the dashboard, opens the plugin dashboard and each of its tabs (administrators only).
 
 = Cookies & GDPR =
 
@@ -46,7 +48,7 @@ Optimizr gathers in a single admin page the settings a brochure website needs ev
 = Cache =
 
 * Page cache: pages are saved as HTML files and sent to visitors without loading WordPress (advanced-cache.php drop-in), with a lifespan, excluded addresses and an optional separate cache for phones. Logged-in users, searches, password-protected content and shopping carts are never cached.
-* Cleared automatically when content, comments, menus, the theme or settings change, and on demand from the Cache tab or the admin bar (whole site or current page).
+* Cleared automatically when content, comments, menus, the theme or settings change, and on demand from the Cache tab or the Optimizr menu of the admin bar (whole site or current page).
 * Browser cache and gzip compression rules written to .htaccess on Apache and LiteSpeed; rules to copy for Nginx.
 * Detects other cache plugins and the host's own cache to avoid conflicts, and clears the host's cache (WP Engine, Pantheon, Nginx Helper) along with its own.
 
@@ -82,6 +84,10 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.11.0 =
+* New "Optimizr" menu in the admin bar, on the site and in the dashboard: it opens the plugin dashboard and links to each tab, the setup wizard and campaign tracking. Shown to administrators only.
+* The admin bar "Cache" menu (clear all cache, clear this page) now sits under Optimizr › Cache.
 
 = 7.10.0 =
 * New "Google Search" card on the dashboard, with a link to Google Search Console. It can be hidden.

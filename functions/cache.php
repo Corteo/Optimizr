@@ -375,11 +375,15 @@ add_action('admin_bar_menu', function ($bar) {
     if (!haptic_cache_page_active() || !haptic_cache_can_purge()) {
         return;
     }
-    $bar->add_node([
-        'id'    => 'optimizr-cache',
-        'title' => esc_html__('Cache', 'optimizr'),
-        'href'  => haptic_admin_tab_url('cache'),
-    ]);
+    // Sous l'onglet Cache du menu Optimizr (functions/admin-bar.php) ; seul dans la barre pour un compte qui peut
+    // vider le cache sans accéder aux réglages (filtre haptic_cache_purge_capability)
+    if (!$bar->get_node('optimizr-cache')) {
+        $bar->add_node([
+            'id'    => 'optimizr-cache',
+            'title' => esc_html__('Cache', 'optimizr'),
+            'href'  => haptic_admin_tab_url('cache'),
+        ]);
+    }
     $bar->add_node([
         'parent' => 'optimizr-cache',
         'id'     => 'optimizr-cache-purge',
