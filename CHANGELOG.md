@@ -4,6 +4,13 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.14.0] - 2026-11-10
+
+### Ajouté
+- **Conversion « Inscription à la lettre d'information »** (`newsletter`) dans l'assistant de suivi des campagnes : inscriptions faites avec MailPoet, Brevo ou Mailchimp for WordPress, comptées seulement quand l'extension les confirme. Envoyées à Google Analytics 4 (évènement recommandé `sign_up`, avec `method` et `form_id`), à Google Tag Manager (`optimizr_conversion`), et avec Optimizr Pro à Google Ads (libellé de conversion propre) et au Pixel Meta (`CompleteRegistration`). Les champs du formulaire accompagnent l'évènement `optimizr:conversion` (`inputs`), comme pour Contact Form 7, pour les conversions améliorées.
+- Détection (`js/optimizr-conversions.js`) : MailPoet (requête `subscribers` / `subscribe`) et l'extension Brevo (`sib_form_action=subscribe_form_submit`, statut `success` ou `update`) par l'évènement jQuery `ajaxSuccess` ; formulaire Brevo intégré depuis sibforms.com par son panneau de confirmation ; Mailchimp for WordPress par l'évènement `subscribed` de son API, en AJAX comme après rechargement de la page. Une adresse déjà inscrite n'est pas comptée.
+- L'action est cochée d'office quand l'une de ces extensions est active, y compris sur un site dont le suivi était déjà réglé (`haptic_conversions_settings()` : une action absente des réglages enregistrés prend sa valeur par défaut). La carte de l'assistant indique les extensions détectées (`haptic_newsletter_plugins()`).
+
 ## [7.13.1] - 2026-11-10
 
 ### Corrigé
