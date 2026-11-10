@@ -4,6 +4,14 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.11.0] - 2026-11-10
+
+### Ajouté
+- **Menu « Optimizr » dans la barre d'administration** (`functions/admin-bar.php`), sur le site comme dans l'administration : il ouvre le tableau de bord du plugin et donne un lien vers chaque onglet affiché (modules actifs et onglets d'Optimizr Pro), puis vers l'assistant de configuration et le suivi des campagnes. Icône d'Optimizr, colorée comme les autres icônes de la barre, et visible aussi sur téléphone. Réservé aux comptes qui ont la capacité `manage_options` ; le filtre `haptic_admin_bar_show` permet de le masquer.
+
+### Modifié
+- Le menu « Cache » de la barre d'administration (vider tout le cache, vider la page affichée) passe sous Optimizr › Cache. Il reste seul dans la barre pour un compte qui peut vider le cache sans accéder aux réglages (filtre `haptic_cache_purge_capability`).
+
 ## [7.10.0] - 2026-11-04
 
 ### Ajouté
