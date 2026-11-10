@@ -30,6 +30,16 @@ function haptic_conversion_events()
         'download' => ['ga4' => 'click_download', 'meta' => ''],
         // Inscription à la lettre d'information (MailPoet, Brevo, Mailchimp for WordPress)
         'newsletter' => ['ga4' => 'sign_up', 'meta' => 'CompleteRegistration'],
+        // Page de remerciement : un contact, comme le formulaire (conversion_action les distingue dans GTM)
+        'thankyou'   => ['ga4' => 'generate_lead', 'meta' => 'Lead'],
+        'directions' => ['ga4' => 'click_directions', 'meta' => 'FindLocation'],
+        'cta'        => ['ga4' => 'click_cta', 'meta' => 'Lead'],
+        'review'     => ['ga4' => 'click_review', 'meta' => ''],
+        'social'     => ['ga4' => 'click_social', 'meta' => ''],
+        // WooCommerce : évènements recommandés GA4 et standard Meta, avec value, currency (et items)
+        'add_to_cart'    => ['ga4' => 'add_to_cart', 'meta' => 'AddToCart'],
+        'begin_checkout' => ['ga4' => 'begin_checkout', 'meta' => 'InitiateCheckout'],
+        'purchase'       => ['ga4' => 'purchase', 'meta' => 'Purchase'],
     ]);
 }
 
@@ -48,6 +58,9 @@ function haptic_conversions_front_config()
     if (!$settings['booking']) {
         $actions = array_values(array_diff($actions, ['booking']));
     }
+    if (!$settings['thankyou']) {
+        $actions = array_values(array_diff($actions, ['thankyou']));
+    }
     if (!$actions) {
         return null;
     }
@@ -55,6 +68,7 @@ function haptic_conversions_front_config()
     $config = [
         'actions' => $actions,
         'booking' => $settings['booking'],
+        'thankyou' => $settings['thankyou'],
         'events'  => array_intersect_key(haptic_conversion_events(), array_flip($actions)),
         // gtag() défini par tarteaucitron.js pour GA4 (et Google Ads avec Optimizr Pro)
         'gtag'    => haptic_cookie_service_id('google_analytics') !== '',
@@ -63,6 +77,10 @@ function haptic_conversions_front_config()
         // Mailchimp for WordPress : écouté par son API window.mc4wp, créée d'avance seulement s'il est actif
         'mc4wp'   => in_array('newsletter', $actions, true) && defined('MC4WP_VERSION'),
     ];
+    $woo = haptic_conversions_woo_config($actions);
+    if ($woo) {
+        $config['woo'] = $woo;
+    }
     return apply_filters('haptic_conversions_front_config', $config);
 }
 
@@ -77,6 +95,109 @@ add_action('haptic_before_enqueue_scripts', function () {
     wp_enqueue_script('optimizr-conversions', HAPTIC_OPTIMIZR_URL . 'js/optimizr-conversions.js', [], HAPTIC_OPTIMIZR_VERSION, true);
     wp_add_inline_script('optimizr-conversions', 'window.optimizrConversions = ' . wp_json_encode($config, JSON_HEX_TAG) . ';', 'before');
 });
+
+/* ---------- WooCommerce ---------- */
+
+/** Montant et articles d'un panier ou d'une commande, au format GA4 (items). */
+function haptic_conversions_woo_items($lines)
+{
+    $items = [];
+    foreach ($lines as $line) {
+        $product = $line['product'] ?? null;
+        if (!$product instanceof WC_Product) {
+            continue;
+        }
+        $quantity = max(1, (int) ($line['quantity'] ?? 1));
+        $items[] = [
+            'item_id'   => $product->get_sku() !== '' ? $product->get_sku() : (string) $product->get_id(),
+            'item_name' => wp_strip_all_tags($product->get_name()),
+            'price'     => round((float) ($line['total'] ?? 0) / $quantity, 2),
+            'quantity'  => $quantity,
+        ];
+    }
+    return $items;
+}
+
+/**
+ * Évènements WooCommerce préparés par le serveur, lus par js/optimizr-conversions.js (window.optimizrConversions.woo) :
+ * - added : produit ajouté au panier par un formulaire classique (page rechargée), gardé en session jusqu'à la page suivante ;
+ *   les ajouts en AJAX (listes de produits, blocs) sont vus dans le navigateur ;
+ * - checkout : page de commande, avec le montant du panier ;
+ * - purchase : page de confirmation, une seule fois par commande (méta _haptic_conversion_sent).
+ * Montants hors livraison et hors taxes, comme la valeur des conversions Google Ads et Meta.
+ */
+function haptic_conversions_woo_config($actions)
+{
+    if (!class_exists('WooCommerce') || !function_exists('WC') || is_admin()) {
+        return [];
+    }
+    $woo = ['currency' => get_woocommerce_currency()];
+
+    if (in_array('add_to_cart', $actions, true) && WC()->session) {
+        $added = WC()->session->get('haptic_conversion_added');
+        if (is_array($added) && $added) {
+            $woo['added'] = $added;
+            WC()->session->set('haptic_conversion_added', null);
+        }
+    }
+
+    if (in_array('begin_checkout', $actions, true) && function_exists('is_checkout') && is_checkout()
+        && !is_order_received_page() && !is_checkout_pay_page() && WC()->cart && !WC()->cart->is_empty()) {
+        $lines = [];
+        foreach (WC()->cart->get_cart() as $item) {
+            $lines[] = ['product' => $item['data'] ?? null, 'quantity' => $item['quantity'] ?? 1, 'total' => $item['line_total'] ?? 0];
+        }
+        $woo['checkout'] = [
+            'value' => round((float) WC()->cart->get_cart_contents_total(), 2),
+            'items' => haptic_conversions_woo_items($lines),
+        ];
+    }
+
+    if (in_array('purchase', $actions, true) && function_exists('is_order_received_page') && is_order_received_page()) {
+        global $wp;
+        $order = wc_get_order(absint($wp->query_vars['order-received'] ?? 0));
+        // Clé de la commande vérifiée, comme le fait WooCommerce pour afficher la page
+        $key = isset($_GET['key']) ? wc_clean(wp_unslash($_GET['key'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ($order && hash_equals($order->get_order_key(), $key) && !$order->has_status('failed') && !$order->get_meta('_haptic_conversion_sent')) {
+            $lines = [];
+            foreach ($order->get_items() as $item) {
+                $lines[] = ['product' => $item->get_product(), 'quantity' => $item->get_quantity(), 'total' => $item->get_total()];
+            }
+            $woo['purchase'] = [
+                'transaction_id' => (string) $order->get_order_number(),
+                'value'          => round((float) $order->get_subtotal() - (float) $order->get_discount_total(), 2),
+                'currency'       => $order->get_currency(),
+                'items'          => haptic_conversions_woo_items($lines),
+                // Pour les conversions améliorées d'Optimizr Pro (haché dans le navigateur, avec l'accord du visiteur)
+                'email'          => $order->get_billing_email(),
+            ];
+            $order->update_meta_data('_haptic_conversion_sent', time());
+            $order->save();
+        }
+    }
+
+    return count($woo) > 1 ? $woo : [];
+}
+
+// Ajout au panier par un formulaire envoyé normalement (pas en AJAX) : évènement gardé pour la page suivante
+add_action('woocommerce_add_to_cart', function ($cart_item_key, $product_id, $quantity, $variation_id) {
+    if (wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST) || !empty($_GET['wc-ajax']) || !WC()->session) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        return;
+    }
+    $settings = haptic_conversions_settings();
+    if (empty($settings['actions']['add_to_cart'])) {
+        return;
+    }
+    $product = wc_get_product($variation_id ?: $product_id);
+    if (!$product) {
+        return;
+    }
+    $price = (float) wc_get_price_excluding_tax($product);
+    WC()->session->set('haptic_conversion_added', [
+        'value' => round($price * $quantity, 2),
+        'items' => haptic_conversions_woo_items([['product' => $product, 'quantity' => $quantity, 'total' => $price * $quantity]]),
+    ]);
+}, 10, 4);
 
 /* ---------- Dernière conversion vue ---------- */
 
@@ -143,7 +264,7 @@ add_action('haptic_admin_aside_cookies', function () {
             <h3 class="optimizr-campaigns__subtitle"><?php esc_html_e('Conversions', 'optimizr'); ?></h3>
             <dl class="optimizr-campaigns__list">
                 <?php foreach (haptic_conversion_actions() as $key => list($title)) :
-                    $active = !empty($settings['actions'][$key]) && ($key !== 'booking' || $settings['booking']);
+                    $active = !empty($settings['actions'][$key]) && ($key !== 'booking' || $settings['booking']) && ($key !== 'thankyou' || $settings['thankyou']);
                     if (!$active) {
                         $value = _x('Not tracked', 'conversion', 'optimizr');
                     } elseif (!empty($seen[$key])) {

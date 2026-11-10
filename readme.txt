@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.14.0
+Stable tag: 7.15.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ An "Optimizr" menu in the admin bar, on the site and in the dashboard, opens the
 
 * Cookie consent banner powered by Tarteaucitron.js (bundled), with configurable position and live preview. Blends in with your theme (background, text, fonts, buttons) or uses its own colors; texts always readable (WCAG AA contrast), mobile-friendly preferences panel.
 * Google Analytics 4 and Google Tag Manager, loaded only after the visitor's consent.
-* Campaign tracking wizard: conversions (contact form, newsletter sign-up, phone, email, WhatsApp, booking and download clicks) sent to Google Analytics 4 and Google Tag Manager.
+* Campaign tracking wizard: conversions (contact form, newsletter sign-up, thank-you page, phone, email, WhatsApp, booking, directions, marked button, download, Google review and social clicks, WooCommerce cart, checkout and purchase) sent to Google Analytics 4 and Google Tag Manager.
 * Google Consent Mode v2.
 * YouTube, Dailymotion, X, Facebook and Google Maps embeds always offered in the consent panel.
 
@@ -85,6 +85,11 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 == Changelog ==
 
+= 7.15.0 =
+* Contact form conversions now also come from WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms and Formidable.
+* New conversions: thank-you page viewed, click for directions (Google Maps, Waze, Apple Maps), click on a button given the optimizr-conversion CSS class, click to leave a Google review, click to a social network.
+* WooCommerce: add to cart, checkout started and order placed, with the amount, sent to Google Analytics 4 as recommended ecommerce events.
+
 = 7.14.0 =
 * New conversion: newsletter sign-ups made with MailPoet, Brevo or Mailchimp for WordPress, counted only once the plugin confirms them, sent to Google Analytics 4 (sign_up) and Google Tag Manager.
 
@@ -108,7 +113,7 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 = 7.9.0 =
 * New campaign tracking wizard (Optimizr › Campaign tracking): a guided path to set up Google Analytics 4 or Google Tag Manager for Google campaigns, with help to find each ID and a warning against counting visits twice.
-* Conversions: contact form sent (Contact Form 7), newsletter sign-up (MailPoet, Brevo, Mailchimp for WordPress), clicks on a phone number, an email address, WhatsApp, a booking service (Doctolib, Calendly…) or a file to download (PDF, Word, Excel, ZIP…) are sent to Google Analytics 4 as events (generate_lead, sign_up, click_phone…) and to Google Tag Manager, through the consent banner and Google Consent Mode v2.
+* Conversions: contact form sent (Contact Form 7, WPForms, Gravity Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable), thank-you page, newsletter sign-up (MailPoet, Brevo, Mailchimp for WordPress), clicks on a phone number, an email address, WhatsApp, a booking service (Doctolib, Calendly…) or a file to download (PDF, Word, Excel, ZIP…) are sent to Google Analytics 4 as events (generate_lead, sign_up, click_phone…) and to Google Tag Manager, through the consent banner and Google Consent Mode v2.
 * The Cookies & GDPR tab shows the tracking status and when each conversion was last seen on the site. The final screen of the wizard lists the checks to do before launching the campaigns.
 
 = 7.8.0 =

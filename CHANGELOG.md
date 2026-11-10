@@ -4,6 +4,17 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.15.0] - 2026-11-10
+
+### Ajouté
+- **Formulaires de contact** : en plus de Contact Form 7, envois réussis de WPForms (`wpformsAjaxSubmitSuccess`), Gravity Forms (`gform_confirmation_loaded`), Fluent Forms (`fluentform_submission_success`), Elementor Pro (`submit_success`), Ninja Forms (`submit:response`) et Formidable (`frmFormComplete`), et message de confirmation de WPForms, Gravity Forms ou Formidable après un envoi sans AJAX. Paramètres `form_plugin` et `form_id` ; champs relevés à l'envoi et transmis en `inputs` (conversions améliorées d'Optimizr Pro). La carte de l'assistant indique les extensions détectées (`haptic_form_plugins()`).
+- **Page de remerciement vue** (`thankyou`, `generate_lead` avec `page_path`) : chemins saisis dans l'assistant (adresse complète acceptée), pour les formulaires qui redirigent ou qu'Optimizr ne reconnaît pas.
+- **Clic pour l'itinéraire** (`directions`, `click_directions`, Meta `FindLocation`) : Google Maps, `maps.app.goo.gl`, Waze, Plans d'Apple, liens `geo:`.
+- **Clic sur un bouton marqué** (`cta`, `click_cta` avec `link_text`, Meta `Lead`) : tout élément portant la classe CSS `optimizr-conversion`.
+- **Clic pour laisser un avis Google** (`review`, `click_review`) et **clic vers un réseau social** (`social`, `click_social`), décochés par défaut.
+- **WooCommerce** (actions proposées quand WooCommerce est actif) : ajout au panier (`add_to_cart`, AJAX des listes et des blocs, ou formulaire classique gardé en session jusqu'à la page suivante), commande commencée (`begin_checkout`, montant du panier) et commande passée (`purchase`, une fois par commande grâce à la méta `_haptic_conversion_sent`, clé de commande vérifiée), avec `value` hors livraison et taxes, `currency`, `items` et `transaction_id`. Meta : `AddToCart`, `InitiateCheckout`, `Purchase` ; montants transmis à Google Ads et Meta par Optimizr Pro 1.19.0.
+- Icônes `cart`, `share` et `star`.
+
 ## [7.14.0] - 2026-11-10
 
 ### Ajouté
