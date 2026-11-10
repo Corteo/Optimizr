@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.12.0
+Stable tag: 7.13.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,9 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.13.0 =
+* New import from Yoast SEO and All in One SEO (Tools tab): SEO title, description, share image and "noindex" of each content, and optionally the title and description patterns. Values already set in Optimizr are kept, the other plugin's data stays in the database, and the plugin can be deactivated right after the import.
 
 = 7.12.0 =
 * New floating toolbar, off by default (Tools tab): on the site, it replaces the WordPress admin bar with a small floating module to edit the page, create content, check the page SEO, clear the cache and see pending comments and updates. Three designs to choose from (bubble, dock, page panel), left or right side, and the roles that get it.

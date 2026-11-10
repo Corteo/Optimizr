@@ -260,7 +260,7 @@ msgid "%1$s / %2$s characters"
 msgstr "%1$s / %2$s caractères"
 
 #. 1: setting label, 2: entered value
-#: js/optimizr-onboarding.js
+#: functions/migration.php js/optimizr-onboarding.js
 msgid "%1$s: %2$s"
 msgstr "%1$s : %2$s"
 
@@ -3154,3 +3154,108 @@ msgstr "Voir comme un visiteur"
 #: functions/toolbar.php
 msgid "View as a visitor (Esc to bring it back)"
 msgstr "Voir comme un visiteur (Échap pour le faire revenir)"
+
+#: functions/migration.php
+msgctxt "plugin status"
+msgid "Active"
+msgstr "Active"
+
+#: functions/migration.php
+msgid "Unknown source."
+msgstr "Source inconnue."
+
+#. %s: number of SEO titles
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s title"
+msgid_plural "%s titles"
+msgstr[0] "%s titre"
+msgstr[1] "%s titres"
+
+#. %s: number of meta descriptions
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s description"
+msgid_plural "%s descriptions"
+msgstr[0] "%s description"
+msgstr[1] "%s descriptions"
+
+#. %s: number of share images
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s share image"
+msgid_plural "%s share images"
+msgstr[0] "%s image de partage"
+msgstr[1] "%s images de partage"
+
+#. %s: number of contents hidden from search engines
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s hidden from search engines"
+msgid_plural "%s hidden from search engines"
+msgstr[0] "%s masqué aux moteurs de recherche"
+msgstr[1] "%s masqués aux moteurs de recherche"
+
+#: functions/migration.php
+msgid "No content setting to import"
+msgstr "Aucun réglage de contenu à importer"
+
+#: functions/migration.php
+msgid "Import from another SEO plugin"
+msgstr "Importer depuis une autre extension SEO"
+
+#: functions/migration.php
+msgid "Titles, descriptions, share images and “noindex” of each content. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr "Titres, descriptions, images de partage et « noindex » de chaque contenu. Les valeurs déjà saisies dans Optimizr sont conservées, et les données de l'autre extension restent en base."
+
+#: functions/migration.php
+msgid "Also use its title and description patterns"
+msgstr "Reprendre aussi ses modèles de titre et de description"
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: functions/migration.php
+msgid "Deactivate %s after the import"
+msgstr "Désactiver %s après l'import"
+
+#: functions/migration.php
+msgid "(avoids duplicate tags; it can be reactivated at any time)"
+msgstr "(évite les balises en double ; elle peut être réactivée à tout moment)"
+
+#: functions/migration.php
+msgid "When both plugins have a value for the same content, the first one in the list wins."
+msgstr "Quand les deux extensions ont une valeur pour le même contenu, la première de la liste l'emporte."
+
+#. 1: date of the last import, 2: summary of imported values
+#: functions/migration.php
+msgid "Last import on %1$s: %2$s."
+msgstr "Dernier import le %1$s : %2$s."
+
+#: js/optimizr-migration.js
+msgid "nothing new"
+msgstr "rien de nouveau"
+
+#: js/optimizr-migration.js
+msgid "Choose at least one plugin to import from."
+msgstr "Choisissez au moins une extension à importer."
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: js/optimizr-migration.js
+msgid "Importing from %s…"
+msgstr "Import depuis %s…"
+
+#. %s: summary of imported values (12 titles, 8 descriptions…)
+#: js/optimizr-migration.js
+msgid "Import complete: %s."
+msgstr "Import terminé : %s."
+
+#. %s: number of values kept
+#: js/optimizr-migration.js
+msgid "%s value already set in Optimizr was kept."
+msgid_plural "%s values already set in Optimizr were kept."
+msgstr[0] "%s valeur déjà saisie dans Optimizr a été conservée."
+msgstr[1] "%s valeurs déjà saisies dans Optimizr ont été conservées."
+
+#. %s: plugin names
+#: js/optimizr-migration.js
+msgid "Deactivated: %s."
+msgstr "Désactivée(s) : %s."
+
+#: js/optimizr-migration.js
+msgid "The import was interrupted. Values already imported are kept: run it again to finish."
+msgstr "L'import a été interrompu. Les valeurs déjà importées sont conservées : relancez-le pour terminer."

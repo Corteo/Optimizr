@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.11.0\n"
+"Project-Id-Version: Optimizr 7.13.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -258,7 +258,7 @@ msgid "%1$s / %2$s characters"
 msgstr ""
 
 #. 1: setting label, 2: entered value
-#: js/optimizr-onboarding.js
+#: functions/migration.php js/optimizr-onboarding.js
 msgid "%1$s: %2$s"
 msgstr ""
 
@@ -3148,4 +3148,109 @@ msgstr ""
 
 #: functions/toolbar.php
 msgid "View as a visitor (Esc to bring it back)"
+msgstr ""
+
+#: functions/migration.php
+msgctxt "plugin status"
+msgid "Active"
+msgstr ""
+
+#: functions/migration.php
+msgid "Unknown source."
+msgstr ""
+
+#. %s: number of SEO titles
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s title"
+msgid_plural "%s titles"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: number of meta descriptions
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s description"
+msgid_plural "%s descriptions"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: number of share images
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s share image"
+msgid_plural "%s share images"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: number of contents hidden from search engines
+#: functions/migration.php js/optimizr-migration.js
+msgid "%s hidden from search engines"
+msgid_plural "%s hidden from search engines"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/migration.php
+msgid "No content setting to import"
+msgstr ""
+
+#: functions/migration.php
+msgid "Import from another SEO plugin"
+msgstr ""
+
+#: functions/migration.php
+msgid "Titles, descriptions, share images and “noindex” of each content. Values already set in Optimizr are kept, and the other plugin's data stays in the database."
+msgstr ""
+
+#: functions/migration.php
+msgid "Also use its title and description patterns"
+msgstr ""
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: functions/migration.php
+msgid "Deactivate %s after the import"
+msgstr ""
+
+#: functions/migration.php
+msgid "(avoids duplicate tags; it can be reactivated at any time)"
+msgstr ""
+
+#: functions/migration.php
+msgid "When both plugins have a value for the same content, the first one in the list wins."
+msgstr ""
+
+#. 1: date of the last import, 2: summary of imported values
+#: functions/migration.php
+msgid "Last import on %1$s: %2$s."
+msgstr ""
+
+#: js/optimizr-migration.js
+msgid "nothing new"
+msgstr ""
+
+#: js/optimizr-migration.js
+msgid "Choose at least one plugin to import from."
+msgstr ""
+
+#. %s: plugin name (Yoast SEO, All in One SEO)
+#: js/optimizr-migration.js
+msgid "Importing from %s…"
+msgstr ""
+
+#. %s: summary of imported values (12 titles, 8 descriptions…)
+#: js/optimizr-migration.js
+msgid "Import complete: %s."
+msgstr ""
+
+#. %s: number of values kept
+#: js/optimizr-migration.js
+msgid "%s value already set in Optimizr was kept."
+msgid_plural "%s values already set in Optimizr were kept."
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: plugin names
+#: js/optimizr-migration.js
+msgid "Deactivated: %s."
+msgstr ""
+
+#: js/optimizr-migration.js
+msgid "The import was interrupted. Values already imported are kept: run it again to finish."
 msgstr ""

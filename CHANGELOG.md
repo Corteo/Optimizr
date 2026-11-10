@@ -4,6 +4,17 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.13.0] - 2026-11-10
+
+### Ajouté
+- **Import depuis Yoast SEO et All in One SEO** (`functions/migration.php`, `js/optimizr-migration.js`), dans une carte de l'onglet Outils affichée seulement quand l'une de ces extensions est installée ou a laissé des données. Elle détaille ce qu'elle a trouvé, puis importe par lots (AJAX `haptic_migration_batch`, 100 contenus par lot) le titre SEO, la description, l'image de partage et le « noindex » de chaque contenu vers `_haptic_og_title`, `_haptic_og_desc`, `_haptic_og_image` et `_haptic_noindex`.
+- Traduction des variables : `%%title%%` et `#post_title` deviennent `{titre_page}`, `%%sitename%%` et `#site_title` `{nom_site}`, `%%sep%%` et `#separator_sa` le séparateur choisi dans l'extension, etc. Les variables sans équivalent (numéro de page, année, champs personnalisés) sont retirées.
+- Option « Reprendre ses modèles de titre et de description » (ceux des pages, sinon des articles), pour une seule source à la fois, cochée d'office pour la première seulement si ceux d'Optimizr n'ont jamais été modifiés.
+- Option « Désactiver l'extension après l'import » (`deactivate_plugins()`, jamais de suppression). À la fin (AJAX `haptic_migration_finish`), le module SEO et ses balises automatiques sont activés, le cache vidé, et le résumé enregistré (option `haptic_migration_log`, exclue de l'export).
+- Filtre `haptic_migration_sources` (autres extensions) et action `haptic_migration_finished`.
+- Une valeur déjà saisie dans Optimizr n'est jamais remplacée ; une valeur égale au résultat du modèle d'Optimizr n'est pas enregistrée, pour que le modèle continue de s'appliquer.
+- Les données de Yoast et d'All in One SEO restent en base : réactiver l'extension retrouve tout.
+
 ## [7.12.0] - 2026-11-10
 
 ### Ajouté

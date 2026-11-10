@@ -3301,3 +3301,48 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* ---------- Import depuis une autre extension SEO (functions/migration.php) ---------- */
+
+.optimizr-migration {
+    margin-bottom: 16px;
+}
+
+.optimizr-migration .optimizr-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.optimizr-migration__source {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0 0 14px;
+    border: 0;
+    border-bottom: 1px solid var(--o-border-soft);
+}
+
+.optimizr-migration__option {
+    margin-left: 26px;
+    font-size: 13px;
+}
+
+.optimizr-migration code {
+    font-size: 12px;
+}
+
+.optimizr-migration__status {
+    margin: 0;
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.optimizr-migration__status:empty {
+    display: none;
+}
+
+.optimizr-migration__status.is-error {
+    color: #a00;
+}
