@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.12.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.13.1 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -80,6 +80,7 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 - L'audit est lancé par Google depuis ses serveurs : un site local (MAMP, `.local`, `.test`, adresse privée) ne peut pas être audité. Rien n'est envoyé à Google sans clic sur « Lancer l'audit ».
 
 ### Outils
+- **Import depuis Yoast SEO, All in One SEO, Rank Math, SEOPress, The SEO Framework et Solid Security** (`functions/migration.php`, `js/optimizr-migration.js`) : la carte n'apparaît que si l'une de ces extensions est installée ou a laissé des données. **Solid Security** (anciennement iThemes Security) y apporte ses réglages : adresse de connexion masquée, limite des tentatives, adresses IP autorisées, Cloudflare, double authentification (chaque compte la refait à sa prochaine connexion) et, avec Optimizr Pro, éditeur de fichiers, XML-RPC et énumération des comptes ; aucune protection n'est désactivée. *Optimizr Pro* y ajoute les redirections (Redirection, Yoast SEO Premium, Rank Math, All in One SEO Pro, SEOPress Pro). La carte indique ce qu'elle a trouvé (« 312 titres, 280 descriptions… ») et importe, par lots de 100 contenus, le titre SEO, la description, l'image de partage et le « noindex » de chaque contenu dans les champs d'Optimizr. Les variables sont traduites (`%%title%%`, `#post_title`, `%title%`, `%%post_title%%` → `{titre_page}` ; `%%sitename%%`, `#site_title`, `%sitename%`, `%%sitetitle%%` → `{nom_site}`…), et le nom du site que The SEO Framework ajoutait au titre est repris ; celles sans équivalent (numéro de page, année, champ personnalisé) sont retirées. En option, les modèles de titre et de description (ceux des pages, sinon des articles) remplacent ceux d'Optimizr (une seule source à la fois, cochée d'office pour la première seulement s'ils n'ont jamais été modifiés). Une valeur déjà saisie dans Optimizr n'est jamais remplacée, une valeur égale au résultat du modèle n'est pas enregistrée, et les données de l'autre extension restent en base. L'extension d'origine peut être désactivée à la fin de l'import (jamais supprimée) ; le module SEO et ses balises automatiques sont activés et le cache vidé. All in One SEO 3 (métadonnées `_aioseop_*`) est lu quand la table `aioseo_posts` d'All in One SEO 4 est absente.
 - **Export / import des réglages** : un fichier JSON contient tous les réglages d'Optimizr, modules désactivés compris. On configure un site, on exporte, on importe sur le suivant. La clé API n'est exportée que sur demande, et l'adresse du site d'origine est remplacée automatiquement (robots.txt…).
 - **Barre flottante** : activation, design (pastille, dock ou fiche de la page), côté de l'écran et rôles concernés.
 - **Suppression du plugin** : à la désactivation (ou dans l'onglet Outils), on choisit ce qui sera effacé si le plugin est ensuite supprimé : réglages, redirections et SEO des contenus, journaux. Par défaut, tout est conservé ; les tâches planifiées, caches et fichiers générés sont toujours supprimés.
@@ -111,7 +112,7 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 - **Tableau de bord :** un en-tête illustré donne l'état du site (points à régler, état par thème : sécurité, visibilité, performance, contenu), avec le dernier audit, une carte « Google Search » (présentation de la Search Console ; avec Optimizr Pro, ses clics, impressions et positions), l'état du cache, les versions et des actions rapides (vider le cache, lancer un audit). Les modules sont rangés par thème ; leur interrupteur les active ou les désactive aussitôt, sans enregistrement, et leur onglet apparaît ou disparaît.
 - **Un onglet par module :** chaque onglet s'enregistre séparément avec le bouton « Enregistrer les modifications » en bas de page. Une alerte signale les modifications non enregistrées.
 - **Audit :** audit Lighthouse d'une page, sur mobile ou sur ordinateur, et historique des scores.
-- **Outils :** export et import des réglages, choix de ce qu'efface la suppression du plugin.
+- **Outils :** import depuis Yoast SEO, All in One SEO, Rank Math, SEOPress, The SEO Framework et Solid Security, export et import des réglages, choix de ce qu'efface la suppression du plugin.
 
 ## Pour les développeurs
 
@@ -138,6 +139,10 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_loaded` | action | Optimizr est chargé : point d'entrée des extensions. |
 | `haptic_activate` / `haptic_deactivate` | action | Activation et désactivation d'Optimizr. |
 | `haptic_settings_imported` | action | Réglages importés depuis l'onglet Outils. |
+| `haptic_migration_sources` | filtre | Extensions concurrentes dont Optimizr sait importer les données (cf. `functions/migration.php`). |
+| `haptic_migration_extras` | filtre | Autres données importables, rattachées à une source : résumé et import (redirections d'Optimizr Pro). |
+| `haptic_migration_solid_settings` | filtre | Réglages de Solid Security repris dans Optimizr. |
+| `haptic_migration_finished` | action | Import depuis une autre extension terminé (sources, totaux). |
 | `haptic_cookie_services` | filtre | Services proposés dans l'onglet Cookies, par catégorie. |
 | `haptic_tarteaucitron_service` | filtre | Variables et services Tarteaucitron d'un service ajouté. |
 | `haptic_tac_color` | filtre | Couleur du bandeau (valeur par défaut d'Optimizr). |
@@ -195,6 +200,7 @@ functions/tabs.php       Affichage des sections en cartes
 functions/cookies.php    Module Cookies & RGPD (+ css/optimizr-cookies.css, thème du bandeau)
 functions/seo/           Module SEO (réglages, metabox, balises)
 functions/tools.php      Onglet Outils : export et import des réglages
+functions/migration.php  Import depuis les extensions SEO et Solid Security
 functions/admin-bar.php  Menu Optimizr de la barre d'administration
 functions/toolbar.php    Barre flottante qui remplace la barre d'administration sur le site (+ css/optimizr-toolbar.css, js/optimizr-toolbar.js)
 functions/audit.php      Onglet Audit : audit Lighthouse avec l'API PageSpeed Insights (+ js/optimizr-audit.js)

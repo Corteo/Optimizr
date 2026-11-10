@@ -54,6 +54,8 @@ function haptic_settings_internal_options()
         'haptic_robots_txt_hash',
         // Réglages importés en attente de nettoyage (cf. haptic_import_sanitize_pending())
         'haptic_import_unsanitized',
+        // Dernier import depuis une autre extension SEO (cf. functions/migration.php)
+        'haptic_migration_log',
     ]);
 }
 
@@ -322,6 +324,8 @@ function haptic_render_tools_tab()
     if (sanitize_key(wp_unslash($_GET['haptic_message'] ?? '')) === 'toolbar') : ?>
         <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Floating toolbar saved.', 'optimizr'); ?></strong> <?php esc_html_e('Open the site to see it.', 'optimizr'); ?></span></div>
     <?php endif; ?>
+
+    <?php haptic_render_migration_card(); ?>
 
     <?php haptic_render_toolbar_card(); ?>
 
