@@ -3178,3 +3178,126 @@
 .optimizr-campaigns__btn {
     align-self: flex-start;
 }
+
+/* ---------- Onglet Outils : barre flottante (functions/toolbar.php) ---------- */
+
+.optimizr-toolbar-card {
+    margin-bottom: 16px;
+}
+
+.optimizr-toolbar-styles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.optimizr-toolbar-styles legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font-weight: 600;
+}
+
+.optimizr-toolbar-style {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding: 12px;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius-sm);
+    background: var(--o-surface);
+    cursor: pointer;
+}
+
+.optimizr-toolbar-style:hover {
+    border-color: var(--o-border-input);
+}
+
+.optimizr-toolbar-style input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.optimizr-toolbar-style:has(input:checked) {
+    border-color: var(--o-accent);
+    box-shadow: 0 0 0 1px var(--o-accent);
+}
+
+.optimizr-toolbar-style:has(input:focus-visible) {
+    outline: 2px solid var(--o-accent);
+    outline-offset: 2px;
+}
+
+.optimizr-toolbar-style__label {
+    font-weight: 600;
+}
+
+.optimizr-toolbar-style__help {
+    color: var(--o-muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+/* Vignette : un écran (i) et le module (b) à sa place */
+.optimizr-toolbar-style__preview {
+    position: relative;
+    display: block;
+    height: 64px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    background: var(--o-bg);
+    overflow: hidden;
+}
+
+.optimizr-toolbar-style__preview i {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 46%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--o-border);
+    box-shadow: 0 12px 0 var(--o-border), 0 24px 0 var(--o-border);
+}
+
+.optimizr-toolbar-style__preview b {
+    position: absolute;
+    background: var(--o-accent);
+}
+
+.optimizr-toolbar-style__preview--bubble b {
+    right: 8px;
+    bottom: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.optimizr-toolbar-style__preview--dock b {
+    left: 50%;
+    bottom: 7px;
+    width: 52%;
+    height: 12px;
+    border-radius: 6px;
+    transform: translateX(-50%);
+}
+
+.optimizr-toolbar-style__preview--sheet b {
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    width: 30%;
+    border-radius: 5px;
+    opacity: 0.85;
+}
+
+@media (max-width: 782px) {
+    .optimizr-toolbar-styles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

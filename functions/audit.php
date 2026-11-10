@@ -571,6 +571,13 @@ function haptic_render_audit_tab()
     $strategies = haptic_audit_strategies();
     $current = isset($results['mobile']) || !isset($results['desktop']) ? 'mobile' : 'desktop';
     $last_url = $results[$current]['url'] ?? home_url('/');
+    // Page demandée depuis la barre flottante (« Auditer cette page ») : préremplie et lancée à l'ouverture
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- simple préremplissage, l'audit lui-même vérifie son nonce
+    $requested = isset($_GET['audit_url']) ? esc_url_raw(wp_unslash($_GET['audit_url'])) : '';
+    $autorun = $requested !== '' && $key !== '' && wp_parse_url($requested, PHP_URL_HOST) === wp_parse_url(home_url(), PHP_URL_HOST);
+    if ($autorun) {
+        $last_url = $requested;
+    }
     ?>
     <div class="optimizr-page-head">
         <h2 class="optimizr-page-head__title"><?php esc_html_e('Lighthouse audit', 'optimizr'); ?></h2>
@@ -583,7 +590,7 @@ function haptic_render_audit_tab()
 
     <div class="optimizr-layout optimizr-layout--aside">
         <div class="optimizr-layout__main">
-            <form class="optimizr-card" data-optimizr-audit
+            <form class="optimizr-card" data-optimizr-audit <?php echo $autorun ? 'data-autorun' : ''; ?>
                 data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>"
                 data-nonce="<?php echo esc_attr(wp_create_nonce('haptic_audit_run')); ?>"
                 <?php /* translators: %d: elapsed seconds */ ?>

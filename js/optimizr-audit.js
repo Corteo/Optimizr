@@ -88,4 +88,13 @@
                 setStatus(form.getAttribute('data-error'), true);
             });
     });
+
+    // Page envoyée par « Auditer cette page » de la barre flottante : audit lancé à l'ouverture
+    if (form.hasAttribute('data-autorun') && !button.disabled) {
+        if (form.requestSubmit) {
+            form.requestSubmit(button);
+        } else {
+            button.click();
+        }
+    }
 })();

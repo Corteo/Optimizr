@@ -4,6 +4,15 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.12.0] - 2026-11-10
+
+### Ajouté
+- **Barre flottante** (`functions/toolbar.php`, `css/optimizr-toolbar.css`, `js/optimizr-toolbar.js`), désactivée par défaut : sur le site, elle remplace la barre d'administration de WordPress par un module flottant qui garde l'essentiel. Modifier la page affichée (ou la catégorie, l'auteur, le modèle d'un thème de blocs), créer un contenu, état SEO de la page (aperçu Google, alerte `noindex` ou site masqué aux moteurs), vidage du cache de la page ou du site, audit de la page, commentaires en attente et mises à jour, rappel de maintenance d'Optimizr Pro, onglets d'Optimizr, raccourcis des autres extensions, compte et déconnexion. « Voir comme un visiteur » masque le module jusqu'à la touche Échap. Chaque élément n'apparaît que si le module correspondant est actif et que le compte a le droit de s'en servir.
+- Trois designs au choix : **pastille** (bouton rond dans un coin qui ouvre un menu), **dock** (capsule en bas au centre) et **fiche de la page** (languette sur le bord qui ouvre une fiche). Thème clair ou sombre selon l'appareil.
+- Carte **Barre flottante** dans l'onglet Outils : activation, design, côté de l'écran, rôles concernés (options `haptic_toolbar`, `haptic_toolbar_style`, `haptic_toolbar_side`, `haptic_toolbar_roles`). L'administration garde la barre de WordPress et son menu Optimizr ; un compte qui a masqué la barre d'outils dans son profil n'a pas non plus le module.
+- Filtres `haptic_toolbar_show`, `haptic_toolbar_context`, `haptic_toolbar_collect_nodes` et `haptic_toolbar_other_nodes`.
+- Onglet Audit : le paramètre `audit_url` (adresse du site) préremplit la page et lance l'audit à l'ouverture.
+
 ## [7.11.0] - 2026-11-10
 
 ### Ajouté

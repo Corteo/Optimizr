@@ -1,0 +1,731 @@
+/*
+ * Optimizr — barre flottante (functions/toolbar.php) : remplace la barre d'administration sur le site.
+ * Trois designs : pastille (.otb--bubble), dock (.otb--dock), fiche de la page (.otb--sheet).
+ * Tout est préfixé par #optimizr-toolbar pour résister aux styles du thème.
+ */
+
+#optimizr-toolbar {
+    --otb-accent: #3858e9;
+    --otb-on-accent: #fff;
+    --otb-bg: rgba(255, 255, 255, 0.92);
+    --otb-solid: #fff;
+    --otb-text: #1e1e1e;
+    --otb-muted: #5c6168;
+    --otb-line: rgba(30, 30, 30, 0.09);
+    --otb-hover: rgba(56, 88, 233, 0.08);
+    --otb-ok: #0b6b35;
+    --otb-ok-soft: #e6f4ea;
+    --otb-ok-dot: #008a45;
+    --otb-bad: #b32d2e;
+    --otb-bad-soft: #fcf0f1;
+    --otb-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 32px -8px rgba(15, 23, 42, 0.24);
+    --otb-gap: 20px;
+    position: fixed;
+    z-index: 99999;
+    font: 400 13.5px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: var(--otb-text);
+    letter-spacing: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+    #optimizr-toolbar {
+        --otb-accent: #7b93ff;
+        --otb-on-accent: #10162e;
+        --otb-bg: rgba(28, 29, 33, 0.92);
+        --otb-solid: #1c1d21;
+        --otb-text: #f1f2f4;
+        --otb-muted: #a4a8b0;
+        --otb-line: rgba(255, 255, 255, 0.1);
+        --otb-hover: rgba(123, 147, 255, 0.14);
+        --otb-ok: #6fd39a;
+        --otb-ok-soft: rgba(47, 179, 107, 0.16);
+        --otb-ok-dot: #2fb36b;
+        --otb-bad: #ff8a8a;
+        --otb-bad-soft: rgba(255, 138, 138, 0.14);
+        --otb-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -8px rgba(0, 0, 0, 0.55);
+    }
+}
+
+#optimizr-toolbar[hidden],
+#optimizr-toolbar [hidden] {
+    display: none !important;
+}
+
+#optimizr-toolbar *,
+#optimizr-toolbar *::before,
+#optimizr-toolbar *::after {
+    box-sizing: border-box;
+}
+
+/* Remise à zéro des éléments que les thèmes stylent souvent */
+#optimizr-toolbar a,
+#optimizr-toolbar button,
+#optimizr-toolbar summary {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-align: left;
+    text-decoration: none;
+    text-transform: none;
+    text-shadow: none;
+    min-height: 0;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    cursor: pointer;
+    border-radius: 0;
+    outline: none;
+}
+
+#optimizr-toolbar summary {
+    list-style: none;
+}
+
+#optimizr-toolbar summary::-webkit-details-marker {
+    display: none;
+}
+
+#optimizr-toolbar details {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+#optimizr-toolbar a:focus-visible,
+#optimizr-toolbar button:focus-visible,
+#optimizr-toolbar summary:focus-visible {
+    outline: 2px solid var(--otb-accent);
+    outline-offset: 1px;
+}
+
+#optimizr-toolbar .otb-ico {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    display: block;
+}
+
+#optimizr-toolbar .otb-logo {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    display: block;
+    color: var(--otb-accent);
+}
+
+#optimizr-toolbar .otb-glass {
+    background: var(--otb-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    border: 1px solid var(--otb-line);
+    box-shadow: var(--otb-shadow);
+}
+
+/* ---------- Éléments communs ---------- */
+
+#optimizr-toolbar .otb-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+#optimizr-toolbar a.otb-row:hover,
+#optimizr-toolbar summary.otb-row:hover {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-row--static {
+    cursor: default;
+}
+
+#optimizr-toolbar .otb-row--sub {
+    padding-left: 36px;
+    font-size: 13px;
+}
+
+#optimizr-toolbar .otb-row__label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#optimizr-toolbar .otb-row__extra {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    color: var(--otb-muted);
+}
+
+#optimizr-toolbar .otb-sub[open] > summary .otb-row__extra .otb-ico {
+    transform: rotate(90deg);
+}
+
+#optimizr-toolbar .otb-label {
+    padding: 10px 10px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--otb-muted);
+}
+
+#optimizr-toolbar .otb-sep {
+    height: 1px;
+    margin: 6px 0;
+    background: var(--otb-line);
+}
+
+#optimizr-toolbar .otb-badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--otb-accent);
+    color: var(--otb-on-accent);
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+#optimizr-toolbar .otb-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#optimizr-toolbar .otb-pill--ok {
+    background: var(--otb-ok-soft);
+    color: var(--otb-ok);
+}
+
+#optimizr-toolbar .otb-pill--bad {
+    background: var(--otb-bad-soft);
+    color: var(--otb-bad);
+}
+
+#optimizr-toolbar .otb-mini {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--otb-accent);
+}
+
+#optimizr-toolbar .otb-mini:hover {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: none;
+    background: var(--otb-ok-dot);
+}
+
+#optimizr-toolbar .otb-dot--bad {
+    background: var(--otb-bad);
+}
+
+#optimizr-toolbar .otb-state {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--otb-solid);
+    background: var(--otb-bad);
+}
+
+#optimizr-toolbar .otb-avatar {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--otb-accent);
+    color: var(--otb-on-accent);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#optimizr-toolbar .otb-primary,
+#optimizr-toolbar .otb-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#optimizr-toolbar .otb-primary {
+    background: var(--otb-accent);
+    color: var(--otb-on-accent);
+}
+
+#optimizr-toolbar .otb-primary:hover {
+    filter: brightness(1.08);
+}
+
+#optimizr-toolbar .otb-secondary {
+    border: 1px solid var(--otb-line);
+}
+
+#optimizr-toolbar .otb-secondary:hover,
+#optimizr-toolbar .otb-create[open] > .otb-secondary {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-icon-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border-radius: 9px;
+    text-align: center;
+}
+
+#optimizr-toolbar .otb-icon-btn:hover,
+#optimizr-toolbar .otb-icon-btn[aria-expanded="true"] {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 2px 4px;
+}
+
+#optimizr-toolbar .otb-actions .otb-primary {
+    flex: 1;
+    min-width: 0;
+}
+
+#optimizr-toolbar .otb-actions .otb-primary span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#optimizr-toolbar .otb-create {
+    position: relative;
+}
+
+#optimizr-toolbar .otb-create__menu {
+    position: absolute;
+    right: 0;
+    top: 42px;
+    z-index: 2;
+    min-width: 180px;
+    padding: 6px;
+    border-radius: 12px;
+    background: var(--otb-solid);
+    border: 1px solid var(--otb-line);
+    box-shadow: var(--otb-shadow);
+}
+
+#optimizr-toolbar .otb-page {
+    display: grid;
+    gap: 1px;
+    padding: 8px 10px 10px;
+    min-width: 0;
+}
+
+#optimizr-toolbar .otb-page__title {
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#optimizr-toolbar .otb-page__meta {
+    font-size: 12px;
+    color: var(--otb-muted);
+}
+
+#optimizr-toolbar .otb-maint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #b32d2e;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+#optimizr-toolbar .otb-foot {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 2px 0 6px;
+}
+
+#optimizr-toolbar .otb-who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    padding: 4px;
+    border-radius: 8px;
+    color: var(--otb-muted);
+    font-size: 12.5px;
+}
+
+#optimizr-toolbar .otb-who span:last-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#optimizr-toolbar .otb-who:hover {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-serp {
+    display: grid;
+    gap: 2px;
+    margin: 2px 2px 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--otb-line);
+    border-radius: 10px;
+}
+
+#optimizr-toolbar .otb-serp:hover {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-serp__url {
+    font-size: 11.5px;
+    color: var(--otb-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#optimizr-toolbar .otb-serp__title {
+    font-size: 14.5px;
+    line-height: 1.3;
+    color: var(--otb-accent);
+}
+
+#optimizr-toolbar .otb-serp__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+    color: var(--otb-muted);
+}
+
+@keyframes otb-in {
+    from { opacity: 0; transform: translateY(6px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+#optimizr-toolbar .otb-panel,
+#optimizr-toolbar .otb-pop {
+    animation: otb-in 0.18s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+/* ---------- Pastille ---------- */
+
+#optimizr-toolbar.otb--bubble {
+    bottom: calc(var(--otb-gap) + env(safe-area-inset-bottom, 0px));
+}
+
+#optimizr-toolbar.otb--bubble.otb--right {
+    right: calc(var(--otb-gap) + env(safe-area-inset-right, 0px));
+}
+
+#optimizr-toolbar.otb--bubble.otb--left {
+    left: calc(var(--otb-gap) + env(safe-area-inset-left, 0px));
+}
+
+#optimizr-toolbar .otb-bubble {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    text-align: center;
+    transition: transform 0.15s ease;
+}
+
+#optimizr-toolbar .otb-bubble:hover {
+    transform: scale(1.05);
+}
+
+#optimizr-toolbar .otb-bubble .otb-logo {
+    width: 24px;
+    height: 24px;
+}
+
+#optimizr-toolbar.otb--bubble .otb-panel {
+    position: absolute;
+    bottom: 60px;
+    width: min(300px, calc(100vw - 2 * var(--otb-gap)));
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 8px;
+    border-radius: 16px;
+    transform-origin: bottom right;
+}
+
+#optimizr-toolbar.otb--bubble.otb--right .otb-panel {
+    right: 0;
+}
+
+#optimizr-toolbar.otb--bubble.otb--left .otb-panel {
+    left: 0;
+    transform-origin: bottom left;
+}
+
+/* ---------- Dock ---------- */
+
+#optimizr-toolbar.otb--dock {
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    display: grid;
+    justify-items: center;
+}
+
+#optimizr-toolbar .otb-dock {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 5px;
+    border-radius: 14px;
+    white-space: nowrap;
+}
+
+#optimizr-toolbar .otb-dock .otb-primary {
+    height: 34px;
+}
+
+#optimizr-toolbar .otb-vsep {
+    width: 1px;
+    height: 22px;
+    margin: 0 4px;
+    background: var(--otb-line);
+}
+
+#optimizr-toolbar .otb-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 9px;
+    font-weight: 500;
+}
+
+#optimizr-toolbar .otb-chip:hover,
+#optimizr-toolbar .otb-chip[aria-expanded="true"] {
+    background: var(--otb-hover);
+}
+
+#optimizr-toolbar .otb-me .otb-badge {
+    position: absolute;
+    top: -3px;
+    right: -4px;
+    transform: scale(0.85);
+}
+
+#optimizr-toolbar .otb-me .otb-state {
+    top: -1px;
+    left: 0;
+    right: auto;
+    width: 10px;
+    height: 10px;
+}
+
+#optimizr-toolbar .otb-pop {
+    position: absolute;
+    bottom: 54px;
+    width: min(300px, calc(100vw - 32px));
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding: 8px;
+    border-radius: 14px;
+    white-space: normal;
+}
+
+#optimizr-toolbar.otb--dock .otb-maint {
+    position: absolute;
+    bottom: 54px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    box-shadow: var(--otb-shadow);
+}
+
+#optimizr-toolbar.otb--dock.has-pop .otb-maint {
+    display: none;
+}
+
+/* ---------- Fiche de la page ---------- */
+
+#optimizr-toolbar.otb--sheet {
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+#optimizr-toolbar.otb--sheet .otb-tab,
+#optimizr-toolbar.otb--sheet .otb-panel {
+    pointer-events: auto;
+}
+
+#optimizr-toolbar.otb--sheet.otb--right {
+    right: env(safe-area-inset-right, 0px);
+}
+
+#optimizr-toolbar.otb--sheet.otb--left {
+    left: env(safe-area-inset-left, 0px);
+}
+
+#optimizr-toolbar .otb-tab {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 52px;
+    text-align: center;
+}
+
+#optimizr-toolbar.otb--right .otb-tab {
+    border-right: 0;
+    border-radius: 12px 0 0 12px;
+}
+
+#optimizr-toolbar.otb--left .otb-tab {
+    border-left: 0;
+    border-radius: 0 12px 12px 0;
+}
+
+#optimizr-toolbar .otb-tab .otb-logo {
+    width: 20px;
+    height: 20px;
+}
+
+#optimizr-toolbar.otb--sheet .otb-panel {
+    position: fixed;
+    top: 12px;
+    bottom: 12px;
+    width: min(330px, calc(100vw - 24px));
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#optimizr-toolbar.otb--sheet .otb-panel[hidden] {
+    display: none !important;
+}
+
+#optimizr-toolbar.otb--sheet.otb--right .otb-panel {
+    right: calc(12px + env(safe-area-inset-right, 0px));
+}
+
+#optimizr-toolbar.otb--sheet.otb--left .otb-panel {
+    left: calc(12px + env(safe-area-inset-left, 0px));
+}
+
+#optimizr-toolbar.otb--sheet.is-open .otb-tab {
+    visibility: hidden;
+}
+
+#optimizr-toolbar .otb-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 0 6px 4px;
+}
+
+#optimizr-toolbar .otb-top strong {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#optimizr-toolbar.otb--sheet .otb-page__title {
+    font-size: 18px;
+    white-space: normal;
+}
+
+#optimizr-toolbar.otb--sheet .otb-foot {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--otb-line);
+}
+
+/* ---------- Petits écrans et accessibilité ---------- */
+
+@media (max-width: 600px) {
+    #optimizr-toolbar {
+        --otb-gap: 14px;
+    }
+
+    #optimizr-toolbar .otb-hide-sm {
+        display: none;
+    }
+
+    #optimizr-toolbar .otb-chip {
+        padding: 0 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #optimizr-toolbar .otb-panel,
+    #optimizr-toolbar .otb-pop {
+        animation: none;
+    }
+
+    #optimizr-toolbar .otb-bubble {
+        transition: none;
+    }
+}
+
+@media print {
+    #optimizr-toolbar {
+        display: none !important;
+    }
+}
