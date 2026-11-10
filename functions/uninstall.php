@@ -28,7 +28,7 @@ function haptic_uninstall_groups()
         ],
         'logs'     => [
             'label' => __('Logs and history', 'optimizr'),
-            'help'  => __('Pages not found, security log, sitemap history, AI usage, link analysis.', 'optimizr'),
+            'help'  => __('Pages not found, conversion counts, security log, sitemap history, AI usage, link analysis.', 'optimizr'),
         ],
     ];
 }
@@ -73,6 +73,10 @@ function haptic_uninstall_log_options()
         'haptic_indexnow_last',
         'haptic_audit_results',
         'haptic_audit_history',
+        // Comptes de l'onglet Suivi (table {prefix}optimizr_conversions)
+        'haptic_tracking_db',
+        'haptic_tracking_since',
+        'haptic_conversions_seen',
     ];
 }
 
@@ -99,6 +103,7 @@ function haptic_uninstall_site()
     wp_unschedule_hook('haptic_ai_alt_on_upload');
     // Préchargement du cache d'Optimizr Pro en attente
     wp_clear_scheduled_hook('haptic_cache_preload_run');
+    wp_clear_scheduled_hook('haptic_tracking_cleanup');
     // Empreinte du robots.txt écrit par Optimizr : gardée si le fichier n'a pas pu être supprimé, inutile désormais
     delete_option('haptic_robots_txt_hash');
 
@@ -124,6 +129,8 @@ function haptic_uninstall_site()
         }
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- suppression, à la désinstallation, d'une table propre au plugin
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}optimizr_404");
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- suppression, à la désinstallation, d'une table propre au plugin
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}optimizr_conversions");
         // Adresses IP déjà vues pour l'alerte de connexion (métadonnée propre à chaque compte, partagée sur un multisite)
         if (!is_multisite() || is_main_site()) {
             delete_metadata('user', 0, 'haptic_sec_known_ips', '', true);

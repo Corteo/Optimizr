@@ -1351,8 +1351,8 @@ msgid "Logs and history"
 msgstr "Journaux et historiques"
 
 #: functions/uninstall.php
-msgid "Pages not found, security log, sitemap history, AI usage, link analysis."
-msgstr "Pages introuvables, journal de sécurité, historique du sitemap, consommation de l'IA, analyse des liens."
+msgid "Pages not found, conversion counts, security log, sitemap history, AI usage, link analysis."
+msgstr "Pages introuvables, comptes des conversions, journal de sécurité, historique du sitemap, consommation de l'IA, analyse des liens."
 
 #: functions/uninstall-admin.php
 msgid "Plugin deletion"
@@ -3433,3 +3433,235 @@ msgstr "WooCommerce : page de confirmation de commande, avec le montant (hors li
 msgid "WooCommerce: product added to the cart, from a product page or a list."
 msgstr "WooCommerce : produit ajouté au panier, depuis sa page ou une liste."
 
+#: functions/tracking.php
+msgid "Contacts"
+msgstr "Contacts"
+
+#: functions/tracking.php
+msgid "Appointments and visits"
+msgstr "Rendez-vous et visites"
+
+#: functions/tracking.php
+msgid "Engagement"
+msgstr "Engagement"
+
+#: functions/tracking.php
+msgid "Shop"
+msgstr "Boutique"
+
+#: functions/tracking.php
+msgid "The consent banner is off"
+msgstr "Le bandeau de consentement est désactivé"
+
+#: functions/tracking.php
+msgid "No conversion is detected or counted while it is off."
+msgstr "Aucune conversion n’est repérée ni comptée tant qu’il est désactivé."
+
+#: functions/tracking.php
+msgid "%s: never seen"
+msgstr "%s : jamais vue"
+
+#: functions/tracking.php
+msgid "Tracked for more than two weeks without a single one. Check that it can still happen on the site, or stop tracking it."
+msgstr "Suivie depuis plus de deux semaines sans une seule. Vérifiez qu’elle peut encore se produire sur le site, ou arrêtez de la suivre."
+
+#: functions/tracking.php
+msgid "%1$s: none for %2$d day"
+msgid_plural "%1$s: none for %2$d days"
+msgstr[0] "%1$s : aucune depuis %2$d jour"
+msgstr[1] "%1$s : aucune depuis %2$d jours"
+
+#: functions/tracking.php
+msgid "Usually about %s a day. Try it yourself to check that it still works."
+msgstr "D’habitude environ %s par jour. Essayez vous-même pour vérifier que cela fonctionne encore."
+
+#: functions/tracking.php
+msgid "Many abandoned carts"
+msgstr "Beaucoup de paniers abandonnés"
+
+#: functions/tracking.php
+msgid "%s of the products added to the cart do not reach the checkout."
+msgstr "%s des produits ajoutés au panier n’arrivent pas jusqu’à la commande."
+
+#: functions/tracking.php
+msgctxt "admin tab"
+msgid "Tracking"
+msgstr "Suivi"
+
+#: functions/tracking.php
+msgid "Today"
+msgstr "Aujourd’hui"
+
+#: functions/tracking.php
+msgid "Yesterday"
+msgstr "Hier"
+
+#: functions/tracking.php
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "il y a %d jour"
+msgstr[1] "il y a %d jours"
+
+#: functions/tracking.php
+msgid "What your visitors do: contacts, appointments, sales. Counted on the site, without a cookie."
+msgstr "Ce que font vos visiteurs : contacts, rendez-vous, ventes. Compté sur le site, sans cookie."
+
+#: functions/tracking.php
+msgid "Period"
+msgstr "Période"
+
+#: functions/tracking.php
+msgid "%d days"
+msgstr "%d jours"
+
+#: functions/tracking.php
+msgid "Where visitors come from"
+msgstr "D’où viennent les visiteurs"
+
+#: functions/tracking.php
+msgid "With Optimizr Pro, visits and conversions for each source (Google search, Google Ads, social networks…) from Google Analytics, next to these figures."
+msgstr "Avec Optimizr Pro, les visites et les conversions de chaque source (recherche Google, Google Ads, réseaux sociaux…) d’après Google Analytics, à côté de ces chiffres."
+
+#: functions/tracking.php
+msgid "Last %d days"
+msgstr "%d derniers jours"
+
+#: functions/tracking.php
+msgid "conversion"
+msgid_plural "conversions"
+msgstr[0] "conversion"
+msgstr[1] "conversions"
+
+#: functions/tracking.php
+msgid "· %s a day"
+msgstr "· %s par jour"
+
+#: functions/tracking.php
+msgid "compared with the previous %d days"
+msgstr "par rapport aux %d jours précédents"
+
+#: functions/tracking.php
+msgid "Counted since %s."
+msgstr "Compté depuis le %s."
+
+#: functions/tracking.php
+msgid "Sales"
+msgstr "Ventes"
+
+#: functions/tracking.php
+msgid "%s order"
+msgid_plural "%s orders"
+msgstr[0] "%s commande"
+msgstr[1] "%s commandes"
+
+#: functions/tracking.php
+msgid "<strong>%s of conversions</strong> come from visitors who refused cookies. Optimizr counts them; Google Analytics and Google Ads do not see them."
+msgstr "<strong>%s des conversions</strong> viennent de visiteurs qui ont refusé les cookies. Optimizr les compte ; Google Analytics et Google Ads ne les voient pas."
+
+#: functions/tracking.php
+msgid "%s seen by Google"
+msgstr "%s vues par Google"
+
+#: functions/tracking.php
+msgid "%s without consent"
+msgstr "%s sans consentement"
+
+#: functions/tracking.php
+msgid "M j"
+msgstr "j M"
+
+#: functions/tracking.php
+msgid "Conversions per day"
+msgstr "Conversions par jour"
+
+#: functions/tracking.php
+msgid "Week of %s"
+msgstr "Semaine du %s"
+
+#: functions/tracking.php
+msgid "Conversions by action"
+msgstr "Conversions par action"
+
+#: functions/tracking.php
+msgid "%s action tracked"
+msgid_plural "%s actions tracked"
+msgstr[0] "%s action suivie"
+msgstr[1] "%s actions suivies"
+
+#: functions/tracking.php
+msgid "Action"
+msgstr "Action"
+
+#: functions/tracking.php
+msgid "Number"
+msgstr "Nombre"
+
+#: functions/tracking.php
+msgid "Change"
+msgstr "Évolution"
+
+#: functions/tracking.php
+msgid "Trend"
+msgstr "Tendance"
+
+#: functions/tracking.php
+msgid "Last"
+msgstr "Dernière"
+
+#: functions/tracking.php
+msgid "step, not counted in the total"
+msgstr "étape, non comptée dans le total"
+
+#: functions/tracking.php
+msgid "A greyed-out action is not tracked."
+msgstr "Une action grisée n’est pas suivie."
+
+#: functions/tracking.php
+msgid "Choose the tracked actions →"
+msgstr "Choisir les actions suivies →"
+
+#: functions/tracking.php
+msgid "Pages that convert"
+msgstr "Pages qui convertissent"
+
+#: functions/tracking.php
+msgid "page where the action happened"
+msgstr "page où l’action a eu lieu"
+
+#: functions/tracking.php
+msgid "To check"
+msgstr "À vérifier"
+
+#: functions/tracking.php
+msgid "%s point"
+msgid_plural "%s points"
+msgstr[0] "%s point"
+msgstr[1] "%s points"
+
+#: functions/tracking.php
+msgid "Nothing to report"
+msgstr "Rien à signaler"
+
+#: functions/tracking.php
+msgid "Every tracked action is behaving as usual."
+msgstr "Chaque action suivie se comporte comme d’habitude."
+
+#: functions/tracking.php
+msgid "Fix →"
+msgstr "Corriger →"
+
+#: functions/tracking.php
+msgid "excluding shipping and taxes"
+msgstr "hors livraison et taxes"
+
+#: functions/tracking.php
+msgid "Orders"
+msgstr "Commandes"
+
+#: functions/tracking.php
+msgid "Average order"
+msgstr "Panier moyen"
+
+#: functions/tracking.php
+msgid "%s stop before this step"
+msgstr "%s s’arrêtent avant cette étape"

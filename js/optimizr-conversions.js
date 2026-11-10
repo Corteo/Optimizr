@@ -11,7 +11,8 @@
  * - vers gtag() (Google Analytics 4, Google Ads), qui applique le Google Consent Mode v2 ;
  * - vers le dataLayer de Google Tag Manager : { event: 'optimizr_conversion', conversion_action, conversion_event } ;
  * - en évènement DOM « optimizr:conversion » sur document, pour les extensions (Optimizr Pro : Google Ads, Meta).
- * Rien n'est envoyé à un outil que tarteaucitron.js n'a pas chargé.
+ * Rien n'est envoyé à un outil que tarteaucitron.js n'a pas chargé. Un signal anonyme compte la conversion sur le
+ * site (onglet Suivi, functions/tracking.php), que le visiteur ait accepté les cookies ou non.
  * Autres formulaires ou boutons : window.optimizrConversion('form', { form_id: 'devis' }).
  */
 (function () {
@@ -56,13 +57,24 @@
         }
         document.dispatchEvent(custom);
 
-        // Date de la dernière conversion, pour l'onglet Cookies & RGPD (aucune donnée du visiteur)
+        // Compte anonyme pour l'onglet Suivi : action, chemin de la page, accord du visiteur pour la mesure
+        // d'audience ; numéro de commande pour un achat (le montant est relu côté serveur). Ni cookie ni donnée du visiteur.
         if (config.ping && navigator.sendBeacon && window.FormData) {
             var body = new FormData();
             body.append('action', 'haptic_conversion_seen');
             body.append('type', action);
+            body.append('page', window.location.pathname);
+            body.append('consent', consentState());
+            if (action === 'purchase' && config.woo && config.woo.purchase) body.append('order', config.woo.purchase.order || '');
             navigator.sendBeacon(config.ping, body);
         }
+    }
+
+    // 1 : Google Analytics ou Tag Manager accepté ; 0 : refusé ou pas encore choisi ; 2 : aucun outil de mesure
+    function consentState() {
+        if (!config.gtag && !config.gtm) return '2';
+        var state = window.tarteaucitron && window.tarteaucitron.state ? window.tarteaucitron.state : {};
+        return (config.gtag && state.gtag === true) || (config.gtm && state.googletagmanager === true) ? '1' : '0';
     }
 
     // API publique : formulaires d'autres extensions, boutons du thème

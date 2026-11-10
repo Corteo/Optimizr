@@ -4,6 +4,13 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.16.0] - 2026-11-10
+
+### Ajouté
+- **Onglet « Suivi »** (après le tableau de bord, module Cookies & RGPD, `functions/tracking.php`) : tableau de bord des conversions sur 7, 30 ou 90 jours. Synthèse (total, moyenne par jour, évolution par rapport à la période précédente, contacts, rendez-vous et visites, engagement, ventes WooCommerce), graphique empilé par jour (par semaine sur 90 jours), **part des conversions faites par des visiteurs qui ont refusé les cookies** (que Google Analytics et Google Ads ne voient pas), conversions par action avec évolution, courbe et dernière vue, **points à vérifier** (bandeau désactivé, action qui ne reçoit plus rien alors qu'elle en recevait, action suivie jamais vue en deux semaines, paniers abandonnés), pages qui convertissent, boutique (ventes, commandes, panier moyen, entonnoir panier → commande). Optimizr Pro y ajoute les sources de visiteurs de Google Analytics 4 (actions `haptic_tracking_main` et `haptic_tracking_aside`, filtres `haptic_tracking_alerts` et `haptic_tracking_action_groups`).
+- **Comptes sur le site** : le signal anonyme `haptic_conversion_seen` porte désormais le chemin de la page (sans paramètres) et l'accord du visiteur pour la mesure d'audience (état tarteaucitron de Google Analytics ou Tag Manager), comptés par jour dans la table `{prefix}optimizr_conversions`. Ni cookie, ni adresse IP, ni donnée du visiteur ; au plus 30 signaux par minute et par adresse (hachée, gardée une minute). Le montant d'une commande est relu sur la commande (clé vérifiée), comptée une seule fois (méta `_haptic_conversion_counted`). Comptes de plus de 400 jours effacés chaque jour.
+- La désinstallation avec « Journaux et historique » supprime aussi la table des comptes.
+
 ## [7.15.0] - 2026-11-10
 
 ### Ajouté
