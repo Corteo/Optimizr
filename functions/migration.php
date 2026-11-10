@@ -753,7 +753,7 @@ function haptic_migration_solid_import()
     }
     if (!empty($settings['login_slug'])) {
         /* translators: %s: login URL */
-        $message .= ' ' . sprintf(__('Login address: %s', 'optimizr'), home_url('/' . $settings['login_slug']));
+        $message .= ' ' . sprintf(__('Login address: %s', 'optimizr'), haptic_sec_login_url(null, $settings['login_slug']));
     }
     return $message;
 }
