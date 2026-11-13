@@ -1405,8 +1405,8 @@ msgid "Title, description and OpenGraph tags, with a SEO box in the editor."
 msgstr "Balises titre, description et OpenGraph, avec un encart SEO dans l'éditeur."
 
 #: functions/admin-ui.php
-msgid "Custom login URL, login attempt limits, neutral error messages and login alerts."
-msgstr "Adresse de connexion personnalisée, limitation des tentatives, messages d'erreur neutres et alertes de connexion."
+msgid "Custom login URL, login attempt limits, neutral error messages, login alerts and comments turned off."
+msgstr "Adresse de connexion personnalisée, limitation des tentatives, messages d'erreur neutres, alertes de connexion et désactivation des commentaires."
 
 #: functions/admin-ui.php
 msgid "Default titles and descriptions, used for any content that has none."
@@ -3673,3 +3673,11 @@ msgstr "Type Évènements prêt à l’emploi et types de contenu personnalisés
 #: functions/admin-ui.php
 msgid "Section"
 msgstr "Rubrique"
+
+#: functions/security-comments.php
+msgid "Turns off comments and pings everywhere on the site: forms and existing comments are hidden, comment feeds and the comments REST API are removed, and the Comments menu disappears from the dashboard and the toolbar. Nothing is deleted: turning this off brings comments back as they were."
+msgstr "Désactive les commentaires et les pings sur tout le site : formulaires et commentaires existants masqués, flux et API REST des commentaires retirés, menu Commentaires retiré de l'administration et de la barre d'outils. Rien n'est supprimé : désactiver ce réglage rend les commentaires tels qu'ils étaient."
+
+#: functions/security-comments.php
+msgid "Turn off comments"
+msgstr "Désactiver les commentaires"

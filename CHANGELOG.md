@@ -4,6 +4,11 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.18.0] - 2026-11-13
+
+### Ajouté
+- **Désactivation des commentaires** (onglet Sécurité, carte « Commentaires », option `haptic_sec_disable_comments`, désactivée par défaut, `functions/security-comments.php`) : commentaires et pings fermés sur tous les contenus (`comments_open`, `pings_open`, statut par défaut des nouveaux contenus, prise en charge `comments` et `trackbacks` retirée des types de contenu) ; commentaires existants masqués sur le site (modèle de commentaires vide, blocs de commentaires des thèmes en blocs, compteurs à zéro, script `comment-reply` et widget « Commentaires récents » retirés) ; flux de commentaires retirés des liens du `<head>` et redirigés en 301 vers la page ou l'accueil ; en-tête `X-Pingback` et méthodes `pingback.*` de XML-RPC retirés ; routes `/wp/v2/comments` de l'API REST supprimées ; menu Commentaires, écrans `edit-comments.php` et `comment.php` (redirigés vers le tableau de bord), widgets et compteurs de commentaires du tableau de bord masqués ; nœud Commentaires retiré de la barre d'administration et de la barre flottante. Rien n'est modifié en base : désactiver le réglage rend les commentaires tels qu'ils étaient. Filtre `haptic_comments_disabled`.
+
 ## [7.17.0] - 2026-11-10
 
 ### Modifié
