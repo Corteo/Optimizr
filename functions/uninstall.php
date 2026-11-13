@@ -113,6 +113,9 @@ function haptic_uninstall_site()
         haptic_filesystem()->rmdir($log_dir, true);
     }
 
+    // Toujours : dernière release GitHub en cache (mises à jour de la version GitHub)
+    delete_site_transient('haptic_github_release');
+
     // Toujours : caches temporaires (verrous de connexion, notices, token de mise à jour…)
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- suppression des transients par préfixe, qu'aucune fonction WordPress ne permet
     $wpdb->query(

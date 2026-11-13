@@ -40,10 +40,10 @@ done
     sed -i.bak '/build:github-only/d' "$file" && rm -f "$file.bak"
 done
 
-# Garde-fous : readme.txt complété, aucun système de mise à jour hors WordPress.org (Plugin Update Checker, retiré en 6.0.0)
-if grep -rqE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out"; then
+# Garde-fous : readme.txt complété, aucun système de mise à jour hors WordPress.org (Plugin Update Checker, retiré en 6.0.0 ; releases GitHub, functions/github-updates.php)
+if grep -rqE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token|api\.github\.com|github-updates\.php' "$out"; then
     echo "Erreur : du code de mise à jour GitHub subsiste dans $out" >&2
-    grep -rnE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token' "$out" >&2
+    grep -rnE 'plugin-update-checker|PucFactory|token\.php|haptic_get_github_token|api\.github\.com|github-updates\.php' "$out" >&2
     exit 1
 fi
 hidden="$(find "$out" -mindepth 1 -name '.*')"

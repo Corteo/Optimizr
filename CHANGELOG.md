@@ -4,6 +4,16 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.19.0] - 2026-11-13
+
+### Ajouté
+- **Mises à jour depuis les releases GitHub** (version GitHub seulement, `functions/github-updates.php`) : la dernière release publique du dépôt (tag `vX.Y.Z`, archive `optimizr-X.Y.Z.zip`) est proposée dans Tableau de bord › Mises à jour et Extensions, mises à jour automatiques comprises, et affichée dans la ligne Optimizr du tableau de bord. Une requête anonyme à l'API GitHub, en cache 12 heures (1 heure après un échec, cache ignoré par « Vérifier à nouveau ») ; aucune licence, aucun compte, aucune donnée du site envoyée. « Voir les détails » affiche les notes de la release. Une extension installée dans un dossier autre que `optimizr` est mise à jour en place. Filtre `haptic_github_updates_enabled`.
+- Dès que la réponse de WordPress.org contient Optimizr (slug `optimizr`), ce module s'efface : les mises à jour viennent de WordPress.org.
+
+### Modifié
+- `bin/build-wporg.sh` retire `functions/github-updates.php` (`.distignore`) et la ligne qui le charge (`build:github-only`), et échoue s'il reste une adresse `api.github.com` dans la version WordPress.org.
+- La désinstallation efface la release GitHub en cache.
+
 ## [7.18.1] - 2026-11-13
 
 ### Corrigé

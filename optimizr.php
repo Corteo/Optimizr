@@ -4,7 +4,7 @@
  * Plugin Name: Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.18.1
+ * Version: 7.19.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.18.1');
+define('HAPTIC_OPTIMIZR_VERSION', '7.19.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -51,6 +51,8 @@ require_once(__DIR__ . '/functions/cache-files.php');
 require_once(__DIR__ . '/functions/tabs.php');
 require_once(__DIR__ . '/functions/tools.php');
 require_once(__DIR__ . '/functions/migration.php');
+// Mises à jour depuis les releases GitHub : version GitHub seulement, retiré par bin/build-wporg.sh (.distignore et ligne ci-dessous)
+require_once(__DIR__ . '/functions/github-updates.php'); // build:github-only
 require_once(__DIR__ . '/functions/audit.php');
 require_once(__DIR__ . '/functions/uninstall.php');
 require_once(__DIR__ . '/functions/uninstall-admin.php');
