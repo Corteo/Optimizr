@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.18.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.19.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -94,11 +94,11 @@ Toutes les protections sont désactivées par défaut et s'activent une à une.
 
 ## Installation
 
-1. Récupérez l'archive ZIP du plugin (branche `stable` du dépôt GitHub).
+1. Récupérez l'archive `optimizr-X.Y.Z.zip` de la [dernière release GitHub](https://github.com/Corteo/Optimizr/releases/latest).
 2. Dans l'administration WordPress, allez dans **Extensions › Ajouter une extension › Téléverser une extension** et envoyez l'archive.
 3. Activez **Optimizr**.
 
-Le dossier du plugin doit s'appeler `optimizr`. Les mises à jour viennent de WordPress.org : une fois Optimizr publié sous le slug `optimizr`, elles sont proposées dans **Tableau de bord › Mises à jour** et dans **Extensions**, comme pour toute extension. Avant cela, une nouvelle version s'installe à la main de la même façon (« Remplacer la version installée »). Les éventuelles migrations de la base s'exécutent au chargement suivant.
+Le dossier du plugin doit s'appeler `optimizr`. Depuis 7.19.0, les nouvelles versions publiées en release GitHub sont proposées dans **Tableau de bord › Mises à jour** et dans **Extensions**, comme pour toute extension (mises à jour automatiques comprises). Une fois Optimizr publié sur WordPress.org sous le slug `optimizr`, elles viendront de là. Les sites en version antérieure à 7.19.0 installent celle-ci une fois à la main (« Remplacer la version installée »). Les éventuelles migrations de la base s'exécutent au chargement suivant.
 
 ### Mise à jour depuis la 1.5
 
@@ -244,10 +244,10 @@ Pour publier une version :
 1. Modifiez le numéro aux trois endroits : l'en-tête `Version` et la constante `HAPTIC_OPTIMIZR_VERSION` de `optimizr.php`, et `Stable tag` dans `readme.txt` (avec une entrée dans sa section « Changelog »).
 2. Déplacez les entrées de la section « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous le nouveau numéro, avec la date.
 3. Vérifiez que le numéro concorde partout avec `bin/check-version.sh` (en-tête, constante, `Stable tag` et changelog de `readme.txt`, CHANGELOG.md et « Version actuelle » de ce README) ; l'intégration continue le refait sur chaque pull request.
-4. Construisez le zip WordPress.org (`bin/build-wporg.sh`) et publiez-le dans le dépôt SVN de WordPress.org : c'est de là que les sites reçoivent la mise à jour.
-5. Publiez la release GitHub avec le workflow « Release » (onglet Actions › Release › Run workflow, numéro `X.Y.Z`) : tag `vX.Y.Z`, titre `X.Y.Z` et archive `optimizr-X.Y.Z.zip`, dont le dossier racine est `optimizr`.
+4. Publiez la release GitHub avec le workflow « Release » (onglet Actions › Release › Run workflow, numéro `X.Y.Z`) : tag `vX.Y.Z`, titre `X.Y.Z` et archive `optimizr-X.Y.Z.zip`, dont le dossier racine est `optimizr`. Dans les 12 heures, les sites installés depuis GitHub se voient proposer la mise à jour.
+5. Une fois Optimizr publié sur WordPress.org : construisez le zip WordPress.org (`bin/build-wporg.sh`) et publiez-le dans le dépôt SVN de WordPress.org.
 
-Depuis 6.0.0, Optimizr ne se met plus à jour depuis GitHub (Plugin Update Checker retiré) : WordPress propose les versions publiées sur WordPress.org, y compris aux sites installés depuis GitHub, tant que le dossier du plugin s'appelle `optimizr` comme le slug. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
+Depuis 7.19.0, la version GitHub se met à jour depuis les releases publiques du dépôt (`functions/github-updates.php`, sans bibliothèque) : une requête anonyme à `api.github.com/repos/Corteo/Optimizr/releases/latest`, en cache 12 heures (1 heure après un échec), ignorée si l'archive `optimizr-X.Y.Z.zip` manque ou si la release est un brouillon ou une pré-version. Aucune licence, aucun compte, aucune donnée du site. « Voir les détails » affiche les notes de la release. Dès que la réponse de WordPress.org contient Optimizr, ce module s'efface et WordPress.org prend le relais. Filtre `haptic_github_updates_enabled` pour le couper. Pour essayer une version de `main` sur un site de test, installez son zip à la main (Extensions › Ajouter une extension › Téléverser).
 
 ### Intégration continue
 
@@ -260,7 +260,7 @@ Deux workflows GitHub Actions, dans `.github/workflows/` (exclus du zip WordPres
 
 Le plugin existe en deux distributions construites à partir du même code :
 
-- **GitHub** (ce dépôt tel quel) : sans mise à jour automatique propre ; WordPress lui propose celles de WordPress.org.
+- **GitHub** (ce dépôt tel quel) : mises à jour depuis les releases GitHub (`functions/github-updates.php`), jusqu'à ce que WordPress.org connaisse Optimizr.
 - **WordPress.org** : le répertoire interdit les mises à jour venant d'ailleurs. `bin/build-wporg.sh [slug]` produit `dist/<slug>-<version>.zip` sans les fichiers de développement (liste dans `.distignore`), et retire des fichiers PHP les lignes marquées `build:github-only`. Le script échoue s'il trouve un système de mise à jour hors WordPress.org ou un fichier caché, ou si `Contributors` n'est pas renseigné dans `readme.txt`. Les icônes et bannières de la fiche WordPress.org sont dans `.wordpress-org/`, à envoyer dans le dossier `assets/` du dépôt SVN (pas dans le zip).
 
 Plugin Check se passe sur ce zip, installé dans un dossier `optimizr` : sur la version GitHub, il signale à tort `bin/`, les fichiers cachés et, si le dossier s'appelle `Optimizr`, chaque texte traduit (domaine `optimizr` attendu égal au nom du dossier).

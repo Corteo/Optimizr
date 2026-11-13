@@ -17,6 +17,8 @@ README.md
 .wordpress-org
 CHANGELOG.md
 functions/seo/sitemap.log
+# Mises à jour depuis les releases GitHub (interdites sur WordPress.org)
+functions/github-updates.php
 
 # Fichiers de développement de Tarteaucitron
 assets/tarteaucitron/package.json
