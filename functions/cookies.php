@@ -405,6 +405,8 @@ function haptic_tarteaucitron_inline_script()
 
     // Position lue par css/optimizr-cookies.css (Tarteaucitron donne la même classe au haut et au milieu)
     $js = 'document.documentElement.setAttribute("data-optimizr-tac", ' . wp_json_encode($config['orientation']) . ");\n";
+    // Version ajoutée à tarteaucitron.services.min.js (chargé par la librairie) : le cache navigateur se vide à chaque mise à jour
+    $js .= 'window.tarteaucitronServicesVersion = ' . wp_json_encode('1.21.0-' . HAPTIC_OPTIMIZR_VERSION) . ";\n";
     $js .= 'tarteaucitron.init(' . wp_json_encode($config, JSON_HEX_TAG) . ");\n";
 
     // Services réglés dans l'onglet Cookies : variables attendues par Tarteaucitron, puis le service

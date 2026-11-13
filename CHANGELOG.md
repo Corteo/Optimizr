@@ -4,6 +4,12 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.18.1] - 2026-11-13
+
+### Corrigé
+- **Taux de consentement à 0 % dans Google Ads** (Google Consent Mode v2) : tant que le visiteur n'avait pas répondu au bandeau, les services `gcmadstorage`, `gcmadsuserdata`, `gcmanalyticsstorage`, `gcmfunctionality`, `gcmpersonalization` et `gcmsecurity` de Tarteaucitron envoyaient `gtag('consent', 'update', … 'denied')` à chaque page. Google lisait ces mises à jour comme des refus explicites, et le diagnostic de la balise annonçait 100 % de signaux refusés, y compris hors EEE. Désormais, sans réponse, seul le consentement par défaut (`denied`, `wait_for_update`) est envoyé ; « refusé » ne part qu'après un vrai refus (cookie `!service=false`), « accordé » ne change pas. Correctif appliqué à `assets/tarteaucitron/tarteaucitron.services.js` et `.min.js`.
+- `tarteaucitron.services.min.js`, chargé par la librairie sans numéro de version, restait 30 jours dans le cache des navigateurs après une mise à jour : son adresse porte désormais `?ver=` (variable `window.tarteaucitronServicesVersion`, définie par `functions/cookies.php`, lue par `tarteaucitron.js` et `.min.js`).
+
 ## [7.18.0] - 2026-11-13
 
 ### Ajouté

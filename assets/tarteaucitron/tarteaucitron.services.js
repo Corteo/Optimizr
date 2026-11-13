@@ -332,7 +332,8 @@ tarteaucitron.services.gcmanalyticsstorage = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 analytics_storage: 'denied'
             });
@@ -360,7 +361,8 @@ tarteaucitron.services.gcmadstorage = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 ad_storage: 'denied'
             });
@@ -389,7 +391,8 @@ tarteaucitron.services.gcmadsuserdata = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 ad_user_data: 'denied',
                 ad_personalization: 'denied'
@@ -418,7 +421,8 @@ tarteaucitron.services.gcmpersonalization = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 personalization_storage: 'denied'
             });
@@ -446,7 +450,8 @@ tarteaucitron.services.gcmfunctionality = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 functionality_storage: 'denied'
             });
@@ -474,7 +479,8 @@ tarteaucitron.services.gcmsecurity = {
     "fallback": function () {
         "use strict";
 
-        if (tarteaucitron.parameters.googleConsentMode === true) {
+        // Optimizr : « refusé » seulement après un vrai refus, pas tant que le visiteur n'a pas choisi
+        if (tarteaucitron.parameters.googleConsentMode === true && tarteaucitron.cookie.read().indexOf('!' + this.key + '=false') >= 0) {
             window.tac_gtag('consent', 'update', {
                 security_storage: 'denied'
             });
