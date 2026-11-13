@@ -205,7 +205,7 @@ var tarteaucitron = {
             language = tarteaucitron.getLanguage(),
             useMinifiedJS = ((new URL(cdn,tarteaucitronPath).host == 'cdn.jsdelivr.net') || (tarteaucitronPath.indexOf('.min.') >= 0) || (tarteaucitronUseMin !== '')),
             pathToLang = cdn + 'lang/tarteaucitron.' + language + (useMinifiedJS ? '.min' : '') + '.js',
-            pathToServices = cdn + 'tarteaucitron.services' + (useMinifiedJS ? '.min' : '') + '.js',
+            pathToServices = cdn + 'tarteaucitron.services' + (useMinifiedJS ? '.min' : '') + '.js' + (window.tarteaucitronServicesVersion ? '?ver=' + encodeURIComponent(window.tarteaucitronServicesVersion) : ''), // Optimizr : version pour vider le cache navigateur
             linkElement = document.createElement('link'),
             defaults = {
                 "adblocker": false,
