@@ -43,7 +43,7 @@ function haptic_modules()
         ],
         'security' => [
             'label' => __('Security', 'optimizr'),
-            'desc'  => __('Custom login URL, login attempt limits, neutral error messages and login alerts.', 'optimizr'),
+            'desc'  => __('Custom login URL, login attempt limits, neutral error messages, login alerts and comments turned off.', 'optimizr'),
             'icon'  => 'lock',
             'tab'   => 'security',
         ],

@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.16.0\n"
+"Project-Id-Version: Optimizr 7.18.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1390,7 +1390,7 @@ msgid "Title, description and OpenGraph tags, with a SEO box in the editor."
 msgstr ""
 
 #: functions/admin-ui.php
-msgid "Custom login URL, login attempt limits, neutral error messages and login alerts."
+msgid "Custom login URL, login attempt limits, neutral error messages, login alerts and comments turned off."
 msgstr ""
 
 #: functions/admin-ui.php
@@ -3665,4 +3665,12 @@ msgstr ""
 
 #: functions/admin-ui.php
 msgid "Section"
+msgstr ""
+
+#: functions/security-comments.php
+msgid "Turns off comments and pings everywhere on the site: forms and existing comments are hidden, comment feeds and the comments REST API are removed, and the Comments menu disappears from the dashboard and the toolbar. Nothing is deleted: turning this off brings comments back as they were."
+msgstr ""
+
+#: functions/security-comments.php
+msgid "Turn off comments"
 msgstr ""

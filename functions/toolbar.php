@@ -209,7 +209,7 @@ function haptic_toolbar_context()
     }
 
     // À traiter
-    if (current_user_can('moderate_comments')) {
+    if (current_user_can('moderate_comments') && !(function_exists('haptic_comments_disabled') && haptic_comments_disabled())) {
         $pending = (int) wp_count_comments()->moderated;
         if ($pending > 0) {
             $ctx['comments'] = ['count' => $pending, 'url' => admin_url('edit-comments.php?comment_status=moderated')];

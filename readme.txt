@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.17.0
+Stable tag: 7.18.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,7 @@ An "Optimizr" menu in the admin bar, on the site and in the dashboard, opens the
 * Custom login URL, login attempt limiting (IP whitelist, trusted proxies and Cloudflare), neutral login error messages, email alert on administrator login from a new IP address.
 * Two-factor authentication with an authenticator app (TOTP codes computed by the plugin, no external service) or a code sent by email, backup codes, required for chosen roles.
 * "Secure your account" screen right after login: users set up two-factor authentication in a few seconds.
+* Turn off comments on the whole site: forms and existing comments hidden, comment feeds, pings and the comments REST API removed, Comments menu gone from the dashboard and the toolbar. Nothing is deleted.
 
 = Images =
 
@@ -84,6 +85,9 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.18.0 =
+* Comments can now be turned off on the whole site (Security tab): comment forms, existing comments, comment feeds, pings, the comments REST API and the Comments menu disappear. Nothing is deleted.
 
 = 7.17.0 =
 * The settings page now has a side menu: sections are grouped like the dashboard themes (Security & compliance, Visibility, Performance, Content & tools), instead of a single row of tabs. On small screens, the menu becomes a drop-down list.
