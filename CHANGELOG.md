@@ -4,6 +4,11 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.19.1] - 2026-11-15
+
+### Modifié
+- Version de maintenance, publiée pour vérifier sur des sites réels la mise à jour depuis les releases GitHub introduite en 7.19.0 (proposition dans Tableau de bord › Mises à jour, archive `optimizr-7.19.1.zip`, dossier racine `optimizr`). Aucun changement fonctionnel.
+
 ## [7.19.0] - 2026-11-13
 
 ### Ajouté
