@@ -4,6 +4,11 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.19.2] - 2026-11-15
+
+### Modifié
+- Seconde version de maintenance pour vérifier la mise à jour depuis les releases GitHub, maintenant que le dépôt est public : tant qu'il était privé, l'appel anonyme à l'API GitHub répondait 404 et aucune release n'était proposée. Aucun changement fonctionnel.
+
 ## [7.19.1] - 2026-11-15
 
 ### Modifié
