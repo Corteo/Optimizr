@@ -4,6 +4,16 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.20.0] - 2026-11-16
+
+### Ajouté
+- **Panneau « Optimizr » dans la médiathèque** (`functions/media-panel.php`) : dans la fiche de chaque image (fenêtre de la médiathèque en grille, modale média de l'éditeur, écran « Modifier le média »), Optimizr affiche :
+  - le format et le poids de l'image ; si elle a été convertie, son format d'origine et le gain (« WebP · 84 Ko, converti depuis JPEG (412 Ko, 80 % plus léger) ») ;
+  - sinon la raison : importée avant l'activation de la conversion, conversion désactivée (lien vers les réglages), GIF gardé pour son animation, image CMJN que le serveur ne sait pas convertir fidèlement, format exclu des réglages ;
+  - l'état du texte alternatif, mis à jour pendant la saisie dans le champ de WordPress.
+- Sans Optimizr Pro, une ligne présente ce que Pro ajoute au panneau (conversion de l'image, texte alternatif par IA).
+- Points d'extension `haptic_media_panel_items`, `haptic_media_panel_actions` et `haptic_media_panel_enabled`, et `window.optimizrMediaPanel` (`setStatus()`, `refresh()`) pour le script des actions.
+
 ## [7.19.2] - 2026-11-15
 
 ### Modifié

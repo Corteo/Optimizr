@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.19.2
+Stable tag: 7.20.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,7 @@ An "Optimizr" menu in the admin bar, on the site and in the dashboard, opens the
 
 * Uploaded JPEG and PNG images saved as WebP or AVIF (when the server supports it) by WordPress's own image editor, with a quality setting. No external service; the original file is kept.
 * Choice of the content types that accept a featured image.
+* "Optimizr" panel in the details of each image of the media library: format, weight and savings, conversion status, alternative text.
 
 = Lighthouse audit =
 
@@ -85,6 +86,9 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.20.0 =
+* New: "Optimizr" panel in the media library. In the details of an image (media library window, media modal, Edit Media screen), it shows the image format and weight, whether it was converted to WebP or AVIF and how much lighter it got, why it was not converted (conversion turned off, GIF, print image, excluded format) and whether its alternative text is filled in. Optimizr Pro adds its actions there.
 
 = 7.19.2 =
 * Second maintenance release used to check updates from GitHub releases now that the repository is public. No functional change.

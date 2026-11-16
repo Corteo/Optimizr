@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.18.0\n"
+"Project-Id-Version: Optimizr 7.20.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -973,7 +973,7 @@ msgstr ""
 msgid "F j, Y \\a\\\t H:i"
 msgstr ""
 
-#: functions/uninstall.php
+#: functions/uninstall.php functions/media-panel.php
 msgid "Settings"
 msgstr ""
 
@@ -1923,7 +1923,7 @@ msgstr ""
 msgid "Convert uploaded images"
 msgstr ""
 
-#: functions/images.php
+#: functions/images.php functions/media-panel.php
 msgid "Format"
 msgstr ""
 
@@ -2770,7 +2770,7 @@ msgstr ""
 msgid "Google Ads conversions, enhanced conversions and Meta (Pixel, Lead and Contact events, domain verification) are set up in the same wizard with Optimizr Pro."
 msgstr ""
 
-#: functions/campaigns.php:342
+#: functions/campaigns.php:342 functions/media-panel.php
 msgid "Learn more"
 msgstr ""
 
@@ -3673,4 +3673,56 @@ msgstr ""
 
 #: functions/security-comments.php
 msgid "Turn off comments"
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%1$s, converted from %2$s (%3$s, %4$s%% lighter)."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%1$s, converted from %2$s."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%s: already a light format."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%1$s, not converted to %2$s yet: it was uploaded before the conversion was turned on."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%s. Converting images to WebP or AVIF is turned off."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "Turn it on"
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%s: GIF images are never converted, so they keep their animation."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%s: print (CMYK) image, kept as JPEG because this server cannot convert its colours faithfully."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "%s: this format is excluded from conversion in the settings."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "Alternative text"
+msgstr ""
+
+#: functions/media-panel.php js/optimizr-media.js
+msgid "Filled in."
+msgstr ""
+
+#: functions/media-panel.php js/optimizr-media.js
+msgid "Missing. It describes the image to search engines and screen readers."
+msgstr ""
+
+#: functions/media-panel.php
+msgid "With Optimizr Pro: convert this image in one click and write its alternative text with AI."
 msgstr ""

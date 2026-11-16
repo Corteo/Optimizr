@@ -1,0 +1,105 @@
+/* Panneau « Optimizr » de la médiathèque (functions/media-panel.php) */
+.optimizr-media-panel {
+    --o-accent: #3858e9;
+    --o-ok: #00a32a;
+    --o-warn: #dba617;
+    --o-muted: #50575e;
+    margin: 4px 0 0;
+    padding: 10px 12px;
+    border: 1px solid #dcdcde;
+    border-left: 3px solid var(--o-accent);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #1e1e1e;
+    text-align: left;
+}
+
+.optimizr-media-panel__items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.optimizr-media-panel__item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 0 0 6px;
+}
+
+.optimizr-media-panel__item:last-child {
+    margin-bottom: 0;
+}
+
+.optimizr-media-panel__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--o-muted);
+}
+
+.optimizr-media-panel__icon svg {
+    width: 12px;
+    height: 12px;
+}
+
+.optimizr-media-panel__item.is-ok .optimizr-media-panel__icon { background: var(--o-ok); }
+.optimizr-media-panel__item.is-warn .optimizr-media-panel__icon { background: var(--o-warn); color: #1e1e1e; }
+.optimizr-media-panel__item.is-off .optimizr-media-panel__icon { background: #a7aaad; }
+.optimizr-media-panel__item.is-info .optimizr-media-panel__icon { background: var(--o-accent); }
+
+.optimizr-media-panel__body strong {
+    display: block;
+}
+
+.optimizr-media-panel__body a {
+    margin-left: 4px;
+}
+
+.optimizr-media-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.optimizr-media-panel__actions .button {
+    margin: 0;
+}
+
+.optimizr-media-panel__status {
+    margin: 8px 0 0;
+    color: var(--o-muted);
+}
+
+.optimizr-media-panel__status.is-error {
+    color: #d63638;
+}
+
+.optimizr-media-panel__pro {
+    margin: 10px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f1;
+    color: var(--o-muted);
+}
+
+/* Fenêtre de la médiathèque : le panneau prend toute la largeur sous le libellé */
+.compat-item .compat-field-optimizr th,
+.compat-item .compat-field-optimizr td {
+    display: block;
+    float: none;
+    width: auto;
+    text-align: left;
+}
+
+.compat-item .compat-field-optimizr th {
+    padding-bottom: 0;
+}

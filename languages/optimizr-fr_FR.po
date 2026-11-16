@@ -975,7 +975,7 @@ msgstr "j M, H:i"
 msgid "F j, Y \\a\\t H:i"
 msgstr "j F Y à H:i"
 
-#: functions/uninstall.php
+#: functions/uninstall.php functions/media-panel.php
 msgid "Settings"
 msgstr "Réglages"
 
@@ -1928,7 +1928,7 @@ msgstr "Formats d'image"
 msgid "Convert uploaded images"
 msgstr "Convertir les images importées"
 
-#: functions/images.php
+#: functions/images.php functions/media-panel.php
 msgid "Format"
 msgstr "Format"
 
@@ -2776,7 +2776,7 @@ msgstr "Choisissez les plateformes : l'assistant n'affiche que ce dont elles ont
 msgid "Google Ads conversions, enhanced conversions and Meta (Pixel, Lead and Contact events, domain verification) are set up in the same wizard with Optimizr Pro."
 msgstr "Les conversions Google Ads, les conversions améliorées et Meta (Pixel, événements Lead et Contact, validation du domaine) se règlent dans ce même assistant avec Optimizr Pro."
 
-#: functions/campaigns.php:342
+#: functions/campaigns.php:342 functions/media-panel.php
 msgid "Learn more"
 msgstr "En savoir plus"
 
@@ -3681,3 +3681,63 @@ msgstr "Désactive les commentaires et les pings sur tout le site : formulaires 
 #: functions/security-comments.php
 msgid "Turn off comments"
 msgstr "Désactiver les commentaires"
+
+#: functions/media-panel.php
+#, php-format
+msgid "%1$s, converted from %2$s (%3$s, %4$s%% lighter)."
+msgstr "%1$s, converti depuis %2$s (%3$s, %4$s %% plus léger)."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%1$s, converted from %2$s."
+msgstr "%1$s, converti depuis %2$s."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%s: already a light format."
+msgstr "%s : déjà un format léger."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%1$s, not converted to %2$s yet: it was uploaded before the conversion was turned on."
+msgstr "%1$s, pas encore converti en %2$s : l'image a été importée avant l'activation de la conversion."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%s. Converting images to WebP or AVIF is turned off."
+msgstr "%s. La conversion des images en WebP ou AVIF est désactivée."
+
+#: functions/media-panel.php
+msgid "Turn it on"
+msgstr "L'activer"
+
+#: functions/media-panel.php
+#, php-format
+msgid "%s: GIF images are never converted, so they keep their animation."
+msgstr "%s : les GIF ne sont jamais convertis, pour garder leur animation."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%s: print (CMYK) image, kept as JPEG because this server cannot convert its colours faithfully."
+msgstr "%s : image d'impression (CMJN), gardée en JPEG car ce serveur ne sait pas convertir fidèlement ses couleurs."
+
+#: functions/media-panel.php
+#, php-format
+msgid "%s: this format is excluded from conversion in the settings."
+msgstr "%s : ce format est exclu de la conversion dans les réglages."
+
+#: functions/media-panel.php
+msgid "Alternative text"
+msgstr "Texte alternatif"
+
+#: functions/media-panel.php js/optimizr-media.js
+msgid "Filled in."
+msgstr "Renseigné."
+
+#: functions/media-panel.php js/optimizr-media.js
+msgid "Missing. It describes the image to search engines and screen readers."
+msgstr "Manquant. Il décrit l'image aux moteurs de recherche et aux lecteurs d'écran."
+
+#: functions/media-panel.php
+msgid "With Optimizr Pro: convert this image in one click and write its alternative text with AI."
+msgstr "Avec Optimizr Pro : convertissez cette image en un clic et rédigez son texte alternatif avec l'IA."

@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.19.2 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.20.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -47,6 +47,7 @@ En option (onglet **Outils**, désactivée par défaut), une **barre flottante**
   - Images CMJN (JPEG préparé pour l'impression) : avec Imagick, converties en sRGB avec leur profil ICC, pour garder leurs couleurs ; avec GD, qui ignore les profils, elles restent en JPEG.
   - AVIF n'est proposé que si le serveur sait l'écrire (WordPress 6.5+, GD ou Imagick compilés avec AVIF) ; sinon, ou si l'hébergement change, les images passent en WebP.
   - Seules les images importées après l'activation sont converties. *Optimizr Pro :* conversion de la médiathèque existante.
+- **Panneau « Optimizr » de la médiathèque** : dans la fiche de chaque image (fenêtre de la médiathèque, modale média de l'éditeur, écran « Modifier le média »), le format et le poids de l'image, sa conversion en WebP ou AVIF et le gain obtenu, la raison si elle n'est pas convertie (conversion désactivée, GIF, image CMJN, format exclu des réglages) et l'état de son texte alternatif, mis à jour pendant la saisie. *Optimizr Pro* y ajoute ses actions : conversion de l'image, texte alternatif par IA.
 
 ### Cache
 Tout est désactivé par défaut. Sur un site existant, le module s'active depuis le tableau de bord.
@@ -137,6 +138,9 @@ Ouvrez le menu **Optimizr** dans la barre latérale de l'administration.
 | `haptic_site_health_checks` | filtre | Ajouter une vérification à l'état du site (en-tête du tableau de bord). Clés `module` ou `group` facultatives : thème auquel rattacher un point à régler (sinon déduit de l'onglet du lien). |
 | `haptic_dashboard_groups` | filtre | Thèmes du tableau de bord : libellé, icône, couleurs et modules de chacun. |
 | `haptic_dashboard_actions` | filtre | Actions rapides de l'en-tête du tableau de bord (`label`, `url`, `icon`). |
+| `haptic_media_panel_items` | filtre | Lignes d'état du panneau « Optimizr » de la médiathèque (`label`, `status` : ok, warn, off ou info, `text`, `link`, `link_label`). |
+| `haptic_media_panel_actions` | filtre | Boutons (HTML) du panneau de la médiathèque ; `window.optimizrMediaPanel` (`setStatus()`, `refresh()`) sert à leur script. |
+| `haptic_media_panel_enabled` | filtre | `false` masque le panneau pour une image. |
 | `haptic_dashboard_versions` | action | Lignes de la carte « Versions et licence » ; `haptic_dashboard_version_row()` affiche une ligne. |
 | `haptic_module_status` | filtre | État d'un module sur le tableau de bord. |
 | `haptic_dashboard_search` | action | Contenu de la carte « Google Search » du tableau de bord (Search Console d'Optimizr Pro) ; sans elle, la carte présente la Search Console. |
@@ -217,6 +221,7 @@ functions/cache-serve.php Cache : service des pages avant WordPress (PHP natif, 
 functions/thumbnails.php Module Images : images à la une
 functions/images.php     Module Images : conversion des images importées en WebP ou AVIF
                          (+ class-haptic-image-editors.php : images CMJN ; assets/icc/ : profil sRGB, CC0)
+functions/media-panel.php Panneau « Optimizr » de la fiche des images de la médiathèque (+ css/optimizr-media.css, js/optimizr-media.js)
 functions/mails.php      Module Emails
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
 functions/security-2fa*.php  Double authentification : connexion (security-2fa.php), profil (security-2fa-profile.php, js/optimizr-2fa.js)
