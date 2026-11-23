@@ -252,7 +252,7 @@ function haptic_media_panel_enqueue()
 
     $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-media.css';
     $js  = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-media.js';
-    wp_enqueue_style('optimizr-media', HAPTIC_OPTIMIZR_URL . 'css/optimizr-media.css', [], filemtime($css));
+    wp_enqueue_style('optimizr-media', HAPTIC_OPTIMIZR_URL . 'css/optimizr-media.css', [haptic_tokens_style()], filemtime($css));
     wp_enqueue_script('optimizr-media', HAPTIC_OPTIMIZR_URL . 'js/optimizr-media.js', ['jquery', 'wp-i18n'], filemtime($js), true);
     wp_set_script_translations('optimizr-media', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 }

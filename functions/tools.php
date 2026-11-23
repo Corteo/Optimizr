@@ -299,7 +299,7 @@ function haptic_render_tools_tab()
 
     <?php if ($result) : ?>
         <?php if (!empty($result['error'])) : ?>
-            <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Import failed.', 'optimizr'); ?></strong> <?php echo esc_html($result['error']); ?></span></div>
+            <div class="optimizr-notice optimizr-notice--bad"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><strong><?php esc_html_e('Import failed.', 'optimizr'); ?></strong> <?php echo esc_html($result['error']); ?></span></div>
         <?php else : ?>
             <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><strong><?php
                 /* translators: %s: number of imported settings */

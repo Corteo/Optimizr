@@ -1666,7 +1666,7 @@ msgstr "Votre code pour vous connecter en tant que « %1$s » : %2$s\n\nIl est v
 
 #: functions/security-2fa.php
 msgid "Your code to confirm two-factor authentication for the account \"%1$s\": %2$s\n\nIt is valid for %3$s minutes.\n\nIf you did not request it, you can ignore this email."
-msgstr "Votre code pour confirmer la double authentification du compte « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous ne l'avez pas demandé, vous pouvez ignorer cet e-mail."
+msgstr "Votre code pour confirmer la double authentification du compte « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous ne l'avez pas demandé, vous pouvez ignorer cet email."
 
 #: functions/security-2fa.php
 msgid "[%s] Your verification code"
@@ -1686,11 +1686,11 @@ msgstr "Un nouveau code a été envoyé. Seul le dernier fonctionne."
 
 #: functions/security-2fa.php
 msgid "Invalid code. Check that you are using the latest email received."
-msgstr "Code invalide. Vérifiez que vous utilisez le dernier e-mail reçu."
+msgstr "Code invalide. Vérifiez que vous utilisez le dernier email reçu."
 
 #: functions/security-2fa.php
 msgid "The site could not send the email. Use one of your backup codes, or contact the administrator."
-msgstr "Le site n'a pas pu envoyer l'e-mail. Utilisez l'un de vos codes de secours, ou contactez l'administrateur."
+msgstr "Le site n'a pas pu envoyer l'email. Utilisez l'un de vos codes de secours, ou contactez l'administrateur."
 
 #: functions/security-2fa.php
 msgid "Enter the 6-digit code sent to %s."
@@ -1698,7 +1698,7 @@ msgstr "Saisissez le code à 6 chiffres envoyé à %s."
 
 #: functions/security-2fa.php
 msgid "No email? Check your spam folder, ask for a new code, or enter one of your backup codes."
-msgstr "Pas d'e-mail ? Regardez dans les indésirables, demandez un nouveau code, ou saisissez l'un de vos codes de secours."
+msgstr "Pas d'email ? Regardez dans les indésirables, demandez un nouveau code, ou saisissez l'un de vos codes de secours."
 
 #: functions/security-2fa.php
 msgid "Send a new code"
@@ -1710,7 +1710,7 @@ msgstr "Seconde étape"
 
 #: functions/security-2fa-profile.php
 msgid "code sent by email to %s"
-msgstr "code envoyé par e-mail à %s"
+msgstr "code envoyé par email à %s"
 
 #: functions/security-2fa-profile.php
 msgid "authentication app"
@@ -1722,7 +1722,7 @@ msgstr "Choisissez la nouvelle méthode. L'actuelle reste valable jusqu'à l'act
 
 #: functions/security-2fa-profile.php
 msgid "To change these settings, enter a code received by email, or a backup code:"
-msgstr "Pour modifier ces réglages, saisissez un code reçu par e-mail, ou un code de secours :"
+msgstr "Pour modifier ces réglages, saisissez un code reçu par email, ou un code de secours :"
 
 #: functions/security-2fa-profile.php
 msgid "To change these settings, enter a code from the app, or a backup code:"
@@ -1750,7 +1750,7 @@ msgstr "E-mail"
 
 #: functions/security-2fa-profile.php
 msgid "A code sent to your email address at each login. Nothing to install, but only as safe as your mailbox."
-msgstr "Un code envoyé à votre adresse e-mail à chaque connexion. Rien à installer, mais aussi sûr que votre boîte mail, pas plus."
+msgstr "Un code envoyé à votre adresse email à chaque connexion. Rien à installer, mais aussi sûr que votre boîte mail, pas plus."
 
 #: functions/security-2fa-profile.php
 msgid "Choose another method"
@@ -1770,7 +1770,7 @@ msgstr "2. Saisissez le code reçu :"
 
 #: functions/security-2fa-profile.php
 msgid "Codes will always be sent to this address, even if the account email changes later."
-msgstr "Les codes seront toujours envoyés à cette adresse, même si l'e-mail du compte change plus tard."
+msgstr "Les codes seront toujours envoyés à cette adresse, même si l'email du compte change plus tard."
 
 #: functions/security-2fa-profile.php
 msgid "Too many wrong attempts. Try again in 15 minutes."
@@ -1782,7 +1782,7 @@ msgstr "Code invalide."
 
 #: functions/security-2fa-profile.php
 msgid "The site could not send the email. Check its email settings (SMTP), or use an authentication app."
-msgstr "Le site n'a pas pu envoyer l'e-mail. Vérifiez ses réglages d'envoi (SMTP), ou utilisez une application d'authentification."
+msgstr "Le site n'a pas pu envoyer l'email. Vérifiez ses réglages d'envoi (SMTP), ou utilisez une application d'authentification."
 
 #: functions/security-2fa-profile.php
 msgid "Code sent to %s. It is valid for 10 minutes."
@@ -1790,7 +1790,7 @@ msgstr "Code envoyé à %s. Il est valable 10 minutes."
 
 #: functions/security-2fa-profile.php
 msgid "Invalid or expired code. Ask for a new code and use the latest email received."
-msgstr "Code invalide ou expiré. Demandez un nouveau code et utilisez le dernier e-mail reçu."
+msgstr "Code invalide ou expiré. Demandez un nouveau code et utilisez le dernier email reçu."
 
 #: functions/security-2fa-profile.php
 msgid "Account %1$s: method changed to %2$s"
@@ -1802,7 +1802,7 @@ msgstr "Compte %1$s : activée (%2$s)"
 
 #: functions/security-2fa-profile.php
 msgid "email"
-msgstr "e-mail"
+msgstr "email"
 
 #: functions/security-2fa-profile.php
 msgid "Incorrect password."
@@ -1830,15 +1830,15 @@ msgstr "Après votre mot de passe, un code à 6 chiffres est demandé. Choisisse
 
 #: functions/security-admin.php
 msgid "After the password, a 6-digit code from an app on the phone (Google Authenticator, Microsoft Authenticator, 1Password…) or sent by email. Computed by the site itself, without any external service. At their next login, users are offered to set it up in a few seconds."
-msgstr "Après le mot de passe, un code à 6 chiffres donné par une application sur le téléphone (Google Authenticator, Microsoft Authenticator, 1Password…) ou envoyé par e-mail. Calculé par le site lui-même, sans service externe. À leur prochaine connexion, les utilisateurs se voient proposer de la mettre en place en quelques secondes."
+msgstr "Après le mot de passe, un code à 6 chiffres donné par une application sur le téléphone (Google Authenticator, Microsoft Authenticator, 1Password…) ou envoyé par email. Calculé par le site lui-même, sans service externe. À leur prochaine connexion, les utilisateurs se voient proposer de la mettre en place en quelques secondes."
 
 #: functions/security-admin.php
 msgid "Code by email"
-msgstr "Code par e-mail"
+msgstr "Code par email"
 
 #: functions/security-admin.php
 msgid "Users can receive the code by email instead of using an app. Less secure: whoever accesses the mailbox can also reset the password."
-msgstr "Les utilisateurs peuvent recevoir le code par e-mail plutôt que d'utiliser une application. Moins sûr : qui accède à la boîte mail peut aussi réinitialiser le mot de passe."
+msgstr "Les utilisateurs peuvent recevoir le code par email plutôt que d'utiliser une application. Moins sûr : qui accède à la boîte mail peut aussi réinitialiser le mot de passe."
 
 #: functions/security-admin.php
 msgid "App for required roles"
@@ -1846,15 +1846,15 @@ msgstr "Application pour les rôles obligatoires"
 
 #: functions/security-admin.php
 msgid "For the roles above, the code by email is not enough: an authentication app is required. Accounts that use email are asked to switch at their next login."
-msgstr "Pour les rôles ci-dessus, le code par e-mail ne suffit pas : une application d'authentification est exigée. Les comptes qui utilisent l'e-mail sont invités à changer à leur prochaine connexion."
+msgstr "Pour les rôles ci-dessus, le code par email ne suffit pas : une application d'authentification est exigée. Les comptes qui utilisent l'email sont invités à changer à leur prochaine connexion."
 
 #: functions/security-admin.php
 msgid "The code only arrives if the site sends its emails reliably: an SMTP extension is recommended. Backup codes remain available if an email does not arrive."
-msgstr "Le code n'arrive que si le site envoie ses e-mails de façon fiable : une extension SMTP est conseillée. Les codes de secours restent possibles si un e-mail n'arrive pas."
+msgstr "Le code n'arrive que si le site envoie ses emails de façon fiable : une extension SMTP est conseillée. Les codes de secours restent possibles si un email n'arrive pas."
 
 #: functions/security-admin.php
 msgid "Lost phone or email not received: a backup code replaces the code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
-msgstr "Téléphone perdu ou e-mail non reçu : un code de secours remplace le code, et un administrateur peut réinitialiser le compte depuis son profil. Si aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
+msgstr "Téléphone perdu ou email non reçu : un code de secours remplace le code, et un administrateur peut réinitialiser le compte depuis son profil. Si aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
 
 #: js/optimizr-2fa.js
 msgid "Two-factor authentication is enabled."
@@ -1862,7 +1862,7 @@ msgstr "La double authentification est activée."
 
 #: js/optimizr-2fa.js
 msgid "Your backup codes. Keep them somewhere safe (password manager, printout): each one lets you log in once without your phone or your email. They will not be shown again."
-msgstr "Vos codes de secours. Gardez-les en lieu sûr (gestionnaire de mots de passe, version imprimée) : chacun permet de se connecter une fois sans votre téléphone ni votre e-mail. Ils ne seront plus affichés."
+msgstr "Vos codes de secours. Gardez-les en lieu sûr (gestionnaire de mots de passe, version imprimée) : chacun permet de se connecter une fois sans votre téléphone ni votre email. Ils ne seront plus affichés."
 
 #: functions/security-2fa.php
 msgid "Too many wrong codes for this account. Try again in 15 minutes."
@@ -1882,7 +1882,7 @@ msgstr "Impossible d'autoriser l'application"
 
 #: functions/onboarding.php
 msgid "After the password, a 6-digit code from an app or sent by email. Each account sets it up in a minute, right after logging in."
-msgstr "Après le mot de passe, un code à 6 chiffres donné par une application ou reçu par e-mail. Chaque compte la met en place en une minute, juste après sa connexion."
+msgstr "Après le mot de passe, un code à 6 chiffres donné par une application ou reçu par email. Chaque compte la met en place en une minute, juste après sa connexion."
 
 #: functions/onboarding.php
 msgid "Your account"
@@ -2714,7 +2714,7 @@ msgstr "Tous les liens tel:, sur ordinateur comme sur téléphone."
 
 #: functions/campaigns.php:79
 msgid "Click on an email address"
-msgstr "Clic sur une adresse e-mail"
+msgstr "Clic sur une adresse email"
 
 #: functions/campaigns.php:79
 msgid "Every mailto: link."

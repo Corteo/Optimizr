@@ -5,19 +5,20 @@
  */
 
 #optimizr-toolbar {
-    --otb-accent: #3858e9;
-    --otb-on-accent: #fff;
+    /* Couleurs du système de design (css/optimizr-tokens.css) ; fond translucide propre à la barre */
+    --otb-accent: var(--optimizr-accent);
+    --otb-on-accent: var(--optimizr-on-accent);
     --otb-bg: rgba(255, 255, 255, 0.92);
     --otb-solid: #fff;
-    --otb-text: #1e1e1e;
-    --otb-muted: #5c6168;
+    --otb-text: var(--optimizr-text);
+    --otb-muted: var(--optimizr-muted);
     --otb-line: rgba(30, 30, 30, 0.09);
     --otb-hover: rgba(56, 88, 233, 0.08);
-    --otb-ok: #0b6b35;
-    --otb-ok-soft: #e6f4ea;
-    --otb-ok-dot: #008a45;
-    --otb-bad: #b32d2e;
-    --otb-bad-soft: #fcf0f1;
+    --otb-ok: var(--optimizr-ok);
+    --otb-ok-soft: var(--optimizr-ok-soft);
+    --otb-ok-dot: var(--optimizr-ok-dot);
+    --otb-bad: var(--optimizr-bad);
+    --otb-bad-soft: var(--optimizr-bad-soft);
     --otb-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 32px -8px rgba(15, 23, 42, 0.24);
     --otb-gap: 20px;
     position: fixed;
@@ -31,18 +32,18 @@
 
 @media (prefers-color-scheme: dark) {
     #optimizr-toolbar {
-        --otb-accent: #7b93ff;
-        --otb-on-accent: #10162e;
+        --otb-accent: var(--optimizr-dark-accent);
+        --otb-on-accent: var(--optimizr-dark-on-accent);
         --otb-bg: rgba(28, 29, 33, 0.92);
         --otb-solid: #1c1d21;
         --otb-text: #f1f2f4;
         --otb-muted: #a4a8b0;
         --otb-line: rgba(255, 255, 255, 0.1);
-        --otb-hover: rgba(123, 147, 255, 0.14);
-        --otb-ok: #6fd39a;
+        --otb-hover: rgba(127, 152, 255, 0.14);
+        --otb-ok: var(--optimizr-dark-ok);
         --otb-ok-soft: rgba(47, 179, 107, 0.16);
-        --otb-ok-dot: #2fb36b;
-        --otb-bad: #ff8a8a;
+        --otb-ok-dot: var(--optimizr-dark-ok-dot);
+        --otb-bad: var(--optimizr-dark-bad);
         --otb-bad-soft: rgba(255, 138, 138, 0.14);
         --otb-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -8px rgba(0, 0, 0, 0.55);
     }

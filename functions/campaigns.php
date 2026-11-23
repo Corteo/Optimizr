@@ -275,7 +275,7 @@ function haptic_campaigns_render()
 
     $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-onboarding.css';
     $js  = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-onboarding.js';
-    wp_register_style('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'css/optimizr-onboarding.css', [], filemtime($css));
+    wp_register_style('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'css/optimizr-onboarding.css', [haptic_tokens_style()], filemtime($css));
     wp_register_script('optimizr-onboarding', HAPTIC_OPTIMIZR_URL . 'js/optimizr-onboarding.js', ['wp-i18n'], filemtime($js), true);
     wp_set_script_translations('optimizr-onboarding', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 

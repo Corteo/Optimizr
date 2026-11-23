@@ -1,9 +1,12 @@
 /* Panneau « Optimizr » de la médiathèque (functions/media-panel.php) */
 .optimizr-media-panel {
-    --o-accent: #3858e9;
-    --o-ok: #00a32a;
-    --o-warn: #dba617;
-    --o-muted: #50575e;
+    /* Couleurs du système de design (css/optimizr-tokens.css) */
+    --o-accent: var(--optimizr-accent);
+    --o-ok: var(--optimizr-ok-dot);
+    --o-warn: var(--optimizr-warn-dot);
+    --o-bad: var(--optimizr-bad);
+    --o-off: var(--optimizr-off-dot);
+    --o-muted: var(--optimizr-muted);
     margin: 4px 0 0;
     padding: 10px 12px;
     border: 1px solid #dcdcde;
@@ -53,7 +56,7 @@
 
 .optimizr-media-panel__item.is-ok .optimizr-media-panel__icon { background: var(--o-ok); }
 .optimizr-media-panel__item.is-warn .optimizr-media-panel__icon { background: var(--o-warn); color: #1e1e1e; }
-.optimizr-media-panel__item.is-off .optimizr-media-panel__icon { background: #a7aaad; }
+.optimizr-media-panel__item.is-off .optimizr-media-panel__icon { background: var(--o-off); }
 .optimizr-media-panel__item.is-info .optimizr-media-panel__icon { background: var(--o-accent); }
 
 .optimizr-media-panel__body strong {
@@ -81,7 +84,7 @@
 }
 
 .optimizr-media-panel__status.is-error {
-    color: #d63638;
+    color: var(--o-bad);
 }
 
 .optimizr-media-panel__pro {

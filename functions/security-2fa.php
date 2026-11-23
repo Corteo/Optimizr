@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
  * Double authentification : après le mot de passe, un code à 6 chiffres, au choix du compte :
  * - donné par une application d'authentification (TOTP, RFC 6238 : Google Authenticator, Microsoft Authenticator, 1Password…) ;
- * - ou envoyé par e-mail (wp_mail), si le réglage le permet. Moins sûr : l'accès à la boîte mail suffit aussi
+ * - ou envoyé par email (wp_mail), si le réglage le permet. Moins sûr : l'accès à la boîte mail suffit aussi
  *   à réinitialiser le mot de passe. L'onglet Sécurité peut exiger l'application pour les rôles obligatoires.
  * Tout est calculé ici, sans service tiers ; le QR code est dessiné dans le navigateur (assets/qrcode-generator).
  *
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
  * à la connexion (functions/security-welcome.php), une fois le réglage activé dans l'onglet Sécurité.
  * Elle peut être imposée à certains rôles.
  *
- * Téléphone perdu ou e-mail qui n'arrive pas : un code de secours remplace le code. En dernier recours, ajouter dans wp-config.php
+ * Téléphone perdu ou email qui n'arrive pas : un code de secours remplace le code. En dernier recours, ajouter dans wp-config.php
  *     define('OPTIMIZR_DISABLE_2FA', true);
  * pour se connecter avec le seul mot de passe.
  *
@@ -23,11 +23,11 @@ if (!defined('ABSPATH')) {
  * - haptic_2fa         : ['method' => 'app' ou 'email', 'secret' => clé en base 32 (app), 'email' => adresse des codes (email),
  *                         'since' => horodatage, 'backup' => [empreintes], 'last_step' => dernier code utilisé (app)]
  * - haptic_2fa_pending : clé proposée pendant la mise en place de l'application, avant le premier code
- * - haptic_2fa_email   : code envoyé par e-mail depuis le profil (mise en place ou confirmation) : empreinte, échéance, essais
+ * - haptic_2fa_email   : code envoyé par email depuis le profil (mise en place ou confirmation) : empreinte, échéance, essais
  * - haptic_2fa_change  : échéance du changement de méthode autorisé par un code
  * - haptic_2fa_fails   : codes faux du compte, à la connexion et dans le profil (5 par quart d'heure au plus)
- * - haptic_2fa_mails   : envois de codes par e-mail de la dernière heure (10 au plus)
- * - haptic_2fa_login   : connexion en attente du code (empreinte du jeton, échéance, essais, redirection, code envoyé par e-mail)
+ * - haptic_2fa_mails   : envois de codes par email de la dernière heure (10 au plus)
+ * - haptic_2fa_login   : connexion en attente du code (empreinte du jeton, échéance, essais, redirection, code envoyé par email)
  */
 
 const HAPTIC_2FA_PERIOD = 30;
@@ -37,10 +37,10 @@ const HAPTIC_2FA_LOGIN_TTL = 10 * MINUTE_IN_SECONDS;
 /** Codes faux acceptés pour une même saisie du mot de passe. */
 const HAPTIC_2FA_MAX_ATTEMPTS = 5;
 const HAPTIC_2FA_BACKUP_COUNT = 10;
-/** Envois du code par e-mail pour une même saisie du mot de passe (le premier compris), et attente entre deux envois. */
+/** Envois du code par email pour une même saisie du mot de passe (le premier compris), et attente entre deux envois. */
 const HAPTIC_2FA_EMAIL_SENDS = 3;
 const HAPTIC_2FA_EMAIL_WAIT = 30;
-/** Codes envoyés par e-mail à un même compte en une heure : chaque saisie du mot de passe en envoie un. */
+/** Codes envoyés par email à un même compte en une heure : chaque saisie du mot de passe en envoie un. */
 const HAPTIC_2FA_EMAIL_HOURLY = 10;
 /**
  * Codes faux d'un compte, toutes saisies confondues (connexion et profil) : au-delà de 5 en un quart d'heure,
@@ -65,13 +65,13 @@ function haptic_2fa_required_roles()
     return is_array($roles) ? array_values($roles) : [];
 }
 
-/** Code par e-mail proposé (réglage activé par défaut). */
+/** Code par email proposé (réglage activé par défaut). */
 function haptic_2fa_email_available()
 {
     return (bool) haptic_sec_option('two_factor_email', 1);
 }
 
-/** Le compte peut recevoir ses codes par e-mail : réglage activé, et pas d'application exigée pour son rôle. */
+/** Le compte peut recevoir ses codes par email : réglage activé, et pas d'application exigée pour son rôle. */
 function haptic_2fa_email_allowed_for($user)
 {
     return $user instanceof WP_User && haptic_2fa_email_available()
@@ -79,7 +79,7 @@ function haptic_2fa_email_allowed_for($user)
 }
 
 /**
- * Double authentification en place sur le compte. Un code par e-mail que le réglage ne permet plus compte comme absent :
+ * Double authentification en place sur le compte. Un code par email que le réglage ne permet plus compte comme absent :
  * le compte est invité à choisir une autre méthode.
  */
 function haptic_2fa_config($user_id)
@@ -218,7 +218,7 @@ function haptic_2fa_new_backup_codes($user_id)
 }
 
 /**
- * Vérifie un code saisi par le compte : code de l'application, code envoyé par e-mail (empreinte fournie par l'appelant,
+ * Vérifie un code saisi par le compte : code de l'application, code envoyé par email (empreinte fournie par l'appelant,
  * qui le retire une fois utilisé) ou code de secours (alors consommé).
  *
  * @return string|false 'totp', 'email', 'backup' ou false
@@ -286,7 +286,7 @@ function haptic_2fa_fails_error()
     return new WP_Error('haptic_2fa_fails', __('Too many wrong attempts. Try again in 15 minutes.', 'optimizr'));
 }
 
-/** Réserve un envoi de code par e-mail pour ce compte (10 par heure au plus) ; false si la limite est atteinte. */
+/** Réserve un envoi de code par email pour ce compte (10 par heure au plus) ; false si la limite est atteinte. */
 function haptic_2fa_mail_quota($user_id)
 {
     $sent = array_filter((array) get_user_meta($user_id, 'haptic_2fa_mails', true), function ($time) {
@@ -300,14 +300,14 @@ function haptic_2fa_mail_quota($user_id)
     return true;
 }
 
-/* ---------- Codes par e-mail ---------- */
+/* ---------- Codes par email ---------- */
 
 function haptic_2fa_new_email_code()
 {
     return str_pad((string) random_int(0, 999999), HAPTIC_2FA_DIGITS, '0', STR_PAD_LEFT);
 }
 
-/** Empreinte d'un code envoyé par e-mail, liée au compte : le code lui-même n'est jamais enregistré. */
+/** Empreinte d'un code envoyé par email, liée au compte : le code lui-même n'est jamais enregistré. */
 function haptic_2fa_email_hash($user_id, $code)
 {
     return hash_hmac('sha256', $user_id . '|' . preg_replace('/\D/', '', (string) $code), wp_salt('auth'));
@@ -321,7 +321,7 @@ function haptic_2fa_mask_email($email)
 }
 
 /**
- * Envoie un code par e-mail.
+ * Envoie un code par email.
  *
  * @param string $purpose 'login' (connexion), 'setup' (mise en place) ou 'confirm' (opération du profil)
  */
@@ -499,12 +499,12 @@ function haptic_2fa_end_pending_login($user_id)
 }
 
 /**
- * Envoie un nouveau code de connexion par e-mail (le précédent ne vaut plus) et l'inscrit dans la connexion en attente.
+ * Envoie un nouveau code de connexion par email (le précédent ne vaut plus) et l'inscrit dans la connexion en attente.
  * 'mail_failed' signale un envoi refusé par le site : un code de secours reste possible.
  */
 function haptic_2fa_send_login_code($user, $challenge)
 {
-    // Compte bloqué par trop de codes faux, ou trop d'e-mails envoyés : pas de nouveau code (la page explique pourquoi)
+    // Compte bloqué par trop de codes faux, ou trop d'emails envoyés : pas de nouveau code (la page explique pourquoi)
     $challenge['mail_limited'] = !haptic_2fa_too_many_fails($user->ID) && !haptic_2fa_mail_quota($user->ID);
     if ($challenge['mail_limited'] || haptic_2fa_too_many_fails($user->ID)) {
         return $challenge;

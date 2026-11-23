@@ -4,6 +4,22 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.20.1] - 2026-11-23
+
+### Modifié
+- **Interface harmonisée avec le système de design Optimizr.** Nouvelle feuille `css/optimizr-tokens.css` : les couleurs, rayons et ombres y sont définis une fois, et la page d'options, l'assistant, l'écran « Sécurisez votre compte », la barre flottante et le panneau de la médiathèque les reprennent (fonction `haptic_tokens_style()`).
+- Bouton principal de la page d'options en dégradé avec halo bleu, comme dans l'assistant ; interrupteurs activés et cases cochées en dégradé.
+- Champs de formulaire au style « Netteté » : coins de 10 px, bordure plus foncée au survol, halo bleu de 4 px au focus, erreur sur fond rouge pâle (`aria-invalid="true"`), état désactivé grisé, chevron bleu des listes déroulantes, cases à cocher et boutons radio redessinés (l'élément natif reste en place pour le clavier et les lecteurs d'écran). Mêmes champs dans l'assistant et l'écran de bienvenue.
+- Gris de l'assistant, de l'écran de bienvenue et de la barre flottante alignés sur ceux de la page d'options ; bleu clair du thème sombre ramené à une seule nuance.
+- Panneau de la médiathèque : vert, orange et gris des états repris du système de design.
+- Couleurs de l'illustration du tableau de bord reprises du système de design.
+- Traduction française : « email » partout, au lieu de « e-mail ».
+
+### Corrigé
+- Le contrôle segmenté du dernier audit (tableau de bord) redéfinissait celui des réglages (format des images, bandeau de cookies, audit) : il devient la variante `optimizr-segmented--sm`, et les autres retrouvent leurs options de largeur égale.
+- Pastilles d'état : les notes de l'audit partagent le style des pastilles (`optimizr-pill-status`), qui gagne une variante `--bad`.
+- Échec d'un import de réglages (onglet Outils) : bandeau d'erreur rouge (`optimizr-notice--bad`, nouvelle variante) au lieu du bandeau orange.
+
 ## [7.20.0] - 2026-11-16
 
 ### Ajouté
