@@ -7,6 +7,21 @@ if (!defined('ABSPATH')) {
 add_action('wp_enqueue_scripts', 'haptic_options_enqueue_scripts');
 add_action('admin_enqueue_scripts', 'haptic_options_enqueue_admin_scripts');
 
+/**
+ * Enregistre la feuille des jetons de design communs (css/optimizr-tokens.css) et renvoie son identifiant,
+ * à passer en dépendance des autres feuilles de l'interface : WordPress la charge alors avant elles, une seule fois.
+ *
+ * @return string Identifiant de la feuille : « optimizr-tokens ».
+ */
+function haptic_tokens_style()
+{
+    if (!wp_style_is('optimizr-tokens', 'registered')) {
+        $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-tokens.css';
+        wp_register_style('optimizr-tokens', HAPTIC_OPTIMIZR_URL . 'css/optimizr-tokens.css', [], filemtime($css));
+    }
+    return 'optimizr-tokens';
+}
+
 function haptic_options_enqueue_scripts()
 {
     // Permet aux modules d'ajouter ou de modifier les scripts du site (ex. Tarteaucitron)

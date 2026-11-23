@@ -4,26 +4,41 @@
  */
 
 .optimizr {
-    --o-accent: #3858e9;
-    --o-accent-strong: #1d35b4;
-    --o-accent-soft: #eef1fd;
-    --o-bg: #f6f7f7;
-    --o-surface: #ffffff;
-    --o-border: #e2e4e7;
-    --o-border-soft: #f0f0f1;
-    --o-border-input: #8c8f94;
-    --o-text: #1e1e1e;
-    --o-muted: #50575e;
-    --o-ok: #0b6b35;
-    --o-ok-dot: #008a45;
-    --o-ok-soft: #e6f4ea;
-    --o-warn: #8a4b00;
-    --o-warn-dot: #d97706;
-    --o-warn-soft: #fcf1e0;
-    --o-off-dot: #8c8f94;
-    --o-radius: 12px;
-    --o-radius-sm: 8px;
-    --o-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    /* Valeurs reprises de css/optimizr-tokens.css (système de design Optimizr) */
+    --o-accent: var(--optimizr-accent);
+    --o-accent-strong: var(--optimizr-accent-strong);
+    --o-accent-soft: var(--optimizr-accent-soft);
+    --o-gradient-from: var(--optimizr-accent-gradient-from);
+    --o-gradient-to: var(--optimizr-accent-gradient-to);
+    --o-bg: var(--optimizr-bg);
+    --o-surface: var(--optimizr-surface);
+    --o-border: var(--optimizr-border);
+    --o-border-soft: var(--optimizr-border-soft);
+    --o-border-input: var(--optimizr-border-input);
+    --o-border-hover: var(--optimizr-border-hover);
+    --o-focus-halo: var(--optimizr-focus-halo);
+    --o-bad-halo: var(--optimizr-bad-halo);
+    --o-disabled-bg: var(--optimizr-disabled-bg);
+    --o-disabled-fg: var(--optimizr-disabled-fg);
+    --o-check-ink: var(--optimizr-check-ink);
+    --o-text: var(--optimizr-text);
+    --o-muted: var(--optimizr-muted);
+    --o-ok: var(--optimizr-ok);
+    --o-ok-dot: var(--optimizr-ok-dot);
+    --o-ok-soft: var(--optimizr-ok-soft);
+    --o-warn: var(--optimizr-warn);
+    --o-warn-dot: var(--optimizr-warn-dot);
+    --o-warn-soft: var(--optimizr-warn-soft);
+    --o-bad: var(--optimizr-bad);
+    --o-bad-dot: var(--optimizr-bad-dot);
+    --o-bad-soft: var(--optimizr-bad-soft);
+    --o-off-dot: var(--optimizr-off-dot);
+    --o-radius: var(--optimizr-radius);
+    --o-radius-sm: var(--optimizr-radius-sm);
+    --o-radius-field: var(--optimizr-radius-field);
+    --o-shadow-button: var(--optimizr-shadow-button);
+    --o-shadow-button-hover: var(--optimizr-shadow-button-hover);
+    --o-mono: var(--optimizr-mono);
 
     /* Pleine largeur : annule la marge de .wrap et le padding de #wpcontent */
     margin: 0 0 0 -20px;
@@ -141,8 +156,8 @@
 }
 
 .optimizr-nav__group {
-    --og-from: #5b7bff;
-    --og-to: #1d35b4;
+    --og-from: var(--o-gradient-from);
+    --og-to: var(--o-gradient-to);
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -456,21 +471,34 @@
     margin: 0;
     padding: 8px 12px;
     border: 1px solid var(--o-border-input);
-    border-radius: var(--o-radius-sm);
+    border-radius: var(--o-radius-field);
     background: var(--o-surface);
     color: var(--o-text);
     font-size: 14px;
     line-height: 1.4;
     box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
 }
 
+/* Liste déroulante : chevron dessiné dans la couleur de l'accent */
 .optimizr select {
-    padding-right: 32px;
+    padding-right: 36px;
+    background: var(--o-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%233858e9' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center / 12px 12px;
+    appearance: none;
+    cursor: pointer;
 }
 
 .optimizr textarea {
     max-width: none;
     resize: vertical;
+}
+
+/* Champs, style « Netteté » du système de design : survol, focus avec halo, erreur, désactivé */
+.optimizr input:hover,
+.optimizr select:hover,
+.optimizr textarea:hover,
+.optimizr-prefixed:hover {
+    border-color: var(--o-border-hover);
 }
 
 .optimizr input:focus,
@@ -479,7 +507,126 @@
 .optimizr .optimizr-token-input:focus {
     border-color: var(--o-accent);
     outline: none;
-    box-shadow: 0 0 0 1px var(--o-accent);
+    box-shadow: 0 0 0 4px var(--o-focus-halo);
+}
+
+.optimizr input[aria-invalid="true"],
+.optimizr select[aria-invalid="true"],
+.optimizr textarea[aria-invalid="true"],
+.optimizr-prefixed:has([aria-invalid="true"]) {
+    border-color: var(--o-bad-dot);
+    background-color: var(--o-bad-soft);
+}
+
+.optimizr input[aria-invalid="true"]:focus,
+.optimizr select[aria-invalid="true"]:focus,
+.optimizr textarea[aria-invalid="true"]:focus,
+.optimizr-prefixed:has([aria-invalid="true"]):focus-within {
+    box-shadow: 0 0 0 4px var(--o-bad-halo);
+}
+
+.optimizr input:disabled,
+.optimizr select:disabled,
+.optimizr textarea:disabled {
+    border-color: var(--o-border);
+    background-color: var(--o-disabled-bg);
+    color: var(--o-disabled-fg);
+    cursor: not-allowed;
+}
+
+/* Cases à cocher et boutons radio dessinés ; l'input natif reste en place (clavier, lecteurs d'écran).
+   Les interrupteurs et contrôles segmentés, qui masquent leur input, ne sont pas concernés. */
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input),
+.optimizr input[type="radio"]:not(.optimizr-segmented input) {
+    appearance: none;
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin: 0;
+    border: 1.5px solid var(--o-border-input);
+    border-radius: 5px;
+    background: var(--o-surface);
+    box-shadow: none;
+    vertical-align: -4px;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+
+.optimizr input[type="radio"]:not(.optimizr-segmented input) {
+    border-radius: 999px;
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):hover:not(:disabled),
+.optimizr input[type="radio"]:not(.optimizr-segmented input):hover:not(:disabled) {
+    border-color: var(--o-accent);
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):focus,
+.optimizr input[type="radio"]:not(.optimizr-segmented input):focus {
+    box-shadow: none;
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):focus-visible,
+.optimizr input[type="radio"]:not(.optimizr-segmented input):focus-visible {
+    outline: 2px solid var(--o-accent);
+    outline-offset: 2px;
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):checked,
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):indeterminate,
+.optimizr input[type="radio"]:not(.optimizr-segmented input):checked {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--o-gradient-from), var(--o-gradient-to));
+}
+
+/* Remplace la coche et le point dessinés par WordPress (::before) */
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input)::before,
+.optimizr input[type="radio"]:not(.optimizr-segmented input)::before {
+    content: none;
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):checked::after {
+    content: "";
+    width: 5px;
+    height: 9px;
+    margin-top: -2px;
+    border: solid var(--o-check-ink);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):indeterminate::after {
+    content: "";
+    width: 8px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--o-check-ink);
+}
+
+.optimizr input[type="radio"]:not(.optimizr-segmented input):checked::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--o-check-ink);
+}
+
+.optimizr input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input):disabled,
+.optimizr input[type="radio"]:not(.optimizr-segmented input):disabled {
+    border-color: var(--o-border);
+    background: var(--o-disabled-bg);
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .optimizr input,
+    .optimizr select,
+    .optimizr textarea {
+        transition: none;
+    }
 }
 
 .optimizr .optimizr-code {
@@ -531,7 +678,12 @@
 }
 
 .optimizr-switch input:checked + .optimizr-switch__track {
-    background: var(--o-accent);
+    background: linear-gradient(135deg, var(--o-gradient-from), var(--o-gradient-to));
+}
+
+.optimizr-switch input:disabled + .optimizr-switch__track {
+    opacity: .45;
+    cursor: not-allowed;
 }
 
 .optimizr-switch input:checked + .optimizr-switch__track::after {
@@ -571,24 +723,42 @@
     cursor: pointer;
 }
 
+/* Bouton principal : dégradé de l'accent et halo bleu, comme dans l'assistant */
 .optimizr-btn--primary {
     min-height: 40px;
     padding: 0 18px;
-    background: var(--o-accent);
+    background: linear-gradient(135deg, var(--o-gradient-from), var(--o-gradient-to));
+    box-shadow: var(--o-shadow-button);
     color: #fff;
     font-size: 14px;
     font-weight: 600;
+    transition: box-shadow .2s ease, transform .2s ease;
 }
 
-.optimizr-btn--primary:hover {
-    background: var(--o-accent-strong);
+.optimizr-btn--primary:hover,
+.optimizr-btn--primary:focus {
+    box-shadow: var(--o-shadow-button-hover);
     color: #fff;
+    transform: translateY(-1px);
 }
 
 .optimizr-btn--primary:disabled {
     background: #dcdcde;
+    box-shadow: none;
     color: var(--o-muted);
+    transform: none;
     cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .optimizr-btn--primary {
+        transition: none;
+    }
+
+    .optimizr-btn--primary:hover,
+    .optimizr-btn--primary:focus {
+        transform: none;
+    }
 }
 
 .optimizr-btn--secondary {
@@ -695,8 +865,9 @@
     font-weight: 600;
 }
 
-.optimizr-notice--ok { background: var(--o-ok-soft); color: #0b5a2e; }
+.optimizr-notice--ok { background: var(--o-ok-soft); color: var(--o-ok); }
 .optimizr-notice--warn { background: var(--o-warn-soft); color: var(--o-warn); }
+.optimizr-notice--bad { background: var(--o-bad-soft); color: var(--o-bad); }
 
 .optimizr-callout {
     display: flex;
@@ -801,7 +972,7 @@
     gap: 8px;
     min-height: 40px;
     padding: 0 14px;
-    border: 1px solid #c3c4c7;
+    border: 1px solid var(--o-border-input);
     border-radius: var(--o-radius-sm);
     background: var(--o-surface);
     font-size: 13px;
@@ -863,6 +1034,32 @@
 .optimizr-segmented__option input:focus-visible + span {
     outline: 2px solid var(--o-accent);
     outline-offset: 1px;
+}
+
+/* Variante compacte à boutons (aria-pressed), sans formulaire : tableau de bord, dernier audit */
+.optimizr-segmented--sm {
+    display: inline-flex;
+    flex: none;
+    padding: 2px;
+}
+
+.optimizr-segmented button {
+    min-height: 28px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--o-muted);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.optimizr-segmented button[aria-pressed="true"] {
+    background: var(--o-surface);
+    color: var(--o-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
 }
 
 /* ---------- Couleurs ---------- */
@@ -1213,8 +1410,8 @@
 
 .optimizr-suggest li:hover,
 .optimizr-suggest li.is-active {
-    background: #eef1fd;
-    color: #1d35b4;
+    background: var(--optimizr-accent-soft);
+    color: var(--optimizr-accent-strong);
 }
 
 .optimizr-suggest[hidden] {
@@ -1603,8 +1800,9 @@
     cursor: pointer;
 }
 
-.optimizr-check input {
-    margin: 2px 0 0;
+.optimizr-check input,
+.optimizr .optimizr-check input[type="checkbox"]:not(.optimizr-switch input, .optimizr-segmented input) {
+    margin: 1px 0 0;
 }
 
 .optimizr-file input[type="file"] {
@@ -1756,14 +1954,14 @@
     display: flex;
     max-width: 640px;
     border: 1px solid var(--o-border-input);
-    border-radius: var(--o-radius-sm);
+    border-radius: var(--o-radius-field);
     background: var(--o-surface);
     overflow: hidden;
 }
 
 .optimizr-prefixed:focus-within {
     border-color: var(--o-accent);
-    box-shadow: 0 0 0 1px var(--o-accent);
+    box-shadow: 0 0 0 4px var(--o-focus-halo);
 }
 
 .optimizr-prefixed__prefix {
@@ -1777,7 +1975,8 @@
     white-space: nowrap;
 }
 
-.optimizr .optimizr-prefixed input[type="text"] {
+.optimizr .optimizr-prefixed input[type="text"],
+.optimizr .optimizr-prefixed input[type="text"]:focus {
     flex: 1;
     min-width: 0;
     max-width: none;
@@ -1918,7 +2117,7 @@
 }
 
 .optimizr-link--danger {
-    color: #b32d2e;
+    color: var(--o-bad);
 }
 
 .optimizr-link:hover,
@@ -1976,7 +2175,7 @@
     min-height: 36px;
     padding: 4px 8px;
     border: 1px solid var(--o-border-input);
-    border-radius: var(--o-radius-sm);
+    border-radius: var(--o-radius-field);
     background: var(--o-surface);
     font-variant-numeric: tabular-nums;
 }
@@ -2057,10 +2256,10 @@
 /* ---------- Onglet Audit (Lighthouse) ---------- */
 
 /* Couleurs des notes Lighthouse : 90 et plus, 50 à 89, moins de 50 */
-.optimizr-audit--pass { --o-rating: #008a45; --o-rating-text: #0b6b35; --o-rating-soft: #e6f4ea; }
-.optimizr-audit--average { --o-rating: #d97706; --o-rating-text: #8a4b00; --o-rating-soft: #fcf1e0; }
-.optimizr-audit--fail { --o-rating: #d63638; --o-rating-text: #a00; --o-rating-soft: #fcf0f1; }
-.optimizr-audit--na { --o-rating: #8c8f94; --o-rating-text: var(--o-muted); --o-rating-soft: var(--o-border-soft); }
+.optimizr-audit--pass { --o-rating: var(--o-ok-dot); --o-rating-text: var(--o-ok); --o-rating-soft: var(--o-ok-soft); }
+.optimizr-audit--average { --o-rating: var(--o-warn-dot); --o-rating-text: var(--o-warn); --o-rating-soft: var(--o-warn-soft); }
+.optimizr-audit--fail { --o-rating: var(--o-bad-dot); --o-rating-text: var(--o-bad); --o-rating-soft: var(--o-bad-soft); }
+.optimizr-audit--na { --o-rating: var(--o-off-dot); --o-rating-text: var(--o-muted); --o-rating-soft: var(--o-border-soft); }
 
 .optimizr-audit-run {
     display: flex;
@@ -2273,15 +2472,13 @@
     text-overflow: ellipsis;
 }
 
+/* Note de l'audit : base de .optimizr-pill-status, couleurs de la note */
 .optimizr-audit-pill {
-    display: inline-block;
+    justify-content: center;
     min-width: 32px;
-    padding: 2px 6px;
-    border-radius: 999px;
     background: var(--o-rating-soft);
     color: var(--o-rating-text);
     font-weight: 600;
-    text-align: center;
 }
 
 @media (max-width: 782px) {
@@ -2344,7 +2541,9 @@
     color: #0b1437;
 }
 
-.optimizr-pill-status {
+/* Pastille d'état : un seul style de base, aussi pour les notes de l'audit (.optimizr-audit-pill) */
+.optimizr-pill-status,
+.optimizr-audit-pill {
     display: inline-flex;
     align-items: center;
     padding: 3px 8px;
@@ -2356,6 +2555,7 @@
 
 .optimizr-pill-status--ok { background: var(--o-ok-soft); color: var(--o-ok); }
 .optimizr-pill-status--warn { background: var(--o-warn-soft); color: var(--o-warn); }
+.optimizr-pill-status--bad { background: var(--o-bad-soft); color: var(--o-bad); }
 
 .optimizr-card__foot {
     display: flex;
@@ -2479,7 +2679,7 @@
 }
 
 .optimizr-hero__dot--warn { background: rgba(245, 158, 11, .18); color: #fbbf4a; }
-.optimizr-hero__dot--ok { background: rgba(47, 211, 154, .16); color: #5ee0b0; }
+.optimizr-hero__dot--ok { background: rgba(47, 211, 154, .16); color: #7ef0c4; }
 
 .optimizr-hero__link,
 .optimizr-hero__link:hover {
@@ -2521,7 +2721,7 @@
 }
 
 .optimizr-hero__pill-dot.is-warn {
-    background: #f59e0b;
+    background: #f5a524;
 }
 
 .optimizr-hero__pill-state {
@@ -2675,7 +2875,7 @@
 
 /* Thèmes de modules ; --og-from / --og-to : couleurs du thème (haptic_dashboard_groups()) */
 .optimizr-group {
-    --og-from: #5b7bff;
+    --og-from: var(--o-gradient-from);
     --og-to: var(--o-accent);
     scroll-margin-top: 48px;
 }
@@ -2805,7 +3005,7 @@
 }
 
 .optimizr-toggle[aria-checked="true"] {
-    background: var(--o-accent);
+    background: linear-gradient(135deg, var(--o-gradient-from), var(--o-gradient-to));
 }
 
 .optimizr-toggle[aria-checked="true"] .optimizr-toggle__knob {
@@ -2841,33 +3041,7 @@
     color: var(--o-accent);
 }
 
-/* Dernier audit */
-.optimizr-segmented {
-    display: inline-flex;
-    flex: none;
-    padding: 2px;
-    border-radius: var(--o-radius-sm);
-    background: var(--o-border-soft);
-}
-
-.optimizr-segmented button {
-    min-height: 28px;
-    padding: 0 10px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--o-muted);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.optimizr-segmented button[aria-pressed="true"] {
-    background: var(--o-surface);
-    color: var(--o-text);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
-}
+/* Dernier audit : contrôle segmenté compact (voir « Contrôle segmenté ») */
 
 .optimizr-dash-audit__meta {
     margin: -6px 20px 12px;
@@ -3433,9 +3607,6 @@
 /* ---------- Onglet Suivi (functions/tracking.php) ---------- */
 
 .optimizr-track {
-    --o-bad: #b32d2e;
-    --o-bad-dot: #d63638;
-    --o-bad-soft: #fcf0f1;
     display: flex;
     flex-direction: column;
     gap: 20px;

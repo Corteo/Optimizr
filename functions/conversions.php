@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
  * Suivi des conversions (module Cookies & RGPD), réglé par l'assistant campagnes (functions/campaigns.php).
  *
  * js/optimizr-conversions.js repère les actions choisies (formulaire Contact Form 7 envoyé, inscription à la lettre
- * d'information MailPoet, Brevo ou Mailchimp for WordPress, clic sur un numéro de téléphone, une adresse e-mail,
+ * d'information MailPoet, Brevo ou Mailchimp for WordPress, clic sur un numéro de téléphone, une adresse email,
  * WhatsApp, un service de prise de rendez-vous, téléchargement) et les envoie :
  * - à Google Analytics 4 / Google Ads par gtag(), qui applique le Google Consent Mode v2 (tarteaucitron.js) ;
  * - à Google Tag Manager par le dataLayer (évènement optimizr_conversion) ;

@@ -4,7 +4,7 @@
  * Actions suivies (window.optimizrConversions.actions) : formulaire envoyé (form : Contact Form 7, WPForms, Gravity
  * Forms, Fluent Forms, Elementor Pro, Ninja Forms, Formidable), inscription à la lettre d'information MailPoet,
  * Brevo ou Mailchimp for WordPress (newsletter), page de remerciement (thankyou), clic sur un numéro de téléphone
- * (phone), une adresse e-mail (email), WhatsApp (whatsapp), un service de prise de rendez-vous (booking), un
+ * (phone), une adresse email (email), WhatsApp (whatsapp), un service de prise de rendez-vous (booking), un
  * itinéraire (directions), un élément de classe optimizr-conversion (cta), un fichier (download), le formulaire
  * d'avis Google (review), un réseau social (social) ; WooCommerce : add_to_cart, begin_checkout, purchase.
  * Chaque conversion part :
@@ -266,7 +266,7 @@
     /*
      * Lettre d'information : inscription confirmée par l'extension, jamais au simple clic.
      * method : extension d'origine (paramètre recommandé de l'évènement GA4 sign_up). inputs : champs du formulaire
-     * [{ name, value }], comme pour Contact Form 7 (Optimizr Pro en tire l'e-mail des conversions améliorées).
+     * [{ name, value }], comme pour Contact Form 7 (Optimizr Pro en tire l'email des conversions améliorées).
      */
     if (enabled.newsletter) {
         var signUp = function (method, formId, inputs) {

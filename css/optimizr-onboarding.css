@@ -4,20 +4,29 @@
  */
 
 :root {
-    --ob-navy: #0b1437;
+    /* Couleurs du système de design (css/optimizr-tokens.css) ; fond blanc, surfaces grises */
+    --ob-navy: var(--optimizr-logo-ink);
     --ob-navy-2: #111d4f;
-    --ob-accent: #3858e9;
-    --ob-accent-strong: #1d35b4;
-    --ob-accent-soft: #eef1fd;
-    --ob-bg: #ffffff;
-    --ob-surface: #f7f8fb;
-    --ob-border: #e3e6ee;
+    --ob-accent: var(--optimizr-accent);
+    --ob-accent-strong: var(--optimizr-accent-strong);
+    --ob-accent-soft: var(--optimizr-accent-soft);
+    --ob-gradient-from: var(--optimizr-accent-gradient-from);
+    --ob-gradient-to: var(--optimizr-accent-gradient-to);
+    --ob-bg: var(--optimizr-surface);
+    --ob-surface: var(--optimizr-bg);
+    --ob-border: var(--optimizr-border);
     --ob-border-strong: #c9ced8;
-    --ob-text: #0f172a;
-    --ob-muted: #5b6475;
-    --ob-ok: #0b6b35;
-    --ob-warn: #8a4b00;
-    --ob-warn-soft: #fcf1e0;
+    --ob-border-input: var(--optimizr-border-input);
+    --ob-border-hover: var(--optimizr-border-hover);
+    --ob-focus-halo: var(--optimizr-focus-halo);
+    --ob-off-dot: var(--optimizr-off-dot);
+    --ob-text: var(--optimizr-text);
+    --ob-muted: var(--optimizr-muted);
+    --ob-ok: var(--optimizr-ok);
+    --ob-warn: var(--optimizr-warn);
+    --ob-warn-soft: var(--optimizr-warn-soft);
+    --ob-bad: var(--optimizr-bad-dot);
+    --ob-bad-soft: var(--optimizr-bad-soft);
     --ob-radius: 14px;
     --ob-radius-sm: 10px;
     --ob-ease: cubic-bezier(.22, 1, .36, 1);
@@ -26,18 +35,25 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --ob-accent: #7f98ff;
-        --ob-accent-strong: #a9baff;
-        --ob-accent-soft: #1b2552;
-        --ob-bg: #0f1424;
-        --ob-surface: #161c30;
-        --ob-border: #262e48;
+        --ob-accent: var(--optimizr-dark-accent);
+        --ob-accent-strong: var(--optimizr-dark-accent-strong);
+        --ob-accent-soft: var(--optimizr-dark-accent-soft);
+        --ob-gradient-to: var(--optimizr-dark-accent-gradient-to);
+        --ob-bg: var(--optimizr-dark-bg);
+        --ob-surface: var(--optimizr-dark-surface);
+        --ob-border: var(--optimizr-dark-border);
         --ob-border-strong: #3a4466;
-        --ob-text: #eef1f8;
-        --ob-muted: #a3abc2;
-        --ob-ok: #6fdba5;
-        --ob-warn: #ffc27a;
-        --ob-warn-soft: #3a2a12;
+        --ob-border-input: var(--optimizr-dark-border-input);
+        --ob-border-hover: var(--optimizr-dark-border-hover);
+        --ob-focus-halo: var(--optimizr-dark-focus-halo);
+        --ob-off-dot: var(--optimizr-dark-border-input);
+        --ob-text: var(--optimizr-dark-text);
+        --ob-muted: var(--optimizr-dark-muted);
+        --ob-ok: var(--optimizr-dark-ok);
+        --ob-warn: var(--optimizr-dark-warn);
+        --ob-warn-soft: var(--optimizr-dark-warn-soft);
+        --ob-bad: var(--optimizr-dark-bad);
+        --ob-bad-soft: var(--optimizr-dark-bad-soft);
         color-scheme: dark;
     }
 }
@@ -476,7 +492,7 @@ body.ob-body {
     height: 24px;
     margin: 0;
     border-radius: 999px;
-    background: var(--ob-border-strong);
+    background: var(--ob-off-dot);
     cursor: pointer;
     transition: background-color .25s var(--ob-ease);
 }
@@ -495,7 +511,7 @@ body.ob-body {
 }
 
 .ob-switch:checked {
-    background: var(--ob-accent);
+    background: linear-gradient(135deg, var(--ob-gradient-from), var(--ob-gradient-to));
 }
 
 .ob-switch:checked::before {
@@ -507,7 +523,6 @@ body.ob-body {
 .ob-position input:focus-visible + .ob-position__preview,
 .ob-provider:has(input:focus-visible),
 .ob-btn:focus-visible,
-.ob-field input:focus-visible,
 .ob-next__item:focus-visible,
 .ob-top__skip:focus-visible {
     outline: 2px solid var(--ob-accent);
@@ -812,7 +827,7 @@ body.ob-body {
     width: 100%;
     min-height: 42px;
     padding: 0 12px;
-    border: 1px solid var(--ob-border-strong);
+    border: 1px solid var(--ob-border-input);
     border-radius: var(--ob-radius-sm);
     background: var(--ob-bg);
     color: var(--ob-text);
@@ -825,8 +840,20 @@ body.ob-body {
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-.ob-field input:focus {
+/* Champs, style « Netteté » du système de design : survol, focus avec halo, erreur */
+.ob-field input:hover,
+.ob-field select:hover,
+.ob-field textarea:hover,
+.ob-prefixed:hover {
+    border-color: var(--ob-border-hover);
+}
+
+.ob-field input:focus,
+.ob-field select:focus,
+.ob-field textarea:focus {
     border-color: var(--ob-accent);
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ob-focus-halo);
 }
 
 .ob-field select,
@@ -834,7 +861,7 @@ body.ob-body {
     width: 100%;
     min-height: 42px;
     padding: 8px 12px;
-    border: 1px solid var(--ob-border-strong);
+    border: 1px solid var(--ob-border-input);
     border-radius: var(--ob-radius-sm);
     background: var(--ob-bg);
     color: var(--ob-text);
@@ -847,12 +874,12 @@ body.ob-body {
     line-height: 1.45;
 }
 
-.ob-field input:invalid:not(:placeholder-shown) {
-    border-color: #d63638;
+.ob-field input:invalid:not(:placeholder-shown),
+.ob-field input[aria-invalid="true"] {
+    border-color: var(--ob-bad);
+    background-color: var(--ob-bad-soft);
 }
 
-.ob-field select:focus-visible,
-.ob-field textarea:focus-visible,
 .ob-var:focus-visible,
 button.ob-field__link:focus-visible {
     outline: 2px solid var(--ob-accent);
@@ -883,7 +910,7 @@ button.ob-field__link:disabled {
 .ob-prefixed {
     display: flex;
     align-items: stretch;
-    border: 1px solid var(--ob-border-strong);
+    border: 1px solid var(--ob-border-input);
     border-radius: var(--ob-radius-sm);
     background: var(--ob-bg);
     overflow: hidden;
@@ -891,7 +918,7 @@ button.ob-field__link:disabled {
 
 .ob-prefixed:focus-within {
     border-color: var(--ob-accent);
-    box-shadow: 0 0 0 1px var(--ob-accent);
+    box-shadow: 0 0 0 4px var(--ob-focus-halo);
 }
 
 .ob-prefixed__prefix {
@@ -909,11 +936,13 @@ button.ob-field__link:disabled {
     text-overflow: ellipsis;
 }
 
-.ob-field .ob-prefixed input {
+.ob-field .ob-prefixed input,
+.ob-field .ob-prefixed input:focus {
     min-width: 0;
     border: 0;
     border-radius: 0;
     outline: none;
+    box-shadow: none;
 }
 
 .ob-vars {
@@ -1161,20 +1190,14 @@ button.ob-field__link:disabled {
 }
 
 .ob-btn--primary {
-    background: linear-gradient(135deg, #5b7bff, var(--ob-accent-strong));
+    background: linear-gradient(135deg, var(--ob-gradient-from), var(--ob-gradient-to));
     color: #fff;
-    box-shadow: 0 8px 22px -8px rgba(56, 88, 233, .7);
-}
-
-@media (prefers-color-scheme: dark) {
-    .ob-btn--primary {
-        background: linear-gradient(135deg, #5b7bff, #3858e9);
-    }
+    box-shadow: var(--optimizr-shadow-button);
 }
 
 .ob-btn--primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 12px 26px -8px rgba(56, 88, 233, .8);
+    box-shadow: var(--optimizr-shadow-button-hover);
 }
 
 .ob-btn--ghost {

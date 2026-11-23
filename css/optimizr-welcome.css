@@ -7,22 +7,27 @@
  */
 
 .optimizr-welcome {
-    --osw-accent: #3858e9;
-    --osw-accent-strong: #1d35b4;
-    --osw-accent-soft: #eef1fd;
-    --osw-bg: #fff;
-    --osw-surface: #f6f7fb;
-    --osw-border: #e3e6ee;
+    /* Couleurs du système de design (css/optimizr-tokens.css) */
+    --osw-accent: var(--optimizr-accent);
+    --osw-accent-strong: var(--optimizr-accent-strong);
+    --osw-accent-soft: var(--optimizr-accent-soft);
+    --osw-bg: var(--optimizr-surface);
+    --osw-surface: var(--optimizr-bg);
+    --osw-border: var(--optimizr-border);
     --osw-border-strong: #c9ced8;
-    --osw-text: #0f172a;
-    --osw-muted: #5b6475;
-    --osw-ok: #0b6b35;
-    --osw-ok-soft: #e4f6eb;
-    --osw-danger: #b32d2e;
-    --osw-danger-soft: #fcf0f1;
+    --osw-border-input: var(--optimizr-border-input);
+    --osw-border-hover: var(--optimizr-border-hover);
+    --osw-focus-halo: var(--optimizr-focus-halo);
+    --osw-text: var(--optimizr-text);
+    --osw-muted: var(--optimizr-muted);
+    --osw-ok: var(--optimizr-ok);
+    --osw-ok-soft: var(--optimizr-ok-soft);
+    --osw-danger: var(--optimizr-bad);
+    --osw-danger-soft: var(--optimizr-bad-soft);
     --osw-radius: 14px;
     --osw-radius-sm: 10px;
-    --osw-button-end: #1d35b4;
+    --osw-button-from: var(--optimizr-accent-gradient-from);
+    --osw-button-end: var(--optimizr-accent-gradient-to);
     color: var(--osw-text);
     font-size: 14px;
     line-height: 1.55;
@@ -37,17 +42,15 @@
     --osw-surface: var(--ob-surface);
     --osw-border: var(--ob-border);
     --osw-border-strong: var(--ob-border-strong);
+    --osw-border-input: var(--ob-border-input);
+    --osw-border-hover: var(--ob-border-hover);
+    --osw-focus-halo: var(--ob-focus-halo);
+    --osw-button-end: var(--ob-gradient-to);
     --osw-text: var(--ob-text);
     --osw-muted: var(--ob-muted);
     --osw-ok: var(--ob-ok);
     --osw-ok-soft: color-mix(in srgb, var(--ob-ok) 14%, transparent);
     font-size: 15px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .ob-body .optimizr-welcome {
-        --osw-button-end: #3858e9;
-    }
 }
 
 .optimizr-welcome [hidden] {
@@ -78,7 +81,7 @@ body.optimizr-welcome-page #login h1 a {
 
 .optimizr-welcome--login {
     padding: 28px 28px 24px;
-    border: 1px solid #dcdcde;
+    border: 1px solid var(--osw-border);
     border-radius: 16px;
     background: var(--osw-bg);
     box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 12px 32px -12px rgba(15, 23, 42, .18);
@@ -97,7 +100,7 @@ body.optimizr-welcome-page #login h1 a {
     height: 52px;
     margin: 0 0 12px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #5b7bff, var(--osw-button-end));
+    background: linear-gradient(135deg, var(--osw-button-from), var(--osw-button-end));
     box-shadow: 0 10px 24px -10px rgba(56, 88, 233, .8);
     color: #fff;
 }
@@ -189,7 +192,7 @@ body.optimizr-welcome-page #login h1 a {
     padding: 2px 9px;
     border-radius: 999px;
     background: var(--osw-danger-soft);
-    color: #8a2424;
+    color: var(--osw-danger);
     font-size: 12px;
     font-weight: 600;
     line-height: 1.5;
@@ -252,15 +255,16 @@ body.optimizr-welcome-page #login h1 a {
 .optimizr-welcome .button.button-primary,
 .optimizr-welcome .button-primary.button-large {
     border-color: transparent;
-    background: linear-gradient(135deg, #5b7bff, var(--osw-button-end));
-    box-shadow: 0 8px 20px -10px rgba(56, 88, 233, .9);
+    background: linear-gradient(135deg, var(--osw-button-from), var(--osw-button-end));
+    box-shadow: var(--optimizr-shadow-button);
     color: #fff;
 }
 
 .optimizr-welcome .button-primary:hover,
 .optimizr-welcome .button-primary:focus {
     border-color: transparent;
-    background: linear-gradient(135deg, #4f6ffb, #1a2f9e);
+    background: linear-gradient(135deg, var(--osw-button-from), var(--osw-button-end));
+    box-shadow: var(--optimizr-shadow-button-hover);
     color: #fff;
     transform: translateY(-1px);
 }
@@ -302,7 +306,7 @@ body.optimizr-welcome-page #login h1 a {
     min-height: 44px;
     margin: 0;
     padding: 6px 12px;
-    border: 1px solid var(--osw-border-strong);
+    border: 1px solid var(--osw-border-input);
     border-radius: var(--osw-radius-sm);
     background: var(--osw-bg);
     box-shadow: none;
@@ -311,10 +315,16 @@ body.optimizr-welcome-page #login h1 a {
     font-size: 16px;
 }
 
+/* Champs, style « Netteté » du système de design */
+.optimizr-welcome input[type="text"]:hover,
+.optimizr-welcome input[type="password"]:hover {
+    border-color: var(--osw-border-hover);
+}
+
 .optimizr-welcome input[type="text"]:focus,
 .optimizr-welcome input[type="password"]:focus {
     border-color: var(--osw-accent);
-    box-shadow: 0 0 0 1px var(--osw-accent);
+    box-shadow: 0 0 0 4px var(--osw-focus-halo);
     outline: 0;
 }
 

@@ -419,14 +419,15 @@ function haptic_render_dashboard_hero(array $groups)
  */
 function haptic_render_dashboard_art(array $groups, array $by_group, $count)
 {
+    // Couleurs de l'illustration : celles du système de design sur fond nuit (vert performance, orange d'alerte sombre)
     // Emplacements des pastilles autour de la page (jusqu'à 6 thèmes)
     $spots = [[78, 62], [290, 66], [72, 182], [288, 184], [180, 20], [180, 226]];
     $ok = '#2fd39a';
-    $warn = '#f59e0b';
+    $warn = '#f5a524';
     ?>
     <svg viewBox="0 0 360 240" fill="none" focusable="false">
         <defs>
-            <radialGradient id="optimizr-art-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4a6bff" stop-opacity=".55"/><stop offset="100%" stop-color="#4a6bff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="optimizr-art-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#5b7bff" stop-opacity=".55"/><stop offset="100%" stop-color="#5b7bff" stop-opacity="0"/></radialGradient>
             <linearGradient id="optimizr-art-line" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#19b5d6"/><stop offset="100%" stop-color="#7f98ff"/></linearGradient>
             <?php $i = 0; foreach ($groups as $key => $group) :
                 $colors = array_values((array) ($group['colors'] ?? []));
@@ -441,7 +442,7 @@ function haptic_render_dashboard_art(array $groups, array $by_group, $count)
         <circle cx="180" cy="122" r="74" stroke="rgba(255,255,255,.08)"/>
         <g class="optimizr-hero__float">
             <rect x="112" y="72" width="136" height="98" rx="12" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.22)"/>
-            <circle cx="126" cy="85" r="3" fill="#ff8a80"/><circle cx="136" cy="85" r="3" fill="#ffd166"/><circle cx="146" cy="85" r="3" fill="#5ee0b0"/>
+            <circle cx="126" cy="85" r="3" fill="#ff8a8a"/><circle cx="136" cy="85" r="3" fill="#f4b400"/><circle cx="146" cy="85" r="3" fill="#7ef0c4"/>
             <rect x="158" y="81" width="78" height="8" rx="4" fill="rgba(255,255,255,.12)"/>
             <rect x="124" y="100" width="58" height="7" rx="3.5" fill="rgba(255,255,255,.45)"/>
             <rect x="124" y="112" width="88" height="4" rx="2" fill="rgba(255,255,255,.18)"/>
@@ -466,8 +467,8 @@ function haptic_render_dashboard_art(array $groups, array $by_group, $count)
                 <circle cx="<?php echo esc_attr((string) ($x + 18)); ?>" cy="<?php echo esc_attr((string) ($y - 18)); ?>" r="6" fill="<?php echo esc_attr($by_group[$key] ? $warn : $ok); ?>" stroke="#0b1437" stroke-width="2"/>
             </g>
         <?php $i++; endforeach; ?>
-        <circle cx="40" cy="120" r="2" fill="#7fdcf0"/>
-        <circle cx="330" cy="126" r="2.5" fill="#5ee0b0"/>
+        <circle cx="40" cy="120" r="2" fill="#19b5d6"/>
+        <circle cx="330" cy="126" r="2.5" fill="#7ef0c4"/>
         <circle cx="168" cy="226" r="2" fill="#7f98ff"/>
     </svg>
     <?php
@@ -543,7 +544,7 @@ function haptic_render_dashboard_audit()
                 <?php endif; ?>
             </div>
             <?php if (count($strategies) > 1) : ?>
-                <div class="optimizr-segmented" role="group" aria-label="<?php esc_attr_e('Device', 'optimizr'); ?>">
+                <div class="optimizr-segmented optimizr-segmented--sm" role="group" aria-label="<?php esc_attr_e('Device', 'optimizr'); ?>">
                     <?php foreach ($strategies as $i => $strategy) : ?>
                         <button type="button" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>" data-audit-show="<?php echo esc_attr($strategy); ?>"><?php echo esc_html($labels[$strategy]); ?></button>
                     <?php endforeach; ?>

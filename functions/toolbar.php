@@ -95,7 +95,7 @@ add_action('wp_enqueue_scripts', function () {
     if (!haptic_toolbar_should_show()) {
         return;
     }
-    wp_enqueue_style('optimizr-toolbar', HAPTIC_OPTIMIZR_URL . 'css/optimizr-toolbar.css', [], HAPTIC_OPTIMIZR_VERSION);
+    wp_enqueue_style('optimizr-toolbar', HAPTIC_OPTIMIZR_URL . 'css/optimizr-toolbar.css', [haptic_tokens_style()], HAPTIC_OPTIMIZR_VERSION);
     wp_enqueue_script('optimizr-toolbar', HAPTIC_OPTIMIZR_URL . 'js/optimizr-toolbar.js', [], HAPTIC_OPTIMIZR_VERSION, true);
 });
 

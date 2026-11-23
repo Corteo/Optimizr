@@ -1,0 +1,84 @@
+/*
+ * Optimizr — jetons de design communs (couleurs, rayons, ombres).
+ * Source : le système de design Optimizr. Chargée avant chaque feuille de l'interface
+ * (haptic_tokens_style(), functions/assets.php), qui reprend ces valeurs sous son propre préfixe
+ * (--o-, --ob-, --osw-, --otb-). Changer une couleur ici la change partout.
+ *
+ * --optimizr-* : thème clair. --optimizr-dark-* : thème sombre, utilisé par les écrans qui suivent
+ * le réglage du système (assistant, écran de bienvenue, barre flottante). La page d'options reste claire.
+ */
+
+:root {
+    /* Accent */
+    --optimizr-accent: #3858e9;
+    --optimizr-accent-strong: #1d35b4;
+    --optimizr-accent-soft: #eef1fd;
+    --optimizr-on-accent: #ffffff;
+    --optimizr-accent-gradient-from: #5b7bff;
+    --optimizr-accent-gradient-to: #1d35b4;
+    --optimizr-logo-ink: #0b1437;
+
+    /* Neutres */
+    --optimizr-bg: #f6f7f7;
+    --optimizr-surface: #ffffff;
+    --optimizr-border: #e2e4e7;
+    --optimizr-border-soft: #f0f0f1;
+    --optimizr-border-input: #8c8f94;
+    --optimizr-border-hover: #50575e;
+    --optimizr-text: #1e1e1e;
+    --optimizr-muted: #50575e;
+
+    /* Champs de formulaire */
+    --optimizr-focus-halo: rgba(56, 88, 233, 0.18);
+    --optimizr-bad-halo: rgba(214, 54, 56, 0.18);
+    --optimizr-disabled-bg: #f6f7f7;
+    --optimizr-disabled-fg: #8c8f94;
+    --optimizr-check-ink: #ffffff;
+
+    /* États : texte foncé, point vif, fond pâle */
+    --optimizr-ok: #0b6b35;
+    --optimizr-ok-dot: #008a45;
+    --optimizr-ok-soft: #e6f4ea;
+    --optimizr-warn: #8a4b00;
+    --optimizr-warn-dot: #d97706;
+    --optimizr-warn-soft: #fcf1e0;
+    --optimizr-bad: #b32d2e;
+    --optimizr-bad-dot: #d63638;
+    --optimizr-bad-soft: #fcf0f1;
+    --optimizr-off-dot: #8c8f94;
+
+    /* Thème sombre */
+    --optimizr-dark-accent: #7f98ff;
+    --optimizr-dark-accent-strong: #a9baff;
+    --optimizr-dark-accent-soft: #1b2552;
+    --optimizr-dark-on-accent: #10162e;
+    --optimizr-dark-accent-gradient-to: #3858e9;
+    --optimizr-dark-bg: #0f1424;
+    --optimizr-dark-surface: #161c30;
+    --optimizr-dark-border: #262e48;
+    --optimizr-dark-border-soft: #1d2440;
+    --optimizr-dark-border-input: #6b7494;
+    --optimizr-dark-border-hover: #a3abc2;
+    --optimizr-dark-text: #eef1f8;
+    --optimizr-dark-muted: #a3abc2;
+    --optimizr-dark-focus-halo: rgba(127, 152, 255, 0.28);
+    --optimizr-dark-disabled-bg: #121829;
+    --optimizr-dark-disabled-fg: #6b7494;
+    --optimizr-dark-ok: #6fdba5;
+    --optimizr-dark-ok-dot: #2fb36b;
+    --optimizr-dark-ok-soft: #173826;
+    --optimizr-dark-warn: #ffc27a;
+    --optimizr-dark-warn-dot: #f5a524;
+    --optimizr-dark-warn-soft: #3a2a12;
+    --optimizr-dark-bad: #ff8a8a;
+    --optimizr-dark-bad-soft: #3a1a1d;
+
+    /* Rayons et ombres */
+    --optimizr-radius-sm: 8px;
+    --optimizr-radius: 12px;
+    --optimizr-radius-field: 10px;
+    --optimizr-radius-pill: 999px;
+    --optimizr-shadow-button: 0 8px 22px -8px rgba(56, 88, 233, 0.7);
+    --optimizr-shadow-button-hover: 0 12px 26px -8px rgba(56, 88, 233, 0.8);
+    --optimizr-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

@@ -440,7 +440,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
     $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-admin.css';
     $js  = HAPTIC_OPTIMIZR_PATH . 'js/optimizr-admin.js';
 
-    wp_enqueue_style('optimizr-admin', HAPTIC_OPTIMIZR_URL . 'css/optimizr-admin.css', [], filemtime($css));
+    wp_enqueue_style('optimizr-admin', HAPTIC_OPTIMIZR_URL . 'css/optimizr-admin.css', [haptic_tokens_style()], filemtime($css));
     wp_enqueue_script('optimizr-admin', HAPTIC_OPTIMIZR_URL . 'js/optimizr-admin.js', ['wp-i18n'], filemtime($js), true);
     wp_set_script_translations('optimizr-admin', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
 });

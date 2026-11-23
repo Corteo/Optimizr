@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.20.0
+Stable tag: 7.20.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.20.1 =
+* Tweak: interface aligned with the Optimizr design system: shared colors, gradient primary button, clearer form fields (focus halo, error state, redrawn checkboxes and radio buttons), unified greys in the setup wizard and the floating toolbar.
+* Fix: the compact device switch of the dashboard no longer changes the other segmented controls.
+* French translation: "email" everywhere.
 
 = 7.20.0 =
 * New: "Optimizr" panel in the media library. In the details of an image (media library window, media modal, Edit Media screen), it shows the image format and weight, whether it was converted to WebP or AVIF and how much lighter it got, why it was not converted (conversion turned off, GIF, print image, excluded format) and whether its alternative text is filled in. Optimizr Pro adds its actions there.

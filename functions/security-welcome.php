@@ -83,7 +83,7 @@ function haptic_sec_account_enqueue($user, $steps, $deps = [])
     $scripts = wp_scripts()->queue;
 
     $css = HAPTIC_OPTIMIZR_PATH . 'css/optimizr-welcome.css';
-    wp_enqueue_style('optimizr-welcome', HAPTIC_OPTIMIZR_URL . 'css/optimizr-welcome.css', $deps, filemtime($css));
+    wp_enqueue_style('optimizr-welcome', HAPTIC_OPTIMIZR_URL . 'css/optimizr-welcome.css', array_merge($deps, [haptic_tokens_style()]), filemtime($css));
     if (isset($steps['two_factor'])) {
         haptic_2fa_enqueue_assets($user->ID, 'welcome');
     }

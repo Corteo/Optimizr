@@ -113,7 +113,7 @@ function haptic_2fa_pending_secret($user_id)
 }
 
 /**
- * Choix de la méthode puis mise en place (application ou e-mail), pour le compte connecté.
+ * Choix de la méthode puis mise en place (application ou email), pour le compte connecté.
  * Pilotée par js/optimizr-2fa.js, dans un bloc .optimizr-2fa.
  */
 function haptic_2fa_setup_markup($user)
@@ -253,7 +253,7 @@ function haptic_2fa_confirm_code($user, $code)
 }
 
 /**
- * Envoie un code par e-mail depuis le profil : mise en place (adresse du compte) ou confirmation (adresse enregistrée).
+ * Envoie un code par email depuis le profil : mise en place (adresse du compte) ou confirmation (adresse enregistrée).
  *
  * @return string|WP_Error adresse masquée
  */
@@ -291,7 +291,7 @@ function haptic_2fa_send_profile_code($user, $purpose)
 }
 
 /**
- * Code de mise en place reçu par e-mail : valable une fois, 10 minutes, 5 essais.
+ * Code de mise en place reçu par email : valable une fois, 10 minutes, 5 essais.
  *
  * @return string|null adresse vérifiée
  */
