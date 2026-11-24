@@ -29,6 +29,7 @@ Première étape de la prise en charge des réseaux multisites (sous-domaines, s
 - **Suppression d'un site du réseau** : ses tables `optimizr_redirects`, `optimizr_404` et `optimizr_conversions` restaient dans la base. Elles sont supprimées avec celles de WordPress (filtre `wpmu_drop_tables`).
 - L'assistant de configuration ne s'ouvre plus après une activation pour le réseau (il règle un site, pas le réseau) ; il reste accessible depuis chaque site.
 - Sur un site neuf (un nouveau site du réseau, par exemple), une migration tentait de nettoyer la table des pages introuvables avant qu'elle existe, ce qui écrivait une erreur de base de données dans le journal.
+- Import depuis une autre extension SEO : le comptage des métadonnées (`haptic_migration_meta_stats()`) prépare sa requête avant de l'exécuter, au lieu de la choisir dans l'appel. Même résultat ; le contrôle Plugin Check, devenu plus strict, la refusait.
 
 ## [7.24.0] - 2026-11-24
 
