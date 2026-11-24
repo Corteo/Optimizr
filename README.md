@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.20.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.21.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -28,7 +28,7 @@ En option (onglet **Outils**, désactivée par défaut), une **barre flottante**
 ### SEO
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
 - Balises OpenGraph (titre, description, image).
-- Metabox « SEO & OpenGraph » dans l'éditeur : titre, description et image personnalisés, option « ne pas indexer ».
+- Boîte « SEO & partage » dans l'éditeur, en deux colonnes : titre, description et image personnalisés (image choisie dans la médiathèque), compteurs de caractères, aperçus Google et partage, résumé en tête et interrupteur « Visible dans Google » (noindex).
 - *Optimizr Pro :* sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow, données structurées, chiffres de la Search Console (clics, impressions, requêtes, pages).
 
 ### Redirections

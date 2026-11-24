@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.20.0\n"
+"Project-Id-Version: Optimizr 7.20.2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -876,7 +876,7 @@ msgstr ""
 msgid "Type your text freely and “{” to pick a variable. Ideally between 120 and 160 characters."
 msgstr ""
 
-#: functions/seo/seo-meta.php functions/seo/seo.php
+#: functions/seo/seo.php
 msgid "Google preview"
 msgstr ""
 
@@ -927,10 +927,6 @@ msgstr ""
 
 #: functions/seo/seo-meta.php
 msgid "Share image"
-msgstr ""
-
-#: functions/seo/seo-meta.php
-msgid "(URL)"
 msgstr ""
 
 #: functions/seo/seo-meta.php
@@ -3725,4 +3721,78 @@ msgstr ""
 
 #: functions/media-panel.php
 msgid "With Optimizr Pro: convert this image in one click and write its alternative text with AI."
+msgstr ""
+
+#. translators: state of the SEO title: "ideal", "too short" or "too long"
+#: functions/seo/seo-meta.php
+msgid "Title: %s"
+msgstr ""
+
+#. translators: state of the SEO description: "ideal", "too short" or "too long"
+#: functions/seo/seo-meta.php
+msgid "Description: %s"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "ideal"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "too short"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "too long"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Image: featured"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Image: chosen"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Image: none"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Visible in Google"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Hidden from Google (noindex)"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Use this image"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Back to the pattern"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Back to the featured image"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Choose…"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Preview"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Sharing"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "Hidden: will not appear in Google"
+msgstr ""
+
+#: functions/seo/seo-meta.php
+msgid "No share image"
 msgstr ""

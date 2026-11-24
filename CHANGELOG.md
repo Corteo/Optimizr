@@ -4,6 +4,23 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.21.0] - 2026-11-24
+
+### Ajouté
+- **Boîte « SEO & partage » de l'éditeur en deux colonnes** : les champs à gauche, l'aperçu à droite, toujours visible pendant la saisie. Sous 880 px de large (éditeur étroit, mobile), l'aperçu passe sous les champs.
+- **Résumé en tête de boîte** : trois pastilles (titre, description, image) disent ce qui reste à faire, et l'interrupteur « Visible dans Google » remplace la case « Ne pas indexer ». Un contenu masqué passe la boîte en orange et l'aperçu Google porte l'étiquette « Masqué : n'apparaîtra pas dans Google ».
+- **Aperçu du partage** (Facebook, LinkedIn, messageries) à côté de l'aperçu Google, au choix par un contrôle segmenté.
+- Liens **« Revenir au motif »** et « Revenir à l'image à la une », visibles seulement sur un champ personnalisé.
+- **Image de partage choisie dans la médiathèque** (bouton « Choisir… », taille « large » si elle existe), avec une vignette ; l'adresse peut toujours être collée.
+
+### Modifié
+- **Boîte aux couleurs du système de design Optimizr.** `gutenberg/seo-preview.css` dépend désormais de `css/optimizr-tokens.css` (`haptic_tokens_style()`), chargée sur l'écran d'édition ; chaque couleur garde une valeur de secours si la feuille des jetons venait à manquer.
+- Champs au style « Netteté » : coins de 10 px, bordure plus foncée au survol, halo bleu au focus, texte de motif grisé.
+- Compteurs de caractères : barre de progression avec la zone idéale teintée, et pastille colorée. Orange sous le minimum conseillé (50 pour le titre, 120 pour la description), vert dans la zone idéale, rouge au-delà du maximum. Avant, une description de 150 caractères, pourtant idéale, s'affichait en orange.
+- Bouton « Générer la description avec l'IA » (Optimizr Pro) en bouton secondaire avec étincelles, qui pulsent pendant la génération, placé à côté du compteur de la description.
+- Aperçu dans Google proche d'un vrai résultat : icône (ou initiale) et nom du site, fil d'Ariane de l'adresse, titre en 20 px, image de partage en vignette à droite.
+- Enregistrement : le formulaire envoie `haptic_seo_visible` (interrupteur) et le marqueur `haptic_seo_visibility` ; l'ancien champ `haptic_noindex` reste compris.
+
 ## [7.20.1] - 2026-11-23
 
 ### Modifié

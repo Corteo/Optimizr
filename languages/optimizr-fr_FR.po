@@ -878,7 +878,7 @@ msgstr "Tapez votre texte librement et « { » pour choisir une variable. Idéal
 msgid "Type your text freely and “{” to pick a variable. Ideally between 120 and 160 characters."
 msgstr "Tapez votre texte librement et « { » pour choisir une variable. Idéalement entre 120 et 160 caractères."
 
-#: functions/seo/seo-meta.php functions/seo/seo.php
+#: functions/seo/seo.php
 msgid "Google preview"
 msgstr "Aperçu dans Google"
 
@@ -930,10 +930,6 @@ msgstr "Idéalement entre 120 et 160 caractères."
 #: functions/seo/seo-meta.php
 msgid "Share image"
 msgstr "Image de partage"
-
-#: functions/seo/seo-meta.php
-msgid "(URL)"
-msgstr "(URL)"
 
 #: functions/seo/seo-meta.php
 msgid "Content featured image"
@@ -3741,3 +3737,77 @@ msgstr "Manquant. Il décrit l'image aux moteurs de recherche et aux lecteurs d'
 #: functions/media-panel.php
 msgid "With Optimizr Pro: convert this image in one click and write its alternative text with AI."
 msgstr "Avec Optimizr Pro : convertissez cette image en un clic et rédigez son texte alternatif avec l'IA."
+
+#. translators: state of the SEO title: "ideal", "too short" or "too long"
+#: functions/seo/seo-meta.php
+msgid "Title: %s"
+msgstr "Titre : %s"
+
+#. translators: state of the SEO description: "ideal", "too short" or "too long"
+#: functions/seo/seo-meta.php
+msgid "Description: %s"
+msgstr "Description : %s"
+
+#: functions/seo/seo-meta.php
+msgid "ideal"
+msgstr "idéal"
+
+#: functions/seo/seo-meta.php
+msgid "too short"
+msgstr "trop court"
+
+#: functions/seo/seo-meta.php
+msgid "too long"
+msgstr "trop long"
+
+#: functions/seo/seo-meta.php
+msgid "Image: featured"
+msgstr "Image : à la une"
+
+#: functions/seo/seo-meta.php
+msgid "Image: chosen"
+msgstr "Image : choisie"
+
+#: functions/seo/seo-meta.php
+msgid "Image: none"
+msgstr "Image : aucune"
+
+#: functions/seo/seo-meta.php
+msgid "Visible in Google"
+msgstr "Visible dans Google"
+
+#: functions/seo/seo-meta.php
+msgid "Hidden from Google (noindex)"
+msgstr "Masqué de Google (noindex)"
+
+#: functions/seo/seo-meta.php
+msgid "Use this image"
+msgstr "Utiliser cette image"
+
+#: functions/seo/seo-meta.php
+msgid "Back to the pattern"
+msgstr "Revenir au motif"
+
+#: functions/seo/seo-meta.php
+msgid "Back to the featured image"
+msgstr "Revenir à l'image à la une"
+
+#: functions/seo/seo-meta.php
+msgid "Choose…"
+msgstr "Choisir…"
+
+#: functions/seo/seo-meta.php
+msgid "Preview"
+msgstr "Aperçu"
+
+#: functions/seo/seo-meta.php
+msgid "Sharing"
+msgstr "Partage"
+
+#: functions/seo/seo-meta.php
+msgid "Hidden: will not appear in Google"
+msgstr "Masqué : n'apparaîtra pas dans Google"
+
+#: functions/seo/seo-meta.php
+msgid "No share image"
+msgstr "Aucune image de partage"
