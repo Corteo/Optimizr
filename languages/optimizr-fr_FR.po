@@ -3844,3 +3844,12 @@ msgstr "Page d'accueil : « %s ». Son titre, sa description et son image de par
 #: functions/seo/seo-home.php
 msgid "Edit the home page SEO"
 msgstr "Régler le SEO de la page d'accueil"
+
+#. translators: %s: title of the page that lists the posts
+#: functions/seo/seo-home.php
+msgid "Posts page: “%s”. It lists your posts, and its “SEO & sharing” box sets the title, description and share image of that list."
+msgstr "Page des articles : « %s ». Elle affiche la liste de vos articles, et sa boîte « SEO & partage » règle le titre, la description et l'image de partage de cette liste."
+
+#: functions/seo/seo-home.php
+msgid "Edit the posts page SEO"
+msgstr "Régler le SEO de la page des articles"

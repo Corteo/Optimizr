@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.22.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.23.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -29,7 +29,8 @@ En option (onglet **Outils**, désactivée par défaut), une **barre flottante**
 - Titre et description par défaut construits à partir de variables (titre de la page, nom du site, résumé, catégorie, auteur…), avec aperçu Google et aperçu de partage social en direct.
 - Balises OpenGraph (titre, description, image).
 - Boîte « SEO & partage » dans l'éditeur, en deux colonnes : titre, description et image personnalisés (image choisie dans la médiathèque), compteurs de caractères, aperçus Google et partage, résumé en tête et interrupteur « Visible dans Google » (noindex).
-- Carte « Page d'accueil » de l'onglet SEO (`functions/seo/seo-home.php`) : quand l'accueil affiche les derniers articles, titre, description et image de partage de l'accueil, avec compteurs de caractères et choix de l'image dans la médiathèque. Quand l'accueil est une page statique, la carte renvoie vers la boîte « SEO & partage » de cette page, seul endroit où la régler.
+- Carte « Page d'accueil » de l'onglet SEO (`functions/seo/seo-home.php`) : quand l'accueil affiche les derniers articles, titre, description et image de partage de l'accueil, avec compteurs de caractères et choix de l'image dans la médiathèque. Quand l'accueil est une page statique, la carte renvoie vers la boîte « SEO & partage » de cette page, seul endroit où la régler, et vers celle de la page « Articles » s'il y en a une.
+- Page « Articles » (Réglages › Lecture) : sa boîte « SEO & partage » s'applique à la liste des articles qu'elle affiche, pages suivantes comprises (titre, description, image de partage, « Visible dans Google »).
 - *Optimizr Pro :* sitemap XML, plan du site, robots.txt, options d'indexation, codes de vérification, IndexNow, données structurées, chiffres de la Search Console (clics, impressions, requêtes, pages).
 
 ### Redirections

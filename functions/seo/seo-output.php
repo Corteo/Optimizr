@@ -155,6 +155,26 @@ function haptic_seo_default_image($post_id)
 }
 
 /**
+ * Contenu dont la boîte « SEO & partage » s'applique à la page affichée, ou 0 :
+ * un contenu seul, ou la page « Articles » (Réglages › Lecture) quand elle affiche la liste des articles,
+ * y compris ses pages suivantes (/blog/page/2/). Pour WordPress, cette liste n'est pas un contenu seul
+ * (is_singular() est faux) : sans ce cas, sa boîte n'aurait aucun effet sur le site.
+ */
+function haptic_seo_queried_post_id()
+{
+    if (is_singular()) {
+        return (int) get_queried_object_id();
+    }
+
+    if (is_home() && !is_front_page()) {
+        $page_id = (int) get_option('page_for_posts');
+        return $page_id && get_post($page_id) ? $page_id : 0;
+    }
+
+    return 0;
+}
+
+/**
  * Titre SEO de la page courante, ou null si le plugin ne doit pas le modifier.
  */
 function haptic_seo_current_title()
@@ -169,11 +189,12 @@ function haptic_seo_current_title()
         return $title !== '' ? $title : null;
     }
 
-    if (!is_singular()) {
+    $post_id = haptic_seo_queried_post_id();
+    if (!$post_id) {
         return null;
     }
 
-    $seo = haptic_seo_resolve(get_queried_object_id());
+    $seo = haptic_seo_resolve($post_id);
 
     return $seo['title'] !== '' ? $seo['title'] : null;
 }
@@ -221,8 +242,9 @@ add_action('wp_head', function () {
 function haptic_generate_meta_tags()
 {
     $blog_front = haptic_seo_is_blog_front();
+    $post_id = $blog_front ? 0 : haptic_seo_queried_post_id();
 
-    if (!$blog_front && !is_singular()) {
+    if (!$blog_front && !$post_id) {
         return;
     }
 
@@ -245,7 +267,7 @@ function haptic_generate_meta_tags()
         $og_type = 'website';
         $og_url = home_url('/');
     } else {
-        $post_id = get_queried_object_id();
+        // Contenu seul, ou page « Articles » : sa boîte « SEO & partage »
         $seo = haptic_seo_resolve($post_id);
         $og_type = get_post_type($post_id) === 'post' ? 'article' : 'website';
         $og_url = get_permalink($post_id);
@@ -282,10 +304,11 @@ function haptic_generate_meta_tags()
 }
 add_action('wp_head', 'haptic_generate_meta_tags');
 
-// Contenu marqué « ne pas indexer » dans la metabox : ni indexé ni ses liens suivis (filtre de WordPress,
-// une seule balise meta robots par page)
+// Contenu marqué « ne pas indexer » dans la metabox (page « Articles » comprise) : ni indexé ni ses liens
+// suivis (filtre de WordPress, une seule balise meta robots par page)
 add_filter('wp_robots', function ($robots) {
-    if (is_singular() && get_post_meta(get_queried_object_id(), '_haptic_noindex', true)) {
+    $post_id = haptic_seo_queried_post_id();
+    if ($post_id && get_post_meta($post_id, '_haptic_noindex', true)) {
         $robots['noindex'] = true;
         $robots['nofollow'] = true;
         unset($robots['follow'], $robots['max-image-preview']);
