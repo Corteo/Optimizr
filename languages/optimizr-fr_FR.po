@@ -1004,23 +1004,6 @@ msgstr "Un contenu du site utilise déjà cette adresse."
 msgid "[%s] New login address"
 msgstr "[%s] Nouvelle adresse de connexion"
 
-#. %s: new login URL
-#: functions/security.php
-msgid ""
-"The admin login address has been changed.\n"
-"\n"
-"New address: %s\n"
-"\n"
-"The old address (wp-login.php) now shows a not-found page.\n"
-"Keep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php."
-msgstr ""
-"L'adresse de connexion à l'administration a été modifiée.\n"
-"\n"
-"Nouvelle adresse : %s\n"
-"\n"
-"L'ancienne adresse (wp-login.php) affiche désormais une page introuvable.\n"
-"Conservez cet email. En cas de blocage, ajoutez define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); dans wp-config.php."
-
 #. %s: number of minutes
 #: functions/security.php
 msgid "Too many login attempts. Try again in %s minute."
@@ -1043,25 +1026,6 @@ msgstr "Identifiant ou mot de passe incorrect."
 #: functions/security.php
 msgid "[%s] Administrator login from a new address"
 msgstr "[%s] Connexion administrateur depuis une nouvelle adresse"
-
-#. 1: username, 2: date and time, 3: IP address, 4: browser user agent
-#: functions/security.php
-msgid ""
-"The account \"%1$s\" has just logged in from an unknown IP address.\n"
-"\n"
-"Date: %2$s\n"
-"IP address: %3$s\n"
-"Browser: %4$s\n"
-"\n"
-"If this wasn't you, change your password immediately."
-msgstr ""
-"Le compte « %1$s » vient de se connecter depuis une adresse IP inconnue.\n"
-"\n"
-"Date : %2$s\n"
-"Adresse IP : %3$s\n"
-"Navigateur : %4$s\n"
-"\n"
-"Si ce n'est pas vous, changez immédiatement votre mot de passe."
 
 #: functions/security.php
 msgid "unknown"
@@ -1655,14 +1619,6 @@ msgstr "Pas encore activée sur votre compte : <a href=\"%s\">mettez-la en place
 #: functions/security-admin.php
 msgid "Lost phone: a backup code replaces the app code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php."
 msgstr "Téléphone perdu : un code de secours remplace le code de l'application, et un administrateur peut réinitialiser le compte depuis son profil. Si plus aucun administrateur ne peut se connecter, ajoutez %s dans wp-config.php."
-
-#: functions/security-2fa.php
-msgid "Your code to log in as \"%1$s\": %2$s\n\nIt is valid for %3$s minutes.\n\nIf you have not just tried to log in, someone knows your password: change it."
-msgstr "Votre code pour vous connecter en tant que « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous n'essayez pas de vous connecter en ce moment, quelqu'un connaît votre mot de passe : changez-le."
-
-#: functions/security-2fa.php
-msgid "Your code to confirm two-factor authentication for the account \"%1$s\": %2$s\n\nIt is valid for %3$s minutes.\n\nIf you did not request it, you can ignore this email."
-msgstr "Votre code pour confirmer la double authentification du compte « %1$s » : %2$s\n\nIl est valable %3$s minutes.\n\nSi vous ne l'avez pas demandé, vous pouvez ignorer cet email."
 
 #: functions/security-2fa.php
 msgid "[%s] Your verification code"
@@ -3853,3 +3809,92 @@ msgstr "Page des articles : « %s ». Elle affiche la liste de vos articles, et 
 #: functions/seo/seo-home.php
 msgid "Edit the posts page SEO"
 msgstr "Régler le SEO de la page des articles"
+
+#. 1: site name, 2: site address
+#: functions/mail-template.php
+msgid "Email sent by %1$s (%2$s), protected by Optimizr."
+msgstr "Email envoyé par %1$s (%2$s), protégé par Optimizr."
+
+#: functions/mail-template.php
+msgid "Button not working? Copy this address into your browser:"
+msgstr "Le bouton ne fonctionne pas ? Copiez cette adresse dans votre navigateur :"
+
+#: functions/security-2fa.php
+msgid "Login code"
+msgstr "Code de connexion"
+
+#. %s: username
+#: functions/security-2fa.php
+msgid "Here is your code to log in as \"%s\":"
+msgstr "Voici votre code pour vous connecter en tant que « %s » :"
+
+#: functions/security-2fa.php
+msgid "Valid for"
+msgstr "Valable"
+
+#. %s: number of minutes
+#: functions/security-2fa.php
+msgid "%s minutes"
+msgstr "%s minutes"
+
+#: functions/security-2fa.php
+msgid "If you have not just tried to log in, someone knows your password: change it."
+msgstr "Si vous n'avez pas essayé de vous connecter à l'instant, quelqu'un connaît votre mot de passe : changez-le."
+
+#. %s: username
+#: functions/security-2fa.php
+msgid "Here is your code to confirm two-factor authentication for the account \"%s\":"
+msgstr "Voici votre code pour confirmer la double authentification du compte « %s » :"
+
+#: functions/security-2fa.php
+msgid "If you did not request it, you can ignore this email."
+msgstr "Si vous ne l'avez pas demandé, vous pouvez ignorer cet email."
+
+#: functions/security.php
+msgid "New login address"
+msgstr "Nouvelle adresse de connexion"
+
+#: functions/security.php
+msgid "The admin login address has been changed. The old address (wp-login.php) now shows a not-found page."
+msgstr "L'adresse de connexion à l'administration a changé. L'ancienne adresse (wp-login.php) affiche désormais une page introuvable."
+
+#: functions/security.php
+msgid "New address"
+msgstr "Nouvelle adresse"
+
+#: functions/security.php
+msgid "Keep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php."
+msgstr "Conservez cet email. Si vous ne pouvez plus vous connecter, ajoutez define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); dans wp-config.php."
+
+#: functions/security.php
+msgid "Open the login page"
+msgstr "Ouvrir la page de connexion"
+
+#: functions/security.php
+msgid "Login from a new address"
+msgstr "Connexion depuis une nouvelle adresse"
+
+#. %s: username
+#: functions/security.php
+msgid "The account \"%s\" has just logged in from an unknown IP address."
+msgstr "Le compte « %s » vient de se connecter depuis une adresse IP inconnue."
+
+#: functions/security.php
+msgid "Account"
+msgstr "Compte"
+
+#: functions/security.php
+msgid "IP address"
+msgstr "Adresse IP"
+
+#: functions/security.php
+msgid "Browser"
+msgstr "Navigateur"
+
+#: functions/security.php
+msgid "If this wasn't you, change your password immediately."
+msgstr "Si ce n'était pas vous, changez votre mot de passe tout de suite."
+
+#: functions/security.php
+msgid "Change my password"
+msgstr "Changer mon mot de passe"

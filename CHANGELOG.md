@@ -4,6 +4,12 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.24.0] - 2026-11-24
+
+### Modifié
+- **Emails d'Optimizr aux couleurs d'Optimizr** : code de connexion (double authentification), alerte de connexion administrateur depuis une nouvelle adresse IP et nouvelle adresse de connexion. Ils sont maintenant en HTML, avec le même habillage que les emails de la console : bandeau nuit avec le logo, petit titre coloré (rouge pour une alerte), nom du site, code en grand à recopier, récapitulatif (compte, date, adresse IP, navigateur, adresse de connexion), encadré orange pour la consigne de sécurité et bouton en dégradé (« Changer mon mot de passe » en rouge, « Ouvrir la page de connexion » en bleu). Le pied dit quel site a envoyé l'email. Une version texte accompagne chaque email pour les messageries qui n'affichent pas le HTML.
+- Mise en page commune dans `functions/mail-template.php` (`haptic_mail_send()`), logo `images/optimizr-mail-logo.png` chargé depuis le site.
+
 ## [7.23.0] - 2026-11-24
 
 Première release depuis la 7.21.0 : elle comprend aussi la 7.22.0, qui n'a pas été publiée seule. Nouvelle carte « Page d'accueil » dans Optimizr › SEO : quand l'accueil affiche les derniers articles, son titre, sa description et son image de partage s'y règlent, et l'accueil reçoit sa balise `description` et ses balises OpenGraph ; quand l'accueil est une page statique, la carte renvoie vers la boîte « SEO & partage » de cette page.

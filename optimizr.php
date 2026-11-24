@@ -4,7 +4,7 @@
  * Plugin Name: Optimizr
  * Plugin URI: https://optimizr.hapticstudio.fr/
  * Description: Cookie consent (Tarteaucitron), SEO meta tags, login protection, page cache and maintenance tools in a single settings page, enabled module by module.
- * Version: 7.23.0
+ * Version: 7.24.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Haptic
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Doit rester synchronisé avec l'en-tête "Version" ci-dessus (SemVer, cf. README.md)
-define('HAPTIC_OPTIMIZR_VERSION', '7.23.0');
+define('HAPTIC_OPTIMIZR_VERSION', '7.24.0');
 define('HAPTIC_OPTIMIZR_FILE', __FILE__);
 define('HAPTIC_OPTIMIZR_PATH', plugin_dir_path(__FILE__));
 define('HAPTIC_OPTIMIZR_URL', plugin_dir_url(__FILE__));
@@ -60,6 +60,8 @@ require_once(__DIR__ . '/functions/onboarding.php');
 require_once(__DIR__ . '/functions/media-panel.php');
 // Assistant campagnes (suivi Google et Meta) : toujours disponible, il active le module Cookies & RGPD
 require_once(__DIR__ . '/functions/campaigns.php');
+// Mise en page des e-mails envoyés par Optimizr (code de connexion, alertes de sécurité)
+require_once(__DIR__ . '/functions/mail-template.php');
 
 // Modules activables depuis le tableau de bord (cf. haptic_modules())
 if (haptic_is_module_active('emails')) {
