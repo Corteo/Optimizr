@@ -29,6 +29,8 @@ function haptic_enqueue_seo_scripts($hook)
     $dir = plugin_dir_path(dirname(__FILE__, 2)) . 'gutenberg/';
     $url = plugin_dir_url(dirname(__FILE__, 2)) . 'gutenberg/';
 
+    // Médiathèque de WordPress pour le bouton « Choisir… » de l'image de partage
+    wp_enqueue_media();
     wp_enqueue_script('haptic-seo-preview', $url . 'seo-preview.js', ['wp-i18n'], filemtime($dir . 'seo-preview.js'), true);
     wp_set_script_translations('haptic-seo-preview', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
     // Les couleurs viennent des jetons du système de design : la feuille est chargée avant celle de la boîte
@@ -55,67 +57,136 @@ function haptic_seo_meta_callback($post)
     // Fil d'Ariane façon Google : « exemple.fr › page › sous-page »
     $breadcrumb = $path === '' ? $host : $host . ' › ' . implode(' › ', array_map('urldecode', explode('/', $path)));
     $site_icon = get_site_icon_url(64);
-    ?>
-    <div class="optimizr-seo">
-        <label class="optimizr-seo__check">
-            <input type="checkbox" name="haptic_noindex" value="1" <?php checked($noindex, 1); ?>>
-            <span><?php esc_html_e('Do not index this content in search engines', 'optimizr'); ?></span>
-        </label>
+    $site_name = wp_strip_all_tags(get_bloginfo('name'));
+    $initial = mb_strtoupper(mb_substr($site_name, 0, 1));
+    $default_image_label = $seo['default_image'] ?: __('Content featured image', 'optimizr');
 
-        <p class="optimizr-seo__intro"><?php
+    // Libellés des pastilles du résumé, lus par gutenberg/seo-preview.js
+    $chips = [
+        /* translators: state of the SEO title: "ideal", "too short" or "too long" */
+        'title' => __('Title: %s', 'optimizr'),
+        /* translators: state of the SEO description: "ideal", "too short" or "too long" */
+        'desc' => __('Description: %s', 'optimizr'),
+        'ok' => __('ideal', 'optimizr'),
+        'warn' => __('too short', 'optimizr'),
+        'bad' => __('too long', 'optimizr'),
+        'imageDefault' => __('Image: featured', 'optimizr'),
+        'imageCustom' => __('Image: chosen', 'optimizr'),
+        'imageNone' => __('Image: none', 'optimizr'),
+        'visible' => __('Visible in Google', 'optimizr'),
+        'hidden' => __('Hidden from Google (noindex)', 'optimizr'),
+        'mediaTitle' => __('Share image', 'optimizr'),
+        'mediaButton' => __('Use this image', 'optimizr'),
+    ];
+    ?>
+    <div class="optimizr-seo" data-labels="<?php echo esc_attr(wp_json_encode($chips)); ?>">
+        <div class="optimizr-seo__summary<?php echo $noindex ? ' is-hidden' : ''; ?>">
+            <div class="optimizr-seo__chips" aria-live="polite">
+                <span class="optimizr-seo__chip" data-chip="title"></span>
+                <span class="optimizr-seo__chip" data-chip="desc"></span>
+                <span class="optimizr-seo__chip" data-chip="image"></span>
+            </div>
+            <?php // L'interrupteur dit « visible » ; le marqueur indique au formulaire d'enregistrement de le lire ainsi ?>
+            <input type="hidden" name="haptic_seo_visibility" value="1">
+            <label class="optimizr-seo__switch">
+                <input type="checkbox" id="haptic_seo_visible" name="haptic_seo_visible" value="1" <?php checked(!$noindex); ?>>
+                <span class="optimizr-seo__track" aria-hidden="true"></span>
+                <span data-visibility-label><?php echo esc_html($noindex ? $chips['hidden'] : $chips['visible']); ?></span>
+            </label>
+        </div>
+
+        <div class="optimizr-seo__layout">
+            <div class="optimizr-seo__fields">
+                <div class="optimizr-seo__field">
+                    <div class="optimizr-seo__label-row">
+                        <label class="optimizr-seo__label" for="haptic_og_title"><?php esc_html_e('SEO title', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(browser tab, Google, shares)', 'optimizr'); ?></span></label>
+                        <button type="button" class="optimizr-seo__reset" data-reset="haptic_og_title" hidden><?php esc_html_e('Back to the pattern', 'optimizr'); ?></button>
+                    </div>
+                    <input type="text" id="haptic_og_title" name="haptic_og_title" value="<?php echo esc_attr($custom_title); ?>" placeholder="<?php echo esc_attr($seo['pattern_title']); ?>" class="widefat" aria-describedby="haptic_title_meter">
+                    <div class="optimizr-seo__meter" id="haptic_title_meter" data-min="50" data-max="60">
+                        <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
+                        <span class="haptic-char-count" id="haptic_title_count">0/60</span>
+                        <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 50 and 60 characters.', 'optimizr'); ?></small>
+                    </div>
+                </div>
+
+                <div class="optimizr-seo__field">
+                    <div class="optimizr-seo__label-row">
+                        <label class="optimizr-seo__label" for="haptic_og_desc"><?php esc_html_e('SEO description', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(Google, shares)', 'optimizr'); ?></span></label>
+                        <button type="button" class="optimizr-seo__reset" data-reset="haptic_og_desc" hidden><?php esc_html_e('Back to the pattern', 'optimizr'); ?></button>
+                    </div>
+                    <textarea id="haptic_og_desc" name="haptic_og_desc" class="widefat" rows="3" placeholder="<?php echo esc_attr($seo['pattern_description']); ?>" aria-describedby="haptic_desc_meter"><?php echo esc_textarea($custom_desc); ?></textarea>
+                    <div class="optimizr-seo__meter-row">
+                        <div class="optimizr-seo__meter" id="haptic_desc_meter" data-min="120" data-max="160">
+                            <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
+                            <span class="haptic-char-count" id="haptic_desc_count">0/160</span>
+                            <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
+                        </div>
+                        <?php
+                        // Optimizr Pro : génération de la description par l'Assistant IA
+                        do_action('haptic_seo_metabox_after_description', $post);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="optimizr-seo__field">
+                    <div class="optimizr-seo__label-row">
+                        <label class="optimizr-seo__label" for="haptic_og_image"><?php esc_html_e('Share image', 'optimizr'); ?></label>
+                        <button type="button" class="optimizr-seo__reset" data-reset="haptic_og_image" hidden><?php esc_html_e('Back to the featured image', 'optimizr'); ?></button>
+                    </div>
+                    <div class="optimizr-seo__image">
+                        <span class="optimizr-seo__image-thumb" data-image-thumb<?php echo $seo['image'] ? '' : ' data-empty'; ?>><img<?php echo $seo['image'] ? ' src="' . esc_url($seo['image']) . '"' : ''; ?> alt=""></span>
+                        <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($default_image_label); ?>" data-default="<?php echo esc_attr($seo['default_image']); ?>">
+                        <button type="button" class="optimizr-seo__button" data-media-pick><?php esc_html_e('Choose…', 'optimizr'); ?></button>
+                    </div>
+                    <small class="haptic-seo-hint"><?php esc_html_e('Default: the featured image. Ideal size: 1200 × 630 px.', 'optimizr'); ?></small>
+                </div>
+            </div>
+
+            <div class="optimizr-seo__aside">
+                <div class="optimizr-seo__preview-head">
+                    <h3 class="optimizr-seo__preview-title"><?php esc_html_e('Preview', 'optimizr'); ?></h3>
+                    <div class="optimizr-seo__segmented" role="group" aria-label="<?php esc_attr_e('Preview', 'optimizr'); ?>">
+                        <button type="button" data-preview="google" aria-pressed="true"><?php esc_html_e('Google', 'optimizr'); ?></button>
+                        <button type="button" data-preview="share" aria-pressed="false"><?php esc_html_e('Sharing', 'optimizr'); ?></button>
+                    </div>
+                </div>
+
+                <div id="haptic_seo_preview" class="haptic-seo-preview-box<?php echo $noindex ? ' is-noindex' : ''; ?>" data-preview-panel="google" data-noindex-label="<?php esc_attr_e('Hidden: will not appear in Google', 'optimizr'); ?>">
+                    <div class="seo-text">
+                        <div class="seo-site">
+                            <span class="seo-favicon"><?php if ($site_icon) : ?><img src="<?php echo esc_url($site_icon); ?>" alt=""><?php else : echo esc_html($initial); endif; ?></span>
+                            <span class="seo-site-text">
+                                <span class="seo-site-name"><?php echo esc_html($site_name); ?></span>
+                                <span class="seo-url" title="<?php echo esc_url($permalink); ?>"><?php echo esc_html($breadcrumb); ?></span>
+                            </span>
+                        </div>
+                        <p class="seo-title" data-out="title"><?php echo esc_html($seo['title']); ?></p>
+                        <p class="seo-desc" data-out="desc"><?php echo esc_html($seo['description']); ?></p>
+                    </div>
+                    <div class="seo-thumb" data-image-thumb<?php echo $seo['image'] ? '' : ' hidden'; ?>>
+                        <img<?php echo $seo['image'] ? ' src="' . esc_url($seo['image']) . '"' : ''; ?> alt="">
+                    </div>
+                </div>
+
+                <div class="optimizr-seo__share" data-preview-panel="share" hidden>
+                    <div class="optimizr-seo__share-image" data-image-thumb<?php echo $seo['image'] ? '' : ' data-empty'; ?>>
+                        <img<?php echo $seo['image'] ? ' src="' . esc_url($seo['image']) . '"' : ''; ?> alt="">
+                        <span><?php esc_html_e('No share image', 'optimizr'); ?></span>
+                    </div>
+                    <div class="optimizr-seo__share-text">
+                        <small><?php echo esc_html($host); ?></small>
+                        <b data-out="title"><?php echo esc_html($seo['title']); ?></b>
+                        <span data-out="desc"><?php echo esc_html($seo['description']); ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="optimizr-seo__foot"><?php
             /* translators: %s: URL of the Optimizr SEO settings tab */
             echo wp_kses(sprintf(__('Leave a field empty to use the pattern set in <a href="%s">Optimizr › SEO</a> (shown in grey).', 'optimizr'), esc_url(admin_url('admin.php?page=haptic-options&tab=seo'))), ['a' => ['href' => []]]);
         ?></p>
-
-        <div class="optimizr-seo__field">
-            <label class="optimizr-seo__label" for="haptic_og_title"><?php esc_html_e('SEO title', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(browser tab, Google, shares)', 'optimizr'); ?></span></label>
-            <input type="text" id="haptic_og_title" name="haptic_og_title" value="<?php echo esc_attr($custom_title); ?>" placeholder="<?php echo esc_attr($seo['pattern_title']); ?>" class="widefat" aria-describedby="haptic_title_meter">
-            <div class="optimizr-seo__meter" id="haptic_title_meter" data-min="50" data-max="60">
-                <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
-                <span class="haptic-char-count" id="haptic_title_count">0/60</span>
-                <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 50 and 60 characters.', 'optimizr'); ?></small>
-            </div>
-        </div>
-
-        <div class="optimizr-seo__field">
-            <label class="optimizr-seo__label" for="haptic_og_desc"><?php esc_html_e('SEO description', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(Google, shares)', 'optimizr'); ?></span></label>
-            <textarea id="haptic_og_desc" name="haptic_og_desc" class="widefat" rows="3" placeholder="<?php echo esc_attr($seo['pattern_description']); ?>" aria-describedby="haptic_desc_meter"><?php echo esc_textarea($custom_desc); ?></textarea>
-            <div class="optimizr-seo__meter" id="haptic_desc_meter" data-min="120" data-max="160">
-                <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
-                <span class="haptic-char-count" id="haptic_desc_count">0/160</span>
-                <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
-            </div>
-            <?php
-            // Optimizr Pro : génération de la description par l'Assistant IA
-            do_action('haptic_seo_metabox_after_description', $post);
-            ?>
-        </div>
-
-        <div class="optimizr-seo__field">
-            <label class="optimizr-seo__label" for="haptic_og_image"><?php esc_html_e('Share image', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(URL)', 'optimizr'); ?></span></label>
-            <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($seo['default_image'] ?: __('Content featured image', 'optimizr')); ?>" class="widefat">
-            <small class="haptic-seo-hint"><?php esc_html_e('Default: the featured image. Ideal size: 1200 × 630 px.', 'optimizr'); ?></small>
-        </div>
-
-        <div class="optimizr-seo__preview">
-            <h3 class="optimizr-seo__preview-title"><?php esc_html_e('Google preview', 'optimizr'); ?></h3>
-            <div id="haptic_seo_preview" class="haptic-seo-preview-box">
-                <div class="seo-text">
-                    <div class="seo-site">
-                        <span class="seo-favicon"><?php if ($site_icon) : ?><img src="<?php echo esc_url($site_icon); ?>" alt=""><?php else : echo esc_html(mb_strtoupper(mb_substr(wp_strip_all_tags(get_bloginfo('name')), 0, 1))); endif; ?></span>
-                        <span class="seo-site-text">
-                            <span class="seo-site-name"><?php echo esc_html(get_bloginfo('name')); ?></span>
-                            <span class="seo-url" title="<?php echo esc_url($permalink); ?>"><?php echo esc_html($breadcrumb); ?></span>
-                        </span>
-                    </div>
-                    <p class="seo-title"><?php echo esc_html($seo['title']); ?></p>
-                    <p class="seo-desc"><?php echo esc_html($seo['description']); ?></p>
-                </div>
-                <div class="seo-thumb"<?php echo $seo['image'] ? '' : ' hidden'; ?>>
-                    <img<?php echo $seo['image'] ? ' src="' . esc_url($seo['image']) . '"' : ''; ?> alt="">
-                </div>
-            </div>
-        </div>
     </div>
     <?php
 }
@@ -138,7 +209,10 @@ function haptic_save_seo_metadata($post_id)
         return;
     }
 
-    if (isset($_POST['haptic_noindex'])) {
+    // Depuis la 7.21.0, un interrupteur « Visible dans Google » (marqueur haptic_seo_visibility) ;
+    // l'ancienne case « Ne pas indexer » reste comprise pour un formulaire mis en cache
+    $noindex = isset($_POST['haptic_seo_visibility']) ? !isset($_POST['haptic_seo_visible']) : isset($_POST['haptic_noindex']);
+    if ($noindex) {
         update_post_meta($post_id, '_haptic_noindex', 1);
     } else {
         delete_post_meta($post_id, '_haptic_noindex');

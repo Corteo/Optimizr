@@ -38,8 +38,7 @@
     --osb-radius-pill: var(--optimizr-radius-pill, 999px);
 
     display: grid;
-    gap: 20px;
-    max-width: 760px;
+    gap: 18px;
     padding: 6px 0 4px;
     color: var(--osb-text);
     font-size: 13px;
@@ -77,91 +76,192 @@
     font-weight: 400;
 }
 
-/* ---------- Ne pas indexer : case à cocher du système de design ---------- */
+/* ---------- Résumé : pastilles d'état et interrupteur « Visible dans Google » ---------- */
 
-.optimizr-seo__check {
+.optimizr-seo__summary {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
+    gap: 8px 12px;
+    padding: 10px 12px;
     border: 1px solid var(--osb-border);
     border-radius: var(--osb-radius-field);
-    background: var(--osb-surface);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
+    background: var(--osb-bg);
     transition: border-color .15s ease, background-color .15s ease;
 }
 
-.optimizr-seo__check:hover {
-    border-color: var(--osb-border-input);
-}
-
 /* Contenu exclu des moteurs : rappel orange bien visible */
-.optimizr-seo__check:has(input:checked) {
+.optimizr-seo__summary.is-hidden {
     border-color: var(--osb-warn-dot);
     background: var(--osb-warn-soft);
+}
+
+.optimizr-seo__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-right: auto;
+}
+
+.optimizr-seo__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: var(--osb-radius-pill);
+    background: var(--osb-border-soft);
+    color: var(--osb-muted);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.optimizr-seo__chip:empty {
+    display: none;
+}
+
+.optimizr-seo__chip::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.optimizr-seo__chip.is-ok { background: var(--osb-ok-soft); color: var(--osb-ok); }
+.optimizr-seo__chip.is-warn { background: var(--osb-warn-soft); color: var(--osb-warn); }
+.optimizr-seo__chip.is-bad { background: var(--osb-bad-soft); color: var(--osb-bad); }
+
+.optimizr-seo__switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+
+.optimizr-seo__summary.is-hidden .optimizr-seo__switch {
     color: var(--osb-warn);
 }
 
-.optimizr-seo input[type="checkbox"] {
-    appearance: none;
-    display: inline-grid;
-    place-items: center;
-    flex: none;
-    width: 18px;
-    height: 18px;
-    min-width: 18px;
+/* L'input natif reste en place, invisible, pour le clavier et les lecteurs d'écran */
+.optimizr-seo .optimizr-seo__switch input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    width: 34px;
+    height: 20px;
     margin: 0;
-    border: 1.5px solid var(--osb-border-input);
-    border-radius: 5px;
-    background: var(--osb-surface);
-    box-shadow: none;
+    opacity: 0;
     cursor: pointer;
-    transition: background-color .15s ease, border-color .15s ease;
 }
 
-.optimizr-seo input[type="checkbox"]:hover {
-    border-color: var(--osb-accent);
+.optimizr-seo__track {
+    position: relative;
+    flex: none;
+    width: 34px;
+    height: 20px;
+    border-radius: var(--osb-radius-pill);
+    background: var(--osb-border-input);
+    transition: background-color .15s ease;
 }
 
-.optimizr-seo input[type="checkbox"]:focus {
-    box-shadow: none;
-    outline: none;
+.optimizr-seo__track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform .15s ease;
 }
 
-.optimizr-seo input[type="checkbox"]:focus-visible {
+.optimizr-seo__switch input:checked + .optimizr-seo__track {
+    background: linear-gradient(135deg, var(--osb-gradient-from), var(--osb-gradient-to));
+}
+
+.optimizr-seo__switch input:checked + .optimizr-seo__track::after {
+    transform: translateX(14px);
+}
+
+.optimizr-seo__switch input:focus-visible + .optimizr-seo__track {
     outline: 2px solid var(--osb-accent);
     outline-offset: 2px;
 }
 
-.optimizr-seo input[type="checkbox"]:checked {
-    border-color: transparent;
-    background: linear-gradient(135deg, var(--osb-gradient-from), var(--osb-gradient-to));
+/* ---------- Deux colonnes : champs à gauche, aperçu à droite ---------- */
+
+.optimizr-seo {
+    container-type: inline-size;
 }
 
-/* Remplace la coche dessinée par WordPress */
-.optimizr-seo input[type="checkbox"]::before {
-    content: none;
+.optimizr-seo__layout,
+.optimizr-seo__fields,
+.optimizr-seo__aside {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    align-content: start;
 }
 
-.optimizr-seo input[type="checkbox"]:checked::after {
-    content: "";
-    width: 5px;
-    height: 9px;
-    margin-top: -2px;
-    border: solid var(--osb-check-ink);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+.optimizr-seo__layout {
+    gap: 24px;
 }
 
-/* ---------- Texte d'aide en tête ---------- */
+.optimizr-seo__aside {
+    gap: 10px;
+}
 
-.optimizr-seo__intro {
-    padding: 10px 14px;
-    border-radius: var(--osb-radius-sm);
-    background: var(--osb-accent-soft);
-    color: var(--osb-text);
+@container (min-width: 880px) {
+    .optimizr-seo__layout {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+        gap: 32px;
+    }
+
+    .optimizr-seo__aside {
+        position: sticky;
+        top: 16px;
+        padding-left: 32px;
+        border-left: 1px solid var(--osb-border-soft);
+    }
+}
+
+.optimizr-seo__label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.optimizr-seo .optimizr-seo__reset {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--osb-accent);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.optimizr-seo .optimizr-seo__reset:hover {
+    color: var(--osb-accent-strong);
+    text-decoration: underline;
+}
+
+.optimizr-seo .optimizr-seo__reset:focus-visible {
+    outline: 2px solid var(--osb-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.optimizr-seo__foot {
+    padding-top: 12px;
+    border-top: 1px solid var(--osb-border-soft);
+    color: var(--osb-muted);
     font-size: 12px;
 }
 
@@ -292,11 +392,24 @@
 
 /* ---------- Bouton IA (ajouté par Optimizr Pro) : bouton secondaire avec étincelles ---------- */
 
-.optimizr-seo__field > p:has(#generate-seo-desc) {
-    margin: 4px 0 0;
+.optimizr-seo__meter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
 }
 
-.optimizr-seo #generate-seo-desc {
+.optimizr-seo__meter-row > .optimizr-seo__meter {
+    flex: 1 1 260px;
+}
+
+.optimizr-seo__meter-row > p {
+    margin: 0;
+}
+
+.optimizr-seo #generate-seo-desc,
+.optimizr-seo .optimizr-seo__button {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -325,13 +438,15 @@
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 2.5l1.9 5.6 5.6 1.9-5.6 1.9L10 17.5l-1.9-5.6L2.5 10l5.6-1.9zM18.5 13l.95 2.55L22 16.5l-2.55.95L18.5 20l-.95-2.55L15 16.5l2.55-.95z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-.optimizr-seo #generate-seo-desc:hover {
+.optimizr-seo #generate-seo-desc:hover,
+.optimizr-seo .optimizr-seo__button:hover {
     border-color: var(--osb-accent);
     background: var(--osb-accent-soft);
     color: var(--osb-accent-strong);
 }
 
-.optimizr-seo #generate-seo-desc:focus {
+.optimizr-seo #generate-seo-desc:focus,
+.optimizr-seo .optimizr-seo__button:focus {
     outline: none;
     border-color: var(--osb-accent);
     box-shadow: 0 0 0 4px var(--osb-focus-halo);
@@ -354,13 +469,47 @@
     to { opacity: .3; }
 }
 
-/* ---------- Aperçu dans Google ---------- */
+/* ---------- Image de partage : vignette, adresse et médiathèque ---------- */
 
-.optimizr-seo__preview {
-    display: grid;
+.optimizr-seo__image {
+    display: flex;
+    align-items: center;
     gap: 10px;
-    padding-top: 18px;
-    border-top: 1px solid var(--osb-border-soft);
+}
+
+.optimizr-seo__image-thumb {
+    flex: none;
+    width: 76px;
+    aspect-ratio: 1.91 / 1;
+    overflow: hidden;
+    border: 1px solid var(--osb-border);
+    border-radius: 6px;
+    background: var(--osb-bg);
+}
+
+.optimizr-seo__image-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.optimizr-seo__image-thumb[data-empty] img {
+    display: none;
+}
+
+.optimizr-seo .optimizr-seo__image input[type="url"] {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* ---------- Aperçu : Google ou partage ---------- */
+
+.optimizr-seo__preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .optimizr-seo h3.optimizr-seo__preview-title {
@@ -372,12 +521,132 @@
     text-transform: uppercase;
 }
 
+.optimizr-seo__segmented {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--osb-radius-field);
+    background: var(--osb-border-soft);
+}
+
+.optimizr-seo .optimizr-seo__segmented button {
+    padding: 5px 11px;
+    border: 0;
+    border-radius: 7px;
+    background: none;
+    color: var(--osb-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.optimizr-seo .optimizr-seo__segmented button[aria-pressed="true"] {
+    background: var(--osb-surface);
+    color: var(--osb-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+.optimizr-seo .optimizr-seo__segmented button:focus-visible {
+    outline: 2px solid var(--osb-accent);
+    outline-offset: 1px;
+}
+
+/* Contenu masqué de Google : étiquette sur la carte, champs toujours modifiables */
+.haptic-seo-preview-box.is-noindex {
+    position: relative;
+    border-color: var(--osb-warn-dot, #d97706);
+}
+
+.haptic-seo-preview-box.is-noindex::after {
+    content: var(--osb-noindex-label, "noindex");
+    position: absolute;
+    top: -11px;
+    right: 14px;
+    padding: 2px 10px;
+    border: 1px solid var(--osb-warn-dot, #d97706);
+    border-radius: 999px;
+    background: var(--osb-warn-soft, #fcf1e0);
+    color: var(--osb-warn, #8a4b00);
+    font: 600 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    pointer-events: none;
+}
+
+/* Carte de partage : Facebook, LinkedIn, messageries */
+.optimizr-seo__share {
+    max-width: 520px;
+    overflow: hidden;
+    border: 1px solid var(--osb-border);
+    border-radius: var(--osb-radius);
+    background: var(--osb-surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+.optimizr-seo__share-image {
+    position: relative;
+    aspect-ratio: 1.91 / 1;
+    background: var(--osb-bg);
+}
+
+.optimizr-seo__share-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.optimizr-seo__share-image span {
+    display: none;
+}
+
+.optimizr-seo__share-image[data-empty] img {
+    display: none;
+}
+
+.optimizr-seo__share-image[data-empty] span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--osb-muted);
+    font-size: 12px;
+}
+
+.optimizr-seo__share-text {
+    display: grid;
+    gap: 2px;
+    padding: 10px 14px 12px;
+    background: #f2f3f5;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.optimizr-seo__share-text small {
+    color: #65676b;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.optimizr-seo__share-text b,
+.optimizr-seo__share-text span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.optimizr-seo__share-text b {
+    color: #050505;
+    font-size: 15px;
+}
+
+.optimizr-seo__share-text span {
+    color: #65676b;
+    font-size: 13px;
+}
+
 /* Carte proche d'un résultat Google : police, couleurs et vignette à droite */
 .haptic-seo-preview-box {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    max-width: 652px;
     padding: 16px 18px;
     border: 1px solid var(--osb-border, #e2e4e7);
     border-radius: var(--osb-radius, 12px);

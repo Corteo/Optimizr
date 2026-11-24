@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.20.2
+Stable tag: 7.21.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,8 +87,10 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 == Changelog ==
 
-= 7.20.2 =
-* Tweak: the "SEO & sharing" box of the editor follows the Optimizr design system: fields with rounded corners and a blue focus halo, character counters with a progress bar and a colored badge (orange too short, green ideal, red too long), "Do not index" option highlighted when checked, AI button with sparkles, Google preview closer to a real result (site name, breadcrumb, thumbnail on the right).
+= 7.21.0 =
+* New: the "SEO & sharing" box of the editor has two columns, fields on the left and a preview always in view on the right, with a summary at the top (title, description and image states) and a "Visible in Google" switch instead of the "Do not index" checkbox.
+* New: sharing preview (Facebook, LinkedIn, messaging apps) next to the Google preview, "Back to the pattern" links, and a "Choose…" button to pick the share image in the media library.
+* Tweak: the box follows the Optimizr design system: rounded fields with a blue focus halo, character counters with a progress bar and a colored badge (orange too short, green ideal, red too long), AI button with sparkles, Google preview closer to a real result.
 
 = 7.20.1 =
 * Tweak: interface aligned with the Optimizr design system: shared colors, gradient primary button, clearer form fields (focus halo, error state, redrawn checkboxes and radio buttons), unified greys in the setup wizard and the floating toolbar.
