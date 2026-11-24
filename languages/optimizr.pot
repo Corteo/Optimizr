@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.21.0\n"
+"Project-Id-Version: Optimizr 7.22.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3828,4 +3828,13 @@ msgstr ""
 
 #: functions/seo/seo-home.php
 msgid "Edit the home page SEO"
+msgstr ""
+
+#. translators: %s: title of the page that lists the posts
+#: functions/seo/seo-home.php
+msgid "Posts page: “%s”. It lists your posts, and its “SEO & sharing” box sets the title, description and share image of that list."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Edit the posts page SEO"
 msgstr ""

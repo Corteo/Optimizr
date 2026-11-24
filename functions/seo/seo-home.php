@@ -73,6 +73,7 @@ function haptic_seo_home_register_settings($group, $page)
     }, $page);
 
     if ($static) {
+        // Accueil et, s'il y en a une, page « Articles » : chacune règle son SEO dans sa propre boîte
         add_settings_field('haptic_seo_home_static', '', 'haptic_seo_home_static_callback', $page, 'haptic_seo_home_section', ['layout' => 'stacked', 'page_id' => $static]);
         return;
     }
@@ -146,6 +147,35 @@ function haptic_seo_home_static_callback($args)
             ?></p>
             <?php if ($edit && current_user_can('edit_post', $page_id)) : ?>
                 <p><a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url($edit . '#haptic_seo_meta'); ?>"><?php esc_html_e('Edit the home page SEO', 'optimizr'); ?></a></p>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
+    haptic_seo_posts_page_callout();
+}
+
+/**
+ * Page « Articles » (Réglages › Lecture, avec un accueil statique) : elle affiche la liste des articles,
+ * mais sa boîte « SEO & partage » s'applique à cette liste (haptic_seo_queried_post_id()).
+ */
+function haptic_seo_posts_page_callout()
+{
+    $page_id = (int) get_option('page_for_posts');
+    if (!$page_id || !get_post($page_id)) {
+        return;
+    }
+
+    $edit = get_edit_post_link($page_id, 'raw');
+    ?>
+    <div class="optimizr-callout">
+        <?php echo wp_kses(haptic_icon('file', 18), haptic_kses_ui()); ?>
+        <div>
+            <p><?php
+                /* translators: %s: title of the page that lists the posts */
+                echo esc_html(sprintf(__('Posts page: “%s”. It lists your posts, and its “SEO & sharing” box sets the title, description and share image of that list.', 'optimizr'), get_the_title($page_id) ?: __('(no title)', 'optimizr')));
+            ?></p>
+            <?php if ($edit && current_user_can('edit_post', $page_id)) : ?>
+                <p><a class="optimizr-btn optimizr-btn--secondary" href="<?php echo esc_url($edit . '#haptic_seo_meta'); ?>"><?php esc_html_e('Edit the posts page SEO', 'optimizr'); ?></a></p>
             <?php endif; ?>
         </div>
     </div>

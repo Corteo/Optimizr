@@ -4,6 +4,14 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.23.0] - 2026-11-24
+
+Première release depuis la 7.21.0 : elle comprend aussi la 7.22.0, qui n'a pas été publiée seule. Nouvelle carte « Page d'accueil » dans Optimizr › SEO : quand l'accueil affiche les derniers articles, son titre, sa description et son image de partage s'y règlent, et l'accueil reçoit sa balise `description` et ses balises OpenGraph ; quand l'accueil est une page statique, la carte renvoie vers la boîte « SEO & partage » de cette page.
+
+### Ajouté
+- **SEO de la page « Articles ».** Quand l'accueil est une page statique et qu'une page « Articles » est choisie (Réglages › Lecture), la boîte « SEO & partage » de cette page s'applique désormais sur le site à la liste des articles qu'elle affiche, pages suivantes comprises (`/blog/page/2/`) : titre, balise `description`, balises OpenGraph (adresse de la page) et « Visible dans Google ». Avant, WordPress ne la traitant pas comme un contenu seul, sa boîte était sans effet. Nouvelle fonction `haptic_seo_queried_post_id()`.
+- La carte « Page d'accueil » de l'onglet SEO renvoie aussi vers la boîte de la page « Articles ».
+
 ## [7.22.0] - 2026-11-24
 
 ### Ajouté
