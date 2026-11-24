@@ -59,6 +59,9 @@ function haptic_options_register_seo_settings()
     add_settings_field('haptic_enable_opengraph', __('OpenGraph tags', 'optimizr'), 'haptic_enable_opengraph_callback', $page, 'haptic_seo_meta_section', [
         'description' => __('Title, description and image when shared on social networks.', 'optimizr'),
     ]);
+
+    // Carte « Page d'accueil » (functions/seo/seo-home.php)
+    haptic_seo_home_register_settings($group, $page);
 }
 add_action('admin_init', 'haptic_options_register_seo_settings');
 
@@ -199,5 +202,6 @@ add_action('haptic_admin_aside_seo', function () {
     <?php
 });
 
+require_once(__DIR__ . '/seo-home.php');
 require_once(__DIR__ . '/seo-meta.php');
 require_once(__DIR__ . '/seo-output.php');

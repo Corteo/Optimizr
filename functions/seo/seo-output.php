@@ -159,7 +159,17 @@ function haptic_seo_default_image($post_id)
  */
 function haptic_seo_current_title()
 {
-    if (!get_option('haptic_enable_seo') || !is_singular()) {
+    if (!get_option('haptic_enable_seo')) {
+        return null;
+    }
+
+    // Accueil « derniers articles » : titre de la carte « Page d'accueil », sinon celui de WordPress
+    if (haptic_seo_is_blog_front()) {
+        $title = haptic_seo_home_resolve()['custom_title'];
+        return $title !== '' ? $title : null;
+    }
+
+    if (!is_singular()) {
         return null;
     }
 
@@ -210,13 +220,13 @@ add_action('wp_head', function () {
 
 function haptic_generate_meta_tags()
 {
-    if (!is_singular()) {
+    $blog_front = haptic_seo_is_blog_front();
+
+    if (!$blog_front && !is_singular()) {
         return;
     }
 
-    $post_id = get_queried_object_id();
-
-    // Le « ne pas indexer » de la metabox passe par le filtre wp_robots (functions/seo/seo-extras.php)
+    // Le « ne pas indexer » de la metabox passe par le filtre wp_robots (en bas de ce fichier)
 
     $meta_enabled = (bool) get_option('haptic_enable_seo');
     $og_enabled = (bool) get_option('haptic_enable_opengraph');
@@ -225,7 +235,21 @@ function haptic_generate_meta_tags()
         return;
     }
 
-    $seo = haptic_seo_resolve($post_id);
+    if ($blog_front) {
+        // Accueil « derniers articles » : réglages de la carte « Page d'accueil » de l'onglet SEO
+        $seo = haptic_seo_home_resolve();
+        if ($seo['custom_title'] === '') {
+            // Titre exact de WordPress (« Nom du site – Slogan », « – Page 2 » sur les pages suivantes)
+            $seo['title'] = haptic_seo_clean_text(wp_get_document_title());
+        }
+        $og_type = 'website';
+        $og_url = home_url('/');
+    } else {
+        $post_id = get_queried_object_id();
+        $seo = haptic_seo_resolve($post_id);
+        $og_type = get_post_type($post_id) === 'post' ? 'article' : 'website';
+        $og_url = get_permalink($post_id);
+    }
 
     if ($meta_enabled && $seo['description'] !== '') {
         echo '<meta name="description" content="' . esc_attr($seo['description']) . '">' . PHP_EOL;
@@ -234,10 +258,10 @@ function haptic_generate_meta_tags()
     if ($og_enabled) {
         $tags = [
             'og:locale'      => get_locale(),
-            'og:type'        => get_post_type($post_id) === 'post' ? 'article' : 'website',
+            'og:type'        => $og_type,
             'og:title'       => $seo['title'],
             'og:description' => $seo['description'],
-            'og:url'         => get_permalink($post_id),
+            'og:url'         => $og_url,
             'og:site_name'   => get_bloginfo('name'),
             'og:image'       => $seo['image'],
         ];

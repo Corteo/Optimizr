@@ -4216,3 +4216,72 @@
         padding-right: 18px;
     }
 }
+
+/* ---------- SEO : carte « Page d'accueil » (functions/seo/seo-home.php) ---------- */
+
+.optimizr-seo-home__count {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+
+.optimizr-seo-home__count [data-seo-home-count] {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.optimizr-seo-home__count .is-warn {
+    color: var(--o-warn);
+}
+
+.optimizr-seo-home__image {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Vignette au format des partages (1,91:1), comme dans la boîte « SEO & partage » */
+.optimizr-seo-home__thumb {
+    flex: none;
+    width: 76px;
+    aspect-ratio: 1.91 / 1;
+    overflow: hidden;
+    border: 1px solid var(--o-border);
+    border-radius: 6px;
+    background: var(--o-bg);
+}
+
+.optimizr-seo-home__thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.optimizr-seo-home__thumb[data-empty] img {
+    display: none;
+}
+
+.optimizr .optimizr-seo-home__image input[type="url"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+}
+
+.optimizr-callout p {
+    margin: 0;
+}
+
+.optimizr-callout p + p {
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .optimizr-seo-home__image {
+        flex-wrap: wrap;
+    }
+
+    .optimizr-seo-home__image input[type="url"] {
+        flex-basis: calc(100% - 86px);
+    }
+}

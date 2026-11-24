@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.20.2\n"
+"Project-Id-Version: Optimizr 7.21.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3795,4 +3795,37 @@ msgstr ""
 
 #: functions/seo/seo-meta.php
 msgid "No share image"
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Your home page is a page of the site: its SEO is set in its own “SEO & sharing” box."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Your home page shows your latest posts, so no page holds its “SEO & sharing” box. Set what Google and social networks show here."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Ideally between 50 and 60 characters. Empty: the site title and tagline, as WordPress does."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "No description: Google picks a passage of the page."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "No image"
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Default: the site icon. Ideal size: 1200 × 630 px."
+msgstr ""
+
+#. translators: %s: title of the page used as the home page
+#: functions/seo/seo-home.php
+msgid "Home page: “%s”. Its title, description and share image are set in the “SEO & sharing” box below its content."
+msgstr ""
+
+#: functions/seo/seo-home.php
+msgid "Edit the home page SEO"
 msgstr ""

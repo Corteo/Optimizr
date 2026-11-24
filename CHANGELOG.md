@@ -4,6 +4,15 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.22.0] - 2026-11-24
+
+### Ajouté
+- **Carte « Page d'accueil » dans Optimizr › SEO** (`functions/seo/seo-home.php`). Quand l'accueil affiche les derniers articles (Réglages › Lecture), aucune page ne porte sa boîte « SEO & partage » : son titre SEO, sa description et son image de partage se règlent désormais ici, avec des compteurs de caractères (50 à 60 pour le titre, 120 à 160 pour la description) et le bouton « Choisir… » de la médiathèque. Options `haptic_seo_home_title`, `haptic_seo_home_desc` et `haptic_seo_home_image`.
+- Quand l'accueil est une page statique, la carte n'affiche pas de champs : elle nomme la page et renvoie vers sa boîte « SEO & partage », pour qu'il n'existe qu'un seul endroit où régler l'accueil. Les valeurs déjà saisies pour l'accueil « derniers articles » sont conservées si l'on change de mode.
+
+### Modifié
+- L'accueil « derniers articles » reçoit maintenant sa balise `description` (si elle est renseignée) et ses balises OpenGraph (titre, description, adresse de l'accueil, image), avec les mêmes interrupteurs que les autres pages. Avant, Optimizr n'y écrivait aucune balise. Un titre vide garde celui de WordPress (« Nom du site – Slogan ») ; une image vide reprend l'icône du site.
+
 ## [7.21.0] - 2026-11-24
 
 ### Ajouté
