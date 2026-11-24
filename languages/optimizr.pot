@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Optimizr 7.24.1\n"
+"Project-Id-Version: Optimizr 7.25.0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2261,7 +2261,7 @@ msgid "On a multisite network, these rules live in the .htaccess file shared by 
 msgstr ""
 
 #: functions/cache.php
-msgid "The page cache is not available on a multisite network."
+msgid "On a multisite network, the page cache must first be turned on by a network administrator, on any site of the network. Every site can then turn it on for itself."
 msgstr ""
 
 #. %s: names of the active cache plugins

@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.24.1 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.25.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -57,7 +57,7 @@ Tout est désactivé par défaut. Sur un site existant, le module s'active depui
 - **Vidage automatique** : un contenu modifié vide sa page, l'accueil et ses archives (type, catégories, auteur) ; un contenu publié, dépublié ou dont l'adresse change, un commentaire, un menu, un widget, le thème, une catégorie, une extension ou un réglage vide tout le cache.
 - **Vidage manuel** : bouton de l'onglet Cache et menu **Optimizr › Cache** de la barre d'administration (tout le site, ou la page affichée).
 - **Cache navigateur et compression** : règles `mod_expires`, `mod_headers` et `mod_deflate` dans un bloc « Optimizr Cache » du `.htaccess` (Apache, LiteSpeed) : images, polices et vidéos un an, styles et scripts un mois. Sur Nginx, l'onglet affiche les règles à transmettre à l'hébergeur.
-- **Conflits** : avec une autre extension de cache (WP Rocket, W3 Total Cache, WP Super Cache, LiteSpeed Cache, WP Fastest Cache…) ou un `advanced-cache.php` qui n'est pas d'Optimizr, le cache des pages reste désactivé. Le cache de l'hébergeur (WP Engine, Kinsta, Pantheon, GoDaddy, Pressable, Varnish) est signalé, et vidé en même temps quand c'est possible (WP Engine, Pantheon, extension Nginx Helper). Pas de cache des pages sur un multisite ; les règles de cache navigateur y sont écrites dans le `.htaccess` commun au réseau et se règlent depuis le site principal seulement.
+- **Conflits** : avec une autre extension de cache (WP Rocket, W3 Total Cache, WP Super Cache, LiteSpeed Cache, WP Fastest Cache…) ou un `advanced-cache.php` qui n'est pas d'Optimizr, le cache des pages reste désactivé. Le cache de l'hébergeur (WP Engine, Kinsta, Pantheon, GoDaddy, Pressable, Varnish) est signalé, et vidé en même temps quand c'est possible (WP Engine, Pantheon, extension Nginx Helper). **Multisite** (sous-domaines, sous-dossiers ou un domaine par site) : chaque site active, règle et vide son propre cache de pages (réglages dans `wp-content/cache/optimizr/sites/`, pages dans `pages/<hôte>--<numéro du site>/`). Un administrateur du réseau l'active une première fois sur un site, ce qui installe `advanced-cache.php` et `WP_CACHE` pour le réseau ; ils sont retirés quand plus aucun site ne s'en sert. Les règles de cache navigateur sont écrites dans le `.htaccess` commun au réseau et se règlent depuis le site principal seulement.
 - Désactiver le cache, le module ou le plugin retire `advanced-cache.php`, la ligne de `wp-config.php`, les règles du `.htaccess` et les pages en cache.
 - *Optimizr Pro :* préchargement du cache et vidage de Cloudflare.
 

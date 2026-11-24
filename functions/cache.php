@@ -305,6 +305,13 @@ foreach (['switch_theme', 'customize_save_after', 'wp_update_nav_menu', 'wp_dele
 }
 unset($haptic_hook);
 
+// Multisite : une mise à jour (extension, thème, WordPress) vaut pour tout le réseau, les pages de tous les sites sont vidées
+add_action('upgrader_process_complete', function () {
+    if (is_multisite()) {
+        haptic_cache_delete_dir(haptic_cache_base_dir() . '/pages');
+    }
+});
+
 add_action('updated_option', 'haptic_cache_option_changed');
 add_action('added_option', 'haptic_cache_option_changed');
 function haptic_cache_option_changed($option)
@@ -454,9 +461,7 @@ function haptic_cache_page_section()
     $state = haptic_cache_state();
     $host = haptic_cache_host_cache();
 
-    if ($blocker === 'multisite') {
-        echo '<p><strong>' . esc_html__('The page cache is not available on a multisite network.', 'optimizr') . '</strong></p>';
-    } elseif ($blocker === 'plugin') {
+    if ($blocker === 'plugin') {
         /* translators: %s: names of the active cache plugins */
         echo '<p><strong>' . esc_html(sprintf(__('%s already caches pages: two caches would conflict. Keep it, or deactivate it to use this one.', 'optimizr'), implode(', ', haptic_cache_conflicting_plugins()))) . '</strong></p>';
     } elseif ($blocker === 'dropin') {
@@ -477,6 +482,8 @@ function haptic_cache_page_section()
             "<code>define('WP_CACHE', true);</code>",
             '<code>wp-config.php</code>'
         )) . '</strong></p>';
+    } elseif (get_option('haptic_cache_page') && $state['error'] === 'network') {
+        echo '<p><strong>' . esc_html__('On a multisite network, the page cache must first be turned on by a network administrator, on any site of the network. Every site can then turn it on for itself.', 'optimizr') . '</strong></p>';
     } elseif (get_option('haptic_cache_page') && $state['error'] === 'files') {
         echo '<p><strong>' . esc_html__('Optimizr cannot write to the wp-content folder: the page cache is off. Ask your host to make it writable.', 'optimizr') . '</strong></p>';
     }

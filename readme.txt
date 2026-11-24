@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.24.1
+Stable tag: 7.25.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,7 +87,8 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 == Changelog ==
 
-= 7.24.1 =
+= 7.25.0 =
+* New (multisite): the page cache now works on a multisite network (subdomains, subdirectories or one domain per site). Each site turns it on, sets it and clears it for itself; a network administrator turns it on first.
 * Fixed (multisite): deactivating Optimizr for the whole network now cleans every site (scheduled tasks, generated files), not only the main one.
 * Fixed (multisite): the files shared by the network (browser cache rules in .htaccess, robots.txt, old sitemap files) are only written or removed from the main site; another site can no longer remove them for everyone.
 * Fixed (multisite): deleting a site of the network also deletes its Optimizr tables (redirects, pages not found, conversions).

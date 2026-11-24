@@ -2263,8 +2263,8 @@ msgid "On a multisite network, these rules live in the .htaccess file shared by 
 msgstr "Sur un réseau multisite, ces règles sont écrites dans le fichier .htaccess commun à tous les sites : elles se règlent depuis le site principal du réseau et s'appliquent à tous les sites."
 
 #: functions/cache.php
-msgid "The page cache is not available on a multisite network."
-msgstr "Le cache des pages n'est pas disponible sur un réseau multisite."
+msgid "On a multisite network, the page cache must first be turned on by a network administrator, on any site of the network. Every site can then turn it on for itself."
+msgstr "Sur un réseau multisite, le cache des pages doit d'abord être activé par un administrateur du réseau, sur n'importe quel site du réseau. Chaque site peut ensuite l'activer pour lui-même."
 
 #. %s: names of the active cache plugins
 #: functions/cache.php

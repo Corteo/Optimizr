@@ -308,7 +308,11 @@ function haptic_options_maybe_upgrade()
         global $wpdb;
         // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
-        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
+        // Seulement si la table existe : un site neuf (nouveau site d'un réseau multisite, par exemple) n'en a pas encore
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($wpdb->prefix . 'optimizr_404'))) === $wpdb->prefix . 'optimizr_404') {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
+            $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
+        }
 
         // Ancien journal de debug public (logs/ du plugin), supprimé depuis :
         // une mise à jour manuelle (FTP, git) le laisse en place
