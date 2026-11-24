@@ -537,7 +537,7 @@ function haptic_onboarding_step_security($modules)
 {
     haptic_onboarding_step_head('security', __('Security', 'optimizr'), __('Lock down access', 'optimizr'), __('A login URL unique to the site stops most bots. Recommended protections are preselected and do not affect visitors.', 'optimizr'));
 
-    $locked = (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite();
+    $locked = defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN;
     $prefix = get_option('permalink_structure') ? home_url('/') : home_url('/') . '?';
     // Même adresse que l'onglet Sécurité (proxys de confiance pris en compte quand le module est actif)
     $ip = function_exists('haptic_sec_client_ip') ? haptic_sec_client_ip() : sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));

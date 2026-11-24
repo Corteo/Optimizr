@@ -769,12 +769,15 @@ function haptic_migration_meta_stats(array $keys, $noindex)
     global $wpdb;
     $stats = [];
     foreach ($keys as $field => $key) {
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- comptage ponctuel sur toutes les publications (onglet Outils)
-        $stats[$field] = (int) $wpdb->get_var($field === 'noindex'
-            ? (is_array($noindex)
-                ? $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s", $key, '%' . $wpdb->esc_like($noindex['like']) . '%')
-                : $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", $key, $noindex))
-            : $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> ''", $key));
+        if ($field !== 'noindex') {
+            $sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> ''", $key);
+        } elseif (is_array($noindex)) {
+            $sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s", $key, '%' . $wpdb->esc_like($noindex['like']) . '%');
+        } else {
+            $sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", $key, $noindex);
+        }
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- requête préparée juste au-dessus ; comptage ponctuel sur toutes les publications (onglet Outils)
+        $stats[$field] = (int) $wpdb->get_var($sql);
     }
     return $stats;
 }

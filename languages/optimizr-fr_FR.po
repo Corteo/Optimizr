@@ -1082,8 +1082,12 @@ msgid "Disabled by the %s constant in wp-config.php: login goes through wp-login
 msgstr "Désactivée par la constante %s dans wp-config.php : la connexion se fait par wp-login.php."
 
 #: functions/security-admin.php
-msgid "Not available on a multisite network."
-msgstr "Non disponible sur un réseau multisite."
+msgid "On a multisite network, each site has its own login address, set here for this site only."
+msgstr "Sur un réseau multisite, chaque site a sa propre adresse de connexion, réglée ici pour ce site seulement."
+
+#: functions/security.php
+msgid "A site of the network already uses this address."
+msgstr "Un site du réseau utilise déjà cette adresse."
 
 #. %s: link to the new login address
 #: functions/security-admin.php
@@ -2259,8 +2263,12 @@ msgid "Pages are saved as HTML files and sent to visitors without loading WordPr
 msgstr "Les pages sont enregistrées en fichiers HTML et envoyées aux visiteurs sans charger WordPress : bien plus rapide. Le cache se vide automatiquement quand un contenu, un commentaire, un menu, le thème ou un réglage change."
 
 #: functions/cache.php
-msgid "The page cache is not available on a multisite network."
-msgstr "Le cache des pages n'est pas disponible sur un réseau multisite."
+msgid "On a multisite network, these rules live in the .htaccess file shared by every site: they are set from the main site of the network and apply to all sites."
+msgstr "Sur un réseau multisite, ces règles sont écrites dans le fichier .htaccess commun à tous les sites : elles se règlent depuis le site principal du réseau et s'appliquent à tous les sites."
+
+#: functions/cache.php
+msgid "On a multisite network, the page cache must first be turned on by a network administrator, on any site of the network. Every site can then turn it on for itself."
+msgstr "Sur un réseau multisite, le cache des pages doit d'abord être activé par un administrateur du réseau, sur n'importe quel site du réseau. Chaque site peut ensuite l'activer pour lui-même."
 
 #. %s: names of the active cache plugins
 #: functions/cache.php
@@ -3898,3 +3906,103 @@ msgstr "Si ce n'était pas vous, changez votre mot de passe tout de suite."
 #: functions/security.php
 msgid "Change my password"
 msgstr "Changer mon mot de passe"
+
+#: functions/network.php
+msgid "Optimizr - Network"
+msgstr "Optimizr - Réseau"
+
+#: functions/network.php
+msgid "Optimizr on the network"
+msgstr "Optimizr sur le réseau"
+
+#: functions/network.php
+msgid "New sites of the network will receive the settings of the model site."
+msgstr "Les nouveaux sites du réseau recevront les réglages du site modèle."
+
+#: functions/network.php
+msgid "New sites of the network will start with the default settings."
+msgstr "Les nouveaux sites du réseau démarreront avec les réglages par défaut."
+
+#: functions/network.php
+msgid "Sites of the network"
+msgstr "Sites du réseau"
+
+#: functions/network.php
+msgid "Optimizr is set site by site: each site has its own modules, settings and data. Open a site to change its settings."
+msgstr "Optimizr se règle site par site : chaque site a ses modules, ses réglages et ses données. Ouvrez un site pour modifier ses réglages."
+
+#: functions/network.php
+msgid "Site"
+msgstr "Site"
+
+#: functions/network.php
+msgid "Active modules"
+msgstr "Modules actifs"
+
+#: functions/network.php
+msgid "Actions"
+msgstr "Actions"
+
+#: functions/network.php
+msgid "Model"
+msgstr "Modèle"
+
+#: functions/network.php
+msgid "Optimizr is not activated on this site"
+msgstr "Optimizr n'est pas activé sur ce site"
+
+#: functions/network.php
+msgid "None"
+msgstr "Aucun"
+
+#: functions/network.php
+msgid "Hidden"
+msgstr "Masquée"
+
+#: functions/network.php
+msgid "Same settings on several sites"
+msgstr "Les mêmes réglages sur plusieurs sites"
+
+#: functions/network.php
+msgid "Set one site the way you want, then copy its Optimizr settings to the others, like an export followed by an import (Tools tab)."
+msgstr "Réglez un site comme vous le voulez, puis copiez ses réglages Optimizr vers les autres, comme un export suivi d'un import (onglet Outils)."
+
+#: functions/network.php
+msgid "Model site"
+msgstr "Site modèle"
+
+#: functions/network.php
+msgid "Give these settings to every new site of the network"
+msgstr "Donner ces réglages à chaque nouveau site du réseau"
+
+#: functions/network.php
+msgid "Save for new sites"
+msgstr "Enregistrer pour les nouveaux sites"
+
+#: functions/network.php
+msgid "Copy now to:"
+msgstr "Copier maintenant vers :"
+
+#: functions/network.php
+msgid "The settings of the chosen sites are replaced. What belongs to one site is never copied: its login address, business details and reviews, home page SEO, Google connections, access granted to AI assistants and to the console, maintenance mode, logs and statistics. Content, redirects and the SEO of each page are not touched."
+msgstr "Les réglages des sites choisis sont remplacés. Ce qui appartient à un seul site n'est jamais copié : son adresse de connexion, son établissement et ses avis, le SEO de sa page d'accueil, ses connexions Google, les accès accordés aux assistants IA et à la console, le mode maintenance, les journaux et les statistiques. Les contenus, les redirections et le SEO de chaque page ne sont pas touchés."
+
+#: functions/network.php
+msgid "Copy the settings"
+msgstr "Copier les réglages"
+
+#: functions/network.php
+msgid "Network"
+msgstr "Réseau"
+
+#. %s: number of sites
+#: functions/network.php
+msgid "Settings copied to %s site."
+msgid_plural "Settings copied to %s sites."
+msgstr[0] "Réglages copiés vers %s site."
+msgstr[1] "Réglages copiés vers %s sites."
+
+#. 1: number of sites shown, 2: number of sites in the network
+#: functions/network.php
+msgid "The first %1$s sites of %2$s are shown."
+msgstr "Les %1$s premiers sites sur %2$s sont affichés."

@@ -83,24 +83,67 @@ function haptic_migrate_legacy_prefix()
 }
 haptic_migrate_legacy_prefix();
 
-function haptic_options_activate()
+/**
+ * Activation. Sur un multisite, une activation « pour le réseau » ne prépare que le site d'où elle est lancée :
+ * tout le reste (tables, tâches planifiées, sitemap) se met en place à la première visite de chaque site.
+ *
+ * @param bool $network_wide Activation pour tout le réseau (multisite).
+ */
+function haptic_options_activate($network_wide = false)
 {
     // Extensions (Optimizr Pro) : fichiers à republier (sitemap, clé IndexNow)
     do_action('haptic_activate');
-    // Première activation : l'assistant de configuration s'ouvre (WordPress confirme déjà l'activation)
-    haptic_onboarding_schedule_redirect();
+    // Première activation : l'assistant de configuration s'ouvre (WordPress confirme déjà l'activation).
+    // Pas depuis l'administration du réseau : l'assistant règle un site, pas le réseau.
+    if (!$network_wide) {
+        haptic_onboarding_schedule_redirect();
+    }
 }
 
 /**
- * Fichiers générés par Optimizr ou Optimizr Pro (sitemap, robots.txt, clé IndexNow, règle .htaccess) :
- * supprimés à la désactivation, même si Optimizr Pro a été retiré avant.
+ * Le site courant gère-t-il les fichiers communs à toute l'installation (.htaccess à la racine, wp-config.php,
+ * wp-content/advanced-cache.php, wp-content/cache/optimizr) ? Toujours sur un site simple ; sur un multisite,
+ * seulement le site principal du réseau : un autre site ne doit ni les écrire ni les retirer pour ses voisins.
  */
-function haptic_options_deactivate()
+function haptic_owns_shared_files()
+{
+    return !is_multisite() || is_main_site();
+}
+
+/**
+ * Désactivation. Sur un multisite, une désactivation « pour le réseau » nettoie chaque site ;
+ * WordPress n'appelle cette fonction qu'une fois, sur le site d'où elle est lancée.
+ *
+ * @param bool $network_wide Désactivation pour tout le réseau (multisite).
+ */
+function haptic_options_deactivate($network_wide = false)
+{
+    if ($network_wide && is_multisite()) {
+        foreach (get_sites(['fields' => 'ids', 'number' => 0]) as $site_id) {
+            switch_to_blog($site_id);
+            haptic_options_deactivate_site();
+            restore_current_blog();
+        }
+        return;
+    }
+
+    haptic_options_deactivate_site();
+}
+
+/**
+ * Fichiers générés par Optimizr ou Optimizr Pro pour le site courant (sitemap, robots.txt, clé IndexNow,
+ * règle .htaccess) et tâches planifiées : supprimés à la désactivation, même si Optimizr Pro a été retiré avant.
+ */
+function haptic_options_deactivate_site()
 {
     do_action('haptic_deactivate');
 
     haptic_sitemap_delete_files();
     haptic_robots_txt_delete_file();
+
+    // Tâche du suivi des conversions : retirée ici aussi, le module Cookies & RGPD (qui la retire sur
+    // haptic_deactivate) pouvant ne pas être chargé pour le site d'où la désactivation est lancée
+    wp_clear_scheduled_hook('haptic_tracking_cleanup');
 
     // Fichier de clé IndexNow à la racine du site
     $key = get_option('haptic_indexnow_key');
@@ -115,6 +158,35 @@ function haptic_options_deactivate()
         insert_with_markers($htaccess, 'Optimizr', []);
     }
 }
+
+/*
+ * Multisite : WordPress envoie « mot de passe perdu » et les liens de réinitialisation vers la page de connexion du
+ * site principal (network_site_url()). Quand celui-ci la masque (adresse de connexion personnalisée du module
+ * Sécurité), ces liens tomberaient sur une page introuvable depuis les autres sites : ils restent sur le site
+ * courant, dont la page de connexion (la sienne, masquée ou non) sait faire la même chose.
+ * Toujours chargé : vaut aussi pour un site du réseau dont le module Sécurité est désactivé.
+ */
+add_filter('network_site_url', function ($url, $path, $scheme) {
+    if (!is_multisite() || is_main_site() || strpos($url, 'wp-login.php') === false
+        || (string) get_blog_option(get_main_site_id(), 'haptic_sec_login_slug', '') === '') {
+        return $url;
+    }
+    $parts = explode('?', $url, 2);
+    return site_url('wp-login.php', $scheme) . (isset($parts[1]) ? '?' . $parts[1] : '');
+}, 5, 3);
+
+/*
+ * Multisite, suppression d'un site du réseau : WordPress ne supprime que ses propres tables.
+ * Celles d'Optimizr et d'Optimizr Pro pour ce site (redirections, pages introuvables, conversions) le sont aussi.
+ */
+add_filter('wpmu_drop_tables', function ($tables, $site_id) {
+    global $wpdb;
+    $prefix = $wpdb->get_blog_prefix($site_id);
+    foreach (['optimizr_redirects', 'optimizr_404', 'optimizr_conversions'] as $name) {
+        $tables[] = $prefix . $name;
+    }
+    return $tables;
+}, 10, 2);
 
 /** Marqueur présent dans chaque fichier de sitemap généré par Optimizr. */
 define('HAPTIC_SITEMAP_MARKER', '<!-- Généré par Optimizr -->');
@@ -134,6 +206,10 @@ function haptic_sitemap_is_ours($path)
 /** Supprime les fichiers de sitemap générés par Optimizr à la racine du site. */
 function haptic_sitemap_delete_physical_files()
 {
+    // Multisite : la racine est commune au réseau, seul le site principal y retire un ancien sitemap d'Optimizr
+    if (!haptic_owns_shared_files()) {
+        return;
+    }
     $paths = array_merge([ABSPATH . 'sitemap.xml'], (array) glob(ABSPATH . 'sitemap-*.xml'));
     foreach ($paths as $path) {
         if (haptic_sitemap_is_ours($path)) {
@@ -187,6 +263,11 @@ function haptic_robots_txt_is_ours()
  */
 function haptic_robots_txt_delete_file()
 {
+    // Multisite : le robots.txt de la racine est commun au réseau, un autre site que le principal n'y touche pas
+    if (!haptic_owns_shared_files()) {
+        delete_option('haptic_robots_txt_hash');
+        return;
+    }
     // Suppression impossible : l'empreinte est gardée pour un nouvel essai à la suppression du plugin
     if (haptic_robots_txt_is_ours()) {
         wp_delete_file(ABSPATH . 'robots.txt');
@@ -241,9 +322,13 @@ function haptic_options_maybe_upgrade()
     if (version_compare($installed, '2.4.1', '<')) {
         // Journal des 404 : adresses enregistrées avec leur requête (« ?… »), qui pouvaient contenir des données personnelles
         global $wpdb;
-        // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
-        $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
+        // Table du module Redirections, propre à Optimizr Pro depuis 5.0 : nom écrit en entier.
+        // Seulement si la table existe : un site neuf (nouveau site d'un réseau multisite, par exemple) n'en a pas encore
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- lecture unique, pendant une migration
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($wpdb->prefix . 'optimizr_404'))) === $wpdb->prefix . 'optimizr_404') {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- migration unique sur une table propre au plugin
+            $wpdb->query($wpdb->prepare('DELETE FROM %i WHERE path LIKE %s', $wpdb->prefix . 'optimizr_404', '%?%'));
+        }
 
         // Ancien journal de debug public (logs/ du plugin), supprimé depuis :
         // une mise à jour manuelle (FTP, git) le laisse en place

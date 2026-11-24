@@ -4,6 +4,33 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.25.0] - 2026-11-24
+
+Première étape de la prise en charge des réseaux multisites (sous-domaines, sous-dossiers ou un domaine par site). Rien ne change sur un site simple.
+
+### Ajouté
+- **Cache de pages sur un réseau multisite.** Il y était refusé, car il ne connaissait qu'un seul domaine. Chaque site du réseau l'active, le règle et le vide désormais pour lui-même.
+  - Un fichier de réglages par site (`wp-content/cache/optimizr/sites/<hôte>/<empreinte du chemin>.php`) et un dossier de pages par site (`pages/<hôte>--<numéro du site>/`). Avant le chargement de WordPress, `advanced-cache.php` retrouve le site d'après l'hôte, puis d'après le début du chemin sur un réseau en sous-dossiers (`/site2/…`).
+  - `advanced-cache.php` et la constante `WP_CACHE` sont communs au réseau : un administrateur du réseau les met en place en activant le cache sur un site, n'importe lequel. Tant que ce n'est pas fait, l'administrateur d'un site voit un message qui le lui dit. Ils sont retirés quand plus aucun site n'utilise le cache.
+  - Vider le cache d'un site ne touche pas aux pages des autres. Une mise à jour (extension, thème, WordPress) vide les pages de tout le réseau. La suppression d'un site ou le changement de son adresse retire ses réglages et ses pages.
+  - Nouvelles fonctions : `haptic_cache_config_path()`, `haptic_cache_site_path()`, `haptic_cache_pages_dir_name()`, `haptic_cache_network_in_use()`, `haptic_cache_network_allowed()`, `haptic_cache_request_config_file()`.
+- **Adresse de connexion personnalisée sur un réseau multisite.** Elle y était désactivée. Chaque site du réseau règle maintenant la sienne (Sécurité, et assistant de configuration) : sa page `wp-login.php` et son `/wp-admin/` affichent une page introuvable aux visiteurs, sans effet sur les autres sites.
+  - Sur un réseau en sous-dossiers, le site principal ne peut pas choisir un identifiant qui est l'adresse d'un autre site. `wp-signup` et `wp-activate` sont réservés.
+  - WordPress envoie « mot de passe perdu » vers la page de connexion du site principal : quand celui-ci la masque, ces liens restent sur le site courant (filtre `network_site_url`, toujours chargé).
+  - Limite connue : sur un réseau où chaque site a son domaine, un compte connecté sur un site ne l'est pas sur les autres. Le lien « Mes sites » vers l'administration d'un site masqué y affiche donc une page introuvable tant qu'on ne s'est pas connecté par son adresse.
+- **Écran « Optimizr » dans l'administration du réseau** (`functions/network.php`, chargé seulement sur un multisite, réservé aux administrateurs du réseau).
+  - Tableau des sites : modules actifs, cache de pages, adresse de connexion masquée ou non, et un bouton vers les réglages de chaque site.
+  - **Mêmes réglages sur plusieurs sites** : on choisit un site modèle, puis on copie ses réglages vers les sites cochés, comme un export suivi d'un import (les adresses du site modèle sont remplacées par celles de chaque site). Une case donne aussi ces réglages à chaque nouveau site du réseau (option de réseau `haptic_network_template`).
+  - Ce qui appartient à un seul site n'est jamais copié : adresse de connexion, établissement et avis, SEO de la page d'accueil, connexions Google, accès accordés aux assistants IA et à la console, mode maintenance, journaux (`haptic_network_copy_excluded()`, filtre du même nom).
+
+### Corrigé
+- **Désactivation pour tout le réseau** : WordPress n'appelle la désactivation qu'une fois, sur le site d'où elle est lancée. Seul ce site était nettoyé ; les tâches planifiées et les fichiers générés (clé IndexNow, règle `.htaccess` des médias) des autres sites restaient. Chaque site du réseau est maintenant nettoyé (`haptic_options_deactivate()` parcourt les sites, `haptic_options_deactivate_site()` fait le travail d'un site).
+- **Fichiers communs au réseau** : le `.htaccess` de la racine, `wp-config.php`, `wp-content/advanced-cache.php`, `wp-content/cache/optimizr`, le `robots.txt` et un ancien sitemap à la racine sont partagés par tous les sites. Un site autre que le principal pouvait y écrire les règles de cache navigateur, et les retirait pour tout le réseau en désactivant le module Cache ou le plugin chez lui. Seul le site principal écrit et retire désormais les règles du `.htaccess`, le `robots.txt` et l'ancien sitemap (`haptic_owns_shared_files()`) ; sur les autres sites, la carte « Cache navigateur » l'explique à la place de l'interrupteur.
+- **Suppression d'un site du réseau** : ses tables `optimizr_redirects`, `optimizr_404` et `optimizr_conversions` restaient dans la base. Elles sont supprimées avec celles de WordPress (filtre `wpmu_drop_tables`).
+- L'assistant de configuration ne s'ouvre plus après une activation pour le réseau (il règle un site, pas le réseau) ; il reste accessible depuis chaque site.
+- Sur un site neuf (un nouveau site du réseau, par exemple), une migration tentait de nettoyer la table des pages introuvables avant qu'elle existe, ce qui écrivait une erreur de base de données dans le journal.
+- Import depuis une autre extension SEO : le comptage des métadonnées (`haptic_migration_meta_stats()`) prépare sa requête avant de l'exécuter, au lieu de la choisir dans l'appel. Même résultat ; le contrôle Plugin Check, devenu plus strict, la refusait.
+
 ## [7.24.0] - 2026-11-24
 
 ### Modifié

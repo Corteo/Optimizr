@@ -99,6 +99,9 @@ function haptic_sec_two_factor_callback()
                 : sprintf(__('Not enabled on your account yet: <a href="%s">set it up in your profile</a>.', 'optimizr'), esc_url(admin_url('profile.php#optimizr-2fa'))));
         ?></span></div>
     <?php endif; ?>
+    <?php if (is_multisite()) : ?>
+        <p class="optimizr-field__help"><?php esc_html_e('On a multisite network, each site has its own login address, set here for this site only.', 'optimizr'); ?></p>
+    <?php endif; ?>
     <p class="optimizr-field__help"><?php /* translators: %s: PHP line to add to wp-config.php */ echo wp_kses_post(sprintf(__('Lost phone or email not received: a backup code replaces the code, and an administrator can reset the account from its profile. If no administrator can log in, add %s to wp-config.php.', 'optimizr'), '<code>define(\'OPTIMIZR_DISABLE_2FA\', true);</code>')); ?></p>
     <?php
 }
@@ -133,8 +136,6 @@ function haptic_sec_login_slug_callback()
     </div>
     <?php if (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) : ?>
         <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><?php /* translators: %s: OPTIMIZR_DISABLE_CUSTOM_LOGIN constant name */ echo wp_kses_post(sprintf(__('Disabled by the %s constant in wp-config.php: login goes through wp-login.php.', 'optimizr'), '<code>OPTIMIZR_DISABLE_CUSTOM_LOGIN</code>')); ?></span></div>
-    <?php elseif (is_multisite()) : ?>
-        <div class="optimizr-notice optimizr-notice--warn"><?php echo wp_kses(haptic_icon('alert', 18), haptic_kses_ui()); ?><span><?php esc_html_e('Not available on a multisite network.', 'optimizr'); ?></span></div>
     <?php elseif ($slug !== '') : ?>
         <div class="optimizr-notice optimizr-notice--ok"><?php echo wp_kses(haptic_icon('check', 18), haptic_kses_ui()); ?><span><?php /* translators: %s: link to the new login address */ echo wp_kses_post(sprintf(__('<strong>Login:</strong> %s — wp-login.php and /wp-admin/ show a not-found page to visitors.', 'optimizr'), '<a href="' . esc_url(haptic_sec_login_url()) . '">' . esc_html(haptic_sec_login_url()) . '</a>')); ?></span></div>
     <?php endif; ?>

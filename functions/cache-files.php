@@ -71,13 +71,10 @@ function haptic_cache_foreign_dropin()
 
 /**
  * Raison pour laquelle le cache de pages ne peut pas être activé, ou '' s'il le peut.
- * 'multisite', 'plugin' (extension de cache active), 'dropin' (advanced-cache.php d'une autre extension).
+ * 'plugin' (extension de cache active), 'dropin' (advanced-cache.php d'une autre extension).
  */
 function haptic_cache_blocker()
 {
-    if (is_multisite()) {
-        return 'multisite';
-    }
     if (haptic_cache_conflicting_plugins()) {
         return 'plugin';
     }
@@ -95,10 +92,61 @@ function haptic_cache_site_host()
     return $host !== '' && !empty($parts['port']) ? $host . ':' . $parts['port'] : $host;
 }
 
+/** Chemin de l'adresse du site, entre deux barres : « / », ou « /site2/ » sur un réseau en sous-dossiers. */
+function haptic_cache_site_path()
+{
+    $path = trim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
+    return $path === '' ? '/' : '/' . $path . '/';
+}
+
+/**
+ * Nom du dossier des pages de ce site, sous wp-content/cache/optimizr/pages : son hôte, suivi du numéro du site
+ * sur un multisite (deux sites d'un réseau en sous-dossiers ont le même hôte).
+ */
+function haptic_cache_pages_dir_name()
+{
+    $name = str_replace(':', '_', haptic_cache_site_host());
+    return is_multisite() ? $name . '--' . get_current_blog_id() : $name;
+}
+
 /** Dossier des pages en cache de ce site. */
 function haptic_cache_pages_dir()
 {
-    return haptic_cache_base_dir() . '/pages/' . str_replace(':', '_', haptic_cache_site_host());
+    return haptic_cache_base_dir() . '/pages/' . haptic_cache_pages_dir_name();
+}
+
+/** Fichier des réglages du cache de ce site : config.php, ou un fichier par site sur un multisite. '' si l'hôte est inutilisable. */
+function haptic_cache_config_path()
+{
+    if (!is_multisite()) {
+        return haptic_cache_base_dir() . '/config.php';
+    }
+    return haptic_cache_site_config_file(haptic_cache_site_host(), haptic_cache_site_path());
+}
+
+/** Multisite : un site du réseau au moins utilise-t-il le cache de pages (fichier de réglages en place) ? */
+function haptic_cache_network_in_use()
+{
+    return (bool) glob(haptic_cache_base_dir() . '/sites/*/*.php');
+}
+
+/** Le fichier advanced-cache.php d'Optimizr est-il en place ? */
+function haptic_cache_dropin_is_ours()
+{
+    $file = WP_CONTENT_DIR . '/advanced-cache.php';
+    return is_file($file) && strpos((string) file_get_contents($file), HAPTIC_CACHE_DROPIN_MARKER) !== false;
+}
+
+/**
+ * Multisite : ce site peut-il mettre en place les fichiers communs du cache de pages (advanced-cache.php, WP_CACHE) ?
+ * Oui s'ils y sont déjà ; sinon il faut un administrateur du réseau, seul à décider de ce qui touche tous les sites.
+ */
+function haptic_cache_network_allowed()
+{
+    if (!is_multisite() || (haptic_cache_dropin_is_ours() && defined('WP_CACHE') && WP_CACHE)) {
+        return true;
+    }
+    return current_user_can('manage_network_options');
 }
 
 /** Cookies qui signalent une page personnalisée, jamais servie depuis le cache. */
@@ -315,9 +363,17 @@ function haptic_cache_delete_dropin()
 /** Écrit les réglages lus par advanced-cache.php (avant WordPress, d'où un fichier PHP). */
 function haptic_cache_write_config()
 {
+    $file = haptic_cache_config_path();
+    if ($file === '') {
+        return false;
+    }
+
     $config = [
         'enabled'      => true,
         'host'         => haptic_cache_site_host(),
+        // Multisite : chemin du site (« / », « /site2/ ») et dossier de ses pages
+        'path'         => is_multisite() ? haptic_cache_site_path() : '',
+        'dir'          => haptic_cache_pages_dir_name(),
         'ttl'          => haptic_cache_ttl_hours() * HOUR_IN_SECONDS,
         'mobile'       => (bool) get_option('haptic_cache_mobile'),
         'exclude'      => haptic_cache_exclusions(), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- adresses exclues du cache, pas une requête get_posts()
@@ -325,13 +381,12 @@ function haptic_cache_write_config()
         'ignore_query' => array_values(apply_filters('haptic_cache_ignored_query_args', ['gclid', 'fbclid', 'msclkid', 'dclid', 'gbraid', 'wbraid', '_ga', '_gl', 'mc_cid', 'mc_eid', 'ref'])),
     ];
 
-    $dir = haptic_cache_base_dir();
-    if (!wp_mkdir_p($dir)) {
+    if (!wp_mkdir_p(dirname($file))) {
         return false;
     }
     // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- écriture d'un tableau PHP valide
     $content = "<?php\nif (!defined('ABSPATH')) {\n    exit;\n}\n// Page cache settings written by Optimizr.\nreturn " . var_export($config, true) . ";\n";
-    return haptic_cache_put_php($dir . '/config.php', $content);
+    return haptic_cache_put_php($file, $content);
 }
 
 /** Écrit un fichier PHP et le retire d'OPcache : sans cela, l'ancienne version peut rester servie (validate_timestamps à 0). */
@@ -370,10 +425,27 @@ function haptic_cache_sync()
     $state = ['page' => false, 'browser' => false, 'error' => '', 'browser_error' => '', 'version' => HAPTIC_OPTIMIZR_VERSION, 'path' => HAPTIC_OPTIMIZR_PATH,
         'apache' => haptic_cache_server_reads_htaccess()];
 
+    // Adresse du site changée depuis la dernière synchronisation (multisite) : les réglages et les pages
+    // écrits sous l'ancienne adresse sont retirés
+    $previous = get_option('haptic_cache_state');
+    $state['config'] = (string) haptic_cache_config_path();
+    $state['dir'] = haptic_cache_pages_dir();
+    if (is_multisite() && is_array($previous)) {
+        if (!empty($previous['config']) && $previous['config'] !== $state['config']) {
+            haptic_cache_delete_config($previous['config']);
+        }
+        if (!empty($previous['dir']) && $previous['dir'] !== $state['dir']) {
+            haptic_cache_delete_dir($previous['dir']);
+        }
+    }
+
     if (haptic_cache_page_wanted()) {
         $blocker = haptic_cache_blocker();
         if ($blocker !== '') {
             $state['error'] = $blocker;
+        } elseif (!haptic_cache_network_allowed()) {
+            // Multisite : advanced-cache.php et WP_CACHE pas encore en place, et ce compte n'administre pas le réseau
+            $state['error'] = 'network';
         } elseif (!haptic_cache_write_config() || !haptic_cache_write_dropin()) {
             $state['error'] = 'files';
         } elseif (!haptic_cache_set_wp_cache(true)) {
@@ -388,7 +460,12 @@ function haptic_cache_sync()
         haptic_cache_disable_page();
     }
 
-    if (haptic_cache_browser_wanted()) {
+    if (!haptic_owns_shared_files()) {
+        // Multisite : le .htaccess de la racine est commun au réseau, seul le site principal y écrit ces règles
+        if (haptic_cache_browser_wanted()) {
+            $state['browser_error'] = 'network';
+        }
+    } elseif (haptic_cache_browser_wanted()) {
         if (!haptic_cache_server_reads_htaccess()) {
             $state['browser_error'] = 'server';
         } elseif (!haptic_cache_write_htaccess(haptic_cache_htaccess_rules((bool) get_option('haptic_cache_gzip', 1)))) {
@@ -405,26 +482,56 @@ function haptic_cache_sync()
     return $state;
 }
 
-/** Retire le cache de pages : advanced-cache.php, constante WP_CACHE ajoutée par Optimizr, réglages et pages. */
+/** Supprime un fichier de réglages du cache (uniquement sous wp-content/cache/optimizr). */
+function haptic_cache_delete_config($file)
+{
+    if ($file === '' || strpos($file, haptic_cache_base_dir() . '/') !== 0 || strpos($file, '..') !== false || !is_file($file)) {
+        return;
+    }
+    wp_delete_file($file);
+    haptic_cache_opcache_invalidate($file);
+}
+
+/**
+ * Retire le cache de pages de ce site : ses réglages et ses pages. Les fichiers communs (advanced-cache.php,
+ * constante WP_CACHE ajoutée par Optimizr) le sont aussi, sauf si un autre site du réseau s'en sert encore.
+ */
 function haptic_cache_disable_page()
 {
+    haptic_cache_delete_config((string) haptic_cache_config_path());
+    haptic_cache_delete_dir(haptic_cache_pages_dir());
+
+    if (is_multisite() && haptic_cache_network_in_use()) {
+        return;
+    }
     haptic_cache_delete_dropin();
     haptic_cache_set_wp_cache(false);
-    if (is_file(haptic_cache_base_dir() . '/config.php')) {
-        wp_delete_file(haptic_cache_base_dir() . '/config.php');
-        haptic_cache_opcache_invalidate(haptic_cache_base_dir() . '/config.php');
-    }
     haptic_cache_delete_dir(haptic_cache_base_dir() . '/pages');
+    haptic_cache_delete_dir(haptic_cache_base_dir() . '/sites');
 }
 
 /** Tout retirer : désactivation du plugin ou du module, suppression du plugin. */
 function haptic_cache_teardown()
 {
     haptic_cache_disable_page();
-    haptic_cache_write_htaccess([]);
-    haptic_cache_delete_dir(haptic_cache_base_dir());
     delete_option('haptic_cache_state');
+
+    // Multisite : le .htaccess de la racine appartient au site principal, et le dossier du cache reste
+    // tant qu'un autre site du réseau s'en sert
+    if (haptic_owns_shared_files()) {
+        haptic_cache_write_htaccess([]);
+    }
+    if (!is_multisite() || !haptic_cache_network_in_use()) {
+        haptic_cache_delete_dir(haptic_cache_base_dir());
+    }
 }
+
+// Multisite, site supprimé du réseau : ses réglages et ses pages en cache disparaissent (avant la suppression de ses tables)
+add_action('wp_uninitialize_site', function ($site) {
+    switch_to_blog($site->id);
+    haptic_cache_disable_page();
+    restore_current_blog();
+}, 5);
 
 /*
  * Synchronisation en fin de requête, une seule fois, après l'enregistrement d'un réglage du cache, des modules

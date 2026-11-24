@@ -46,17 +46,62 @@ if (!function_exists('haptic_cache_config')) {
      */
     function haptic_cache_config()
     {
-        static $config = false;
+        static $configs = [];
 
-        if ($config === false) {
+        if (defined('MULTISITE') && MULTISITE) {
+            // Multisite : un fichier de réglages par site. Une fois WordPress chargé, celui du site courant
+            // (functions/cache-files.php) ; avant, dans advanced-cache.php, celui que désigne l'adresse demandée.
+            $file = function_exists('haptic_cache_config_path') ? haptic_cache_config_path() : haptic_cache_request_config_file();
+        } else {
             $file = haptic_cache_base_dir() . '/config.php';
-            $config = is_file($file) ? include $file : null;
+        }
+
+        if (!array_key_exists($file, $configs)) {
+            $config = $file !== '' && is_file($file) ? include $file : null;
             if (!is_array($config) || empty($config['host']) || empty($config['enabled'])) {
                 $config = null;
             }
+            $configs[$file] = $config;
         }
 
-        return $config;
+        return $configs[$file];
+    }
+
+    /** Nom de dossier d'un hôte (« : » du port remplacé), ou '' si l'hôte contient autre chose qu'un nom de domaine. */
+    function haptic_cache_host_dir($host)
+    {
+        return preg_match('/^[a-z0-9.\-]+(:[0-9]+)?$/', (string) $host) ? str_replace(':', '_', $host) : '';
+    }
+
+    /**
+     * Multisite : fichier de réglages du site d'adresse https://{$host}{$path} ($path : « / », « /site2/ »…).
+     * Un fichier par site, que chaque site écrit et retire sans toucher à ceux des autres.
+     */
+    function haptic_cache_site_config_file($host, $path)
+    {
+        $dir = haptic_cache_host_dir($host);
+        return $dir === '' ? '' : haptic_cache_base_dir() . '/sites/' . $dir . '/' . md5((string) $path) . '.php';
+    }
+
+    /**
+     * Multisite, avant le chargement de WordPress : fichier de réglages du site auquel s'adresse la requête.
+     * Réseau en sous-domaines ou à domaines distincts : l'hôte suffit. Réseau en sous-dossiers : le début du chemin
+     * désigne le site (« /site2/page/ » : site « /site2/ », sinon le site principal « / »), du plus précis au plus général.
+     */
+    function haptic_cache_request_config_file()
+    {
+        $host = strtolower(haptic_cache_server_var('HTTP_HOST'));
+        $parts = explode('?', haptic_cache_server_var('REQUEST_URI'), 2);
+        $segments = array_slice(array_values(array_filter(explode('/', $parts[0]), 'strlen')), 0, 3);
+
+        for ($i = count($segments); $i >= 0; $i--) {
+            $prefix = $i ? '/' . implode('/', array_slice($segments, 0, $i)) . '/' : '/';
+            $file = haptic_cache_site_config_file($host, $prefix);
+            if ($file !== '' && is_file($file)) {
+                return $file;
+            }
+        }
+        return '';
     }
 
     function haptic_cache_is_https()
@@ -137,6 +182,10 @@ if (!function_exists('haptic_cache_config')) {
             || !preg_match('#^[A-Za-z0-9/_.\-~%@!$&\'()*+,;=:]*$#', $path) || preg_match('#\.php$|^/wp-(admin|includes|json)(/|$)#i', $path)) {
             return '';
         }
+        // Multisite en sous-dossiers : seulement les adresses du site (« /site2/… »)
+        if (!empty($config['path']) && $config['path'] !== '/' && strpos($path . '/', $config['path']) !== 0) {
+            return '';
+        }
         if (!empty($config['exclude']) && haptic_cache_path_excluded($path, $config['exclude'])) {
             return '';
         }
@@ -154,7 +203,9 @@ if (!function_exists('haptic_cache_config')) {
         }
 
         $dir = trim($path, '/');
-        return haptic_cache_base_dir() . '/pages/' . str_replace(':', '_', $config['host']) . ($dir !== '' ? '/' . $dir : '') . '/' . $name . '.html';
+        // Dossier des pages du site : son hôte, suivi du numéro du site sur un multisite (réglage « dir »)
+        $root = !empty($config['dir']) && preg_match('/^[a-z0-9._\-]+$/', $config['dir']) ? $config['dir'] : str_replace(':', '_', $config['host']);
+        return haptic_cache_base_dir() . '/pages/' . $root . ($dir !== '' ? '/' . $dir : '') . '/' . $name . '.html';
     }
 
     /** Sert la page depuis le cache si elle y est et n'a pas expiré, puis arrête PHP. Appelé par advanced-cache.php. */

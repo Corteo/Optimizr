@@ -169,10 +169,13 @@ add_action('wp_scheduled_delete', 'haptic_sec_get_log');
 
 /* ---------- Adresse de connexion personnalisée ---------- */
 
-/** Identifiant de l'adresse de connexion, ou chaîne vide si la fonction est inactive. */
+/**
+ * Identifiant de l'adresse de connexion, ou chaîne vide si la fonction est inactive.
+ * Multisite : un réglage par site, chaque site du réseau ayant sa propre page de connexion.
+ */
 function haptic_sec_login_slug()
 {
-    if ((defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) || is_multisite()) {
+    if (defined('OPTIMIZR_DISABLE_CUSTOM_LOGIN') && OPTIMIZR_DISABLE_CUSTOM_LOGIN) {
         return '';
     }
     return (string) haptic_sec_option('login_slug', '');
@@ -322,7 +325,8 @@ function haptic_sec_sanitize_login_slug($value)
         return '';
     }
 
-    $reserved = ['wp-admin', 'wp-login', 'wp-login-php', 'admin', 'login', 'dashboard', 'wp-content', 'wp-includes', 'wp-json', 'feed', 'xmlrpc', 'sitemap'];
+    $reserved = ['wp-admin', 'wp-login', 'wp-login-php', 'admin', 'login', 'dashboard', 'wp-content', 'wp-includes', 'wp-json', 'feed', 'xmlrpc', 'sitemap',
+        'wp-signup', 'wp-signup-php', 'wp-activate', 'wp-activate-php'];
     $error = '';
     if (strlen($value) < 4) {
         $error = __('The login address must be at least 4 characters long.', 'optimizr');
@@ -330,6 +334,9 @@ function haptic_sec_sanitize_login_slug($value)
         $error = __('This login address is reserved by WordPress.', 'optimizr');
     } elseif (get_page_by_path($value, OBJECT, get_post_types(['public' => true]))) {
         $error = __('Some content on the site already uses this address.', 'optimizr');
+    } elseif (is_multisite() && !is_subdomain_install() && is_main_site() && domain_exists(get_network()->domain, get_network()->path . $value . '/')) {
+        // Réseau en sous-dossiers : https://reseau/<identifiant>/ est l'adresse d'un autre site
+        $error = __('A site of the network already uses this address.', 'optimizr');
     }
 
     if ($error) {
