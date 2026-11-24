@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.24.0
+Stable tag: 7.24.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.24.1 =
+* Fixed (multisite): deactivating Optimizr for the whole network now cleans every site (scheduled tasks, generated files), not only the main one.
+* Fixed (multisite): the files shared by the network (browser cache rules in .htaccess, robots.txt, old sitemap files) are only written or removed from the main site; another site can no longer remove them for everyone.
+* Fixed (multisite): deleting a site of the network also deletes its Optimizr tables (redirects, pages not found, conversions).
 
 = 7.24.0 =
 * Improved: the emails sent by Optimizr (login code, login alert, new login address) now use the Optimizr design: dark header with the logo, large code to copy, summary table and a button (red for an alert). A plain-text version is sent alongside.

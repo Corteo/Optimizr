@@ -2259,6 +2259,10 @@ msgid "Pages are saved as HTML files and sent to visitors without loading WordPr
 msgstr "Les pages sont enregistrées en fichiers HTML et envoyées aux visiteurs sans charger WordPress : bien plus rapide. Le cache se vide automatiquement quand un contenu, un commentaire, un menu, le thème ou un réglage change."
 
 #: functions/cache.php
+msgid "On a multisite network, these rules live in the .htaccess file shared by every site: they are set from the main site of the network and apply to all sites."
+msgstr "Sur un réseau multisite, ces règles sont écrites dans le fichier .htaccess commun à tous les sites : elles se règlent depuis le site principal du réseau et s'appliquent à tous les sites."
+
+#: functions/cache.php
 msgid "The page cache is not available on a multisite network."
 msgstr "Le cache des pages n'est pas disponible sur un réseau multisite."
 

@@ -4,6 +4,16 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.24.1] - 2026-11-24
+
+Première étape de la prise en charge des réseaux multisites : corrections, sans nouveau réglage.
+
+### Corrigé
+- **Désactivation pour tout le réseau** : WordPress n'appelle la désactivation qu'une fois, sur le site d'où elle est lancée. Seul ce site était nettoyé ; les tâches planifiées et les fichiers générés (clé IndexNow, règle `.htaccess` des médias) des autres sites restaient. Chaque site du réseau est maintenant nettoyé (`haptic_options_deactivate()` parcourt les sites, `haptic_options_deactivate_site()` fait le travail d'un site).
+- **Fichiers communs au réseau** : le `.htaccess` de la racine, `wp-config.php`, `wp-content/advanced-cache.php`, `wp-content/cache/optimizr`, le `robots.txt` et un ancien sitemap à la racine sont partagés par tous les sites. Un site autre que le principal pouvait y écrire les règles de cache navigateur, et les retirait pour tout le réseau en désactivant le module Cache ou le plugin chez lui. Seul le site principal les écrit et les retire désormais (`haptic_owns_shared_files()`) ; sur les autres sites, la carte « Cache navigateur » l'explique à la place de l'interrupteur.
+- **Suppression d'un site du réseau** : ses tables `optimizr_redirects`, `optimizr_404` et `optimizr_conversions` restaient dans la base. Elles sont supprimées avec celles de WordPress (filtre `wpmu_drop_tables`).
+- L'assistant de configuration ne s'ouvre plus après une activation pour le réseau (il règle un site, pas le réseau) ; il reste accessible depuis chaque site.
+
 ## [7.24.0] - 2026-11-24
 
 ### Modifié

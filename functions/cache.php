@@ -437,7 +437,8 @@ function haptic_cache_register_settings()
     ]);
 
     // Serveur sans .htaccess (Nginx…) : seulement les règles à transmettre à l'hébergeur
-    $htaccess = haptic_cache_server_reads_htaccess();
+    // Multisite : règles écrites dans le .htaccess commun au réseau, réglées depuis le site principal seulement
+    $htaccess = haptic_cache_server_reads_htaccess() && haptic_owns_shared_files();
     add_settings_section('haptic-cache-browser', __('Browser cache', 'optimizr'), 'haptic_cache_browser_section', $page,
         $htaccess ? ['toggle' => 'haptic_cache_browser', 'toggle_label' => __('Enable the browser cache rules', 'optimizr')] : []);
     if ($htaccess) {
@@ -505,6 +506,10 @@ function haptic_cache_browser_section()
     echo '<p>' . esc_html__('Visitors\' browsers keep images and fonts for a year, styles and scripts for a month, instead of downloading them on every page.', 'optimizr') . '</p>';
 
     $state = haptic_cache_state();
+    if (!haptic_owns_shared_files()) {
+        echo '<p><strong>' . esc_html__('On a multisite network, these rules live in the .htaccess file shared by every site: they are set from the main site of the network and apply to all sites.', 'optimizr') . '</strong></p>';
+        return;
+    }
     if (!haptic_cache_server_reads_htaccess()) {
         echo '<p>' . esc_html__('Your server (Nginx or another) does not read the .htaccess file, where Optimizr writes these rules. Ask your host to add them to its configuration:', 'optimizr') . '</p>';
         echo '<pre class="optimizr-code">' . esc_html(haptic_cache_nginx_rules((bool) get_option('haptic_cache_gzip', 1))) . '</pre>';

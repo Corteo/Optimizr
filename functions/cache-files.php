@@ -370,6 +370,19 @@ function haptic_cache_sync()
     $state = ['page' => false, 'browser' => false, 'error' => '', 'browser_error' => '', 'version' => HAPTIC_OPTIMIZR_VERSION, 'path' => HAPTIC_OPTIMIZR_PATH,
         'apache' => haptic_cache_server_reads_htaccess()];
 
+    // Multisite : les fichiers du cache sont communs au réseau, seul le site principal les écrit ou les retire.
+    // Un autre site garde ses réglages, sans effet, et l'écran du module le lui dit.
+    if (!haptic_owns_shared_files()) {
+        if (haptic_cache_page_wanted()) {
+            $state['error'] = 'multisite';
+        }
+        if (haptic_cache_browser_wanted()) {
+            $state['browser_error'] = 'network';
+        }
+        update_option('haptic_cache_state', $state, false);
+        return $state;
+    }
+
     if (haptic_cache_page_wanted()) {
         $blocker = haptic_cache_blocker();
         if ($blocker !== '') {
@@ -420,6 +433,11 @@ function haptic_cache_disable_page()
 /** Tout retirer : désactivation du plugin ou du module, suppression du plugin. */
 function haptic_cache_teardown()
 {
+    // Multisite : un site autre que le principal ne retire pas les fichiers communs au réseau
+    if (!haptic_owns_shared_files()) {
+        delete_option('haptic_cache_state');
+        return;
+    }
     haptic_cache_disable_page();
     haptic_cache_write_htaccess([]);
     haptic_cache_delete_dir(haptic_cache_base_dir());
