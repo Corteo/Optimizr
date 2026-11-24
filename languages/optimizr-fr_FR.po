@@ -3811,3 +3811,36 @@ msgstr "Masqué : n'apparaîtra pas dans Google"
 #: functions/seo/seo-meta.php
 msgid "No share image"
 msgstr "Aucune image de partage"
+
+#: functions/seo/seo-home.php
+msgid "Your home page is a page of the site: its SEO is set in its own “SEO & sharing” box."
+msgstr "Votre page d'accueil est une page du site : son référencement se règle dans sa propre boîte « SEO & partage »."
+
+#: functions/seo/seo-home.php
+msgid "Your home page shows your latest posts, so no page holds its “SEO & sharing” box. Set what Google and social networks show here."
+msgstr "Votre page d'accueil affiche vos derniers articles : aucune page ne porte sa boîte « SEO & partage ». Réglez ici ce qu'en montrent Google et les réseaux sociaux."
+
+#: functions/seo/seo-home.php
+msgid "Ideally between 50 and 60 characters. Empty: the site title and tagline, as WordPress does."
+msgstr "Idéalement entre 50 et 60 caractères. Vide : le titre du site et son slogan, comme le fait WordPress."
+
+#: functions/seo/seo-home.php
+msgid "No description: Google picks a passage of the page."
+msgstr "Aucune description : Google choisit un passage de la page."
+
+#: functions/seo/seo-home.php
+msgid "No image"
+msgstr "Aucune image"
+
+#: functions/seo/seo-home.php
+msgid "Default: the site icon. Ideal size: 1200 × 630 px."
+msgstr "Par défaut : l'icône du site. Taille idéale : 1200 × 630 px."
+
+#. translators: %s: title of the page used as the home page
+#: functions/seo/seo-home.php
+msgid "Home page: “%s”. Its title, description and share image are set in the “SEO & sharing” box below its content."
+msgstr "Page d'accueil : « %s ». Son titre, sa description et son image de partage se règlent dans la boîte « SEO & partage », sous son contenu."
+
+#: functions/seo/seo-home.php
+msgid "Edit the home page SEO"
+msgstr "Régler le SEO de la page d'accueil"

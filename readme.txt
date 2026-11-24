@@ -4,7 +4,7 @@ Tags: seo, cookies, gdpr, security, cache
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.21.0
+Stable tag: 7.22.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ You choose when deactivating the plugin, or in the Tools tab. By default, settin
 When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define('WP_CACHE', true); to wp-config.php and stores pages in wp-content/cache/optimizr. The browser cache rules go into a "# BEGIN Optimizr Cache" block of .htaccess. All of this is removed when you turn the feature, the module or the plugin off. If another cache plugin is active, the page cache stays off.
 
 == Changelog ==
+
+= 7.22.0 =
+* New: "Home page" card in Optimizr > SEO. When the home page shows the latest posts, set its SEO title, description and share image there (no page holds its "SEO & sharing" box). When the home page is a static page, the card links to that page's box instead.
+* New: the latest-posts home page now gets its meta description and OpenGraph tags.
 
 = 7.21.0 =
 * New: the "SEO & sharing" box of the editor has two columns, fields on the left and a preview always in view on the right, with a summary at the top (title, description and image states) and a "Visible in Google" switch instead of the "Do not index" checkbox.

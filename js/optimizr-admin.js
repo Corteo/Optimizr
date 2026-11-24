@@ -401,6 +401,73 @@
         update();
     }
 
+    /* ---------- SEO : carte « Page d'accueil » (functions/seo/seo-home.php) ---------- */
+
+    function initHomeSeo() {
+        // Compteurs de caractères : le titre vide compte celui de WordPress (affiché en exemple grisé)
+        document.querySelectorAll('[data-seo-home-count]').forEach(function (counter) {
+            var input = document.getElementById(counter.dataset.seoHomeCount);
+            if (!input) return;
+            var max = parseInt(counter.dataset.max, 10);
+
+            function update() {
+                var text = (input.value.trim() || (input.tagName === 'INPUT' ? input.placeholder : '')).replace(/\s+/g, ' ');
+                /* translators: 1: current length, 2: recommended maximum length */
+                counter.textContent = sprintf(__('%1$s / %2$s characters', 'optimizr'), text.length, max);
+                counter.classList.toggle('is-warn', text.length > max);
+            }
+
+            input.addEventListener('input', update);
+            update();
+        });
+
+        // Image de partage : vignette et bouton « Choisir… » (médiathèque de WordPress)
+        var box = document.querySelector('[data-seo-home-media]');
+        if (!box) return;
+
+        var labels = JSON.parse(box.dataset.seoHomeMedia || '{}');
+        var input = box.querySelector('input');
+        var thumb = box.querySelector('[data-seo-home-thumb]');
+        var img = thumb.querySelector('img');
+        var frame = null;
+
+        function updateThumb() {
+            var url = input.value.trim() || thumb.dataset.default || '';
+            if (url) {
+                img.src = url;
+                thumb.removeAttribute('data-empty');
+            } else {
+                img.removeAttribute('src');
+                thumb.setAttribute('data-empty', '');
+            }
+        }
+
+        input.addEventListener('input', updateThumb);
+
+        box.querySelector('[data-seo-home-pick]').addEventListener('click', function () {
+            if (!window.wp || !wp.media) {
+                input.focus();
+                return;
+            }
+            if (!frame) {
+                frame = wp.media({
+                    title: labels.title,
+                    button: { text: labels.button },
+                    library: { type: 'image' },
+                    multiple: false
+                });
+                frame.on('select', function () {
+                    var attachment = frame.state().get('selection').first().toJSON();
+                    // Taille « large » si elle existe : suffisante pour les partages, plus légère que l'original
+                    var size = attachment.sizes && attachment.sizes.large ? attachment.sizes.large : attachment;
+                    input.value = size.url || attachment.url;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            }
+            frame.open();
+        });
+    }
+
     /* ---------- Menu latéral : liste déroulante des petits écrans ---------- */
 
     function initNav() {
@@ -420,5 +487,6 @@
         initCookieBanner();
         initServices();
         initSeoPreview();
+        initHomeSeo();
     });
 })();
