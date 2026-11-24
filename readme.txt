@@ -89,6 +89,7 @@ When you turn it on, Optimizr writes wp-content/advanced-cache.php, adds define(
 
 = 7.25.0 =
 * New (multisite): the page cache now works on a multisite network (subdomains, subdirectories or one domain per site). Each site turns it on, sets it and clears it for itself; a network administrator turns it on first.
+* New (multisite): the custom login address now works on a multisite network, one address per site.
 * Fixed (multisite): deactivating Optimizr for the whole network now cleans every site (scheduled tasks, generated files), not only the main one.
 * Fixed (multisite): the files shared by the network (browser cache rules in .htaccess, robots.txt, old sitemap files) are only written or removed from the main site; another site can no longer remove them for everyone.
 * Fixed (multisite): deleting a site of the network also deletes its Optimizr tables (redirects, pages not found, conversions).

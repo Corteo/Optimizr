@@ -1080,7 +1080,11 @@ msgid "Disabled by the %s constant in wp-config.php: login goes through wp-login
 msgstr ""
 
 #: functions/security-admin.php
-msgid "Not available on a multisite network."
+msgid "On a multisite network, each site has its own login address, set here for this site only."
+msgstr ""
+
+#: functions/security.php
+msgid "A site of the network already uses this address."
 msgstr ""
 
 #. %s: link to the new login address

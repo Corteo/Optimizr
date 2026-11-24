@@ -160,6 +160,22 @@ function haptic_options_deactivate_site()
 }
 
 /*
+ * Multisite : WordPress envoie « mot de passe perdu » et les liens de réinitialisation vers la page de connexion du
+ * site principal (network_site_url()). Quand celui-ci la masque (adresse de connexion personnalisée du module
+ * Sécurité), ces liens tomberaient sur une page introuvable depuis les autres sites : ils restent sur le site
+ * courant, dont la page de connexion (la sienne, masquée ou non) sait faire la même chose.
+ * Toujours chargé : vaut aussi pour un site du réseau dont le module Sécurité est désactivé.
+ */
+add_filter('network_site_url', function ($url, $path, $scheme) {
+    if (!is_multisite() || is_main_site() || strpos($url, 'wp-login.php') === false
+        || (string) get_blog_option(get_main_site_id(), 'haptic_sec_login_slug', '') === '') {
+        return $url;
+    }
+    $parts = explode('?', $url, 2);
+    return site_url('wp-login.php', $scheme) . (isset($parts[1]) ? '?' . $parts[1] : '');
+}, 5, 3);
+
+/*
  * Multisite, suppression d'un site du réseau : WordPress ne supprime que ses propres tables.
  * Celles d'Optimizr et d'Optimizr Pro pour ce site (redirections, pages introuvables, conversions) le sont aussi.
  */

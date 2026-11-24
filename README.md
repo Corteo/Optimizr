@@ -67,7 +67,7 @@ Tout est désactivé par défaut. Sur un site existant, le module s'active depui
 
 ### Sécurité
 Toutes les protections sont désactivées par défaut et s'activent une à une.
-- **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent aux visiteurs la page 404 du thème, comme une adresse qui n'existe pas ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php.
+- **Adresse de connexion personnalisée** : wp-login.php et /wp-admin/ affichent aux visiteurs la page 404 du thème, comme une adresse qui n'existe pas ; la nouvelle adresse est envoyée par email à chaque changement. Fonctionne avec les permaliens simples (`https://site/?adresse`). En cas de blocage : `define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true);` dans wp-config.php. Sur un multisite, chaque site du réseau a sa propre adresse de connexion ; « mot de passe perdu » reste sur le site courant quand le site principal masque la sienne.
 - **Limitation des tentatives de connexion** par adresse IP (seuil et durée réglables, liste blanche, proxys de confiance et Cloudflare), **messages d'erreur neutres**, **alerte email** lors d'une connexion administrateur depuis une nouvelle adresse IP.
 - **Double authentification** : après le mot de passe, un code à 6 chiffres, au choix du compte :
   - donné par une application d'authentification (Google Authenticator, Microsoft Authenticator, 1Password…) : codes TOTP calculés par le plugin, sans service externe, QR code dessiné dans le navigateur (bibliothèque qrcode-generator, MIT, dans `assets/qrcode-generator/`) ;
