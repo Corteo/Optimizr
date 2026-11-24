@@ -349,15 +349,23 @@ function haptic_sec_mail_login_url($old, $new)
     if ($new === '' || $new === $old) {
         return;
     }
-    wp_mail(
+    $url = haptic_sec_login_url(null, $new);
+    haptic_mail_send(
         get_option('admin_email'),
         /* translators: %s: site name */
         sprintf(__('[%s] New login address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
-        sprintf(
-            /* translators: %s: new login URL */
-            __("The admin login address has been changed.\n\nNew address: %s\n\nThe old address (wp-login.php) now shows a not-found page.\nKeep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php.", 'optimizr'),
-            haptic_sec_login_url(null, $new)
-        )
+        [
+            'tone' => 'ok',
+            'label' => __('Security', 'optimizr'),
+            'title' => __('New login address', 'optimizr'),
+            'paragraphs' => [
+                __('The admin login address has been changed. The old address (wp-login.php) now shows a not-found page.', 'optimizr'),
+            ],
+            'details' => [__('New address', 'optimizr') => $url],
+            'note' => __("Keep this email. If you get locked out, add define('OPTIMIZR_DISABLE_CUSTOM_LOGIN', true); to wp-config.php.", 'optimizr'),
+            'action_text' => __('Open the login page', 'optimizr'),
+            'action_url' => $url,
+        ]
     );
 }
 add_action('update_option_haptic_sec_login_slug', 'haptic_sec_mail_login_url', 10, 2);
@@ -470,19 +478,29 @@ if (haptic_sec_option('login_alert')) {
         }
         // Première connexion suivie : on mémorise sans alerter
         if ($known) {
-            wp_mail(
+            haptic_mail_send(
                 $user->user_email,
                 /* translators: %s: site name */
                 sprintf(__('[%s] Administrator login from a new address', 'optimizr'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)),
-                sprintf(
-                    /* translators: 1: username, 2: date and time, 3: IP address, 4: browser user agent */
-                    __("The account \"%1\$s\" has just logged in from an unknown IP address.\n\nDate: %2\$s\nIP address: %3\$s\nBrowser: %4\$s\n\nIf this wasn't you, change your password immediately.", 'optimizr'),
-                    $user->user_login,
-                    /* translators: date format in the login alert email, see https://www.php.net/manual/datetime.format.php */
-                    wp_date(__('F j, Y \a\t H:i', 'optimizr')),
-                    haptic_sec_client_ip(),
-                    sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? __('unknown', 'optimizr')))
-                )
+                [
+                    'tone' => 'bad',
+                    'label' => __('Login alert', 'optimizr'),
+                    'title' => __('Login from a new address', 'optimizr'),
+                    'paragraphs' => [
+                        /* translators: %s: username */
+                        sprintf(__('The account "%s" has just logged in from an unknown IP address.', 'optimizr'), $user->user_login),
+                    ],
+                    'details' => [
+                        __('Account', 'optimizr') => $user->user_login,
+                        /* translators: date format in the login alert email, see https://www.php.net/manual/datetime.format.php */
+                        __('Date', 'optimizr') => wp_date(__('F j, Y \a\t H:i', 'optimizr')),
+                        __('IP address', 'optimizr') => haptic_sec_client_ip(),
+                        __('Browser', 'optimizr') => sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'] ?? __('unknown', 'optimizr'))),
+                    ],
+                    'note' => __("If this wasn't you, change your password immediately.", 'optimizr'),
+                    'action_text' => __('Change my password', 'optimizr'),
+                    'action_url' => admin_url('profile.php#password'),
+                ]
             );
             // Type d'évènement enregistré tel quel (clé du journal), libellé traduit à l'affichage
             /* translators: %s: username */

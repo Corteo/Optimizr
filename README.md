@@ -6,7 +6,7 @@ Chaque fonctionnalité est un **module** que l'on active ou désactive depuis le
 
 Optimizr est la version gratuite, publiable sur WordPress.org. Les fonctionnalités avancées (redirections et journal des 404, types de contenu, SEO local, pages spéciales, assistant IA, sitemap, sécurité complète…) sont dans l'extension séparée **[Optimizr Pro](https://github.com/Corteo/Optimizr-pro)**, qui se branche sur Optimizr par ses points d'extension et reprend les réglages existants.
 
-**Version actuelle :** 7.23.0 · [Historique des versions](CHANGELOG.md)
+**Version actuelle :** 7.24.0 · [Historique des versions](CHANGELOG.md)
 
 Pour les administrateurs, un menu **Optimizr** dans la barre d'administration (sur le site comme dans l'administration) ouvre le tableau de bord du plugin et chacun de ses onglets, l'assistant de configuration et le suivi des campagnes.
 
@@ -63,6 +63,7 @@ Tout est désactivé par défaut. Sur un site existant, le module s'active depui
 
 ### Emails
 - Désactivation des emails envoyés après les mises à jour automatiques des extensions et de WordPress.
+- Les emails envoyés par Optimizr (code de connexion, alerte de connexion, nouvelle adresse de connexion) sont mis en page aux couleurs d'Optimizr, avec une version texte (`functions/mail-template.php`, `haptic_mail_send()`).
 
 ### Sécurité
 Toutes les protections sont désactivées par défaut et s'activent une à une.
@@ -225,6 +226,7 @@ functions/images.php     Module Images : conversion des images importées en Web
                          (+ class-haptic-image-editors.php : images CMJN ; assets/icc/ : profil sRGB, CC0)
 functions/media-panel.php Panneau « Optimizr » de la fiche des images de la médiathèque (+ css/optimizr-media.css, js/optimizr-media.js)
 functions/mails.php      Module Emails
+functions/mail-template.php  Mise en page des emails envoyés par Optimizr
 functions/security.php   Module Sécurité, protection de la connexion (+ security-admin.php : onglet de réglages)
 functions/security-2fa*.php  Double authentification : connexion (security-2fa.php), profil (security-2fa-profile.php, js/optimizr-2fa.js)
 functions/security-welcome.php  Écran « Sécurisez votre compte » proposé après la connexion et à la fin de l'assistant (+ css/optimizr-welcome.css)

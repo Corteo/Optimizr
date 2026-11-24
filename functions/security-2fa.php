@@ -328,18 +328,43 @@ function haptic_2fa_mask_email($email)
 function haptic_2fa_send_email_code($user, $address, $code, $purpose)
 {
     $site = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+    $minutes = number_format_i18n(HAPTIC_2FA_LOGIN_TTL / MINUTE_IN_SECONDS);
     if ($purpose === 'login') {
-        /* translators: 1: username, 2: 6-digit code, 3: validity in minutes */
-        $body = __("Your code to log in as \"%1\$s\": %2\$s\n\nIt is valid for %3\$s minutes.\n\nIf you have not just tried to log in, someone knows your password: change it.", 'optimizr');
+        $args = [
+            'tone' => 'ok',
+            'label' => __('Login code', 'optimizr'),
+            'title' => $site,
+            'paragraphs' => [
+                /* translators: %s: username */
+                sprintf(__('Here is your code to log in as "%s":', 'optimizr'), $user->user_login),
+            ],
+            'code' => $code,
+            'details' => [
+                __('Valid for', 'optimizr') => sprintf(/* translators: %s: number of minutes */ __('%s minutes', 'optimizr'), $minutes),
+            ],
+            'note' => __('If you have not just tried to log in, someone knows your password: change it.', 'optimizr'),
+        ];
     } else {
-        /* translators: 1: username, 2: 6-digit code, 3: validity in minutes */
-        $body = __("Your code to confirm two-factor authentication for the account \"%1\$s\": %2\$s\n\nIt is valid for %3\$s minutes.\n\nIf you did not request it, you can ignore this email.", 'optimizr');
+        $args = [
+            'tone' => 'ok',
+            'label' => __('Two-factor authentication', 'optimizr'),
+            'title' => $site,
+            'paragraphs' => [
+                /* translators: %s: username */
+                sprintf(__('Here is your code to confirm two-factor authentication for the account "%s":', 'optimizr'), $user->user_login),
+            ],
+            'code' => $code,
+            'details' => [
+                __('Valid for', 'optimizr') => sprintf(/* translators: %s: number of minutes */ __('%s minutes', 'optimizr'), $minutes),
+            ],
+            'note' => __('If you did not request it, you can ignore this email.', 'optimizr'),
+        ];
     }
-    return wp_mail(
+    return haptic_mail_send(
         $address,
         /* translators: %s: site name */
         sprintf(__('[%s] Your verification code', 'optimizr'), $site),
-        sprintf($body, $user->user_login, $code, number_format_i18n(HAPTIC_2FA_LOGIN_TTL / MINUTE_IN_SECONDS))
+        $args
     );
 }
 
