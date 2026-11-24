@@ -3894,3 +3894,103 @@ msgstr ""
 #: functions/security.php
 msgid "Change my password"
 msgstr ""
+
+#: functions/network.php
+msgid "Optimizr - Network"
+msgstr ""
+
+#: functions/network.php
+msgid "Optimizr on the network"
+msgstr ""
+
+#: functions/network.php
+msgid "New sites of the network will receive the settings of the model site."
+msgstr ""
+
+#: functions/network.php
+msgid "New sites of the network will start with the default settings."
+msgstr ""
+
+#: functions/network.php
+msgid "Sites of the network"
+msgstr ""
+
+#: functions/network.php
+msgid "Optimizr is set site by site: each site has its own modules, settings and data. Open a site to change its settings."
+msgstr ""
+
+#: functions/network.php
+msgid "Site"
+msgstr ""
+
+#: functions/network.php
+msgid "Active modules"
+msgstr ""
+
+#: functions/network.php
+msgid "Actions"
+msgstr ""
+
+#: functions/network.php
+msgid "Model"
+msgstr ""
+
+#: functions/network.php
+msgid "Optimizr is not activated on this site"
+msgstr ""
+
+#: functions/network.php
+msgid "None"
+msgstr ""
+
+#: functions/network.php
+msgid "Hidden"
+msgstr ""
+
+#: functions/network.php
+msgid "Same settings on several sites"
+msgstr ""
+
+#: functions/network.php
+msgid "Set one site the way you want, then copy its Optimizr settings to the others, like an export followed by an import (Tools tab)."
+msgstr ""
+
+#: functions/network.php
+msgid "Model site"
+msgstr ""
+
+#: functions/network.php
+msgid "Give these settings to every new site of the network"
+msgstr ""
+
+#: functions/network.php
+msgid "Save for new sites"
+msgstr ""
+
+#: functions/network.php
+msgid "Copy now to:"
+msgstr ""
+
+#: functions/network.php
+msgid "The settings of the chosen sites are replaced. What belongs to one site is never copied: its login address, business details and reviews, home page SEO, Google connections, access granted to AI assistants and to the console, maintenance mode, logs and statistics. Content, redirects and the SEO of each page are not touched."
+msgstr ""
+
+#: functions/network.php
+msgid "Copy the settings"
+msgstr ""
+
+#: functions/network.php
+msgid "Network"
+msgstr ""
+
+#. %s: number of sites
+#: functions/network.php
+msgid "Settings copied to %s site."
+msgid_plural "Settings copied to %s sites."
+msgstr[0] ""
+msgstr[1] ""
+
+#. 1: number of sites shown, 2: number of sites in the network
+#: functions/network.php
+msgid "The first %1$s sites of %2$s are shown."
+msgstr ""

@@ -18,6 +18,10 @@ Première étape de la prise en charge des réseaux multisites (sous-domaines, s
   - Sur un réseau en sous-dossiers, le site principal ne peut pas choisir un identifiant qui est l'adresse d'un autre site. `wp-signup` et `wp-activate` sont réservés.
   - WordPress envoie « mot de passe perdu » vers la page de connexion du site principal : quand celui-ci la masque, ces liens restent sur le site courant (filtre `network_site_url`, toujours chargé).
   - Limite connue : sur un réseau où chaque site a son domaine, un compte connecté sur un site ne l'est pas sur les autres. Le lien « Mes sites » vers l'administration d'un site masqué y affiche donc une page introuvable tant qu'on ne s'est pas connecté par son adresse.
+- **Écran « Optimizr » dans l'administration du réseau** (`functions/network.php`, chargé seulement sur un multisite, réservé aux administrateurs du réseau).
+  - Tableau des sites : modules actifs, cache de pages, adresse de connexion masquée ou non, et un bouton vers les réglages de chaque site.
+  - **Mêmes réglages sur plusieurs sites** : on choisit un site modèle, puis on copie ses réglages vers les sites cochés, comme un export suivi d'un import (les adresses du site modèle sont remplacées par celles de chaque site). Une case donne aussi ces réglages à chaque nouveau site du réseau (option de réseau `haptic_network_template`).
+  - Ce qui appartient à un seul site n'est jamais copié : adresse de connexion, établissement et avis, SEO de la page d'accueil, connexions Google, accès accordés aux assistants IA et à la console, mode maintenance, journaux (`haptic_network_copy_excluded()`, filtre du même nom).
 
 ### Corrigé
 - **Désactivation pour tout le réseau** : WordPress n'appelle la désactivation qu'une fois, sur le site d'où elle est lancée. Seul ce site était nettoyé ; les tâches planifiées et les fichiers générés (clé IndexNow, règle `.htaccess` des médias) des autres sites restaient. Chaque site du réseau est maintenant nettoyé (`haptic_options_deactivate()` parcourt les sites, `haptic_options_deactivate_site()` fait le travail d'un site).

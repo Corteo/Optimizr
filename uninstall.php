@@ -27,3 +27,5 @@ if (is_multisite()) {
 
 // Toujours : cache de l'outil de mise à jour (une seule option pour tout le réseau sur un multisite)
 delete_site_option('external_updates-optimizr');
+// Multisite : site modèle des nouveaux sites (écran Optimizr de l'administration du réseau)
+delete_site_option('haptic_network_template');

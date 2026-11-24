@@ -51,6 +51,10 @@ require_once(__DIR__ . '/functions/cache-files.php');
 require_once(__DIR__ . '/functions/tabs.php');
 require_once(__DIR__ . '/functions/tools.php');
 require_once(__DIR__ . '/functions/migration.php');
+// Multisite : écran Optimizr de l'administration du réseau (vue des sites, copie des réglages)
+if (is_multisite()) {
+    require_once(__DIR__ . '/functions/network.php');
+}
 // Mises à jour depuis les releases GitHub : version GitHub seulement, retiré par bin/build-wporg.sh (.distignore et ligne ci-dessous)
 require_once(__DIR__ . '/functions/github-updates.php'); // build:github-only
 require_once(__DIR__ . '/functions/audit.php');
