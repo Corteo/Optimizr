@@ -4,6 +4,16 @@ Toutes les évolutions notables d'Optimizr sont consignées ici.
 
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et la numérotation suit le [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [7.20.2] - 2026-11-24
+
+### Modifié
+- **Boîte « SEO & partage » de l'éditeur aux couleurs du système de design Optimizr.** La feuille `gutenberg/seo-preview.css` dépend désormais de `css/optimizr-tokens.css` (`haptic_tokens_style()`), chargée sur l'écran d'édition ; chaque couleur garde une valeur de secours si la feuille des jetons venait à manquer.
+- Champs au style « Netteté » : coins de 10 px, bordure plus foncée au survol, halo bleu au focus, texte de motif grisé.
+- Compteurs de caractères : barre de progression avec la zone idéale teintée, et pastille colorée. Orange sous le minimum conseillé (50 pour le titre, 120 pour la description), vert dans la zone idéale, rouge au-delà du maximum. Avant, une description de 150 caractères, pourtant idéale, s'affichait en orange.
+- Case « Ne pas indexer » dessinée comme dans les réglages, dans un encadré qui passe en orange quand elle est cochée.
+- Bouton « Générer la description avec l'IA » (Optimizr Pro) en bouton secondaire avec étincelles, qui pulsent pendant la génération.
+- Aperçu dans Google proche d'un vrai résultat : icône et nom du site, fil d'Ariane de l'adresse, titre en 20 px, image de partage en vignette à droite au lieu d'une grande image sous le texte.
+
 ## [7.20.1] - 2026-11-23
 
 ### Modifié

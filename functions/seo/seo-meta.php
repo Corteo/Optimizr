@@ -31,7 +31,8 @@ function haptic_enqueue_seo_scripts($hook)
 
     wp_enqueue_script('haptic-seo-preview', $url . 'seo-preview.js', ['wp-i18n'], filemtime($dir . 'seo-preview.js'), true);
     wp_set_script_translations('haptic-seo-preview', 'optimizr', HAPTIC_OPTIMIZR_PATH . 'languages');
-    wp_enqueue_style('haptic-seo-preview-style', $url . 'seo-preview.css', [], filemtime($dir . 'seo-preview.css'));
+    // Les couleurs viennent des jetons du système de design : la feuille est chargée avant celle de la boîte
+    wp_enqueue_style('haptic-seo-preview-style', $url . 'seo-preview.css', [haptic_tokens_style()], filemtime($dir . 'seo-preview.css'));
 }
 add_action('admin_enqueue_scripts', 'haptic_enqueue_seo_scripts');
 
@@ -47,52 +48,74 @@ function haptic_seo_meta_callback($post)
     $custom_image = get_post_meta($post->ID, '_haptic_og_image', true);
 
     wp_nonce_field('haptic_seo_meta_nonce', 'haptic_seo_meta_nonce_field');
+
+    $permalink = get_permalink($post->ID);
+    $host = wp_parse_url(home_url(), PHP_URL_HOST);
+    $path = trim((string) wp_parse_url($permalink, PHP_URL_PATH), '/');
+    // Fil d'Ariane façon Google : « exemple.fr › page › sous-page »
+    $breadcrumb = $path === '' ? $host : $host . ' › ' . implode(' › ', array_map('urldecode', explode('/', $path)));
+    $site_icon = get_site_icon_url(64);
     ?>
-    <p>
-        <label>
+    <div class="optimizr-seo">
+        <label class="optimizr-seo__check">
             <input type="checkbox" name="haptic_noindex" value="1" <?php checked($noindex, 1); ?>>
-            <?php esc_html_e('Do not index this content in search engines', 'optimizr'); ?>
+            <span><?php esc_html_e('Do not index this content in search engines', 'optimizr'); ?></span>
         </label>
-    </p>
 
-    <p class="haptic-seo-hint"><?php
-        /* translators: %s: URL of the Optimizr SEO settings tab */
-        echo wp_kses(sprintf(__('Leave a field empty to use the pattern set in <a href="%s">Optimizr › SEO</a> (shown in grey).', 'optimizr'), esc_url(admin_url('admin.php?page=haptic-options&tab=seo'))), ['a' => ['href' => []]]);
-    ?></p>
+        <p class="optimizr-seo__intro"><?php
+            /* translators: %s: URL of the Optimizr SEO settings tab */
+            echo wp_kses(sprintf(__('Leave a field empty to use the pattern set in <a href="%s">Optimizr › SEO</a> (shown in grey).', 'optimizr'), esc_url(admin_url('admin.php?page=haptic-options&tab=seo'))), ['a' => ['href' => []]]);
+        ?></p>
 
-    <p>
-        <label for="haptic_og_title"><strong><?php esc_html_e('SEO title', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(browser tab, Google, shares)', 'optimizr'); ?></span></label><br>
-        <input type="text" id="haptic_og_title" name="haptic_og_title" value="<?php echo esc_attr($custom_title); ?>" placeholder="<?php echo esc_attr($seo['pattern_title']); ?>" class="widefat">
-        <span class="haptic-char-count" id="haptic_title_count">0/60</span>
-        <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 50 and 60 characters.', 'optimizr'); ?></small>
-    </p>
+        <div class="optimizr-seo__field">
+            <label class="optimizr-seo__label" for="haptic_og_title"><?php esc_html_e('SEO title', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(browser tab, Google, shares)', 'optimizr'); ?></span></label>
+            <input type="text" id="haptic_og_title" name="haptic_og_title" value="<?php echo esc_attr($custom_title); ?>" placeholder="<?php echo esc_attr($seo['pattern_title']); ?>" class="widefat" aria-describedby="haptic_title_meter">
+            <div class="optimizr-seo__meter" id="haptic_title_meter" data-min="50" data-max="60">
+                <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
+                <span class="haptic-char-count" id="haptic_title_count">0/60</span>
+                <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 50 and 60 characters.', 'optimizr'); ?></small>
+            </div>
+        </div>
 
-    <p>
-        <label for="haptic_og_desc"><strong><?php esc_html_e('SEO description', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(Google, shares)', 'optimizr'); ?></span></label><br>
-        <textarea id="haptic_og_desc" name="haptic_og_desc" class="widefat" rows="3" placeholder="<?php echo esc_attr($seo['pattern_description']); ?>"><?php echo esc_textarea($custom_desc); ?></textarea>
-        <span class="haptic-char-count" id="haptic_desc_count">0/160</span>
-        <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
-    </p>
+        <div class="optimizr-seo__field">
+            <label class="optimizr-seo__label" for="haptic_og_desc"><?php esc_html_e('SEO description', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(Google, shares)', 'optimizr'); ?></span></label>
+            <textarea id="haptic_og_desc" name="haptic_og_desc" class="widefat" rows="3" placeholder="<?php echo esc_attr($seo['pattern_description']); ?>" aria-describedby="haptic_desc_meter"><?php echo esc_textarea($custom_desc); ?></textarea>
+            <div class="optimizr-seo__meter" id="haptic_desc_meter" data-min="120" data-max="160">
+                <span class="optimizr-seo__bar" aria-hidden="true"><span class="optimizr-seo__ideal"></span><span class="optimizr-seo__fill"></span></span>
+                <span class="haptic-char-count" id="haptic_desc_count">0/160</span>
+                <small class="haptic-seo-hint"><?php esc_html_e('Ideally between 120 and 160 characters.', 'optimizr'); ?></small>
+            </div>
+            <?php
+            // Optimizr Pro : génération de la description par l'Assistant IA
+            do_action('haptic_seo_metabox_after_description', $post);
+            ?>
+        </div>
 
-    <?php
-    // Optimizr Pro : génération de la description par l'Assistant IA
-    do_action('haptic_seo_metabox_after_description', $post);
-    ?>
+        <div class="optimizr-seo__field">
+            <label class="optimizr-seo__label" for="haptic_og_image"><?php esc_html_e('Share image', 'optimizr'); ?> <span class="haptic-seo-hint"><?php esc_html_e('(URL)', 'optimizr'); ?></span></label>
+            <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($seo['default_image'] ?: __('Content featured image', 'optimizr')); ?>" class="widefat">
+            <small class="haptic-seo-hint"><?php esc_html_e('Default: the featured image. Ideal size: 1200 × 630 px.', 'optimizr'); ?></small>
+        </div>
 
-    <p>
-        <label for="haptic_og_image"><strong><?php esc_html_e('Share image', 'optimizr'); ?></strong> <span class="haptic-seo-hint"><?php esc_html_e('(URL)', 'optimizr'); ?></span></label><br>
-        <input type="url" id="haptic_og_image" name="haptic_og_image" value="<?php echo esc_attr($custom_image); ?>" placeholder="<?php echo esc_attr($seo['default_image'] ?: __('Content featured image', 'optimizr')); ?>" class="widefat">
-        <small class="haptic-seo-hint"><?php esc_html_e('Default: the featured image. Ideal size: 1200 × 630 px.', 'optimizr'); ?></small>
-    </p>
-
-    <h3><?php esc_html_e('Google preview', 'optimizr'); ?></h3>
-    <div id="haptic_seo_preview" class="haptic-seo-preview-box">
-        <p class="seo-title"><?php echo esc_html($seo['title']); ?></p>
-        <p class="seo-url"><?php echo esc_url(get_permalink($post->ID)); ?></p>
-        <p class="seo-desc"><?php echo esc_html($seo['description']); ?></p>
-        <?php if ($seo['image']) : ?>
-            <img src="<?php echo esc_url($seo['image']); ?>" alt="">
-        <?php endif; ?>
+        <div class="optimizr-seo__preview">
+            <h3 class="optimizr-seo__preview-title"><?php esc_html_e('Google preview', 'optimizr'); ?></h3>
+            <div id="haptic_seo_preview" class="haptic-seo-preview-box">
+                <div class="seo-text">
+                    <div class="seo-site">
+                        <span class="seo-favicon"><?php if ($site_icon) : ?><img src="<?php echo esc_url($site_icon); ?>" alt=""><?php else : echo esc_html(mb_strtoupper(mb_substr(wp_strip_all_tags(get_bloginfo('name')), 0, 1))); endif; ?></span>
+                        <span class="seo-site-text">
+                            <span class="seo-site-name"><?php echo esc_html(get_bloginfo('name')); ?></span>
+                            <span class="seo-url" title="<?php echo esc_url($permalink); ?>"><?php echo esc_html($breadcrumb); ?></span>
+                        </span>
+                    </div>
+                    <p class="seo-title"><?php echo esc_html($seo['title']); ?></p>
+                    <p class="seo-desc"><?php echo esc_html($seo['description']); ?></p>
+                </div>
+                <div class="seo-thumb"<?php echo $seo['image'] ? '' : ' hidden'; ?>>
+                    <img<?php echo $seo['image'] ? ' src="' . esc_url($seo['image']) . '"' : ''; ?> alt="">
+                </div>
+            </div>
+        </div>
     </div>
     <?php
 }
